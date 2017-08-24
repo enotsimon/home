@@ -1,4 +1,4 @@
 # geo
 experimental landscape emulator
 
-nothing interesting here for now...
+https://enotsimon.github.io/geo/
