@@ -60038,6 +60038,8 @@ var Game = (function () {
     this.cells_count = Infinity;
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
+    this.map_drawer = new _jsMap_drawer2["default"](this.width, this.height);
+    this.interaction = new _jsInteraction2["default"](this);
   }
 
   _createClass(Game, [{
@@ -60091,11 +60093,10 @@ var Game = (function () {
       let path = a_star.find(from, to);
       */
 
-      this.map_drawer = new _jsMap_drawer2["default"](this.diagram, this.rrt, [], this.width, this.height);
+      this.map_drawer.world_init(this.diagram, this.rrt);
       this.geo = new _jsGeo2["default"](this.diagram, this.rrt, this.map_drawer);
       this.map_drawer.draw();
       // map_drawer.map is a pixi.js app
-      this.interaction = new _jsInteraction2["default"](this.map_drawer.map, this.diagram, this.map_drawer);
 
       this.map_drawer.highlight_bad_river_links();
       this.map_drawer.highlight_local_minimums();
@@ -60414,17 +60415,18 @@ var _d3 = require("d3");
 var d3 = _interopRequireWildcard(_d3);
 
 var Interaction = (function () {
-  function Interaction(map, diagram, map_drawer) {
+  function Interaction(game) {
     _classCallCheck(this, Interaction);
 
-    this.diagram = diagram;
+    this.game = game;
     document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
-    this.map = map;
-    this.map_drawer = map_drawer;
+    this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
 
     document.addEventListener('click', this.map_click_handler.bind(this), false);
     document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
+
+    d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
 
     // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
     var map_canvas = d3.select('#map');
@@ -60472,7 +60474,7 @@ var Interaction = (function () {
     key: "map_mouse_move_handler",
     value: function map_mouse_move_handler(event) {
       if (event.target != this.map.view) {
-        this.map_drawer.clear_cell_under_cursor();
+        this.game.map_drawer.clear_cell_under_cursor();
         this.cell_under_cursor = null;
         return false;
       }
@@ -60480,7 +60482,7 @@ var Interaction = (function () {
       // TODO check if its fast enought
       var cell = this.get_cell_under_cursor(mouse_coords);
       if (!this.cell_under_cursor || this.cell_under_cursor != cell) {
-        this.map_drawer.highlight_cell_under_cursor(cell);
+        this.game.map_drawer.highlight_cell_under_cursor(cell);
         this.cell_under_cursor = cell;
       }
 
@@ -60515,6 +60517,17 @@ var Interaction = (function () {
       this.map.stage.scale.y = d3.event.transform.k;
       d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
     }
+  }, {
+    key: "trigger_generate_world",
+    value: function trigger_generate_world() {
+      console.clear();
+      this.map.stage.children.forEach(function (layer) {
+        return layer.removeChildren();
+      });
+      this.game.generate_map();
+    }
+
+    ///////////////////////////////////////
 
     // UTILS
   }, {
@@ -60526,7 +60539,7 @@ var Interaction = (function () {
     key: "get_cell_under_cursor",
     value: function get_cell_under_cursor(mouse_coords) {
       var world_coords = this.mouse_coords_to_world_coords(mouse_coords);
-      return _jsVoronoi_diagram2["default"].find(world_coords, this.diagram);
+      return _jsVoronoi_diagram2["default"].find(world_coords, this.game.map_drawer.diagram);
     }
   }, {
     key: "mouse_coords_to_world_coords",
@@ -60581,14 +60594,10 @@ var _jsColor = require("js/color");
 var _jsColor2 = _interopRequireDefault(_jsColor);
 
 var MapDrawer = (function () {
-  function MapDrawer(diagram, rrt, path, width, height) {
+  function MapDrawer(width, height) {
     var _this = this;
 
     _classCallCheck(this, MapDrawer);
-
-    this.path = path;
-    this.diagram = diagram;
-    this.rrt = rrt;
 
     var PIXI = require('pixi.js');
     this.map = new PIXI.Application(width, height, {
@@ -60616,6 +60625,12 @@ var MapDrawer = (function () {
   }
 
   _createClass(MapDrawer, [{
+    key: "world_init",
+    value: function world_init(diagram, rrt) {
+      this.diagram = diagram;
+      this.rrt = rrt;
+    }
+  }, {
     key: "draw",
     value: function draw() {
       var draw_voronoi_diagram = true;

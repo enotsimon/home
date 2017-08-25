@@ -3,15 +3,16 @@ import VoronoiDiagram from "js/voronoi_diagram";
 import * as d3 from "d3";
 
 export default class Interaction {
-  constructor(map, diagram, map_drawer) {
-    this.diagram = diagram;
+  constructor(game) {
+    this.game = game;
     document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
-    this.map = map;
-    this.map_drawer = map_drawer;
+    this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
 
     document.addEventListener('click', this.map_click_handler.bind(this), false);
     document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
+
+    d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
 
     // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
     let map_canvas = d3.select('#map');
@@ -27,6 +28,7 @@ export default class Interaction {
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
+
 
   change_state(state) {
     this.state = state;
@@ -64,7 +66,7 @@ export default class Interaction {
 
   map_mouse_move_handler(event) {
     if (event.target != this.map.view) {
-      this.map_drawer.clear_cell_under_cursor();
+      this.game.map_drawer.clear_cell_under_cursor();
       this.cell_under_cursor = null;
       return false;
     }
@@ -72,7 +74,7 @@ export default class Interaction {
     // TODO check if its fast enought
     let cell = this.get_cell_under_cursor(mouse_coords);
     if (!this.cell_under_cursor || this.cell_under_cursor != cell) {
-      this.map_drawer.highlight_cell_under_cursor(cell)
+      this.game.map_drawer.highlight_cell_under_cursor(cell)
       this.cell_under_cursor = cell;
     }
     
@@ -107,6 +109,13 @@ export default class Interaction {
   }
 
 
+  trigger_generate_world() {
+    console.clear();
+    this.map.stage.children.forEach(layer => layer.removeChildren());
+    this.game.generate_map();
+  }
+  ///////////////////////////////////////
+
   // UTILS
   get_mouse_coords(event) {
     return {x: event.offsetX, y: event.offsetY};
@@ -114,7 +123,7 @@ export default class Interaction {
 
   get_cell_under_cursor(mouse_coords) {
     let world_coords = this.mouse_coords_to_world_coords(mouse_coords);
-    return VoronoiDiagram.find(world_coords, this.diagram);
+    return VoronoiDiagram.find(world_coords, this.game.map_drawer.diagram);
   }
 
 

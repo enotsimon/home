@@ -17,6 +17,8 @@ export default class Game {
     this.cells_count = Infinity;
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
+    this.map_drawer = new MapDrawer(this.width, this.height);
+    this.interaction = new Interaction(this);
   }
 
   generate_map() {
@@ -63,11 +65,10 @@ export default class Game {
     */
 
 
-    this.map_drawer = new MapDrawer(this.diagram, this.rrt, [], this.width, this.height);
+    this.map_drawer.world_init(this.diagram, this.rrt);
     this.geo = new Geo(this.diagram, this.rrt, this.map_drawer);
     this.map_drawer.draw();
     // map_drawer.map is a pixi.js app
-    this.interaction = new Interaction(this.map_drawer.map, this.diagram, this.map_drawer);
 
     this.map_drawer.highlight_bad_river_links();
     this.map_drawer.highlight_local_minimums();

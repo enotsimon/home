@@ -6,10 +6,7 @@ import BallsGenerator from "js/balls_generator";
 import Color from "js/color";
 
 export default class MapDrawer {
-  constructor(diagram, rrt, path, width, height) {
-    this.path = path;
-    this.diagram = diagram;
-    this.rrt = rrt;
+  constructor(width, height) {
 
     let PIXI = require('pixi.js');
     this.map = new PIXI.Application(width, height, {
@@ -48,6 +45,11 @@ export default class MapDrawer {
       // other
       'dim'
     ];
+  }
+
+  world_init(diagram, rrt) {
+    this.diagram = diagram;
+    this.rrt = rrt;
   }
 
   
