@@ -16,42 +16,53 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   </head>
 
-  <body style="background-color: #000000;">
+  <body style="background-color: #EEE;">
+    <small>
+    <table style="margin: 5px; border-spacing: 5px; border-collapse: separate;">
+      <tr style="vertical-align: top;">
+        <td>
 
-    <div class="">
-      <table>
-        <tr>
-          <td>
-            <div class="" id="map_container">
-              <canvas id='map' width='800' height='800'></canvas>
+          <div class="panel panel-success">
+            <div class="panel-body">
+              <div class="" id="map_container">
+                <canvas id='map' width='800' height='800'></canvas>
+              </div>
             </div>
-          </td>
-          <td width="100%">
-            <div class="">
-              <div class="">
+          </div>
+
+        </td>
+        <td width="100%">
+
+          <div class="panel panel-success">
+            <div class="panel-heading">menu</div>
+            <div class="panel-body">
+          
+              <div id="road_block">
                 <input type="button" id="build_road" value="build road">
                 <div class=""></div>
                 <div id="road_text"></div>
               </div>
+
             </div>
-          </td>
-        </tr>
-      </table>
-      <div class="">
-        <div class="">
-          <div>DEBUG</div>
-          <div>FPS: <span id="fps_counter"></span></div>
-          <div>map scale: <span id="map_scale"></span></div>
-          <div>mouse position: <span id="mouse_pos">{0, 0}</span></div>
-          <div>world point: <span id="world_pos">{0, 0}</span></div>
-        </div>
-      </div>
+          </div>
+        </td>
+      </tr>
+      <tr style="vertical-align: top;">
+        <td>
+          <div class="panel panel-success">
+            <div class="panel-heading">debug</div>
+            <div class="panel-body">
+              <div>FPS: <span id="fps_counter"></span></div>
+              <div>map scale: <span id="map_scale"></span></div>
+              <div>mouse position: <span id="mouse_pos">{0, 0}</span></div>
+              <div>world point: <span id="world_pos">{0, 0}</span></div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    </small>
 
-    </div>
-
-    <script>
-      require("js/game")
-    </script>
-
+    <script>require("js/game")</script>
   </body>
 </html>
