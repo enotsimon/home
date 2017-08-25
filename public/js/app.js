@@ -60423,14 +60423,14 @@ var Interaction = (function () {
     this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
 
-    document.addEventListener('click', this.map_click_handler.bind(this), false);
     document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
 
     d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
 
+    d3.select('#map').on('click', this.map_click_handler.bind(this));
+
     // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
-    var map_canvas = d3.select('#map');
-    map_canvas.call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
+    d3.select('#map').call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
 
     this.road_text_div = document.getElementById("road_text");
 
@@ -60492,8 +60492,8 @@ var Interaction = (function () {
     }
   }, {
     key: "map_click_handler",
-    value: function map_click_handler(event) {
-      var mouse_coords = this.get_mouse_coords(event);
+    value: function map_click_handler() {
+      var mouse_coords = this.get_mouse_coords(d3.event);
       var cell = this.get_cell_under_cursor(mouse_coords);
       if (!cell) {
         console.log('dunno why, but no cell under cursor');

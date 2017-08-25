@@ -9,14 +9,14 @@ export default class Interaction {
     this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
 
-    document.addEventListener('click', this.map_click_handler.bind(this), false);
     document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
 
     d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
 
+    d3.select('#map').on('click', this.map_click_handler.bind(this));
+
     // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
-    let map_canvas = d3.select('#map');
-    map_canvas.call(
+    d3.select('#map').call(
       d3.zoom()
       .scaleExtent([1, 4])
       .translateExtent([[0, 0], [this.map.view.width, this.map.view.height]])
@@ -83,8 +83,8 @@ export default class Interaction {
     d3.select('#world_pos').html('{x: '+world_pos.x+', y: '+world_pos.y+'}');
   }
 
-  map_click_handler(event) {
-    let mouse_coords = this.get_mouse_coords(event);
+  map_click_handler() {
+    let mouse_coords = this.get_mouse_coords(d3.event);
     let cell = this.get_cell_under_cursor(mouse_coords);
     if (!cell) {
       console.log('dunno why, but no cell under cursor');
