@@ -21,16 +21,6 @@ export default class MapDrawer {
       this.layers[layer] = new PIXI.Container();
       this.map.stage.addChild(this.layers[layer]);
     });
-
-    this.fps_div = document.getElementById('fps_counter');
-    this.ticks = 0;
-    this.map.ticker.add(() => {
-      this.ticks++;
-      if (this.ticks % 10 == 0) {
-        this.fps_div.innerHTML = this.map.ticker.FPS | 0;
-      }
-    });
-    document.getElementById('map_scale').innerHTML = '{x: '+this.map.stage.scale.x+', y: '+this.map.stage.scale.y+'}';
   }
 
   static layers() {

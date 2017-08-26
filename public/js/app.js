@@ -60416,6 +60416,8 @@ var d3 = _interopRequireWildcard(_d3);
 
 var Interaction = (function () {
   function Interaction(game) {
+    var _this = this;
+
     _classCallCheck(this, Interaction);
 
     this.game = game;
@@ -60434,6 +60436,16 @@ var Interaction = (function () {
 
     this.road_text_div = document.getElementById("road_text");
 
+    this.ticks = 0; // here?
+    this.fps_div = document.getElementById('fps_counter');
+    this.map.ticker.add(function () {
+      _this.ticks++;
+      if (_this.ticks % 10 == 0) {
+        d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
+      }
+    });
+    d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
+
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
@@ -60442,20 +60454,15 @@ var Interaction = (function () {
     key: "change_state",
     value: function change_state(state) {
       this.state = state;
-
       if (state == 'initial') {
-
-        this.road_text_div.innerHTML = '';
+        d3.select('#road_text').html('');
         this.road_start_cell = null;
       } else if (state == 'build_road_choose_start') {
-
-        this.road_text_div.innerHTML = 'click road start cell';
+        d3.select('#road_text').html('click road start cell');
         this.road_start_cell = null;
       } else if (state == 'build_road_choose_finish') {
-
-        this.road_text_div.innerHTML = 'click road finish cell';
+        d3.select('#road_text').html('click road finish cell');
       } else if (state == 'build_road') {
-
         //this.game.build_road(this.road_start_cell, this.road_finish_cell);
         console.log('suppose the road is built now');
         this.change_state('initial');
@@ -60612,16 +60619,6 @@ var MapDrawer = (function () {
       _this.layers[layer] = new PIXI.Container();
       _this.map.stage.addChild(_this.layers[layer]);
     });
-
-    this.fps_div = document.getElementById('fps_counter');
-    this.ticks = 0;
-    this.map.ticker.add(function () {
-      _this.ticks++;
-      if (_this.ticks % 10 == 0) {
-        _this.fps_div.innerHTML = _this.map.ticker.FPS | 0;
-      }
-    });
-    document.getElementById('map_scale').innerHTML = '{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}';
   }
 
   _createClass(MapDrawer, [{

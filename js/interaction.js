@@ -25,6 +25,16 @@ export default class Interaction {
 
     this.road_text_div = document.getElementById("road_text");
 
+    this.ticks = 0; // here?
+    this.fps_div = document.getElementById('fps_counter');
+    this.map.ticker.add(() => {
+      this.ticks++;
+      if (this.ticks % 10 == 0) {
+        d3.select('#fps_counter').html(this.map.ticker.FPS | 0);
+      }
+    });
+    d3.select('#map_scale').html('{x: '+this.map.stage.scale.x+', y: '+this.map.stage.scale.y+'}');
+
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
@@ -32,27 +42,18 @@ export default class Interaction {
 
   change_state(state) {
     this.state = state;
-
     if (state == 'initial') {
-
-      this.road_text_div.innerHTML = '';
+      d3.select('#road_text').html('');
       this.road_start_cell = null;
-
     } else if (state == 'build_road_choose_start') {
-
-      this.road_text_div.innerHTML = 'click road start cell';
+      d3.select('#road_text').html('click road start cell');
       this.road_start_cell = null;
-
     } else if (state == 'build_road_choose_finish') {
-
-      this.road_text_div.innerHTML = 'click road finish cell';
-
+      d3.select('#road_text').html('click road finish cell');
     } else if (state == 'build_road') {
-
       //this.game.build_road(this.road_start_cell, this.road_finish_cell);
       console.log('suppose the road is built now');
       this.change_state('initial');
-
     }
   }
 
