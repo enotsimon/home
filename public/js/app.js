@@ -60444,7 +60444,7 @@ var Interaction = (function () {
         d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
       }
     });
-    d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
+    this.update_map_scale();
 
     this.cell_under_cursor = null;
     this.state = 'initial';
@@ -60522,7 +60522,7 @@ var Interaction = (function () {
       this.map.stage.position.y = d3.event.transform.y;
       this.map.stage.scale.x = d3.event.transform.k;
       this.map.stage.scale.y = d3.event.transform.k;
-      d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
+      this.update_map_scale();
     }
   }, {
     key: "trigger_generate_world",
@@ -60536,7 +60536,15 @@ var Interaction = (function () {
 
     ///////////////////////////////////////
 
+  }, {
+    key: "update_map_scale",
+    value: function update_map_scale() {
+      d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
+    }
+
+    /////////////////////////////////////// 
     // UTILS
+    ///////////////////////////////////////
   }, {
     key: "get_mouse_coords",
     value: function get_mouse_coords(event) {

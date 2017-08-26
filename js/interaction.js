@@ -33,7 +33,7 @@ export default class Interaction {
         d3.select('#fps_counter').html(this.map.ticker.FPS | 0);
       }
     });
-    d3.select('#map_scale').html('{x: '+this.map.stage.scale.x+', y: '+this.map.stage.scale.y+'}');
+    this.update_map_scale();
 
     this.cell_under_cursor = null;
     this.state = 'initial';
@@ -106,7 +106,7 @@ export default class Interaction {
     this.map.stage.position.y = d3.event.transform.y;
     this.map.stage.scale.x = d3.event.transform.k;
     this.map.stage.scale.y = d3.event.transform.k;
-    d3.select('#map_scale').html('{x: '+this.map.stage.scale.x+', y: '+this.map.stage.scale.y+'}');
+    this.update_map_scale();
   }
 
 
@@ -117,7 +117,15 @@ export default class Interaction {
   }
   ///////////////////////////////////////
 
+
+  update_map_scale() {
+    d3.select('#map_scale').html('{x: '+this.map.stage.scale.x+', y: '+this.map.stage.scale.y+'}');
+  }
+
+
+  ///////////////////////////////////////  
   // UTILS
+  ///////////////////////////////////////
   get_mouse_coords(event) {
     return {x: event.offsetX, y: event.offsetY};
   }
