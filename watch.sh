@@ -23,8 +23,8 @@ previous_sha=$sha
 
 build() {
   echo -en " building...  "
-  $cmd
-  #echo -en "\n--> resumed watching."
+  result=`$cmd`
+  notify-send 'brunch build' "$result"
 }
 
 compare() {
@@ -50,7 +50,7 @@ trap build SIGQUIT
 trap do_exit SIGINT
 
 echo -e  "--> Press Ctrl+\\ to force build, Ctrl+c to exit."
-echo -en "--> watching \"$path\""
+echo -e "--> watching \"$path\""
 while true; do
   compare
   sleep 1
