@@ -17,8 +17,6 @@ export default class Interaction {
 
     document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
 
-    d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
-
     d3.select('#map').on('click', this.map_click_handler.bind(this));
 
     // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
@@ -110,13 +108,6 @@ export default class Interaction {
     this.map.stage.scale.x = d3.event.transform.k;
     this.map.stage.scale.y = d3.event.transform.k;
     this.update_map_scale();
-  }
-
-
-  trigger_generate_world() {
-    console.clear();
-    this.map.stage.children.forEach(layer => layer.removeChildren());
-    this.game.generate_map();
   }
   ///////////////////////////////////////
 
