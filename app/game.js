@@ -13,7 +13,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import App from 'components/app';
 
-export default class Game {
+class Game {
   constructor() {
     // CONST
     this.width = 800;
@@ -22,7 +22,7 @@ export default class Game {
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
     this.map_drawer = new MapDrawer();
-    this.interaction = new Interaction(this);
+    this.interaction = new Interaction();
   }
 
   generate_map() {
@@ -84,9 +84,10 @@ export default class Game {
   }
 }
 
+let game = new Game();
+module.exports.game = game; // OMG global export BAD WAY
 
 document.addEventListener('DOMContentLoaded', () => {
-  let game = new Game();
   ReactDOM.render(<App />, document.querySelector('#app'));
   game.generate_map();
 });

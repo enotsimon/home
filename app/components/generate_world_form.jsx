@@ -1,4 +1,5 @@
 import React from 'react';
+import {game} from "game";
 
 export default class GenerateWorldForm extends React.Component {
   render() {

@@ -1,15 +1,16 @@
 import Util from "util";
 import VoronoiDiagram from "voronoi_diagram";
 import * as d3 from "d3";
+import {game} from "game";
 
 export default class Interaction {
-  constructor(game) {
-    this.game = game;
+  constructor() {
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
 
   init() {
+    this.game = game;
     document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
     this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
