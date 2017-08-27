@@ -483,6 +483,26 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _collapsible_panel = require('components/collapsible_panel');
+
+var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
+
+var _debug_info = require('components/debug_info');
+
+var _debug_info2 = _interopRequireDefault(_debug_info);
+
+var _generate_world_form = require('components/generate_world_form');
+
+var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
+
+var _roads_form = require('components/roads_form');
+
+var _roads_form2 = _interopRequireDefault(_roads_form);
+
+var _legend = require('components/legend');
+
+var _legend2 = _interopRequireDefault(_legend);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -534,64 +554,9 @@ var App = function (_React$Component) {
                       )
                     )
                   ),
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'panel panel-success' },
-                    _react2.default.createElement(
-                      'div',
-                      { className: 'panel-heading' },
-                      _react2.default.createElement(
-                        'h4',
-                        { className: 'panel-title' },
-                        _react2.default.createElement(
-                          'a',
-                          { 'data-toggle': 'collapse', href: '#menu-element-3' },
-                          'debug ',
-                          _react2.default.createElement('span', { className: 'caret' })
-                        )
-                      )
-                    ),
-                    _react2.default.createElement(
-                      'div',
-                      { id: 'menu-element-3', className: 'panel-collapse collapse' },
-                      _react2.default.createElement(
-                        'div',
-                        { className: 'panel-body' },
-                        _react2.default.createElement(
-                          'div',
-                          null,
-                          'FPS: ',
-                          _react2.default.createElement('span', { id: 'fps_counter' })
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          null,
-                          'map scale: ',
-                          _react2.default.createElement('span', { id: 'map_scale' })
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          null,
-                          'mouse position: ',
-                          _react2.default.createElement(
-                            'span',
-                            { id: 'mouse_pos' },
-                            (0, 0)
-                          )
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          null,
-                          'world point: ',
-                          _react2.default.createElement(
-                            'span',
-                            { id: 'world_pos' },
-                            (0, 0)
-                          )
-                        )
-                      )
-                    )
-                  )
+                  _react2.default.createElement(_collapsible_panel2.default, { header: 'debug', name: 'debug', content_func: function content_func() {
+                      return _react2.default.createElement(_debug_info2.default);
+                    } })
                 )
               ),
               _react2.default.createElement(
@@ -606,121 +571,19 @@ var App = function (_React$Component) {
                     _react2.default.createElement(
                       'div',
                       { className: 'panel-body' },
-                      _react2.default.createElement(
-                        'div',
-                        { className: 'panel panel-success' },
-                        _react2.default.createElement(
-                          'div',
-                          { className: 'panel-heading' },
-                          _react2.default.createElement(
-                            'h4',
-                            { className: 'panel-title' },
-                            _react2.default.createElement(
-                              'a',
-                              { 'data-toggle': 'collapse', href: '#menu-element-1' },
-                              'world generating ',
-                              _react2.default.createElement('span', { className: 'caret' })
-                            )
-                          )
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          { id: 'menu-element-1', className: 'panel-collapse collapse' },
-                          _react2.default.createElement(
-                            'div',
-                            { className: 'panel-body' },
-                            _react2.default.createElement(
-                              'form',
-                              { className: 'form-horizontal' },
-                              _react2.default.createElement(
-                                'div',
-                                { className: 'form-group' },
-                                _react2.default.createElement(
-                                  'div',
-                                  { className: 'col-sm-offset-2 col-sm-10' },
-                                  _react2.default.createElement(
-                                    'button',
-                                    { type: 'button', className: 'btn btn-default', id: 'generate_world' },
-                                    'generate'
-                                  )
-                                )
-                              )
-                            )
-                          )
-                        )
-                      ),
-                      _react2.default.createElement(
-                        'div',
-                        { className: 'panel panel-success' },
-                        _react2.default.createElement(
-                          'div',
-                          { className: 'panel-heading' },
-                          _react2.default.createElement(
-                            'h4',
-                            { className: 'panel-title' },
-                            _react2.default.createElement(
-                              'a',
-                              { 'data-toggle': 'collapse', href: '#menu-element-2' },
-                              'roads ',
-                              _react2.default.createElement('span', { className: 'caret' })
-                            )
-                          )
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          { id: 'menu-element-2', className: 'panel-collapse collapse' },
-                          _react2.default.createElement(
-                            'div',
-                            { className: 'panel-body' },
-                            _react2.default.createElement(
-                              'p',
-                              null,
-                              'in test mode for now, nothing works...'
-                            ),
-                            _react2.default.createElement(
-                              'button',
-                              { type: 'button', className: 'btn btn-success', id: 'build_road' },
-                              'build road'
-                            ),
-                            _react2.default.createElement('div', { id: 'road_text' })
-                          )
-                        )
-                      )
+                      _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
+                          return _react2.default.createElement(_generate_world_form2.default);
+                        } }),
+                      _react2.default.createElement(_collapsible_panel2.default, { header: 'roads', name: 'roads', content_func: function content_func() {
+                          return _react2.default.createElement(_roads_form2.default);
+                        } })
                     ),
                     _react2.default.createElement(
                       'div',
                       { className: 'panel-footer' },
-                      _react2.default.createElement(
-                        'div',
-                        { className: 'panel panel-success' },
-                        _react2.default.createElement(
-                          'div',
-                          { className: 'panel-heading' },
-                          _react2.default.createElement(
-                            'h4',
-                            { className: 'panel-title' },
-                            _react2.default.createElement(
-                              'a',
-                              { 'data-toggle': 'collapse', href: '#menu-element-5' },
-                              'legend ',
-                              _react2.default.createElement('span', { className: 'caret' })
-                            )
-                          )
-                        ),
-                        _react2.default.createElement(
-                          'div',
-                          { id: 'menu-element-5', className: 'panel-collapse collapse' },
-                          _react2.default.createElement(
-                            'div',
-                            { className: 'panel-body' },
-                            _react2.default.createElement(
-                              'p',
-                              null,
-                              'here will be map legend...'
-                            )
-                          )
-                        )
-                      )
+                      _react2.default.createElement(_collapsible_panel2.default, { header: 'legend', name: 'legend', content_func: function content_func() {
+                          return _react2.default.createElement(_legend2.default);
+                        } })
                     )
                   )
                 )
@@ -736,6 +599,339 @@ var App = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = App;
+
+});
+
+require.register("components/collapsible_panel.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CollapsiblePanel = function (_React$Component) {
+  _inherits(CollapsiblePanel, _React$Component);
+
+  function CollapsiblePanel(args) {
+    _classCallCheck(this, CollapsiblePanel);
+
+    var _this = _possibleConstructorReturn(this, (CollapsiblePanel.__proto__ || Object.getPrototypeOf(CollapsiblePanel)).call(this));
+
+    _this.header = args.header;
+    _this.name = args.name;
+    _this.content_func = args.content_func;
+    return _this;
+  }
+
+  _createClass(CollapsiblePanel, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "panel panel-success" },
+        _react2.default.createElement(
+          "div",
+          { className: "panel-heading" },
+          _react2.default.createElement(
+            "h4",
+            { className: "panel-title" },
+            _react2.default.createElement(
+              "a",
+              { "data-toggle": "collapse", href: '#' + this.name },
+              this.header,
+              " ",
+              _react2.default.createElement("span", { className: "caret" })
+            )
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          { id: this.name, className: "panel-collapse collapse" },
+          _react2.default.createElement(
+            "div",
+            { className: "panel-body" },
+            this.content_func()
+          )
+        )
+      );
+    }
+  }]);
+
+  return CollapsiblePanel;
+}(_react2.default.Component);
+
+exports.default = CollapsiblePanel;
+
+});
+
+require.register("components/debug_info.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DebugInfo = function (_React$Component) {
+  _inherits(DebugInfo, _React$Component);
+
+  function DebugInfo() {
+    _classCallCheck(this, DebugInfo);
+
+    return _possibleConstructorReturn(this, (DebugInfo.__proto__ || Object.getPrototypeOf(DebugInfo)).apply(this, arguments));
+  }
+
+  _createClass(DebugInfo, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+          "div",
+          null,
+          "FPS: ",
+          _react2.default.createElement("span", { id: "fps_counter" })
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "map scale: ",
+          _react2.default.createElement("span", { id: "map_scale" })
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "mouse position: ",
+          _react2.default.createElement(
+            "span",
+            { id: "mouse_pos" },
+            (0, 0)
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "world point: ",
+          _react2.default.createElement(
+            "span",
+            { id: "world_pos" },
+            (0, 0)
+          )
+        )
+      );
+    }
+  }]);
+
+  return DebugInfo;
+}(_react2.default.Component);
+
+exports.default = DebugInfo;
+
+});
+
+require.register("components/generate_world_form.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GenerateWorldForm = function (_React$Component) {
+  _inherits(GenerateWorldForm, _React$Component);
+
+  function GenerateWorldForm() {
+    _classCallCheck(this, GenerateWorldForm);
+
+    return _possibleConstructorReturn(this, (GenerateWorldForm.__proto__ || Object.getPrototypeOf(GenerateWorldForm)).apply(this, arguments));
+  }
+
+  _createClass(GenerateWorldForm, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+          "form",
+          { className: "form-horizontal" },
+          _react2.default.createElement(
+            "div",
+            { className: "form-group" },
+            _react2.default.createElement(
+              "div",
+              { className: "col-sm-offset-2 col-sm-10" },
+              _react2.default.createElement(
+                "button",
+                { type: "button", className: "btn btn-default", id: "generate_world" },
+                "generate"
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return GenerateWorldForm;
+}(_react2.default.Component);
+
+exports.default = GenerateWorldForm;
+
+});
+
+require.register("components/legend.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Legend = function (_React$Component) {
+  _inherits(Legend, _React$Component);
+
+  function Legend() {
+    _classCallCheck(this, Legend);
+
+    return _possibleConstructorReturn(this, (Legend.__proto__ || Object.getPrototypeOf(Legend)).apply(this, arguments));
+  }
+
+  _createClass(Legend, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'p',
+          null,
+          'here will be map legend...'
+        )
+      );
+    }
+  }]);
+
+  return Legend;
+}(_react2.default.Component);
+
+exports.default = Legend;
+
+});
+
+require.register("components/roads_form.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var RoadsForm = function (_React$Component) {
+  _inherits(RoadsForm, _React$Component);
+
+  function RoadsForm() {
+    _classCallCheck(this, RoadsForm);
+
+    return _possibleConstructorReturn(this, (RoadsForm.__proto__ || Object.getPrototypeOf(RoadsForm)).apply(this, arguments));
+  }
+
+  _createClass(RoadsForm, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+          "form",
+          { className: "form-horizontal" },
+          _react2.default.createElement(
+            "p",
+            null,
+            "in test mode for now, nothing works..."
+          ),
+          _react2.default.createElement(
+            "button",
+            { type: "button", className: "btn btn-success", id: "build_road" },
+            "build road"
+          ),
+          _react2.default.createElement("div", { id: "road_text" })
+        )
+      );
+    }
+  }]);
+
+  return RoadsForm;
+}(_react2.default.Component);
+
+exports.default = RoadsForm;
 
 });
 
