@@ -1,13 +1,13 @@
 
-import Util from "js/util";
-import VoronoiDiagram from "js/voronoi_diagram";
-import RegionsGatherer from "js/regions_gatherer";
-import RRTDiagram from "js/rrt_diagram";
-import Geo from "js/geo";
-import AStar from "js/a_star";
+import Util from "util";
+import VoronoiDiagram from "voronoi_diagram";
+import RegionsGatherer from "regions_gatherer";
+import RRTDiagram from "rrt_diagram";
+import Geo from "geo";
+import AStar from "a_star";
 
-import Interaction from "js/interaction";
-import MapDrawer from "js/map_drawer";
+import Interaction from "interaction";
+import MapDrawer from "map_drawer";
 
 export default class Game {
   constructor() {

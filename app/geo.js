@@ -1,6 +1,6 @@
-import Util from "js/util";
-import RRTDiagram from "js/rrt_diagram";
-import RiversAndLakesGenerator from "js/rivers_and_lakes_generator";
+import Util from "util";
+import RRTDiagram from "rrt_diagram";
+import RiversAndLakesGenerator from "rivers_and_lakes_generator";
 
 
 export default class Geo {

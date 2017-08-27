@@ -1,5 +1,5 @@
-import Util from "js/util";
-import VoronoiDiagram from "js/voronoi_diagram";
+import Util from "util";
+import VoronoiDiagram from "voronoi_diagram";
 import * as d3 from "d3";
 
 export default class Interaction {

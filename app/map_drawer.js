@@ -1,9 +1,9 @@
 
-import Util from "js/util";
-import RRTDiagram from "js/rrt_diagram";
-import TextureGenerator from "js/texture_generator";
-import BallsGenerator from "js/balls_generator";
-import Color from "js/color";
+import Util from "util";
+import RRTDiagram from "rrt_diagram";
+import TextureGenerator from "texture_generator";
+import BallsGenerator from "balls_generator";
+import Color from "color";
 
 export default class MapDrawer {
   constructor(width, height) {

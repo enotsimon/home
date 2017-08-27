@@ -1,4 +1,4 @@
-import Util from "js/util";
+import Util from "util";
 
 class RRTNode {
   constructor(x, y) {

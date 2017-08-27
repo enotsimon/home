@@ -1,4 +1,4 @@
-import Util from "js/util";
+import Util from "util";
 import * as d3 from "d3";
 
 /**

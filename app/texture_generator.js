@@ -1,5 +1,5 @@
-import Util from "js/util";
-import MapDrawer from "js/map_drawer";
+import Util from "util";
+import MapDrawer from "map_drawer";
 
 export default class TextureGenerator {
 
