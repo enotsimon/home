@@ -524,67 +524,63 @@ var App = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'small',
-        null,
+        'table',
+        { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
         _react2.default.createElement(
-          'table',
-          { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
+          'tbody',
+          null,
           _react2.default.createElement(
-            'tbody',
-            null,
+            'tr',
+            { style: { verticalAlign: 'top' } },
             _react2.default.createElement(
-              'tr',
-              { style: { verticalAlign: 'top' } },
+              'td',
+              null,
               _react2.default.createElement(
-                'td',
-                null,
+                'div',
+                { className: 'panel-group' },
                 _react2.default.createElement(
                   'div',
-                  { className: 'panel-group' },
+                  { className: 'panel panel-success' },
                   _react2.default.createElement(
                     'div',
-                    { className: 'panel panel-success' },
+                    { className: 'panel-body' },
                     _react2.default.createElement(
                       'div',
-                      { className: 'panel-body' },
-                      _react2.default.createElement(
-                        'div',
-                        { className: '', id: 'map_container' },
-                        _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
-                      )
+                      { className: '', id: 'map_container' },
+                      _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
                     )
+                  )
+                ),
+                _react2.default.createElement(_collapsible_panel2.default, { header: 'debug', name: 'debug', content_func: function content_func() {
+                    return _react2.default.createElement(_debug_info2.default);
+                  } })
+              )
+            ),
+            _react2.default.createElement(
+              'td',
+              { width: '100%' },
+              _react2.default.createElement(
+                'div',
+                { className: 'panel-group' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel panel-success' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
+                        return _react2.default.createElement(_generate_world_form2.default);
+                      } }),
+                    _react2.default.createElement(_collapsible_panel2.default, { header: 'roads', name: 'roads', content_func: function content_func() {
+                        return _react2.default.createElement(_roads_form2.default);
+                      } })
                   ),
-                  _react2.default.createElement(_collapsible_panel2.default, { header: 'debug', name: 'debug', content_func: function content_func() {
-                      return _react2.default.createElement(_debug_info2.default);
-                    } })
-                )
-              ),
-              _react2.default.createElement(
-                'td',
-                { width: '100%' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'panel-group' },
                   _react2.default.createElement(
                     'div',
-                    { className: 'panel panel-success' },
-                    _react2.default.createElement(
-                      'div',
-                      { className: 'panel-body' },
-                      _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
-                          return _react2.default.createElement(_generate_world_form2.default);
-                        } }),
-                      _react2.default.createElement(_collapsible_panel2.default, { header: 'roads', name: 'roads', content_func: function content_func() {
-                          return _react2.default.createElement(_roads_form2.default);
-                        } })
-                    ),
-                    _react2.default.createElement(
-                      'div',
-                      { className: 'panel-footer' },
-                      _react2.default.createElement(_collapsible_panel2.default, { header: 'legend', name: 'legend', content_func: function content_func() {
-                          return _react2.default.createElement(_legend2.default);
-                        } })
-                    )
+                    { className: 'panel-footer' },
+                    _react2.default.createElement(_collapsible_panel2.default, { header: 'legend', name: 'legend', content_func: function content_func() {
+                        return _react2.default.createElement(_legend2.default);
+                      } })
                   )
                 )
               )
@@ -758,7 +754,7 @@ exports.default = DebugInfo;
 });
 
 require.register("components/generate_world_form.jsx", function(exports, require, module) {
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -766,9 +762,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
+
+var _input_spinner = require('components/input_spinner');
+
+var _input_spinner2 = _interopRequireDefault(_input_spinner);
+
+var _game = require('game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -788,24 +790,48 @@ var GenerateWorldForm = function (_React$Component) {
   }
 
   _createClass(GenerateWorldForm, [{
-    key: "render",
+    key: 'submit',
+    value: function submit(e) {
+      e.preventDefault();
+      console.clear();
+      _game.game.map_drawer.map.stage.children.forEach(function (layer) {
+        return layer.removeChildren();
+      });
+      _game.game.generate_map();
+    }
+  }, {
+    key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        "div",
+        'div',
         null,
         _react2.default.createElement(
-          "form",
-          { className: "form-horizontal" },
+          'form',
+          { className: 'form-horizontal' },
           _react2.default.createElement(
-            "div",
-            { className: "form-group" },
+            'div',
+            { className: 'form-group' },
             _react2.default.createElement(
-              "div",
-              { className: "col-sm-offset-2 col-sm-10" },
+              'label',
+              { htmlFor: 'epsilon', className: 'col-sm-6 control-label' },
+              'rrt diagram epsilon'
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'col-sm-6' },
+              _react2.default.createElement(_input_spinner2.default, { name: 'rrt_epsilon' })
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'form-group' },
+            _react2.default.createElement(
+              'div',
+              { className: 'col-sm-offset-6 col-sm-6' },
               _react2.default.createElement(
-                "button",
-                { type: "button", className: "btn btn-default", id: "generate_world" },
-                "generate"
+                'button',
+                { type: 'button', className: 'btn btn-default', id: 'generate_world', onClick: this.submit.bind(this) },
+                'generate'
               )
             )
           )
@@ -818,6 +844,104 @@ var GenerateWorldForm = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = GenerateWorldForm;
+
+});
+
+require.register("components/input_spinner.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _game = require("game");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var InputSpinner = function (_React$Component) {
+  _inherits(InputSpinner, _React$Component);
+
+  function InputSpinner(args) {
+    _classCallCheck(this, InputSpinner);
+
+    var _this = _possibleConstructorReturn(this, (InputSpinner.__proto__ || Object.getPrototypeOf(InputSpinner)).call(this, args));
+
+    _this.state = { value: _game.game.rrt_epsilon };
+    _this.name = args.name;
+    _this.min = args.min ? args.min : 0;
+    _this.max = args.max ? args.max : Infinity;
+    return _this;
+  }
+
+  _createClass(InputSpinner, [{
+    key: "click_up",
+    value: function click_up(e) {
+      if (this.state.value >= this.max) {
+        return false;
+      }
+      this.update_value(this.state.value + 1);
+      e.preventDefault();
+    }
+  }, {
+    key: "click_down",
+    value: function click_down(e) {
+      if (this.state.value <= this.min) {
+        return false;
+      }
+      this.update_value(this.state.value - 1);
+      e.preventDefault();
+    }
+  }, {
+    key: "manual_set",
+    value: function manual_set(e) {
+      this.update_value(e.target.value);
+    }
+  }, {
+    key: "update_value",
+    value: function update_value(new_value) {
+      this.setState({ value: new_value });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "input-group spinner" },
+        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control", value: this.state.value, onChange: this.manual_set.bind(this) }),
+        _react2.default.createElement(
+          "div",
+          { className: "input-group-btn-vertical" },
+          _react2.default.createElement(
+            "button",
+            { className: "btn btn-default", type: "button", onClick: this.click_up.bind(this) },
+            _react2.default.createElement("i", { className: "fa fa-caret-up" })
+          ),
+          _react2.default.createElement(
+            "button",
+            { className: "btn btn-default", type: "button", onClick: this.click_down.bind(this) },
+            _react2.default.createElement("i", { className: "fa fa-caret-down" })
+          )
+        )
+      );
+    }
+  }]);
+
+  return InputSpinner;
+}(_react2.default.Component);
+
+exports.default = InputSpinner;
 
 });
 
@@ -938,10 +1062,6 @@ exports.default = RoadsForm;
 require.register("game.js", function(exports, require, module) {
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _util = require("util");
@@ -1003,7 +1123,7 @@ var Game = function () {
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
     this.map_drawer = new _map_drawer2.default();
-    this.interaction = new _interaction2.default(this);
+    this.interaction = new _interaction2.default();
   }
 
   _createClass(Game, [{
@@ -1076,11 +1196,10 @@ var Game = function () {
   return Game;
 }();
 
-exports.default = Game;
-
+var game = new Game();
+module.exports.game = game; // OMG global export BAD WAY
 
 document.addEventListener('DOMContentLoaded', function () {
-  var game = new Game();
   _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_map();
 });
@@ -1376,6 +1495,8 @@ var _d = require("d3");
 
 var d3 = _interopRequireWildcard(_d);
 
+var _game = require("game");
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -1383,10 +1504,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var Interaction = function () {
-  function Interaction(game) {
+  function Interaction() {
     _classCallCheck(this, Interaction);
 
-    this.game = game;
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
@@ -1396,13 +1516,12 @@ var Interaction = function () {
     value: function init() {
       var _this = this;
 
+      this.game = _game.game;
       document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
       this.map = this.game.map_drawer.map;
       this.map.stage.interactive = true;
 
       document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
-
-      d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
 
       d3.select('#map').on('click', this.map_click_handler.bind(this));
 
@@ -1495,15 +1614,6 @@ var Interaction = function () {
       this.map.stage.scale.x = d3.event.transform.k;
       this.map.stage.scale.y = d3.event.transform.k;
       this.update_map_scale();
-    }
-  }, {
-    key: "trigger_generate_world",
-    value: function trigger_generate_world() {
-      console.clear();
-      this.map.stage.children.forEach(function (layer) {
-        return layer.removeChildren();
-      });
-      this.game.generate_map();
     }
     ///////////////////////////////////////
 

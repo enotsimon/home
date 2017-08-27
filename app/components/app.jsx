@@ -8,7 +8,6 @@ import Legend from 'components/legend';
 export default class App extends React.Component {
   render() {
     return (
-      <small>
       <table style={{margin: '5px', borderSpacing: '5px', borderCollapse: 'separate'}}>
       <tbody>
         <tr style={{verticalAlign: 'top'}}>
@@ -49,7 +48,6 @@ export default class App extends React.Component {
         </tr>
       </tbody>
       </table>
-      </small>
     );
   }
 }
