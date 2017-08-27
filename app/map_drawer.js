@@ -7,7 +7,6 @@ import Color from "color";
 
 export default class MapDrawer {
   constructor(width, height) {
-
     let PIXI = require('pixi.js');
     this.map = new PIXI.Application(width, height, {
       backgroundColor : Color.to_pixi([0, 0, 0]),

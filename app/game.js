@@ -9,6 +9,10 @@ import AStar from "a_star";
 import Interaction from "interaction";
 import MapDrawer from "map_drawer";
 
+import ReactDOM from 'react-dom';
+import React from 'react';
+import App from 'components/app';
+
 export default class Game {
   constructor() {
     // CONST
@@ -81,5 +85,8 @@ export default class Game {
 }
 
 
-let game = new Game();
-game.generate_map();
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(<App />, document.querySelector('#app'));
+  let game = new Game();
+  game.generate_map();
+});

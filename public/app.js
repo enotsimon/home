@@ -470,6 +470,275 @@ exports.default = Color;
 
 });
 
+require.register("components/app.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var App = function (_React$Component) {
+  _inherits(App, _React$Component);
+
+  function App() {
+    _classCallCheck(this, App);
+
+    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+  }
+
+  _createClass(App, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'small',
+        null,
+        _react2.default.createElement(
+          'table',
+          { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
+          _react2.default.createElement(
+            'tbody',
+            null,
+            _react2.default.createElement(
+              'tr',
+              { style: { verticalAlign: 'top' } },
+              _react2.default.createElement(
+                'td',
+                null,
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel-group' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel panel-success' },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'panel-body' },
+                      _react2.default.createElement(
+                        'div',
+                        { className: '', id: 'map_container' },
+                        _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
+                      )
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel panel-success' },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'panel-heading' },
+                      _react2.default.createElement(
+                        'h4',
+                        { className: 'panel-title' },
+                        _react2.default.createElement(
+                          'a',
+                          { 'data-toggle': 'collapse', href: '#menu-element-3' },
+                          'debug ',
+                          _react2.default.createElement('span', { className: 'caret' })
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { id: 'menu-element-3', className: 'panel-collapse collapse' },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'panel-body' },
+                        _react2.default.createElement(
+                          'div',
+                          null,
+                          'FPS: ',
+                          _react2.default.createElement('span', { id: 'fps_counter' })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          null,
+                          'map scale: ',
+                          _react2.default.createElement('span', { id: 'map_scale' })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          null,
+                          'mouse position: ',
+                          _react2.default.createElement(
+                            'span',
+                            { id: 'mouse_pos' },
+                            (0, 0)
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          null,
+                          'world point: ',
+                          _react2.default.createElement(
+                            'span',
+                            { id: 'world_pos' },
+                            (0, 0)
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              _react2.default.createElement(
+                'td',
+                { width: '100%' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel-group' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel panel-success' },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'panel-body' },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'panel panel-success' },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'panel-heading' },
+                          _react2.default.createElement(
+                            'h4',
+                            { className: 'panel-title' },
+                            _react2.default.createElement(
+                              'a',
+                              { 'data-toggle': 'collapse', href: '#menu-element-1' },
+                              'world generating ',
+                              _react2.default.createElement('span', { className: 'caret' })
+                            )
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { id: 'menu-element-1', className: 'panel-collapse collapse' },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'panel-body' },
+                            _react2.default.createElement(
+                              'form',
+                              { className: 'form-horizontal' },
+                              _react2.default.createElement(
+                                'div',
+                                { className: 'form-group' },
+                                _react2.default.createElement(
+                                  'div',
+                                  { className: 'col-sm-offset-2 col-sm-10' },
+                                  _react2.default.createElement(
+                                    'button',
+                                    { type: 'button', className: 'btn btn-default', id: 'generate_world' },
+                                    'generate'
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'panel panel-success' },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'panel-heading' },
+                          _react2.default.createElement(
+                            'h4',
+                            { className: 'panel-title' },
+                            _react2.default.createElement(
+                              'a',
+                              { 'data-toggle': 'collapse', href: '#menu-element-2' },
+                              'roads ',
+                              _react2.default.createElement('span', { className: 'caret' })
+                            )
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { id: 'menu-element-2', className: 'panel-collapse collapse' },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'panel-body' },
+                            _react2.default.createElement(
+                              'p',
+                              null,
+                              'in test mode for now, nothing works...'
+                            ),
+                            _react2.default.createElement(
+                              'button',
+                              { type: 'button', className: 'btn btn-success', id: 'build_road' },
+                              'build road'
+                            ),
+                            _react2.default.createElement('div', { id: 'road_text' })
+                          )
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'panel-footer' },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'panel panel-success' },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'panel-heading' },
+                          _react2.default.createElement(
+                            'h4',
+                            { className: 'panel-title' },
+                            _react2.default.createElement(
+                              'a',
+                              { 'data-toggle': 'collapse', href: '#menu-element-5' },
+                              'legend ',
+                              _react2.default.createElement('span', { className: 'caret' })
+                            )
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { id: 'menu-element-5', className: 'panel-collapse collapse' },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'panel-body' },
+                            _react2.default.createElement(
+                              'p',
+                              null,
+                              'here will be map legend...'
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return App;
+}(_react2.default.Component);
+
+exports.default = App;
+
+});
+
 require.register("game.js", function(exports, require, module) {
 "use strict";
 
@@ -510,6 +779,18 @@ var _interaction2 = _interopRequireDefault(_interaction);
 var _map_drawer = require("map_drawer");
 
 var _map_drawer2 = _interopRequireDefault(_map_drawer);
+
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _app = require("components/app");
+
+var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -601,8 +882,11 @@ var Game = function () {
 exports.default = Game;
 
 
-var game = new Game();
-game.generate_map();
+document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
+  var game = new Game();
+  game.generate_map();
+});
 
 });
 
