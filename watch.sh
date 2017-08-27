@@ -24,6 +24,7 @@ previous_sha=$sha
 build() {
   echo -en " building...  "
   result=`$cmd`
+  echo "$result"
   notify-send 'brunch build' "$result"
 }
 
@@ -51,6 +52,7 @@ trap do_exit SIGINT
 
 echo -e  "--> Press Ctrl+\\ to force build, Ctrl+c to exit."
 echo -e "--> watching \"$path\""
+build
 while true; do
   compare
   sleep 1
