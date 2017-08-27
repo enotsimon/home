@@ -21,7 +21,7 @@ export default class Game {
     this.cells_count = Infinity;
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
-    this.map_drawer = new MapDrawer(this.width, this.height);
+    this.map_drawer = new MapDrawer();
     this.interaction = new Interaction(this);
   }
 
@@ -68,8 +68,8 @@ export default class Game {
     let path = a_star.find(from, to);
     */
 
-
-    this.map_drawer.world_init(this.diagram, this.rrt);
+    this.map_drawer.init(this.diagram, this.rrt, this.width, this.height);
+    this.interaction.init();
     this.geo = new Geo(this.diagram, this.rrt, this.map_drawer);
     this.map_drawer.draw();
     // map_drawer.map is a pixi.js app
@@ -86,7 +86,7 @@ export default class Game {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<App />, document.querySelector('#app'));
   let game = new Game();
+  ReactDOM.render(<App />, document.querySelector('#app'));
   game.generate_map();
 });

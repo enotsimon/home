@@ -1002,7 +1002,7 @@ var Game = function () {
     this.cells_count = Infinity;
     this.rrt_epsilon = 35;
     this.rrt_reject_limit = 500;
-    this.map_drawer = new _map_drawer2.default(this.width, this.height);
+    this.map_drawer = new _map_drawer2.default();
     this.interaction = new _interaction2.default(this);
   }
 
@@ -1057,7 +1057,8 @@ var Game = function () {
       let path = a_star.find(from, to);
       */
 
-      this.map_drawer.world_init(this.diagram, this.rrt);
+      this.map_drawer.init(this.diagram, this.rrt, this.width, this.height);
+      this.interaction.init();
       this.geo = new _geo2.default(this.diagram, this.rrt, this.map_drawer);
       this.map_drawer.draw();
       // map_drawer.map is a pixi.js app
@@ -1079,8 +1080,8 @@ exports.default = Game;
 
 
 document.addEventListener('DOMContentLoaded', function () {
-  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   var game = new Game();
+  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_map();
 });
 
@@ -1383,41 +1384,44 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Interaction = function () {
   function Interaction(game) {
-    var _this = this;
-
     _classCallCheck(this, Interaction);
 
     this.game = game;
-    document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
-    this.map = this.game.map_drawer.map;
-    this.map.stage.interactive = true;
-
-    document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
-
-    d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
-
-    d3.select('#map').on('click', this.map_click_handler.bind(this));
-
-    // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
-    d3.select('#map').call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
-
-    this.road_text_div = document.getElementById("road_text");
-
-    this.ticks = 0; // here?
-    this.fps_div = document.getElementById('fps_counter');
-    this.map.ticker.add(function () {
-      _this.ticks++;
-      if (_this.ticks % 10 == 0) {
-        d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
-      }
-    });
-    this.update_map_scale();
-
     this.cell_under_cursor = null;
     this.state = 'initial';
   }
 
   _createClass(Interaction, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
+      this.map = this.game.map_drawer.map;
+      this.map.stage.interactive = true;
+
+      document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
+
+      d3.select('#generate_world').on('click', this.trigger_generate_world.bind(this));
+
+      d3.select('#map').on('click', this.map_click_handler.bind(this));
+
+      // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
+      d3.select('#map').call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
+
+      this.road_text_div = document.getElementById("road_text");
+
+      this.ticks = 0; // here?
+      this.fps_div = document.getElementById('fps_counter');
+      this.map.ticker.add(function () {
+        _this.ticks++;
+        if (_this.ticks % 10 == 0) {
+          d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
+        }
+      });
+      this.update_map_scale();
+    }
+  }, {
     key: "change_state",
     value: function change_state(state) {
       this.state = state;
@@ -1577,29 +1581,28 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var MapDrawer = function () {
-  function MapDrawer(width, height) {
-    var _this = this;
-
+  function MapDrawer() {
     _classCallCheck(this, MapDrawer);
-
-    var PIXI = require('pixi.js');
-    this.map = new PIXI.Application(width, height, {
-      backgroundColor: _color2.default.to_pixi([0, 0, 0]),
-      antialias: true,
-      view: document.getElementById('map')
-    });
-    console.log('renderer', this.map.renderer);
-    document.getElementById('map_container').appendChild(this.map.view);
-    this.layers = {};
-    MapDrawer.layers().forEach(function (layer) {
-      _this.layers[layer] = new PIXI.Container();
-      _this.map.stage.addChild(_this.layers[layer]);
-    });
   }
 
   _createClass(MapDrawer, [{
-    key: "world_init",
-    value: function world_init(diagram, rrt) {
+    key: "init",
+    value: function init(diagram, rrt, width, height) {
+      var _this = this;
+
+      var PIXI = require('pixi.js');
+      this.map = new PIXI.Application(width, height, {
+        backgroundColor: _color2.default.to_pixi([0, 0, 0]),
+        antialias: true,
+        view: document.getElementById('map')
+      });
+      console.log('renderer', this.map.renderer);
+      this.layers = {};
+      MapDrawer.layers().forEach(function (layer) {
+        _this.layers[layer] = new PIXI.Container();
+        _this.map.stage.addChild(_this.layers[layer]);
+      });
+      document.getElementById('map_container').appendChild(this.map.view);
       this.diagram = diagram;
       this.rrt = rrt;
     }

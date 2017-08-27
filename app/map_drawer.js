@@ -6,22 +6,6 @@ import BallsGenerator from "balls_generator";
 import Color from "color";
 
 export default class MapDrawer {
-  constructor(width, height) {
-    let PIXI = require('pixi.js');
-    this.map = new PIXI.Application(width, height, {
-      backgroundColor : Color.to_pixi([0, 0, 0]),
-      antialias: true,
-      view: document.getElementById('map'),
-    });
-    console.log('renderer', this.map.renderer);
-    document.getElementById('map_container').appendChild(this.map.view);
-    this.layers = {};
-    MapDrawer.layers().forEach(layer => {
-      this.layers[layer] = new PIXI.Container();
-      this.map.stage.addChild(this.layers[layer]);
-    });
-  }
-
   static layers() {
     // edges -- test for rivers by edges
     return [
@@ -36,7 +20,20 @@ export default class MapDrawer {
     ];
   }
 
-  world_init(diagram, rrt) {
+  init(diagram, rrt, width, height) {
+    let PIXI = require('pixi.js');
+    this.map = new PIXI.Application(width, height, {
+      backgroundColor : Color.to_pixi([0, 0, 0]),
+      antialias: true,
+      view: document.getElementById('map'),
+    });
+    console.log('renderer', this.map.renderer);
+    this.layers = {};
+    MapDrawer.layers().forEach(layer => {
+      this.layers[layer] = new PIXI.Container();
+      this.map.stage.addChild(this.layers[layer]);
+    });
+    document.getElementById('map_container').appendChild(this.map.view);
     this.diagram = diagram;
     this.rrt = rrt;
   }

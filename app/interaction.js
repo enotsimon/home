@@ -5,6 +5,11 @@ import * as d3 from "d3";
 export default class Interaction {
   constructor(game) {
     this.game = game;
+    this.cell_under_cursor = null;
+    this.state = 'initial';
+  }
+
+  init() {
     document.getElementById('build_road').onclick = this.build_road_button_handler.bind(this);
     this.map = this.game.map_drawer.map;
     this.map.stage.interactive = true;
@@ -33,10 +38,7 @@ export default class Interaction {
         d3.select('#fps_counter').html(this.map.ticker.FPS | 0);
       }
     });
-    this.update_map_scale();
-
-    this.cell_under_cursor = null;
-    this.state = 'initial';
+    this.update_map_scale();    
   }
 
 
