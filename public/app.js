@@ -1159,39 +1159,14 @@ var Game = function () {
         }
       });
 
-      // RegionsGatherer.gather_regions(diagram);
-
-      // find ways experiment
-      /*
-      let from = Util.rand_element(diagram.cells);
-      let to = Util.rand_element(diagram.cells);
-      let get_links_fun = (cell) => cell.links.map(e => {
-        let mid_point = MapDrawer.two_cells_edge_midpoint(diagram, e, cell);
-        return {
-          point: e,
-          weight: Util.distance(e, mid_point) + Util.distance(mid_point, cell),
-        };
-      });
-      let index_fun = (cell) => cell.index;
-      let euristic_fun = (c1, c2) => Util.distance(c1, c2);
-      let euristic_weight = 1;
-      let a_star = new AStar(get_links_fun, euristic_fun, euristic_weight, index_fun);
-      let path = a_star.find(from, to);
-      */
-
       this.map_drawer.init(this.diagram, this.rrt, this.width, this.height);
       this.interaction.init();
       this.geo = new _geo2.default(this.diagram, this.rrt, this.map_drawer);
       this.map_drawer.draw();
-      // map_drawer.map is a pixi.js app
 
       this.map_drawer.highlight_bad_river_links();
       this.map_drawer.highlight_local_minimums();
-      //this.map_drawer.highlight_bad_voronoi_nodes();
       //this.map_drawer.print_text_for_each_cell(cell => cell.fertility);
-
-      console.log('RRT', this.rrt);
-      console.log('DIAGRAM', this.diagram);
     }
   }]);
 
@@ -1724,8 +1699,6 @@ var MapDrawer = function () {
       var draw_voronoi_diagram = true;
       var draw_rrt_links = true;
       var draw_arrows = false;
-      //let draw_regions = false;
-      //let draw_region_borders = false;
       var draw_height = false;
       var draw_rivers = true;
       var draw_geo_types = true;
@@ -1733,13 +1706,11 @@ var MapDrawer = function () {
       var dark_mode = false; // DEBUG MODE
 
       this.draw_heights();
-      //this.draw_regions();
       this.draw_geo_types();
       this.draw_arrows();
       this.draw_rrt();
-      //this.draw_region_borders();
       this.draw_rivers(water_color);
-      // temp
+
       var rg = new PIXI.Graphics();
       this.layers['water'].addChild(rg);
       this.diagram.cells.forEach(function (cell) {
@@ -1750,11 +1721,9 @@ var MapDrawer = function () {
       this.dark_mode();
 
       this.layers['heights'].visible = draw_height;
-      //this.layers['regions'].visible = draw_regions;
       this.layers['geo'].visible = draw_geo_types;
       this.layers['arrows'].visible = draw_arrows;
       this.layers['rrt_links'].visible = draw_rrt_links;
-      //this.layers['borders'].visible = draw_region_borders;
       this.layers['water'].visible = draw_rivers;
       if (!draw_voronoi_diagram) {
         this.layers['regions'].visible = false;
@@ -1763,19 +1732,6 @@ var MapDrawer = function () {
       }
       this.layers['dim_cells'].visible = dark_mode;
       this.layers['dim'].visible = dark_mode;
-
-      // draw exp path
-      /*
-      let test_from = MapDrawer.draw_polygon(this.path[0].nodes, [50 , 0, 0]);
-      this.layers['roads'].addChild(test_from);
-      let test_to = MapDrawer.draw_polygon(Util.last(this.path).nodes, [50, 50, 0]);
-      this.layers['roads'].addChild(test_to);
-      let road_g = new PIXI.Graphics();
-      this.layers['roads'].addChild(road_g);
-      for (let i = 1; i < this.path.length; i++) {
-        let from = this.path[i-1], to = this.path[i];
-        MapDrawer.draw_broken_line_between_two_cells(from, to, road_g, diagram, [50, 50, 0], 3);
-      }*/
     }
   }, {
     key: "clear_cell_under_cursor",
@@ -1882,25 +1838,6 @@ var MapDrawer = function () {
       });
     }
   }, {
-    key: "highlight_bad_voronoi_nodes",
-    value: function highlight_bad_voronoi_nodes() {
-      var _this4 = this;
-
-      this.diagram.nodes.forEach(function (node) {
-        if (node.links.length > 3) {
-          var graphics = new PIXI.Graphics();
-          graphics.lineStyle(2, _color2.default.to_pixi([200, 50, 0]));
-          graphics.drawCircle(node.x, node.y, 3);
-          node.links.forEach(function (e) {
-            graphics.moveTo(node.x, node.y);
-            graphics.lineTo(e.x, e.y);
-            graphics.closePath();
-          });
-          _this4.layers['errors'].addChild(graphics);
-        }
-      });
-    }
-  }, {
     key: "highlight_deleted_links",
     value: function highlight_deleted_links(deleted_links) {
       var graphics = new PIXI.Graphics();
@@ -1919,7 +1856,7 @@ var MapDrawer = function () {
   }, {
     key: "draw_heights",
     value: function draw_heights() {
-      var _this5 = this;
+      var _this4 = this;
 
       var min_height = this.diagram.cells[0].height,
           max_height = this.diagram.cells[0].height;
@@ -1930,24 +1867,13 @@ var MapDrawer = function () {
       this.diagram.cells.forEach(function (cell) {
         var c = _util2.default.normalize_value(cell.height, max_height, 255, min_height, 0);
         var graphics = MapDrawer.draw_polygon(cell.nodes, [0, c, 0]);
-        _this5.layers['heights'].addChild(graphics); // z-index?
-      });
-    }
-  }, {
-    key: "draw_regions",
-    value: function draw_regions() {
-      var _this6 = this;
-
-      this.diagram.cells.forEach(function (cell) {
-        var fill_color = cell.region.color;
-        var graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
-        _this6.layers['regions'].addChild(graphics);
+        _this4.layers['heights'].addChild(graphics); // z-index?
       });
     }
   }, {
     key: "draw_geo_types",
     value: function draw_geo_types() {
-      var _this7 = this;
+      var _this5 = this;
 
       var geo_types_colors = {
         sea: [0, 50, 100],
@@ -1965,7 +1891,7 @@ var MapDrawer = function () {
         }
         var fill_color = geo_types_colors[cell.geo_type];
         var graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
-        _this7.layers['geo'].addChild(graphics);
+        _this5.layers['geo'].addChild(graphics);
       });
 
       //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
@@ -2037,32 +1963,14 @@ var MapDrawer = function () {
       });
     }
   }, {
-    key: "draw_region_borders",
-    value: function draw_region_borders() {
-      var _this8 = this;
-
-      var bg = new PIXI.Graphics();
-      bg.lineStyle(4, _color2.default.to_pixi([0, 60, 0]));
-      this.diagram.edges.forEach(function (edge) {
-        var left_region = edge.left ? _this8.diagram.cells[edge.left.index].region : null;
-        var right_region = edge.right ? _this8.diagram.cells[edge.right.index].region : null;
-        if (left_region != right_region) {
-          bg.moveTo(edge.from.x, edge.from.y);
-          bg.lineTo(edge.to.x, edge.to.y);
-          bg.closePath();
-        }
-      });
-      this.layers['borders'].addChild(bg);
-    }
-  }, {
     key: "dark_mode",
     value: function dark_mode() {
-      var _this9 = this;
+      var _this6 = this;
 
       this.diagram.cells.forEach(function (cell) {
         var color = cell.geo_type == 'sea' || cell.geo_type == 'lake' ? [0, 0, 100] : [0, 0, 0];
         var graphics = MapDrawer.draw_polygon(cell.nodes, color);
-        _this9.layers['dim_cells'].addChild(graphics); // z-index?
+        _this6.layers['dim_cells'].addChild(graphics); // z-index?
       });
       var g = new PIXI.Graphics();
       this.layers['dim'].addChild(g);
@@ -2182,16 +2090,6 @@ var MapDrawer = function () {
         throw 'two_cells_edge_midpoint not linked cells';
       }
       return { x: (my_edge.from.x + my_edge.to.x) / 2, y: (my_edge.from.y + my_edge.to.y) / 2 };
-    }
-  }, {
-    key: "color",
-    value: function color(_ref3) {
-      var _ref4 = _slicedToArray(_ref3, 3),
-          r = _ref4[0],
-          g = _ref4[1],
-          b = _ref4[2];
-
-      return (r << 16) + (g << 8) + b;
     }
   }]);
 

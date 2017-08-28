@@ -43,8 +43,6 @@ export default class MapDrawer {
     let draw_voronoi_diagram = true;
     let draw_rrt_links = true;
     let draw_arrows = false;
-    //let draw_regions = false;
-    //let draw_region_borders = false;
     let draw_height = false;
     let draw_rivers = true;
     let draw_geo_types = true;
@@ -52,13 +50,11 @@ export default class MapDrawer {
     let dark_mode = false; // DEBUG MODE
 
     this.draw_heights();
-    //this.draw_regions();
     this.draw_geo_types();
     this.draw_arrows();
     this.draw_rrt();
-    //this.draw_region_borders();
     this.draw_rivers(water_color);
-    // temp
+    
     let rg = new PIXI.Graphics();
     this.layers['water'].addChild(rg);
     this.diagram.cells.forEach(cell => {
@@ -69,11 +65,9 @@ export default class MapDrawer {
     this.dark_mode();
 
     this.layers['heights'].visible = draw_height;
-    //this.layers['regions'].visible = draw_regions;
     this.layers['geo'].visible = draw_geo_types;
     this.layers['arrows'].visible = draw_arrows;
     this.layers['rrt_links'].visible = draw_rrt_links;
-    //this.layers['borders'].visible = draw_region_borders;
     this.layers['water'].visible = draw_rivers;
     if (!draw_voronoi_diagram) {
       this.layers['regions'].visible = false;
@@ -82,19 +76,6 @@ export default class MapDrawer {
     }
     this.layers['dim_cells'].visible = dark_mode;
     this.layers['dim'].visible = dark_mode;
-
-    // draw exp path
-    /*
-    let test_from = MapDrawer.draw_polygon(this.path[0].nodes, [50 , 0, 0]);
-    this.layers['roads'].addChild(test_from);
-    let test_to = MapDrawer.draw_polygon(Util.last(this.path).nodes, [50, 50, 0]);
-    this.layers['roads'].addChild(test_to);
-    let road_g = new PIXI.Graphics();
-    this.layers['roads'].addChild(road_g);
-    for (let i = 1; i < this.path.length; i++) {
-      let from = this.path[i-1], to = this.path[i];
-      MapDrawer.draw_broken_line_between_two_cells(from, to, road_g, diagram, [50, 50, 0], 3);
-    }*/
   }
 
 
@@ -194,22 +175,6 @@ export default class MapDrawer {
     });
   }  
 
-  highlight_bad_voronoi_nodes() {
-    this.diagram.nodes.forEach(node => {
-      if (node.links.length > 3) {
-        let graphics = new PIXI.Graphics();
-        graphics.lineStyle(2, Color.to_pixi([200, 50, 0]));
-        graphics.drawCircle(node.x, node.y, 3);
-        node.links.forEach(e => {
-          graphics.moveTo(node.x, node.y);
-          graphics.lineTo(e.x, e.y);
-          graphics.closePath();
-        });
-        this.layers['errors'].addChild(graphics);
-      }
-    });
-  }
-
   highlight_deleted_links(deleted_links) {
     let graphics = new PIXI.Graphics();
     deleted_links.forEach(([from, to]) => {
@@ -240,16 +205,7 @@ export default class MapDrawer {
     });
   }
 
-  draw_regions() {
-    this.diagram.cells.forEach(cell => {
-      let fill_color = cell.region.color;
-      let graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
-      this.layers['regions'].addChild(graphics);
-    });
-  }
-
-  draw_geo_types() {
-    
+  draw_geo_types() {    
     let geo_types_colors = {
       sea: [0, 50, 100],
       rock: [60, 60, 50],
@@ -332,21 +288,6 @@ export default class MapDrawer {
         graphics.lineTo(link.x, link.y);
       });
     });
-  }
-
-  draw_region_borders() {
-    let bg = new PIXI.Graphics();
-    bg.lineStyle(4, Color.to_pixi([0, 60, 0]));
-    this.diagram.edges.forEach(edge => {
-      let left_region = edge.left ? this.diagram.cells[edge.left.index].region : null;
-      let right_region = edge.right ? this.diagram.cells[edge.right.index].region : null;
-      if (left_region != right_region) {
-        bg.moveTo(edge.from.x, edge.from.y);
-        bg.lineTo(edge.to.x, edge.to.y);
-        bg.closePath();
-      }
-    });
-    this.layers['borders'].addChild(bg);
   }
 
   dark_mode() {
@@ -444,11 +385,5 @@ export default class MapDrawer {
       throw('two_cells_edge_midpoint not linked cells');
     }
     return {x: (my_edge.from.x + my_edge.to.x)/2, y: (my_edge.from.y + my_edge.to.y)/2};
-  }
-
-
-
-  static color([r, g, b]) {
-    return (r << 16) + (g << 8) + b;
   }
 }

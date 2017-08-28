@@ -48,39 +48,14 @@ class Game {
       }
     });
 
-    // RegionsGatherer.gather_regions(diagram);
-
-    // find ways experiment
-    /*
-    let from = Util.rand_element(diagram.cells);
-    let to = Util.rand_element(diagram.cells);
-    let get_links_fun = (cell) => cell.links.map(e => {
-      let mid_point = MapDrawer.two_cells_edge_midpoint(diagram, e, cell);
-      return {
-        point: e,
-        weight: Util.distance(e, mid_point) + Util.distance(mid_point, cell),
-      };
-    });
-    let index_fun = (cell) => cell.index;
-    let euristic_fun = (c1, c2) => Util.distance(c1, c2);
-    let euristic_weight = 1;
-    let a_star = new AStar(get_links_fun, euristic_fun, euristic_weight, index_fun);
-    let path = a_star.find(from, to);
-    */
-
     this.map_drawer.init(this.diagram, this.rrt, this.width, this.height);
     this.interaction.init();
     this.geo = new Geo(this.diagram, this.rrt, this.map_drawer);
     this.map_drawer.draw();
-    // map_drawer.map is a pixi.js app
 
     this.map_drawer.highlight_bad_river_links();
     this.map_drawer.highlight_local_minimums();
-    //this.map_drawer.highlight_bad_voronoi_nodes();
     //this.map_drawer.print_text_for_each_cell(cell => cell.fertility);
-
-    console.log('RRT', this.rrt);
-    console.log('DIAGRAM', this.diagram);
   }
 }
 
