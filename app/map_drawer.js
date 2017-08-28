@@ -206,6 +206,7 @@ export default class MapDrawer {
   }
 
   draw_geo_types() {    
+    /*
     let geo_types_colors = {
       sea: [0, 50, 100],
       rock: [60, 60, 50],
@@ -224,11 +225,11 @@ export default class MapDrawer {
       let graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
       this.layers['geo'].addChild(graphics);
     });
-    
+    */
     //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
     //balls_generator.generate();
     // DEBUG works EXTREMELY SLOW
-    let geo_sprite = new PIXI.Sprite();
+    let container = new PIXI.Container();
     let texture_generator = new TextureGenerator();
     let geo_types_textures = {
       sea: texture_generator.simple([0, 50, 100]),
@@ -245,15 +246,22 @@ export default class MapDrawer {
       if (!geo_types_textures[cell.geo_type]) {
         throw('no geo_type color for '.cell.geo_type);
       }
+      let xc = Util.find_min_and_max(cell.nodes, e => e.x);
+      let yc = Util.find_min_and_max(cell.nodes, e => e.y);
       let graphics = new PIXI.Graphics();
+      let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
+      sprite.x = xc.min;
+      sprite.y = yc.min;
+      /* do not use polygon masks! they are EXTREMELY slow
       graphics.beginFill(0);
       graphics.drawPolygon(cell.nodes.map(node => new PIXI.Point(node.x, node.y)));
       graphics.endFill();
-      let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], this.map.view.width, this.map.view.height);
+      //let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], this.map.view.width, this.map.view.height);
       sprite.mask = graphics;
-      geo_sprite.addChild(sprite);
+      */
+      container.addChild(sprite);
     });
-    this.layers['geo'].addChild(geo_sprite);
+    this.layers['geo'].addChild(container);
   }
 
   draw_arrows() {
