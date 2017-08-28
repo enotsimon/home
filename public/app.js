@@ -813,13 +813,13 @@ var GenerateWorldForm = function (_React$Component) {
             { className: 'form-group' },
             _react2.default.createElement(
               'label',
-              { htmlFor: 'epsilon', className: 'col-sm-6 control-label' },
+              { htmlFor: 'epsilon', className: 'col-sm-4 control-label' },
               'rrt diagram epsilon'
             ),
             _react2.default.createElement(
               'div',
-              { className: 'col-sm-6' },
-              _react2.default.createElement(_input_spinner2.default, { name: 'rrt_epsilon' })
+              { className: 'col-sm-8' },
+              _react2.default.createElement(_input_spinner2.default, { name: 'rrt_epsilon', value: _game.game.rrt_epsilon })
             )
           ),
           _react2.default.createElement(
@@ -827,7 +827,7 @@ var GenerateWorldForm = function (_React$Component) {
             { className: 'form-group' },
             _react2.default.createElement(
               'div',
-              { className: 'col-sm-offset-6 col-sm-6' },
+              { className: 'col-sm-offset-4 col-sm-8' },
               _react2.default.createElement(
                 'button',
                 { type: 'button', className: 'btn btn-default', id: 'generate_world', onClick: this.submit.bind(this) },
@@ -860,8 +860,6 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
-var _game = require("game");
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -878,7 +876,7 @@ var InputSpinner = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (InputSpinner.__proto__ || Object.getPrototypeOf(InputSpinner)).call(this, args));
 
-    _this.state = { value: _game.game.rrt_epsilon };
+    _this.state = { value: args.value };
     _this.name = args.name;
     _this.min = args.min ? args.min : 0;
     _this.max = args.max ? args.max : Infinity;

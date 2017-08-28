@@ -16,11 +16,11 @@ export default class GenerateWorldForm extends React.Component {
       <div>
         <form className="form-horizontal">
           <div className="form-group">
-            <label htmlFor="epsilon" className="col-sm-6 control-label">rrt diagram epsilon</label>
-            <div className="col-sm-6"><InputSpinner name='rrt_epsilon'/></div>
+            <label htmlFor="epsilon" className="col-sm-4 control-label">rrt diagram epsilon</label>
+            <div className="col-sm-8"><InputSpinner name='rrt_epsilon' value={game.rrt_epsilon}/></div>
           </div>
           <div className="form-group">
-            <div className="col-sm-offset-6 col-sm-6">
+            <div className="col-sm-offset-4 col-sm-8">
               <button type="button" className="btn btn-default" id="generate_world" onClick={this.submit.bind(this)}>generate</button>
             </div>
           </div>

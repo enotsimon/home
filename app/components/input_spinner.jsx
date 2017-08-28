@@ -1,11 +1,10 @@
 import React from 'react';
-import {game} from "game";
 
 export default class InputSpinner extends React.Component {
 
   constructor(args) {
     super(args);
-    this.state = {value: game.rrt_epsilon};
+    this.state = {value: args.value};
     this.name = args.name;
     this.min = args.min ? args.min : 0;
     this.max = args.max ? args.max : Infinity;
