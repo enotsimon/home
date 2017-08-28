@@ -1,0 +1,4 @@
+- [ ] world generating form
+- [ ] drawing settings form -- checkboxes like draw heights, draw rivers, draw rrt, etc
+- [ ] saving and retrieving world and drawing settings from session storage
+- [ ] prop in CollapsiblePanel to set defult state collapsed/expanded
