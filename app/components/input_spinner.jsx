@@ -40,7 +40,7 @@ export default class InputSpinner extends React.Component {
         <span className="input-group-btn">
           <a className="btn btn-danger" onClick={this.click_down.bind(this)}><span className="glyphicon glyphicon-minus"></span></a>
         </span>
-        <input type="text" className="form-control text-center" value={this.state.value} onChange={this.manual_set.bind(this)}/>
+        <input id={this.name} type="text" className="form-control text-center" value={this.state.value} onChange={this.manual_set.bind(this)}/>
         <span className="input-group-btn">
           <a className="btn btn-info" onClick={this.click_up.bind(this)}><span className="glyphicon glyphicon-plus"></span></a>
         </span>

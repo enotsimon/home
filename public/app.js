@@ -792,6 +792,7 @@ var GenerateWorldForm = function (_React$Component) {
   _createClass(GenerateWorldForm, [{
     key: 'submit',
     value: function submit(e) {
+      _game.game.rrt_epsilon = parseInt(document.querySelector('#gwf_rrt_epsilon').value);
       e.preventDefault();
       console.clear();
       _game.game.map_drawer.map.stage.children.forEach(function (layer) {
@@ -814,12 +815,12 @@ var GenerateWorldForm = function (_React$Component) {
             _react2.default.createElement(
               'label',
               { htmlFor: 'epsilon', className: 'col-sm-4 control-label' },
-              'rrt diagram epsilon'
+              'rrt nodes distance'
             ),
             _react2.default.createElement(
               'div',
               { className: 'col-sm-8' },
-              _react2.default.createElement(_input_spinner2.default, { name: 'rrt_epsilon', value: _game.game.rrt_epsilon })
+              _react2.default.createElement(_input_spinner2.default, { name: 'gwf_rrt_epsilon', value: _game.game.rrt_epsilon })
             )
           ),
           _react2.default.createElement(
@@ -926,7 +927,7 @@ var InputSpinner = function (_React$Component) {
             _react2.default.createElement("span", { className: "glyphicon glyphicon-minus" })
           )
         ),
-        _react2.default.createElement("input", { type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
+        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
         _react2.default.createElement(
           "span",
           { className: "input-group-btn" },
