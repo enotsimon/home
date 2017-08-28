@@ -224,38 +224,6 @@ export default class MapDrawer {
       let graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
       this.layers['geo'].addChild(graphics);
     });
-    
-    //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
-    //balls_generator.generate();
-    // DEBUG works EXTREMELY SLOW
-    /*
-    let geo_sprite = new PIXI.Sprite();
-    let texture_generator = new TextureGenerator();
-    let geo_types_textures = {
-      sea: texture_generator.simple([0, 50, 100]),
-      rock: texture_generator.simple([60, 60, 50]),
-      //ITS A HACK! its only a background, we draw lake lower with c draw_smoothed_polygon() and blue color
-      lake: texture_generator.simple([0, 150, 0]),
-      bog: texture_generator.simple([50, 100, 0]),
-      grass: texture_generator.simple([0, 150, 0]),
-      steppe: texture_generator.simple([150, 150, 0]),
-      desert: texture_generator.simple([200, 150, 0]),
-    };
-    
-    this.diagram.cells.forEach(cell => {
-      if (!geo_types_textures[cell.geo_type]) {
-        throw('no geo_type color for '.cell.geo_type);
-      }
-      let graphics = new PIXI.Graphics();
-      graphics.beginFill(0);
-      graphics.drawPolygon(cell.nodes.map(node => new PIXI.Point(node.x, node.y)));
-      graphics.endFill();
-      let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], this.map.view.width, this.map.view.height);
-      sprite.mask = graphics;
-      geo_sprite.addChild(sprite);
-    });
-    //this.layers['geo'].addChild(geo_sprite);
-    */
   }
 
   draw_arrows() {
