@@ -1894,6 +1894,38 @@ var MapDrawer = function () {
         var graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
         _this5.layers['geo'].addChild(graphics);
       });
+
+      //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
+      //balls_generator.generate();
+      // DEBUG works EXTREMELY SLOW
+      var geo_sprite = new PIXI.Sprite();
+      var texture_generator = new _texture_generator2.default();
+      var geo_types_textures = {
+        sea: texture_generator.simple([0, 50, 100]),
+        rock: texture_generator.simple([60, 60, 50]),
+        //ITS A HACK! its only a background, we draw lake lower with c draw_smoothed_polygon() and blue color
+        lake: texture_generator.simple([0, 150, 0]),
+        bog: texture_generator.simple([50, 100, 0]),
+        grass: texture_generator.simple([0, 150, 0]),
+        steppe: texture_generator.simple([150, 150, 0]),
+        desert: texture_generator.simple([200, 150, 0])
+      };
+
+      this.diagram.cells.forEach(function (cell) {
+        if (!geo_types_textures[cell.geo_type]) {
+          throw 'no geo_type color for '.cell.geo_type;
+        }
+        var graphics = new PIXI.Graphics();
+        graphics.beginFill(0);
+        graphics.drawPolygon(cell.nodes.map(function (node) {
+          return new PIXI.Point(node.x, node.y);
+        }));
+        graphics.endFill();
+        var sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], _this5.map.view.width, _this5.map.view.height);
+        sprite.mask = graphics;
+        geo_sprite.addChild(sprite);
+      });
+      this.layers['geo'].addChild(geo_sprite);
     }
   }, {
     key: "draw_arrows",
