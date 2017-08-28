@@ -37,16 +37,14 @@ export default class InputSpinner extends React.Component {
 
   render() {
     return (
-      <div className="input-group spinner">
-        <input id={this.name} type="text" className="form-control" value={this.state.value} onChange={this.manual_set.bind(this)}/>
-        <div className="input-group-btn-vertical">
-          <button className="btn btn-default" type="button" onClick={this.click_up.bind(this)}>
-            <i className="fa fa-caret-up"></i>
-          </button>
-          <button className="btn btn-default" type="button" onClick={this.click_down.bind(this)}>
-            <i className="fa fa-caret-down"></i>
-          </button>
-        </div>
+      <div className="input-group">
+        <span className="input-group-btn">
+          <a className="btn btn-danger" onClick={this.click_down.bind(this)}><span className="glyphicon glyphicon-minus"></span></a>
+        </span>
+        <input type="text" className="form-control text-center" value={this.state.value} onChange={this.manual_set.bind(this)}/>
+        <span className="input-group-btn">
+          <a className="btn btn-info" onClick={this.click_up.bind(this)}><span className="glyphicon glyphicon-plus"></span></a>
+        </span>
       </div>
     );
   }

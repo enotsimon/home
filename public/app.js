@@ -918,20 +918,24 @@ var InputSpinner = function (_React$Component) {
     value: function render() {
       return _react2.default.createElement(
         "div",
-        { className: "input-group spinner" },
-        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control", value: this.state.value, onChange: this.manual_set.bind(this) }),
+        { className: "input-group" },
         _react2.default.createElement(
-          "div",
-          { className: "input-group-btn-vertical" },
+          "span",
+          { className: "input-group-btn" },
           _react2.default.createElement(
-            "button",
-            { className: "btn btn-default", type: "button", onClick: this.click_up.bind(this) },
-            _react2.default.createElement("i", { className: "fa fa-caret-up" })
-          ),
+            "a",
+            { className: "btn btn-danger", onClick: this.click_down.bind(this) },
+            _react2.default.createElement("span", { className: "glyphicon glyphicon-minus" })
+          )
+        ),
+        _react2.default.createElement("input", { type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
+        _react2.default.createElement(
+          "span",
+          { className: "input-group-btn" },
           _react2.default.createElement(
-            "button",
-            { className: "btn btn-default", type: "button", onClick: this.click_down.bind(this) },
-            _react2.default.createElement("i", { className: "fa fa-caret-down" })
+            "a",
+            { className: "btn btn-info", onClick: this.click_up.bind(this) },
+            _react2.default.createElement("span", { className: "glyphicon glyphicon-plus" })
           )
         )
       );
