@@ -4,3 +4,6 @@
 - [ ] prop in CollapsiblePanel to set defult state collapsed/expanded
 - [ ] add map legend
 - [ ] find out what's wrong with PIXI js geo-sprites mode (branch: geo_sprites)
+- [ ] world loading spinner and some loading info
+- [ ] map auto-detect size depending on screen size
+- [ ] map resizing by autorotation of mob devices
