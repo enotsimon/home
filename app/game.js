@@ -1,5 +1,6 @@
 
 import Util from "util";
+import StarSystem from "star_system";
 import Interaction from "interaction";
 import MapDrawer from "map_drawer";
 
@@ -18,11 +19,22 @@ class Game {
   }
 
   generate_world() {
-    // ...
+    this.star_system = new StarSystem();
+    this.star_system.generate();
+
+    this.ticks = 0;
     
     this.map_drawer.init(this.width, this.height);
     this.interaction.init();
+
+    this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
+
     this.map_drawer.draw();
+  }
+
+  handle_tick() {
+    this.ticks++;
+    this.star_system.tick();
   }
 }
 

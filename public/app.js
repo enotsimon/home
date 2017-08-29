@@ -706,6 +706,10 @@ var _util = require("util");
 
 var _util2 = _interopRequireDefault(_util);
 
+var _star_system = require("star_system");
+
+var _star_system2 = _interopRequireDefault(_star_system);
+
 var _interaction = require("interaction");
 
 var _interaction2 = _interopRequireDefault(_interaction);
@@ -745,11 +749,23 @@ var Game = function () {
   _createClass(Game, [{
     key: "generate_world",
     value: function generate_world() {
-      // ...
+      this.star_system = new _star_system2.default();
+      this.star_system.generate();
+
+      this.ticks = 0;
 
       this.map_drawer.init(this.width, this.height);
       this.interaction.init();
+
+      this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
+
       this.map_drawer.draw();
+    }
+  }, {
+    key: "handle_tick",
+    value: function handle_tick() {
+      this.ticks++;
+      this.star_system.tick();
     }
   }]);
 
@@ -926,6 +942,8 @@ var _color = require("color");
 
 var _color2 = _interopRequireDefault(_color);
 
+var _game = require("game");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -947,29 +965,48 @@ var MapDrawer = function () {
         view: document.getElementById('map')
       });
       console.log('renderer', this.map.renderer);
+
+      this.base_container = new PIXI.Container();
+      this.map.stage.addChild(this.base_container);
+      this.base_container.position.x = width / 2 | 0;
+      this.base_container.position.y = height / 2 | 0;
+
       this.layers = {};
       MapDrawer.layers().forEach(function (layer) {
         _this.layers[layer] = new PIXI.Container();
-        _this.map.stage.addChild(_this.layers[layer]);
+        _this.base_container.addChild(_this.layers[layer]);
       });
       document.getElementById('map_container').appendChild(this.map.view);
     }
   }, {
     key: "draw",
-    value: function draw() {}
+    value: function draw() {
+      var _this2 = this;
+
+      this.init_stellar_body(_game.game.star_system.star);
+      _game.game.star_system.planets.forEach(function (planet) {
+        return _this2.init_stellar_body(planet);
+      });
+    }
+  }, {
+    key: "init_stellar_body",
+    value: function init_stellar_body(stellar_body) {
+      var graphics = new PIXI.Graphics();
+      graphics.backlink = stellar_body;
+      var coords = _util2.default.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
+      graphics.beginFill(_color2.default.to_pixi(stellar_body.color));
+      graphics.drawCircle(0, 0, stellar_body.radius);
+      graphics.endFill();
+      graphics.position.x = coords.x;
+      graphics.position.y = coords.y;
+      graphics.rotation = stellar_body.angle;
+      this.layers['bodies'].addChild(graphics);
+      //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
+    }
   }], [{
     key: "layers",
     value: function layers() {
-      // edges -- test for rivers by edges
-      return [
-      // cells filling
-      'regions', 'geo', 'heights', 'dim_cells',
-      // all items, objects, all that 'upon' the ground
-      'borders', 'water', 'rrt_links', 'arrows', 'edges', 'roads', 'errors',
-      // interaction routines
-      'selection', 'under_cursor',
-      // other
-      'dim'];
+      return ['bodies', 'errors'];
     }
   }]);
 
@@ -980,12 +1017,345 @@ exports.default = MapDrawer;
 
 });
 
+require.register("star_system.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _game = require("game");
+
+var _stellar_body = require("stellar_body");
+
+var _stellar_body2 = _interopRequireDefault(_stellar_body);
+
+var _color = require("color");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var StarSystem = function () {
+  function StarSystem() {
+    _classCallCheck(this, StarSystem);
+
+    this.star = null;
+    this.planets = [];
+  }
+
+  _createClass(StarSystem, [{
+    key: "generate",
+    value: function generate() {
+      this.star = new _stellar_body2.default();
+      this.star.radius = 10;
+      this.star.rotation_speed = 10;
+      this.star.color = _color2.default.random_near([250, 50, 50]);
+
+      var count_planets = 5;
+      while (count_planets--) {
+        var planet = new _stellar_body2.default();
+        planet.orbital_radius = 10 * (count_planets + 1);
+        planet.radius = _util2.default.rand(1, 5);
+        planet.orbital_speed = _util2.default.rand(1, 10);
+        planet.rotation_speed = _util2.default.rand(1, 10);
+        planet.color = _color2.default.random([200, 200, 200]);
+
+        this.planets.push(planet);
+      }
+    }
+  }, {
+    key: "tick",
+    value: function tick() {}
+  }]);
+
+  return StarSystem;
+}();
+
+exports.default = StarSystem;
+
+});
+
+require.register("stellar_body.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _util = require("util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _game = require("game");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var StellarBody = function StellarBody() {
+  _classCallCheck(this, StellarBody);
+
+  this.orbital_radius = 0;
+  this.radius = 0;
+  this.orbital_speed = 0;
+  this.rotation_speed = 0;
+  // temp
+  this.color = [0, 0, 0];
+
+  this.orbital_angle = 0;
+  this.angle = 0;
+};
+
+exports.default = StellarBody;
+
+});
+
+require.register("util.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Util = function () {
+  function Util() {
+    _classCallCheck(this, Util);
+  }
+
+  _createClass(Util, null, [{
+    key: 'exec_in_cycle_with_delay',
+    value: function exec_in_cycle_with_delay(index, limit, delay, func) {
+      var final_func = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function () {};
+
+      if (typeof limit === "function" && !limit() || index >= limit) {
+        final_func(index);
+        return;
+      }
+      func(index);
+      setTimeout(function () {
+        Util.exec_in_cycle_with_delay(index + 1, limit, delay, func, final_func);
+      }, delay);
+    }
+  }, {
+    key: 'rand',
+    value: function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+  }, {
+    key: 'rand_element',
+    value: function rand_element(arr) {
+      if (arr.length == 0) return false;
+      return arr[Util.rand(0, arr.length - 1)];
+    }
+  }, {
+    key: 'rand_float',
+    value: function rand_float(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+  }, {
+    key: 'normalize_value',
+    value: function normalize_value(value, max, normal_max) {
+      var min = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+      var normal_min = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
+      if (value > max || value < min) {
+        console.log('value out of range', value, max, normal_max, min, normal_min);
+        throw 'value out of range';
+      }
+      return (value - min) * (normal_max - normal_min) / (max - min) + normal_min;
+    }
+
+    ///////////////////////////////////
+    // ARRAYS
+    ///////////////////////////////////
+
+  }, {
+    key: 'last',
+    value: function last(array) {
+      return array.length == 0 ? false : array[array.length - 1];
+    }
+  }, {
+    key: 'push_uniq',
+    value: function push_uniq(element, arr) {
+      if (arr.indexOf(element) == -1) {
+        arr.push(element);
+      }
+    }
+  }, {
+    key: 'merge',
+    value: function merge(arr1, arr2) {
+      arr2.forEach(function (e) {
+        return Util.push_uniq(e, arr1);
+      });
+    }
+  }, {
+    key: 'remove_element',
+    value: function remove_element(element, arr) {
+      var index = arr.indexOf(element);
+      if (index !== -1) {
+        arr.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+  }, {
+    key: 'for_all_consecutive_pairs',
+    value: function for_all_consecutive_pairs(array, fun) {
+      if (array.length < 2) {
+        return false;
+      }
+      for (var i = 0; i < array.length; i++) {
+        var cur = array[i];
+        var next_index = i + 1 == array.length ? 0 : i + 1;
+        var next = array[next_index];
+        fun(cur, next, i, next_index);
+      }
+    }
+  }, {
+    key: 'find_min_and_max',
+    value: function find_min_and_max(array, value_func) {
+      if (!array.length) return false;
+      var ret = { min: null, max: null, min_element: null, max_element: null };
+      array.forEach(function (e) {
+        var res = value_func(e);
+        if (isNaN(res) || res === null) return;
+        if (ret.min == null || ret.max == null) {
+          ret.min = res;
+          ret.max = res;
+          ret.min_element = e;
+          ret.max_element = e;
+          return;
+        }
+        if (res < ret.min) {
+          ret.min = res;
+          ret.min_element = e;
+        }
+        if (res > ret.max) {
+          ret.max = res;
+          ret.max_element = e;
+        }
+      });
+      return ret;
+    }
+
+    // ??? experimental. some standard routine for cyclic open_list processing
+
+  }, {
+    key: 'do_while_not_empty',
+    value: function do_while_not_empty(open_list, func) {
+      var length_before = void 0,
+          step = 0;
+      do {
+        length_before = open_list.length;
+        open_list = open_list.filter(function (element) {
+          return !func(element, step++);
+        });
+        if (length_before == open_list.length) {
+          console.log('do_while_not_empty() open_list length not chenged, bailing out', length_before, open_list);
+          return false;
+        }
+      } while (open_list.length);
+      return true;
+    }
+
+    //////////////////////////////////////////
+    // geometry
+    //////////////////////////////////////////
+
+  }, {
+    key: 'to_polar_coords',
+    value: function to_polar_coords(x, y) {
+      var radius = Math.sqrt(x * x + y * y);
+      var angle = Math.atan2(y, x);
+      return { angle: angle, radius: radius };
+    }
+  }, {
+    key: 'from_polar_coords',
+    value: function from_polar_coords(angle, radius) {
+      var x = radius * Math.cos(angle);
+      var y = radius * Math.sin(angle);
+      return { x: x, y: y };
+    }
+  }, {
+    key: 'radians',
+    value: function radians(degrees) {
+      return degrees * Math.PI / 180;
+    }
+  }, {
+    key: 'degrees',
+    value: function degrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+  }, {
+    key: 'move_by_vector',
+    value: function move_by_vector(xf, yf, xt, yt, length) {
+      // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
+      return [xf + (xt - xf) * length, yf + (yt - yf) * length];
+    }
+  }, {
+    key: 'convex_polygon_centroid',
+    value: function convex_polygon_centroid(points) {
+      var p1 = points[0];
+      var square_sum = 0;
+      var xc = 0,
+          yc = 0;
+      for (var i = 1; i < points.length - 1; i++) {
+        var p2 = points[i];
+        var p3 = points[i + 1];
+        var square = ((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2; // triangle square
+        square_sum += square;
+        xc += square * (p1.x + p2.x + p3.x) / 3;
+        yc += square * (p1.y + p2.y + p3.y) / 3;
+      }
+      return { x: xc / square_sum, y: yc / square_sum };
+    }
+
+    // points should be sorted by angle to center!!!
+
+  }, {
+    key: 'convex_polygon_square',
+    value: function convex_polygon_square(points) {
+      var p1 = points[0];
+      var square = 0;
+      for (var i = 1; i < points.length - 1; i++) {
+        var p2 = points[i];
+        var p3 = points[i + 1];
+        square += Math.abs((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2;
+      }
+      return square;
+    }
+  }, {
+    key: 'distance',
+    value: function distance(p1, p2) {
+      return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    }
+  }]);
+
+  return Util;
+}();
+
+exports.default = Util;
+
+});
+
 require.alias("buffer/index.js", "buffer");
 require.alias("path-browserify/index.js", "path");
 require.alias("process/browser.js", "process");
 require.alias("punycode/punycode.js", "punycode");
 require.alias("querystring-es3/index.js", "querystring");
-require.alias("util/util.js", "sys");
 require.alias("url/url.js", "url");process = require('process');require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
