@@ -202,12 +202,40 @@ var Color = function () {
       });
     }
   }, {
-    key: "to_pixi",
-    value: function to_pixi(_ref5) {
+    key: "brighter",
+    value: function brighter(_ref5) {
       var _ref6 = _slicedToArray(_ref5, 3),
           r = _ref6[0],
           g = _ref6[1],
           b = _ref6[2];
+
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+      return [r, g, b].map(function (e) {
+        return Math.min(e + step, 255);
+      });
+    }
+  }, {
+    key: "darker",
+    value: function darker(_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 3),
+          r = _ref8[0],
+          g = _ref8[1],
+          b = _ref8[2];
+
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+      return [r, g, b].map(function (e) {
+        return Math.max(e - step, 0);
+      });
+    }
+  }, {
+    key: "to_pixi",
+    value: function to_pixi(_ref9) {
+      var _ref10 = _slicedToArray(_ref9, 3),
+          r = _ref10[0],
+          g = _ref10[1],
+          b = _ref10[2];
 
       return (r << 16) + (g << 8) + b;
     }
@@ -216,11 +244,11 @@ var Color = function () {
 
   }, {
     key: "for_rgb",
-    value: function for_rgb(_ref7, func) {
-      var _ref8 = _slicedToArray(_ref7, 3),
-          r = _ref8[0],
-          g = _ref8[1],
-          b = _ref8[2];
+    value: function for_rgb(_ref11, func) {
+      var _ref12 = _slicedToArray(_ref11, 3),
+          r = _ref12[0],
+          g = _ref12[1],
+          b = _ref12[2];
 
       return [func(r), func(g), func(b)];
     }
@@ -759,13 +787,14 @@ var Game = function () {
 
       this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
 
-      this.map_drawer.draw();
+      this.map_drawer.init_graphics();
     }
   }, {
     key: "handle_tick",
     value: function handle_tick() {
       this.ticks++;
       this.star_system.tick();
+      this.map_drawer.redraw();
     }
   }]);
 
@@ -967,6 +996,7 @@ var MapDrawer = function () {
       console.log('renderer', this.map.renderer);
 
       this.base_container = new PIXI.Container();
+      this.base_container.scale = { x: 6, y: 6 };
       this.map.stage.addChild(this.base_container);
       this.base_container.position.x = width / 2 | 0;
       this.base_container.position.y = height / 2 | 0;
@@ -977,10 +1007,11 @@ var MapDrawer = function () {
         _this.base_container.addChild(_this.layers[layer]);
       });
       document.getElementById('map_container').appendChild(this.map.view);
+      this.bodies_graphics = [];
     }
   }, {
-    key: "draw",
-    value: function draw() {
+    key: "init_graphics",
+    value: function init_graphics() {
       var _this2 = this;
 
       this.init_stellar_body(_game.game.star_system.star);
@@ -989,19 +1020,54 @@ var MapDrawer = function () {
       });
     }
   }, {
+    key: "redraw",
+    value: function redraw() {
+      var _this3 = this;
+
+      this.bodies_graphics.forEach(function (graphics) {
+        return _this3.update_stellar_body(graphics);
+      });
+    }
+  }, {
     key: "init_stellar_body",
     value: function init_stellar_body(stellar_body) {
       var graphics = new PIXI.Graphics();
       graphics.backlink = stellar_body;
-      var coords = _util2.default.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
+
+      var line_color = _color2.default.to_pixi(_color2.default.darker(stellar_body.color, 30));
+      graphics.lineStyle(stellar_body.radius / 10, line_color);
       graphics.beginFill(_color2.default.to_pixi(stellar_body.color));
       graphics.drawCircle(0, 0, stellar_body.radius);
+      graphics.closePath();
       graphics.endFill();
+
+      this.small_circle(graphics, 0, 1, stellar_body, line_color);
+      this.small_circle(graphics, 0, -1, stellar_body, line_color);
+      this.small_circle(graphics, 1, 0, stellar_body, line_color);
+      this.small_circle(graphics, -1, 0, stellar_body, line_color);
+
+      this.layers['bodies'].addChild(graphics);
+      this.bodies_graphics.push(graphics);
+      this.update_stellar_body(graphics);
+      //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
+    }
+  }, {
+    key: "update_stellar_body",
+    value: function update_stellar_body(graphics) {
+      var stellar_body = graphics.backlink;
+      var coords = _util2.default.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
+      //console.log('SF', coords);
       graphics.position.x = coords.x;
       graphics.position.y = coords.y;
       graphics.rotation = stellar_body.angle;
-      this.layers['bodies'].addChild(graphics);
-      //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
+    }
+  }, {
+    key: "small_circle",
+    value: function small_circle(graphics, x, y, stellar_body, color) {
+      graphics.lineStyle(stellar_body.radius / 10, _color2.default.to_pixi([0, 0, 0]));
+      graphics.beginFill(color);
+      graphics.drawCircle(x * (stellar_body.radius / 2), y * (stellar_body.radius / 2), stellar_body.radius / 3);
+      graphics.endFill();
     }
   }], [{
     key: "layers",
@@ -1050,23 +1116,26 @@ var StarSystem = function () {
 
     this.star = null;
     this.planets = [];
+
+    this.orbital_speed_coef = 0.0025;
+    this.rotation_speed_coef = 0.01;
   }
 
   _createClass(StarSystem, [{
     key: "generate",
     value: function generate() {
       this.star = new _stellar_body2.default();
-      this.star.radius = 10;
-      this.star.rotation_speed = 10;
+      this.star.radius = 8;
+      this.star.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
       this.star.color = _color2.default.random_near([250, 50, 50]);
 
       var count_planets = 5;
       while (count_planets--) {
         var planet = new _stellar_body2.default();
-        planet.orbital_radius = 10 * (count_planets + 1);
+        planet.orbital_radius = 10 * (count_planets + 2);
         planet.radius = _util2.default.rand(1, 5);
-        planet.orbital_speed = _util2.default.rand(1, 10);
-        planet.rotation_speed = _util2.default.rand(1, 10);
+        planet.orbital_speed = this.orbital_speed_coef * _util2.default.rand(1, 10);
+        planet.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
         planet.color = _color2.default.random([200, 200, 200]);
 
         this.planets.push(planet);
@@ -1074,7 +1143,20 @@ var StarSystem = function () {
     }
   }, {
     key: "tick",
-    value: function tick() {}
+    value: function tick() {
+      var _this = this;
+
+      this.update_stellar_body(this.star);
+      this.planets.forEach(function (planet) {
+        return _this.update_stellar_body(planet);
+      });
+    }
+  }, {
+    key: "update_stellar_body",
+    value: function update_stellar_body(body) {
+      body.orbital_angle += body.orbital_speed;
+      body.angle += body.rotation_speed;
+    }
   }]);
 
   return StarSystem;

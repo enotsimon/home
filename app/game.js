@@ -29,12 +29,13 @@ class Game {
 
     this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
 
-    this.map_drawer.draw();
+    this.map_drawer.init_graphics();
   }
 
   handle_tick() {
     this.ticks++;
     this.star_system.tick();
+    this.map_drawer.redraw();
   }
 }
 
