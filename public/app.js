@@ -2750,9 +2750,9 @@ var _util = require("util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _map_drawer = require("map_drawer");
+var _color = require("color");
 
-var _map_drawer2 = _interopRequireDefault(_map_drawer);
+var _color2 = _interopRequireDefault(_color);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2766,50 +2766,21 @@ var TextureGenerator = function () {
   _createClass(TextureGenerator, [{
     key: "simple",
     value: function simple(base) {
-      var step = 10;
-      var lower = [this.color_channel(base[0], -step), this.color_channel(base[1], -step), this.color_channel(base[2], -step)];
-      var upper = [this.color_channel(base[0], step), this.color_channel(base[1], step), this.color_channel(base[2], step)];
-      return this.generate(lower, upper, step, 400, 2);
-    }
-  }, {
-    key: "color_channel",
-    value: function color_channel(base, step) {
-      if (base == 0) {
-        return 0;
-      }
-      var res = base + step;
-      if (res < 0 || res > 255) {
-        throw 'color channel out of border';
-      }
-      return res;
+      return this.generate(base, 400, 2);
     }
   }, {
     key: "generate",
-    value: function generate(lower, upper, step, tiles_count, tile_size) {
+    value: function generate(base, tiles_count, tile_size) {
       var graphics = new PIXI.Graphics();
       for (var y = 0; y < tiles_count; y++) {
         for (var x = 0; x < tiles_count; x++) {
-          graphics.beginFill(_map_drawer2.default.color(this.random_color(lower, upper, step)));
+          graphics.beginFill(_color2.default.to_pixi(_color2.default.random_near(base)));
           graphics.drawRect(tile_size * x, tile_size * y, tile_size, tile_size);
           graphics.endFill();
         }
       }
       var texture = graphics.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST, 1);
       return texture;
-    }
-  }, {
-    key: "random_color",
-    value: function random_color(lower, upper) {
-      var step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-
-      return [this.rand(lower[0], upper[0], step), this.rand(lower[1], upper[1], step), this.rand(lower[2], upper[2], step)];
-    }
-  }, {
-    key: "rand",
-    value: function rand(lower, upper) {
-      var step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-
-      return step * _util2.default.rand(lower / step | 0, upper / step | 0);
     }
   }]);
 
