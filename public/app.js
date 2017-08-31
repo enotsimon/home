@@ -1894,10 +1894,11 @@ var MapDrawer = function () {
         this.layers['geo'].addChild(graphics);
       });
       */
+
       //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
       //balls_generator.generate();
-      // DEBUG works EXTREMELY SLOW
-      var container = new PIXI.Container();
+
+      var container = new PIXI.Graphics();
       var texture_generator = new _texture_generator2.default();
       var geo_types_textures = {
         sea: texture_generator.simple([0, 50, 100]),
@@ -1914,26 +1915,28 @@ var MapDrawer = function () {
         if (!geo_types_textures[cell.geo_type]) {
           throw 'no geo_type color for '.cell.geo_type;
         }
+        var graphics = new PIXI.Graphics();
+        graphics.beginFill(0);
+        graphics.drawPolygon(cell.nodes.map(function (node) {
+          return new PIXI.Point(node.x, node.y);
+        }));
+        graphics.endFill();
+
         var xc = _util2.default.find_min_and_max(cell.nodes, function (e) {
           return e.x;
         });
         var yc = _util2.default.find_min_and_max(cell.nodes, function (e) {
           return e.y;
         });
-        var graphics = new PIXI.Graphics();
         var sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
         sprite.x = xc.min;
         sprite.y = yc.min;
-        /* do not use polygon masks! they are EXTREMELY slow
-        graphics.beginFill(0);
-        graphics.drawPolygon(cell.nodes.map(node => new PIXI.Point(node.x, node.y)));
-        graphics.endFill();
-        //let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], this.map.view.width, this.map.view.height);
         sprite.mask = graphics;
-        */
         container.addChild(sprite);
       });
-      this.layers['geo'].addChild(container);
+      var final_texture = container.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST);
+      var final_sprite = new PIXI.Sprite(final_texture);
+      this.layers['geo'].addChild(final_sprite);
     }
   }, {
     key: "draw_arrows",

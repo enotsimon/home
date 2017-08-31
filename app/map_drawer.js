@@ -205,7 +205,7 @@ export default class MapDrawer {
     });
   }
 
-  draw_geo_types() {    
+  draw_geo_types() {
     /*
     let geo_types_colors = {
       sea: [0, 50, 100],
@@ -226,10 +226,11 @@ export default class MapDrawer {
       this.layers['geo'].addChild(graphics);
     });
     */
+
     //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
     //balls_generator.generate();
-    // DEBUG works EXTREMELY SLOW
-    let container = new PIXI.Container();
+
+    let container = new PIXI.Graphics();
     let texture_generator = new TextureGenerator();
     let geo_types_textures = {
       sea: texture_generator.simple([0, 50, 100]),
@@ -246,22 +247,22 @@ export default class MapDrawer {
       if (!geo_types_textures[cell.geo_type]) {
         throw('no geo_type color for '.cell.geo_type);
       }
-      let xc = Util.find_min_and_max(cell.nodes, e => e.x);
-      let yc = Util.find_min_and_max(cell.nodes, e => e.y);
       let graphics = new PIXI.Graphics();
-      let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
-      sprite.x = xc.min;
-      sprite.y = yc.min;
-      /* do not use polygon masks! they are EXTREMELY slow
       graphics.beginFill(0);
       graphics.drawPolygon(cell.nodes.map(node => new PIXI.Point(node.x, node.y)));
       graphics.endFill();
-      //let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], this.map.view.width, this.map.view.height);
+
+      let xc = Util.find_min_and_max(cell.nodes, e => e.x);
+      let yc = Util.find_min_and_max(cell.nodes, e => e.y);
+      let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
+      sprite.x = xc.min;
+      sprite.y = yc.min;
       sprite.mask = graphics;
-      */
       container.addChild(sprite);
     });
-    this.layers['geo'].addChild(container);
+    let final_texture = container.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST);
+    let final_sprite = new PIXI.Sprite(final_texture);
+    this.layers['geo'].addChild(final_sprite);
   }
 
   draw_arrows() {
