@@ -206,7 +206,6 @@ export default class MapDrawer {
   }
 
   draw_geo_types() {
-    /*
     let geo_types_colors = {
       sea: [0, 50, 100],
       rock: [60, 60, 50],
@@ -225,11 +224,10 @@ export default class MapDrawer {
       let graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
       this.layers['geo'].addChild(graphics);
     });
-    */
 
     //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
     //balls_generator.generate();
-
+    /*
     let container = new PIXI.Graphics();
     let texture_generator = new TextureGenerator();
     let geo_types_textures = {
@@ -263,6 +261,7 @@ export default class MapDrawer {
     let final_texture = container.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST);
     let final_sprite = new PIXI.Sprite(final_texture);
     this.layers['geo'].addChild(final_sprite);
+    */
   }
 
   draw_arrows() {

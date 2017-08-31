@@ -1874,8 +1874,9 @@ var MapDrawer = function () {
   }, {
     key: "draw_geo_types",
     value: function draw_geo_types() {
-      /*
-      let geo_types_colors = {
+      var _this5 = this;
+
+      var geo_types_colors = {
         sea: [0, 50, 100],
         rock: [60, 60, 50],
         //ITS A HACK! its only a background, we draw lake lower with c draw_smoothed_polygon() and blue color
@@ -1883,24 +1884,23 @@ var MapDrawer = function () {
         bog: [50, 100, 0],
         grass: [0, 150, 0],
         steppe: [150, 150, 0],
-        desert: [200, 150, 0],
+        desert: [200, 150, 0]
       };
-      this.diagram.cells.forEach(cell => {
+      this.diagram.cells.forEach(function (cell) {
         if (!geo_types_colors[cell.geo_type]) {
-          throw('no geo_type color for '.cell.geo_type);
+          throw 'no geo_type color for '.cell.geo_type;
         }
-        let fill_color = geo_types_colors[cell.geo_type];
-        let graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
-        this.layers['geo'].addChild(graphics);
+        var fill_color = geo_types_colors[cell.geo_type];
+        var graphics = MapDrawer.draw_polygon(cell.nodes, fill_color);
+        _this5.layers['geo'].addChild(graphics);
       });
-      */
 
       //let balls_generator = new BallsGenerator(this.diagram, geo_types_colors, this);
       //balls_generator.generate();
-
-      var container = new PIXI.Graphics();
-      var texture_generator = new _texture_generator2.default();
-      var geo_types_textures = {
+      /*
+      let container = new PIXI.Graphics();
+      let texture_generator = new TextureGenerator();
+      let geo_types_textures = {
         sea: texture_generator.simple([0, 50, 100]),
         rock: texture_generator.simple([60, 60, 50]),
         //ITS A HACK! its only a background, we draw lake lower with c draw_smoothed_polygon() and blue color
@@ -1908,35 +1908,29 @@ var MapDrawer = function () {
         bog: texture_generator.simple([50, 100, 0]),
         grass: texture_generator.simple([0, 150, 0]),
         steppe: texture_generator.simple([150, 150, 0]),
-        desert: texture_generator.simple([200, 150, 0])
+        desert: texture_generator.simple([200, 150, 0]),
       };
-
-      this.diagram.cells.forEach(function (cell) {
+      
+      this.diagram.cells.forEach(cell => {
         if (!geo_types_textures[cell.geo_type]) {
-          throw 'no geo_type color for '.cell.geo_type;
+          throw('no geo_type color for '.cell.geo_type);
         }
-        var graphics = new PIXI.Graphics();
+        let graphics = new PIXI.Graphics();
         graphics.beginFill(0);
-        graphics.drawPolygon(cell.nodes.map(function (node) {
-          return new PIXI.Point(node.x, node.y);
-        }));
+        graphics.drawPolygon(cell.nodes.map(node => new PIXI.Point(node.x, node.y)));
         graphics.endFill();
-
-        var xc = _util2.default.find_min_and_max(cell.nodes, function (e) {
-          return e.x;
-        });
-        var yc = _util2.default.find_min_and_max(cell.nodes, function (e) {
-          return e.y;
-        });
-        var sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
+         let xc = Util.find_min_and_max(cell.nodes, e => e.x);
+        let yc = Util.find_min_and_max(cell.nodes, e => e.y);
+        let sprite = new PIXI.extras.TilingSprite(geo_types_textures[cell.geo_type], xc.max - xc.min, yc.max - yc.min);
         sprite.x = xc.min;
         sprite.y = yc.min;
         sprite.mask = graphics;
         container.addChild(sprite);
       });
-      var final_texture = container.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST);
-      var final_sprite = new PIXI.Sprite(final_texture);
+      let final_texture = container.generateCanvasTexture(PIXI.SCALE_MODES.NEAREST);
+      let final_sprite = new PIXI.Sprite(final_texture);
       this.layers['geo'].addChild(final_sprite);
+      */
     }
   }, {
     key: "draw_arrows",
@@ -1977,12 +1971,12 @@ var MapDrawer = function () {
   }, {
     key: "dark_mode",
     value: function dark_mode() {
-      var _this5 = this;
+      var _this6 = this;
 
       this.diagram.cells.forEach(function (cell) {
         var color = cell.geo_type == 'sea' || cell.geo_type == 'lake' ? [0, 0, 100] : [0, 0, 0];
         var graphics = MapDrawer.draw_polygon(cell.nodes, color);
-        _this5.layers['dim_cells'].addChild(graphics); // z-index?
+        _this6.layers['dim_cells'].addChild(graphics); // z-index?
       });
       var g = new PIXI.Graphics();
       this.layers['dim'].addChild(g);
