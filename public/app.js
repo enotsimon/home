@@ -495,6 +495,10 @@ var _generate_world_form = require('components/generate_world_form');
 
 var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
 
+var _drawing_settings_form = require('components/drawing_settings_form');
+
+var _drawing_settings_form2 = _interopRequireDefault(_drawing_settings_form);
+
 var _roads_form = require('components/roads_form');
 
 var _roads_form2 = _interopRequireDefault(_roads_form);
@@ -570,6 +574,9 @@ var App = function (_React$Component) {
                     { className: 'panel-body' },
                     _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
                         return _react2.default.createElement(_generate_world_form2.default);
+                      } }),
+                    _react2.default.createElement(_collapsible_panel2.default, { header: 'drawing settings', name: 'drawing_settings', content_func: function content_func() {
+                        return _react2.default.createElement(_drawing_settings_form2.default);
                       } }),
                     _react2.default.createElement(_collapsible_panel2.default, { header: 'roads', name: 'roads', content_func: function content_func() {
                         return _react2.default.createElement(_roads_form2.default);
@@ -750,6 +757,91 @@ var DebugInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DebugInfo;
+
+});
+
+require.register("components/drawing_settings_form.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _input_spinner = require('components/input_spinner');
+
+var _input_spinner2 = _interopRequireDefault(_input_spinner);
+
+var _game = require('game');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DrawingSettingsForm = function (_React$Component) {
+  _inherits(DrawingSettingsForm, _React$Component);
+
+  _createClass(DrawingSettingsForm, [{
+    key: 'submit',
+    value: function submit(e) {
+      e.preventDefault();
+    }
+  }]);
+
+  function DrawingSettingsForm() {
+    _classCallCheck(this, DrawingSettingsForm);
+
+    return _possibleConstructorReturn(this, (DrawingSettingsForm.__proto__ || Object.getPrototypeOf(DrawingSettingsForm)).call(this));
+  }
+
+  _createClass(DrawingSettingsForm, [{
+    key: 'checkbox_handler',
+    value: function checkbox_handler(event, checkbox_type) {
+      _game.game.map_drawer.draw_voronoi_diagram = !_game.game.map_drawer.draw_voronoi_diagram;
+      _game.game.map_drawer.set_layers_visibility();
+      this.setState({});
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this2 = this;
+
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'form',
+          { className: 'form-horizontal' },
+          _react2.default.createElement(
+            'div',
+            { className: 'form-check' },
+            _react2.default.createElement(
+              'label',
+              { className: 'form-check-label' },
+              _react2.default.createElement('input', { className: 'form-check-input', type: 'checkbox', onChange: function onChange(e) {
+                  return _this2.checkbox_handler(e, 'ds_voronoi_diagram');
+                }, checked: _game.game.map_drawer.draw_voronoi_diagram }),
+              '\xA0draw voronoi diagram'
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return DrawingSettingsForm;
+}(_react2.default.Component);
+
+exports.default = DrawingSettingsForm;
 
 });
 
@@ -1697,20 +1789,20 @@ var MapDrawer = function () {
   }, {
     key: "draw",
     value: function draw() {
-      var draw_voronoi_diagram = true;
-      var draw_rrt_links = true;
-      var draw_arrows = false;
-      var draw_height = false;
-      var draw_rivers = true;
-      var draw_geo_types = true;
+      this.draw_voronoi_diagram = true;
+      this.draw_rrt_links = true;
+      this.draw_arrows = false;
+      this.draw_height = false;
+      this.draw_rivers = true;
+      this.draw_geo_types = true;
+      this.dark_mode = false; // DEBUG MODE
       var water_color = [0, 50, 200];
-      var dark_mode = false; // DEBUG MODE
 
-      this.draw_heights();
-      this.draw_geo_types();
-      this.draw_arrows();
-      this.draw_rrt();
-      this.draw_rivers(water_color);
+      this.init_heignts();
+      this.init_geo_types();
+      this.init_arrows();
+      this.init_rrt();
+      this.init_rivers(water_color);
 
       var rg = new PIXI.Graphics();
       this.layers['water'].addChild(rg);
@@ -1719,20 +1811,25 @@ var MapDrawer = function () {
           MapDrawer.draw_smoothed_polygon(rg, cell.nodes, cell, water_color);
         }
       });
-      this.dark_mode();
+      this.init_dark_mode();
 
-      this.layers['heights'].visible = draw_height;
-      this.layers['geo'].visible = draw_geo_types;
-      this.layers['arrows'].visible = draw_arrows;
-      this.layers['rrt_links'].visible = draw_rrt_links;
-      this.layers['water'].visible = draw_rivers;
-      if (!draw_voronoi_diagram) {
+      this.set_layers_visibility();
+    }
+  }, {
+    key: "set_layers_visibility",
+    value: function set_layers_visibility() {
+      this.layers['heights'].visible = this.draw_height;
+      this.layers['geo'].visible = this.draw_geo_types;
+      this.layers['arrows'].visible = this.draw_arrows;
+      this.layers['rrt_links'].visible = this.draw_rrt_links;
+      this.layers['water'].visible = this.draw_rivers;
+      if (!this.draw_voronoi_diagram) {
         this.layers['regions'].visible = false;
         this.layers['geo'].visible = false;
         this.layers['heights'].visible = false;
       }
-      this.layers['dim_cells'].visible = dark_mode;
-      this.layers['dim'].visible = dark_mode;
+      this.layers['dim_cells'].visible = this.dark_mode;
+      this.layers['dim'].visible = this.dark_mode;
     }
   }, {
     key: "clear_cell_under_cursor",
@@ -1762,8 +1859,8 @@ var MapDrawer = function () {
       this.layers['under_cursor'].addChild(inner_graphics);
     }
   }, {
-    key: "draw_rivers",
-    value: function draw_rivers(water_color) {
+    key: "init_rivers",
+    value: function init_rivers(water_color) {
       var draw_arrows = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
       var graphics = new PIXI.Graphics();
@@ -1855,8 +1952,8 @@ var MapDrawer = function () {
       this.layers['errors'].addChild(graphics);
     }
   }, {
-    key: "draw_heights",
-    value: function draw_heights() {
+    key: "init_heignts",
+    value: function init_heignts() {
       var _this4 = this;
 
       var min_height = this.diagram.cells[0].height,
@@ -1872,8 +1969,8 @@ var MapDrawer = function () {
       });
     }
   }, {
-    key: "draw_geo_types",
-    value: function draw_geo_types() {
+    key: "init_geo_types",
+    value: function init_geo_types() {
       var _this5 = this;
 
       var geo_types_colors = {
@@ -1933,8 +2030,8 @@ var MapDrawer = function () {
       */
     }
   }, {
-    key: "draw_arrows",
-    value: function draw_arrows() {
+    key: "init_arrows",
+    value: function init_arrows() {
       var graphics = new PIXI.Graphics();
       this.layers['arrows'].addChild(graphics);
       this.diagram.cells.forEach(function (cell) {
@@ -1942,8 +2039,8 @@ var MapDrawer = function () {
       });
     }
   }, {
-    key: "draw_rrt",
-    value: function draw_rrt() {
+    key: "init_rrt",
+    value: function init_rrt() {
       var color = [0, 125, 255].sort(function (e1, e2) {
         return 0.5 - Math.random();
       });
@@ -1969,8 +2066,8 @@ var MapDrawer = function () {
       });
     }
   }, {
-    key: "dark_mode",
-    value: function dark_mode() {
+    key: "init_dark_mode",
+    value: function init_dark_mode() {
       var _this6 = this;
 
       this.diagram.cells.forEach(function (cell) {

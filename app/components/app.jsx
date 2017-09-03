@@ -2,6 +2,7 @@ import React from 'react';
 import CollapsiblePanel from 'components/collapsible_panel';
 import DebugInfo from 'components/debug_info';
 import GenerateWorldForm from 'components/generate_world_form';
+import DrawingSettingsForm from 'components/drawing_settings_form';
 import RoadsForm from 'components/roads_form';
 import Legend from 'components/legend';
 
@@ -34,6 +35,8 @@ export default class App extends React.Component {
                 <div className="panel-body">
 
                   <CollapsiblePanel header="world generating" name="generate_world" content_func={() => React.createElement(GenerateWorldForm)} />
+                  
+                  <CollapsiblePanel header="drawing settings" name="drawing_settings" content_func={() => React.createElement(DrawingSettingsForm)} />
 
                   <CollapsiblePanel header="roads" name="roads" content_func={() => React.createElement(RoadsForm)} />
 
