@@ -40,20 +40,20 @@ export default class MapDrawer {
 
   
   draw() {
-    let draw_voronoi_diagram = true;
-    let draw_rrt_links = true;
-    let draw_arrows = false;
-    let draw_height = false;
-    let draw_rivers = true;
-    let draw_geo_types = true;
+    this.draw_voronoi_diagram = true;
+    this.draw_rrt_links = true;
+    this.draw_arrows = false;
+    this.draw_height = false;
+    this.draw_rivers = true;
+    this.draw_geo_types = true;
+    this.dark_mode = false; // DEBUG MODE
     let water_color = [0, 50, 200];
-    let dark_mode = false; // DEBUG MODE
 
-    this.draw_heights();
-    this.draw_geo_types();
-    this.draw_arrows();
-    this.draw_rrt();
-    this.draw_rivers(water_color);
+    this.init_heignts();
+    this.init_geo_types();
+    this.init_arrows();
+    this.init_rrt();
+    this.init_rivers(water_color);
     
     let rg = new PIXI.Graphics();
     this.layers['water'].addChild(rg);
@@ -62,20 +62,24 @@ export default class MapDrawer {
         MapDrawer.draw_smoothed_polygon(rg, cell.nodes, cell, water_color);
       }
     });
-    this.dark_mode();
-
-    this.layers['heights'].visible = draw_height;
-    this.layers['geo'].visible = draw_geo_types;
-    this.layers['arrows'].visible = draw_arrows;
-    this.layers['rrt_links'].visible = draw_rrt_links;
-    this.layers['water'].visible = draw_rivers;
-    if (!draw_voronoi_diagram) {
+    this.init_dark_mode();
+    
+    this.set_layers_visibility();
+  }
+  
+  set_layers_visibility() {
+    this.layers['heights'].visible = this.draw_height;
+    this.layers['geo'].visible = this.draw_geo_types;
+    this.layers['arrows'].visible = this.draw_arrows;
+    this.layers['rrt_links'].visible = this.draw_rrt_links;
+    this.layers['water'].visible = this.draw_rivers;
+    if (!this.draw_voronoi_diagram) {
       this.layers['regions'].visible = false;
       this.layers['geo'].visible = false;
       this.layers['heights'].visible = false;
     }
-    this.layers['dim_cells'].visible = dark_mode;
-    this.layers['dim'].visible = dark_mode;
+    this.layers['dim_cells'].visible = this.dark_mode;
+    this.layers['dim'].visible = this.dark_mode;
   }
 
 
@@ -104,7 +108,7 @@ export default class MapDrawer {
   }
 
 
-  draw_rivers(water_color, draw_arrows = false) {
+  init_rivers(water_color, draw_arrows = false) {
     let graphics = new PIXI.Graphics();
     let graphics_arrows = new PIXI.Graphics();
     graphics_arrows.alpha = 0.5;
@@ -191,7 +195,7 @@ export default class MapDrawer {
 
 
 
-  draw_heights() {
+  init_heignts() {
     let min_height = this.diagram.cells[0].height,
         max_height = this.diagram.cells[0].height;
     this.diagram.cells.forEach(cell => {
@@ -205,7 +209,7 @@ export default class MapDrawer {
     });
   }
 
-  draw_geo_types() {
+  init_geo_types() {    
     let geo_types_colors = {
       sea: [0, 50, 100],
       rock: [60, 60, 50],
@@ -264,13 +268,13 @@ export default class MapDrawer {
     */
   }
 
-  draw_arrows() {
+  init_arrows() {
     let graphics = new PIXI.Graphics();
     this.layers['arrows'].addChild(graphics);
     this.diagram.cells.forEach(cell => MapDrawer.draw_arrow(cell, cell.closest_link, graphics, 3, [50, 50, 0]));
   }
 
-  draw_rrt() {
+  init_rrt() {
     let color = ([0, 125, 255]).sort((e1, e2) => 0.5 - Math.random());
     let graphics = new PIXI.Graphics();
     this.layers['rrt_links'].addChild(graphics);
@@ -296,7 +300,7 @@ export default class MapDrawer {
     });
   }
 
-  dark_mode() {
+  init_dark_mode() {
     this.diagram.cells.forEach(cell => {
       let color = cell.geo_type == 'sea' || cell.geo_type == 'lake' ? [0, 0, 100] : [0, 0, 0];
       let graphics = MapDrawer.draw_polygon(cell.nodes, color);
