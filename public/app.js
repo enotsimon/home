@@ -1010,6 +1010,13 @@ var MapDrawer = function () {
       this.bodies_graphics = [];
     }
   }, {
+    key: "clear_all",
+    value: function clear_all() {
+      this.base_container.children.forEach(function (layer) {
+        return layer.removeChildren();
+      });
+    }
+  }, {
     key: "init_graphics",
     value: function init_graphics() {
       var _this2 = this;
@@ -1018,15 +1025,76 @@ var MapDrawer = function () {
       _game.game.star_system.planets.forEach(function (planet) {
         return _this2.init_stellar_body(planet);
       });
+
+      this.clear_all();
+      this.exp_dots();
     }
   }, {
     key: "redraw",
     value: function redraw() {
+      //this.bodies_graphics.forEach(graphics => this.update_stellar_body(graphics));
+    }
+  }, {
+    key: "exp_dots",
+    value: function exp_dots() {
       var _this3 = this;
 
-      this.bodies_graphics.forEach(function (graphics) {
-        return _this3.update_stellar_body(graphics);
+      this.exp_container = new PIXI.Container();
+      this.map.stage.addChild(this.exp_container);
+      var points_count_coef = .0050;
+      var points_count = points_count_coef * this.map.view.width * this.map.view.height;
+      var radius_coef = 0.03;
+      var radius = radius_coef * Math.min(this.map.view.width, this.map.view.height);
+      var count_near_threshold = points_count * radius_coef;
+      var steps_count = 10;
+
+      console.log('points_count', points_count, 'radius', radius, 'count_near_threshold', count_near_threshold);
+      var points = [];
+      while (points_count--) {
+        points.push({ x: _util2.default.rand(0, this.map.view.width), y: _util2.default.rand(0, this.map.view.height) });
+      }
+      var basic_color = [60, 30, 0];
+      while (--steps_count) {
+        basic_color = _color2.default.brighter(basic_color, 20);
+        this.exp_dots_step(radius, count_near_threshold / steps_count | 0, points, basic_color);
+      }
+      points.forEach(function (point) {
+        return _this3.exp_dots_draw_circle(point.x, point.y, 2, [200, 100, 0]);
       });
+    }
+  }, {
+    key: "exp_dots_step",
+    value: function exp_dots_step(radius, count_near_threshold, points, color) {
+      var _this4 = this;
+
+      console.log('exp_dots_step radius', radius, 'threshold', count_near_threshold);
+      var nears_sum = 10;
+      points.forEach(function (point) {
+        var count_near = _this4.exp_dots_count_near(point, radius, points);
+        nears_sum += count_near;
+        if (count_near >= count_near_threshold) {
+          _this4.exp_dots_draw_circle(point.x, point.y, radius, color);
+        }
+      });
+      console.log('near mid', nears_sum / points.length);
+    }
+  }, {
+    key: "exp_dots_draw_circle",
+    value: function exp_dots_draw_circle(x, y, radius, color) {
+      var graphics = new PIXI.Graphics();
+      graphics.beginFill(_color2.default.to_pixi(color));
+      graphics.drawCircle(x, y, radius);
+      graphics.closePath();
+      graphics.endFill();
+      this.exp_container.addChild(graphics);
+    }
+  }, {
+    key: "exp_dots_count_near",
+    value: function exp_dots_count_near(from, radius, points) {
+      var filtered = points.filter(function (point) {
+        return _util2.default.distance(from, point) <= radius;
+      });
+      return filtered.length - 1;
     }
   }, {
     key: "init_stellar_body",
@@ -1072,7 +1140,7 @@ var MapDrawer = function () {
   }], [{
     key: "layers",
     value: function layers() {
-      return ['bodies', 'errors'];
+      return ['bodies', 'errors', 'test'];
     }
   }]);
 
