@@ -973,6 +973,10 @@ var _color2 = _interopRequireDefault(_color);
 
 var _game = require("game");
 
+var _blur_generator = require("texture_generators/blur_generator");
+
+var _blur_generator2 = _interopRequireDefault(_blur_generator);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1027,74 +1031,13 @@ var MapDrawer = function () {
       });
 
       this.clear_all();
-      this.exp_dots();
+      var blur_generator = new _blur_generator2.default();
+      blur_generator.exp_dots();
     }
   }, {
     key: "redraw",
     value: function redraw() {
       //this.bodies_graphics.forEach(graphics => this.update_stellar_body(graphics));
-    }
-  }, {
-    key: "exp_dots",
-    value: function exp_dots() {
-      var _this3 = this;
-
-      this.exp_container = new PIXI.Container();
-      this.map.stage.addChild(this.exp_container);
-      var points_count_coef = .0050;
-      var points_count = points_count_coef * this.map.view.width * this.map.view.height;
-      var radius_coef = 0.03;
-      var radius = radius_coef * Math.min(this.map.view.width, this.map.view.height);
-      var count_near_threshold = points_count * radius_coef;
-      var steps_count = 10;
-
-      console.log('points_count', points_count, 'radius', radius, 'count_near_threshold', count_near_threshold);
-      var points = [];
-      while (points_count--) {
-        points.push({ x: _util2.default.rand(0, this.map.view.width), y: _util2.default.rand(0, this.map.view.height) });
-      }
-      var basic_color = [60, 30, 0];
-      while (--steps_count) {
-        basic_color = _color2.default.brighter(basic_color, 20);
-        this.exp_dots_step(radius, count_near_threshold / steps_count | 0, points, basic_color);
-      }
-      points.forEach(function (point) {
-        return _this3.exp_dots_draw_circle(point.x, point.y, 2, [200, 100, 0]);
-      });
-    }
-  }, {
-    key: "exp_dots_step",
-    value: function exp_dots_step(radius, count_near_threshold, points, color) {
-      var _this4 = this;
-
-      console.log('exp_dots_step radius', radius, 'threshold', count_near_threshold);
-      var nears_sum = 10;
-      points.forEach(function (point) {
-        var count_near = _this4.exp_dots_count_near(point, radius, points);
-        nears_sum += count_near;
-        if (count_near >= count_near_threshold) {
-          _this4.exp_dots_draw_circle(point.x, point.y, radius, color);
-        }
-      });
-      console.log('near mid', nears_sum / points.length);
-    }
-  }, {
-    key: "exp_dots_draw_circle",
-    value: function exp_dots_draw_circle(x, y, radius, color) {
-      var graphics = new PIXI.Graphics();
-      graphics.beginFill(_color2.default.to_pixi(color));
-      graphics.drawCircle(x, y, radius);
-      graphics.closePath();
-      graphics.endFill();
-      this.exp_container.addChild(graphics);
-    }
-  }, {
-    key: "exp_dots_count_near",
-    value: function exp_dots_count_near(from, radius, points) {
-      var filtered = points.filter(function (point) {
-        return _util2.default.distance(from, point) <= radius;
-      });
-      return filtered.length - 1;
     }
   }, {
     key: "init_stellar_body",
@@ -1266,6 +1209,107 @@ var StellarBody = function StellarBody() {
 };
 
 exports.default = StellarBody;
+
+});
+
+require.register("texture_generators/blur_generator.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _game = require("game");
+
+var _util = require("util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("color");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BlurGenerator = function () {
+  function BlurGenerator() {
+    _classCallCheck(this, BlurGenerator);
+
+    this.map = _game.game.map_drawer.map;
+    this.exp_container = new PIXI.Container();
+    this.map.stage.addChild(this.exp_container);
+  }
+
+  _createClass(BlurGenerator, [{
+    key: "exp_dots",
+    value: function exp_dots() {
+      var _this = this;
+
+      var points_count_coef = .0050;
+      var points_count = points_count_coef * this.map.view.width * this.map.view.height;
+      var radius_coef = 0.03;
+      var radius = radius_coef * Math.min(this.map.view.width, this.map.view.height);
+      var count_near_threshold = points_count * radius_coef;
+      var steps_count = 10;
+
+      console.log('points_count', points_count, 'radius', radius, 'count_near_threshold', count_near_threshold);
+      var points = [];
+      while (points_count--) {
+        points.push({ x: _util2.default.rand(0, this.map.view.width), y: _util2.default.rand(0, this.map.view.height) });
+      }
+      var basic_color = [60, 30, 0];
+      while (--steps_count) {
+        basic_color = _color2.default.brighter(basic_color, 20);
+        this.exp_dots_step(radius, count_near_threshold / steps_count | 0, points, basic_color);
+      }
+      points.forEach(function (point) {
+        return _this.exp_dots_draw_circle(point.x, point.y, 2, [200, 100, 0]);
+      });
+    }
+  }, {
+    key: "exp_dots_step",
+    value: function exp_dots_step(radius, count_near_threshold, points, color) {
+      var _this2 = this;
+
+      console.log('exp_dots_step radius', radius, 'threshold', count_near_threshold);
+      var nears_sum = 10;
+      points.forEach(function (point) {
+        var count_near = _this2.exp_dots_count_near(point, radius, points);
+        nears_sum += count_near;
+        if (count_near >= count_near_threshold) {
+          _this2.exp_dots_draw_circle(point.x, point.y, radius, color);
+        }
+      });
+      console.log('near mid', nears_sum / points.length);
+    }
+  }, {
+    key: "exp_dots_draw_circle",
+    value: function exp_dots_draw_circle(x, y, radius, color) {
+      var graphics = new PIXI.Graphics();
+      graphics.beginFill(_color2.default.to_pixi(color));
+      graphics.drawCircle(x, y, radius);
+      graphics.closePath();
+      graphics.endFill();
+      this.exp_container.addChild(graphics);
+    }
+  }, {
+    key: "exp_dots_count_near",
+    value: function exp_dots_count_near(from, radius, points) {
+      var filtered = points.filter(function (point) {
+        return _util2.default.distance(from, point) <= radius;
+      });
+      return filtered.length - 1;
+    }
+  }]);
+
+  return BlurGenerator;
+}();
+
+exports.default = BlurGenerator;
 
 });
 
