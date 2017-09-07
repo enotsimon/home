@@ -1039,7 +1039,8 @@ var MapDrawer = function () {
       var tg = new _points_in_circle2.default();
       //tg.generate(points_count, PointsInCicrle.linear);
       tg.generate(points_count, _points_in_circle2.default.pow);
-      var container = tg.draw(50);
+      //let container = tg.draw(50);
+      var container = tg.draw_triangles(50);
       this.layers['test'].addChild(container);
     }
   }, {
@@ -1340,6 +1341,12 @@ var _color = require("color");
 
 var _color2 = _interopRequireDefault(_color);
 
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1356,7 +1363,8 @@ var PointsInCicrle = function () {
       while (count--) {
         var angle = Math.random() * 2 * Math.PI;
         var radius = func(Math.random());
-        this.points.push({ angle: angle, radius: radius });
+        var coords = _util2.default.from_polar_coords(angle, radius);
+        this.points.push({ angle: angle, radius: radius, x: coords.x, y: coords.y });
       }
       this.points;
       return true;
@@ -1370,13 +1378,57 @@ var PointsInCicrle = function () {
       var radius = .01;
 
       this.points.forEach(function (point) {
-        var coords = _util2.default.from_polar_coords(point.angle, point.radius);
         graphics.beginFill(_color2.default.to_pixi(_color2.default.random_near(color, 20)));
-        graphics.drawCircle(scale * coords.x, scale * coords.y, scale * radius);
+        graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
         graphics.closePath();
         graphics.endFill();
       });
 
+      return graphics;
+    }
+  }, {
+    key: "draw_triangles",
+    value: function draw_triangles(scale) {
+      var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [50, 100, 0];
+
+      var voronoi = d3.voronoi().x(function (p) {
+        return p.x;
+      }).y(function (p) {
+        return p.y;
+      });
+      var diagram = voronoi(this.points);
+      var triangles = diagram.triangles();
+
+      var graphics = new PIXI.Graphics();
+      triangles.forEach(function (triangle) {
+        graphics.beginFill(_color2.default.to_pixi(_color2.default.random_near(color, 20)));
+        graphics.drawPolygon(triangle.map(function (point) {
+          return new PIXI.Point(scale * point.x, scale * point.y);
+        }));
+        graphics.closePath();
+        graphics.endFill();
+      });
+      graphics.lineStyle(scale * .005, _color2.default.to_pixi(_color2.default.brighter(color, 100)));
+      /*
+      very strange and beautiful
+      diagram.edges.forEach(edge => {
+        if (!edge[1]) {
+          return;
+        }
+        graphics.moveTo(scale * edge[0][0], scale * edge[0][1]);
+        graphics.lineTo(scale * edge[1][0], scale * edge[1][1]);
+        graphics.closePath();
+      });
+      */
+      triangles.forEach(function (triangle) {
+        // pixi has sharp angles when joining lines in path, so do not use path
+        graphics.moveTo(scale * triangle[0].x, scale * triangle[0].y);
+        graphics.lineTo(scale * triangle[1].x, scale * triangle[1].y);
+        graphics.moveTo(scale * triangle[1].x, scale * triangle[1].y);
+        graphics.lineTo(scale * triangle[2].x, scale * triangle[2].y);
+        graphics.moveTo(scale * triangle[2].x, scale * triangle[2].y);
+        graphics.lineTo(scale * triangle[0].x, scale * triangle[0].y);
+      });
       return graphics;
     }
   }], [{
@@ -1387,7 +1439,7 @@ var PointsInCicrle = function () {
   }, {
     key: "pow",
     value: function pow(random) {
-      return Math.pow(random, 0.1);
+      return Math.pow(random, 0.2);
     }
   }]);
 

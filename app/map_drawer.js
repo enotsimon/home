@@ -53,7 +53,8 @@ export default class MapDrawer {
     let tg = new PointsInCicrle();
     //tg.generate(points_count, PointsInCicrle.linear);
     tg.generate(points_count, PointsInCicrle.pow);
-    let container = tg.draw(50);
+    //let container = tg.draw(50);
+    let container = tg.draw_triangles(50);
     this.layers['test'].addChild(container);
   }
 
