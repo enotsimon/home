@@ -2,7 +2,8 @@
 import Util from "util";
 import Color from "color";
 import {game} from "game";
-import BlurGenerator from "texture_generators/blur_generator"
+import BlurGenerator from "texture_generators/blur_generator";
+import PointsInCicrle from "texture_generators/points_in_circle";
 
 export default class MapDrawer {
   static layers() {
@@ -48,8 +49,12 @@ export default class MapDrawer {
     game.star_system.planets.forEach(planet => this.init_stellar_body(planet));
 
     this.clear_all();
-    let blur_generator = new BlurGenerator();
-    blur_generator.exp_dots();
+    let points_count = 1000;
+    let tg = new PointsInCicrle();
+    //tg.generate(points_count, PointsInCicrle.linear);
+    tg.generate(points_count, PointsInCicrle.pow);
+    let container = tg.draw(50);
+    this.layers['test'].addChild(container);
   }
 
   redraw() {

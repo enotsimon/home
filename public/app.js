@@ -977,6 +977,10 @@ var _blur_generator = require("texture_generators/blur_generator");
 
 var _blur_generator2 = _interopRequireDefault(_blur_generator);
 
+var _points_in_circle = require("texture_generators/points_in_circle");
+
+var _points_in_circle2 = _interopRequireDefault(_points_in_circle);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1031,8 +1035,12 @@ var MapDrawer = function () {
       });
 
       this.clear_all();
-      var blur_generator = new _blur_generator2.default();
-      blur_generator.exp_dots();
+      var points_count = 1000;
+      var tg = new _points_in_circle2.default();
+      //tg.generate(points_count, PointsInCicrle.linear);
+      tg.generate(points_count, _points_in_circle2.default.pow);
+      var container = tg.draw(50);
+      this.layers['test'].addChild(container);
     }
   }, {
     key: "redraw",
@@ -1310,6 +1318,83 @@ var BlurGenerator = function () {
 }();
 
 exports.default = BlurGenerator;
+
+});
+
+require.register("texture_generators/points_in_circle.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _game = require("game");
+
+var _util = require("util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("color");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var PointsInCicrle = function () {
+  function PointsInCicrle() {
+    _classCallCheck(this, PointsInCicrle);
+  }
+
+  _createClass(PointsInCicrle, [{
+    key: "generate",
+    value: function generate(count, func) {
+      this.points = [];
+      while (count--) {
+        var angle = Math.random() * 2 * Math.PI;
+        var radius = func(Math.random());
+        this.points.push({ angle: angle, radius: radius });
+      }
+      this.points;
+      return true;
+    }
+  }, {
+    key: "draw",
+    value: function draw(scale) {
+      var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [50, 100, 0];
+
+      var graphics = new PIXI.Graphics();
+      var radius = .01;
+
+      this.points.forEach(function (point) {
+        var coords = _util2.default.from_polar_coords(point.angle, point.radius);
+        graphics.beginFill(_color2.default.to_pixi(_color2.default.random_near(color, 20)));
+        graphics.drawCircle(scale * coords.x, scale * coords.y, scale * radius);
+        graphics.closePath();
+        graphics.endFill();
+      });
+
+      return graphics;
+    }
+  }], [{
+    key: "linear",
+    value: function linear(random) {
+      return random;
+    }
+  }, {
+    key: "pow",
+    value: function pow(random) {
+      return Math.pow(random, 0.1);
+    }
+  }]);
+
+  return PointsInCicrle;
+}();
+
+exports.default = PointsInCicrle;
 
 });
 
