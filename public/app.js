@@ -115,7 +115,12 @@
 })();
 
 (function() {
-var global = typeof window === 'undefined' ? this : window;
+var global = typeof window === 'undefined' ? this : window;require.register("child_process", function(exports, require, module) {
+  module.exports = {};
+});
+require.register("fs", function(exports, require, module) {
+  module.exports = {};
+});
 var process;
 var __makeRelativeRequire = function(require, mappings, pref) {
   var none = {};
@@ -981,6 +986,10 @@ var _points_in_circle = require("texture_generators/points_in_circle");
 
 var _points_in_circle2 = _interopRequireDefault(_points_in_circle);
 
+var _density_map = require("texture_generators/density_map");
+
+var _density_map2 = _interopRequireDefault(_density_map);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1035,13 +1044,15 @@ var MapDrawer = function () {
       });
 
       this.clear_all();
-      var points_count = 1000;
-      var tg = new _points_in_circle2.default();
+      var points_count = 100;
+      //let tg = new PointsInCicrle();
+      var tg = new _density_map2.default();
       //tg.generate(points_count, PointsInCicrle.linear);
-      tg.generate(points_count, _points_in_circle2.default.pow);
+      //tg.generate(points_count, PointsInCicrle.pow);
+      tg.generate(points_count);
       //let container = tg.draw(50);
-      var container = tg.draw_triangles(50);
-      this.layers['test'].addChild(container);
+      //let container = tg.draw_triangles(50);
+      //this.layers['test'].addChild(container);
     }
   }, {
     key: "redraw",
@@ -1319,6 +1330,108 @@ var BlurGenerator = function () {
 }();
 
 exports.default = BlurGenerator;
+
+});
+
+require.register("texture_generators/density_map.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _game = require("game");
+
+var _util = require("util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var DensityMap = function () {
+  function DensityMap() {
+    _classCallCheck(this, DensityMap);
+
+    this.reject_limit = 50;
+    this.average_distance_threshold = 0.25;
+  }
+
+  _createClass(DensityMap, [{
+    key: "generate",
+    value: function generate(count) {
+      var count_basic = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+      var reject_counter = this.reject_limit;
+      this.points = [];
+      // basic points
+      while (count_basic) {
+        var point = { x: Math.random(), y: Math.random() };
+        if (this.check_in_circle(point)) {
+          this.points.push(point);
+          count_basic--;
+        }
+      }
+      // regular points
+      while (this.points.length < count) {
+        var _point = { x: Math.random(), y: Math.random() };
+        if (!this.check_in_circle(_point)) {
+          continue; // do not decrement reject_counter
+        }
+        if (!this.check_average_distance(_point)) {
+          reject_counter--;
+          console.log('now reject count', reject_counter);
+        } else {
+          reject_counter = this.reject_limit;
+          this.points.push(_point);
+          console.log('now push', this.points.length);
+        }
+        if (!reject_counter) {
+          console.log("DensityMap.generate() reject limit " + this.reject_limit + " reached, bailing out");
+          break;
+        }
+      }
+      return true;
+    }
+  }, {
+    key: "check_in_circle",
+    value: function check_in_circle(point) {
+      return _util2.default.distance(point, { x: 0, y: 0 }) <= 1;
+    }
+  }, {
+    key: "check_average_distance",
+    value: function check_average_distance(point) {
+      var sum = this.points.reduce(function (acc, e) {
+        return acc + _util2.default.distance(point, e);
+      }, 0);
+      var average = sum / this.points.length;
+      console.log('average', average);
+      return Math.random() * average < this.average_distance_threshold;
+    }
+  }, {
+    key: "draw",
+    value: function draw(scale) {
+      var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [150, 75, 0];
+    }
+  }]);
+
+  return DensityMap;
+}();
+
+exports.default = DensityMap;
 
 });
 
@@ -1683,10 +1796,14 @@ exports.default = Util;
 });
 
 require.alias("buffer/index.js", "buffer");
+require.alias("events/events.js", "events");
+require.alias("stream-http/index.js", "http");
+require.alias("https-browserify/index.js", "https");
 require.alias("path-browserify/index.js", "path");
 require.alias("process/browser.js", "process");
 require.alias("punycode/punycode.js", "punycode");
 require.alias("querystring-es3/index.js", "querystring");
+require.alias("stream-browserify/index.js", "stream");
 require.alias("url/url.js", "url");process = require('process');require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
