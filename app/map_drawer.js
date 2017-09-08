@@ -4,6 +4,7 @@ import Color from "color";
 import {game} from "game";
 import BlurGenerator from "texture_generators/blur_generator";
 import PointsInCicrle from "texture_generators/points_in_circle";
+import DensityMap from "texture_generators/density_map";
 
 export default class MapDrawer {
   static layers() {
@@ -49,13 +50,15 @@ export default class MapDrawer {
     game.star_system.planets.forEach(planet => this.init_stellar_body(planet));
 
     this.clear_all();
-    let points_count = 1000;
-    let tg = new PointsInCicrle();
+    let points_count = 100;
+    //let tg = new PointsInCicrle();
+    let tg = new DensityMap();
     //tg.generate(points_count, PointsInCicrle.linear);
-    tg.generate(points_count, PointsInCicrle.pow);
+    //tg.generate(points_count, PointsInCicrle.pow);
+    tg.generate(points_count);
     //let container = tg.draw(50);
-    let container = tg.draw_triangles(50);
-    this.layers['test'].addChild(container);
+    //let container = tg.draw_triangles(50);
+    //this.layers['test'].addChild(container);
   }
 
   redraw() {
