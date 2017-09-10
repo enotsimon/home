@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="enotsimon">
 
-    <title>enotsimon home page</title>
+    <title>experimantal landscape emulator</title>
     <link rel="shortcut icon" type="image/x-icon" href="https://avatars3.githubusercontent.com/u/4075076?v=4&s=40">
     
     <script
@@ -18,50 +18,13 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
+    <link rel="stylesheet" href="./app.css">
+    <script src="./vendor.js"></script>
+    <script src="./app.js"></script>
   </head>
 
   <body style="background-color: #EEE;">
-
-    <div class="col-md-6 col-md-offset-3">
-      <div class="panel-group">
-
-        <div class="panel panel-success">
-          <div class="panel-heading">
-            <h4 className="panel-title">
-              geo
-            </h4>
-          </div>
-          <div class="panel-body">
-            <h5>experimental landscape emulator</h5>
-            <p><a href="public/geo.html">link</a></p>
-          </div>
-        </div>
-
-        <div class="panel panel-success">
-          <div class="panel-heading">
-            <h4 className="panel-title">
-              planets
-            </h4>
-          </div>
-          <div class="panel-body">
-            <h5>star system emulator</h5>
-            <p><a href="public/planets.html">link</a></p>
-          </div>
-        </div>
-
-        <div class="panel panel-success">
-          <div class="panel-heading">
-            <h4 className="panel-title">
-              experiments
-            </h4>
-          </div>
-          <div class="panel-body">
-            <h5>some textures and funny videos</h5>
-            <p><a href="public/exp.html">link</a></p>
-          </div>
-        </div>
-
-      </div>
-    </div>
+    <div id="app" style="max-width: 1280px;"></div>
   </body>
+  <script>require('geo/game');</script>
 </html>
