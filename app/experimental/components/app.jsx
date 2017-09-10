@@ -1,4 +1,4 @@
-import CollapsiblePanel from 'experimental/components/collapsible_panel';
+import CollapsiblePanel from 'common/components/collapsible_panel';
 import DebugInfo from 'experimental/components/debug_info';
 import GenerateWorldForm from 'experimental/components/generate_world_form';
 import React from 'react';

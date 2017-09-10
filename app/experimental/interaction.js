@@ -1,4 +1,4 @@
-import Util from "experimental/util";
+import Util from "common/util";
 import {game} from "experimental/game";
 import * as d3 from "d3";
 
