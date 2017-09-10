@@ -1,6 +1,6 @@
-import {game} from "game";
-import Util from "util";
-import Color from "color";
+import {game} from "experimental/game";
+import Util from "experimental/util";
+import Color from "experimental/color";
 
 export default class BlurGenerator {
   constructor() {

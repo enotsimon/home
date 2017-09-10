@@ -148,7 +148,7 @@ var __makeRelativeRequire = function(require, mappings, pref) {
     return require(name);
   }
 };
-require.register("color.js", function(exports, require, module) {
+require.register("experimental/color.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -159,7 +159,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -279,7 +279,7 @@ exports.default = Color;
 
 });
 
-require.register("components/app.jsx", function(exports, require, module) {
+require.register("experimental/components/app.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -288,21 +288,21 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _collapsible_panel = require('components/collapsible_panel');
+var _collapsible_panel = require('experimental/components/collapsible_panel');
 
 var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
 
-var _debug_info = require('components/debug_info');
+var _debug_info = require('experimental/components/debug_info');
 
 var _debug_info2 = _interopRequireDefault(_debug_info);
 
-var _generate_world_form = require('components/generate_world_form');
+var _generate_world_form = require('experimental/components/generate_world_form');
 
 var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -390,7 +390,7 @@ exports.default = App;
 
 });
 
-require.register("components/collapsible_panel.jsx", function(exports, require, module) {
+require.register("experimental/components/collapsible_panel.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -466,7 +466,7 @@ exports.default = CollapsiblePanel;
 
 });
 
-require.register("components/debug_info.jsx", function(exports, require, module) {
+require.register("experimental/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -545,7 +545,7 @@ exports.default = DebugInfo;
 
 });
 
-require.register("components/generate_world_form.jsx", function(exports, require, module) {
+require.register("experimental/components/generate_world_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -558,11 +558,11 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _input_spinner = require('components/input_spinner');
+var _input_spinner = require('experimental/components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
-var _game = require('game');
+var _game = require('experimental/game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -625,7 +625,7 @@ exports.default = GenerateWorldForm;
 
 });
 
-require.register("components/input_spinner.jsx", function(exports, require, module) {
+require.register("experimental/components/input_spinner.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -725,26 +725,30 @@ exports.default = InputSpinner;
 
 });
 
-require.register("game.js", function(exports, require, module) {
+require.register("experimental/game.js", function(exports, require, module) {
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _star_system = require("star_system");
+var _star_system = require("experimental/star_system");
 
 var _star_system2 = _interopRequireDefault(_star_system);
 
-var _interaction = require("interaction");
+var _interaction = require("experimental/interaction");
 
 var _interaction2 = _interopRequireDefault(_interaction);
 
-var _map_drawer = require("map_drawer");
+var _map_drawer = require("experimental/map_drawer");
 
 var _map_drawer2 = _interopRequireDefault(_map_drawer);
+
+var _app = require("experimental/components/app");
+
+var _app2 = _interopRequireDefault(_app);
 
 var _reactDom = require("react-dom");
 
@@ -753,10 +757,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
-
-var _app = require("components/app");
-
-var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -811,30 +811,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-require.register("initialize.js", function(exports, require, module) {
-'use strict';
-
-var _reactDom = require('react-dom');
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _app = require('components/app');
-
-var _app2 = _interopRequireDefault(_app);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-document.addEventListener('DOMContentLoaded', function () {
-  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
-});
-
-});
-
-require.register("interaction.js", function(exports, require, module) {
+require.register("experimental/interaction.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -843,15 +820,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
+
+var _game = require("experimental/game");
 
 var _d = require("d3");
 
 var d3 = _interopRequireWildcard(_d);
-
-var _game = require("game");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -954,7 +931,7 @@ exports.default = Interaction;
 
 });
 
-require.register("map_drawer.js", function(exports, require, module) {
+require.register("experimental/map_drawer.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -963,25 +940,25 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("color");
+var _color = require("experimental/color");
 
 var _color2 = _interopRequireDefault(_color);
 
-var _game = require("game");
+var _game = require("experimental/game");
 
-var _blur_generator = require("texture_generators/blur_generator");
+var _blur_generator = require("experimental/texture_generators/blur_generator");
 
 var _blur_generator2 = _interopRequireDefault(_blur_generator);
 
-var _points_in_circle = require("texture_generators/points_in_circle");
+var _points_in_circle = require("experimental/texture_generators/points_in_circle");
 
 var _points_in_circle2 = _interopRequireDefault(_points_in_circle);
 
-var _density_map = require("texture_generators/density_map");
+var _density_map = require("experimental/texture_generators/density_map");
 
 var _density_map2 = _interopRequireDefault(_density_map);
 
@@ -1110,7 +1087,7 @@ exports.default = MapDrawer;
 
 });
 
-require.register("star_system.js", function(exports, require, module) {
+require.register("experimental/star_system.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1119,17 +1096,17 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _game = require("game");
+var _game = require("experimental/game");
 
-var _stellar_body = require("stellar_body");
+var _stellar_body = require("experimental/stellar_body");
 
 var _stellar_body2 = _interopRequireDefault(_stellar_body);
 
-var _color = require("color");
+var _color = require("experimental/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -1193,18 +1170,18 @@ exports.default = StarSystem;
 
 });
 
-require.register("stellar_body.js", function(exports, require, module) {
+require.register("experimental/stellar_body.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _game = require("game");
+var _game = require("experimental/game");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1228,7 +1205,7 @@ exports.default = StellarBody;
 
 });
 
-require.register("texture_generators/blur_generator.js", function(exports, require, module) {
+require.register("experimental/texture_generators/blur_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1237,13 +1214,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("game");
+var _game = require("experimental/game");
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("color");
+var _color = require("experimental/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -1329,7 +1306,7 @@ exports.default = BlurGenerator;
 
 });
 
-require.register("texture_generators/density_map.js", function(exports, require, module) {
+require.register("experimental/texture_generators/density_map.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1338,13 +1315,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("game");
+var _game = require("experimental/game");
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("color");
+var _color = require("experimental/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -1509,7 +1486,7 @@ exports.default = DensityMap;
 
 });
 
-require.register("texture_generators/points_in_circle.js", function(exports, require, module) {
+require.register("experimental/texture_generators/points_in_circle.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1518,13 +1495,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("game");
+var _game = require("experimental/game");
 
-var _util = require("util");
+var _util = require("experimental/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("color");
+var _color = require("experimental/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -1637,7 +1614,7 @@ exports.default = PointsInCicrle;
 
 });
 
-require.register("util.js", function(exports, require, module) {
+require.register("experimental/util.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

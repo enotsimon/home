@@ -1,6 +1,6 @@
-import Util from "util";
+import Util from "experimental/util";
+import {game} from "experimental/game";
 import * as d3 from "d3";
-import {game} from "game";
 
 export default class Interaction {
   constructor() {

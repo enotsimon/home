@@ -1,5 +1,5 @@
-import Util from "util";
-import {game} from "game";
+import Util from "experimental/util";
+import {game} from "experimental/game";
 
 export default class StellarBody {
   constructor() {

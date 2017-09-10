@@ -1,12 +1,11 @@
 
-import Util from "util";
-import StarSystem from "star_system";
-import Interaction from "interaction";
-import MapDrawer from "map_drawer";
-
+import Util from "experimental/util";
+import StarSystem from "experimental/star_system";
+import Interaction from "experimental/interaction";
+import MapDrawer from "experimental/map_drawer";
+import App from 'experimental/components/app';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import App from 'components/app';
 
 class Game {
   constructor() {

@@ -1,10 +1,10 @@
 
-import Util from "util";
-import Color from "color";
-import {game} from "game";
-import BlurGenerator from "texture_generators/blur_generator";
-import PointsInCicrle from "texture_generators/points_in_circle";
-import DensityMap from "texture_generators/density_map";
+import Util from "experimental/util";
+import Color from "experimental/color";
+import {game} from "experimental/game";
+import BlurGenerator from "experimental/texture_generators/blur_generator";
+import PointsInCicrle from "experimental/texture_generators/points_in_circle";
+import DensityMap from "experimental/texture_generators/density_map";
 
 export default class MapDrawer {
   static layers() {

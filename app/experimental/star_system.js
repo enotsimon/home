@@ -1,7 +1,7 @@
-import Util from "util";
-import {game} from "game";
-import StellarBody from "stellar_body";
-import Color from "color";
+import Util from "experimental/util";
+import {game} from "experimental/game";
+import StellarBody from "experimental/stellar_body";
+import Color from "experimental/color";
 
 export default class StarSystem {
   constructor() {
