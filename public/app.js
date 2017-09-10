@@ -1169,7 +1169,7 @@ var App = function (_React$Component) {
                     _react2.default.createElement(
                       'div',
                       { className: '', id: 'map_container' },
-                      _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
+                      _react2.default.createElement('canvas', { id: 'map', width: '600', height: '600' })
                     )
                   )
                 ),
@@ -1408,8 +1408,8 @@ var Game = function () {
     _classCallCheck(this, Game);
 
     // CONST
-    this.width = 800;
-    this.height = 800;
+    this.width = 500;
+    this.height = 500;
 
     this.map_drawer = new _map_drawer2.default();
     this.interaction = new _interaction2.default();
@@ -1599,6 +1599,10 @@ var _density_map = require("experimental/texture_generators/density_map");
 
 var _density_map2 = _interopRequireDefault(_density_map);
 
+var _links = require("experimental/texture_generators/links");
+
+var _links2 = _interopRequireDefault(_links);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -1622,7 +1626,7 @@ var MapDrawer = function () {
       console.log('renderer', this.map.renderer);
 
       this.base_container = new PIXI.Container();
-      this.base_container.scale = { x: 6, y: 6 };
+      this.base_container.scale = { x: 4, y: 4 };
       this.map.stage.addChild(this.base_container);
       this.base_container.position.x = width / 2 | 0;
       this.base_container.position.y = height / 2 | 0;
@@ -1647,11 +1651,12 @@ var MapDrawer = function () {
     value: function init_graphics() {
       var points_count = 5000;
       //let tg = new PointsInCicrle();
-      var tg = new _density_map2.default();
+      //let tg = new DensityMap();
+      var tg = new _links2.default();
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
       tg.generate(points_count);
-      var func = tg.draw_density_grid;
+      var func = tg.draw_naive;
       var container = tg.draw(50, func.bind(tg));
       //let container = tg.draw_triangles(50);
       this.layers['test'].addChild(container);
@@ -1951,6 +1956,106 @@ var DensityMap = function () {
 }();
 
 exports.default = DensityMap;
+
+});
+
+require.register("experimental/texture_generators/links.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _game = require("experimental/game");
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Links = function () {
+  function Links() {
+    _classCallCheck(this, Links);
+
+    this.angle = Math.PI / 60;
+    this.points = [];
+  }
+
+  _createClass(Links, [{
+    key: "random_point",
+    value: function random_point() {
+      return { x: 2 * Math.random() - 1, y: 2 * Math.random() - 1 };
+    }
+  }, {
+    key: "generate",
+    value: function generate() {
+      var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
+
+      for (var a = 0; a < Math.PI * 2; a += this.angle) {
+        var point = _util2.default.from_polar_coords(a, 1);
+        point.on_border = true;
+        this.points.push(point);
+      }
+      var step = (1 - -1) / size;
+      for (var y = -1; y < 1; y += step) {
+        for (var x = -1; x < 1; x += step) {
+          var _point = { x: x, y: y, on_border: false };
+          if (!this.check_in_circle(_point)) {
+            continue;
+          }
+          this.points.push(_point);
+        }
+      }
+      this.points.forEach(function (point) {});
+    }
+  }, {
+    key: "check_in_circle",
+    value: function check_in_circle(point) {
+      return _util2.default.distance(point, { x: 0, y: 0 }) < 1;
+    }
+  }, {
+    key: "draw",
+    value: function draw(scale) {
+      var func = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.draw_naive.bind(this);
+
+      var graphics = new PIXI.Graphics();
+      func(scale, graphics);
+      return graphics;
+    }
+  }, {
+    key: "draw_naive",
+    value: function draw_naive(scale, graphics) {
+      var radius = .01;
+      this.points.forEach(function (point) {
+        //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
+        var color = [255, 0, 0];
+        graphics.beginFill(_color2.default.to_pixi(color));
+        graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
+        graphics.closePath();
+        graphics.endFill();
+      });
+    }
+  }]);
+
+  return Links;
+}();
+
+exports.default = Links;
 
 });
 
