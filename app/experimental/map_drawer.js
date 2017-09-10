@@ -9,8 +9,6 @@ import DensityMap from "experimental/texture_generators/density_map";
 export default class MapDrawer {
   static layers() {
     return [
-      'bodies',
-      'errors',
       'test',
     ];
   }
@@ -46,10 +44,6 @@ export default class MapDrawer {
   }
 
   init_graphics() {
-    this.init_stellar_body(game.star_system.star);
-    game.star_system.planets.forEach(planet => this.init_stellar_body(planet));
-
-    this.clear_all();
     let points_count = 5000;
     //let tg = new PointsInCicrle();
     let tg = new DensityMap();
@@ -63,46 +57,6 @@ export default class MapDrawer {
   }
 
   redraw() {
-    //this.bodies_graphics.forEach(graphics => this.update_stellar_body(graphics));
-  }
-
-
-  init_stellar_body(stellar_body) {
-    let graphics = new PIXI.Graphics();
-    graphics.backlink = stellar_body;
-
-    let line_color = Color.to_pixi(Color.darker(stellar_body.color, 30));
-    graphics.lineStyle(stellar_body.radius / 10, line_color);
-    graphics.beginFill(Color.to_pixi(stellar_body.color));
-    graphics.drawCircle(0, 0, stellar_body.radius);
-    graphics.closePath();
-    graphics.endFill();
-
-    this.small_circle(graphics, 0, 1, stellar_body, line_color);
-    this.small_circle(graphics, 0, -1, stellar_body, line_color);
-    this.small_circle(graphics, 1, 0, stellar_body, line_color);
-    this.small_circle(graphics, -1, 0, stellar_body, line_color);
-
-    this.layers['bodies'].addChild(graphics);
-    this.bodies_graphics.push(graphics);
-    this.update_stellar_body(graphics);
-    //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
-  }
-
-  update_stellar_body(graphics) {
-    let stellar_body = graphics.backlink;
-    let coords = Util.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
-    //console.log('SF', coords);
-    graphics.position.x = coords.x;
-    graphics.position.y = coords.y;
-    graphics.rotation = stellar_body.angle;
-  }
-
-
-  small_circle(graphics, x, y, stellar_body, color) {
-    graphics.lineStyle(stellar_body.radius / 10, Color.to_pixi([0, 0, 0]));
-    graphics.beginFill(color);
-    graphics.drawCircle(x * (stellar_body.radius / 2), y * (stellar_body.radius / 2), stellar_body.radius / 3);
-    graphics.endFill();
+    
   }
 }

@@ -1379,10 +1379,6 @@ var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _star_system = require("experimental/star_system");
-
-var _star_system2 = _interopRequireDefault(_star_system);
-
 var _interaction = require("experimental/interaction");
 
 var _interaction2 = _interopRequireDefault(_interaction);
@@ -1422,9 +1418,6 @@ var Game = function () {
   _createClass(Game, [{
     key: "generate_world",
     value: function generate_world() {
-      this.star_system = new _star_system2.default();
-      this.star_system.generate();
-
       this.ticks = 0;
 
       this.map_drawer.init(this.width, this.height);
@@ -1438,7 +1431,6 @@ var Game = function () {
     key: "handle_tick",
     value: function handle_tick() {
       this.ticks++;
-      this.star_system.tick();
       this.map_drawer.redraw();
     }
   }]);
@@ -1653,14 +1645,6 @@ var MapDrawer = function () {
   }, {
     key: "init_graphics",
     value: function init_graphics() {
-      var _this2 = this;
-
-      this.init_stellar_body(_game.game.star_system.star);
-      _game.game.star_system.planets.forEach(function (planet) {
-        return _this2.init_stellar_body(planet);
-      });
-
-      this.clear_all();
       var points_count = 5000;
       //let tg = new PointsInCicrle();
       var tg = new _density_map2.default();
@@ -1674,54 +1658,11 @@ var MapDrawer = function () {
     }
   }, {
     key: "redraw",
-    value: function redraw() {
-      //this.bodies_graphics.forEach(graphics => this.update_stellar_body(graphics));
-    }
-  }, {
-    key: "init_stellar_body",
-    value: function init_stellar_body(stellar_body) {
-      var graphics = new PIXI.Graphics();
-      graphics.backlink = stellar_body;
-
-      var line_color = _color2.default.to_pixi(_color2.default.darker(stellar_body.color, 30));
-      graphics.lineStyle(stellar_body.radius / 10, line_color);
-      graphics.beginFill(_color2.default.to_pixi(stellar_body.color));
-      graphics.drawCircle(0, 0, stellar_body.radius);
-      graphics.closePath();
-      graphics.endFill();
-
-      this.small_circle(graphics, 0, 1, stellar_body, line_color);
-      this.small_circle(graphics, 0, -1, stellar_body, line_color);
-      this.small_circle(graphics, 1, 0, stellar_body, line_color);
-      this.small_circle(graphics, -1, 0, stellar_body, line_color);
-
-      this.layers['bodies'].addChild(graphics);
-      this.bodies_graphics.push(graphics);
-      this.update_stellar_body(graphics);
-      //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
-    }
-  }, {
-    key: "update_stellar_body",
-    value: function update_stellar_body(graphics) {
-      var stellar_body = graphics.backlink;
-      var coords = _util2.default.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
-      //console.log('SF', coords);
-      graphics.position.x = coords.x;
-      graphics.position.y = coords.y;
-      graphics.rotation = stellar_body.angle;
-    }
-  }, {
-    key: "small_circle",
-    value: function small_circle(graphics, x, y, stellar_body, color) {
-      graphics.lineStyle(stellar_body.radius / 10, _color2.default.to_pixi([0, 0, 0]));
-      graphics.beginFill(color);
-      graphics.drawCircle(x * (stellar_body.radius / 2), y * (stellar_body.radius / 2), stellar_body.radius / 3);
-      graphics.endFill();
-    }
+    value: function redraw() {}
   }], [{
     key: "layers",
     value: function layers() {
-      return ['bodies', 'errors', 'test'];
+      return ['test'];
     }
   }]);
 
@@ -1729,124 +1670,6 @@ var MapDrawer = function () {
 }();
 
 exports.default = MapDrawer;
-
-});
-
-require.register("experimental/star_system.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("common/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _game = require("experimental/game");
-
-var _stellar_body = require("experimental/stellar_body");
-
-var _stellar_body2 = _interopRequireDefault(_stellar_body);
-
-var _color = require("common/color");
-
-var _color2 = _interopRequireDefault(_color);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var StarSystem = function () {
-  function StarSystem() {
-    _classCallCheck(this, StarSystem);
-
-    this.star = null;
-    this.planets = [];
-
-    this.orbital_speed_coef = 0.0025;
-    this.rotation_speed_coef = 0.01;
-  }
-
-  _createClass(StarSystem, [{
-    key: "generate",
-    value: function generate() {
-      this.star = new _stellar_body2.default();
-      this.star.radius = 8;
-      this.star.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
-      this.star.color = _color2.default.random_near([250, 50, 50]);
-
-      var count_planets = 5;
-      while (count_planets--) {
-        var planet = new _stellar_body2.default();
-        planet.orbital_radius = 10 * (count_planets + 2);
-        planet.radius = _util2.default.rand(1, 5);
-        planet.orbital_speed = this.orbital_speed_coef * _util2.default.rand(1, 10);
-        planet.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
-        planet.color = _color2.default.random([200, 200, 200]);
-
-        this.planets.push(planet);
-      }
-    }
-  }, {
-    key: "tick",
-    value: function tick() {
-      var _this = this;
-
-      this.update_stellar_body(this.star);
-      this.planets.forEach(function (planet) {
-        return _this.update_stellar_body(planet);
-      });
-    }
-  }, {
-    key: "update_stellar_body",
-    value: function update_stellar_body(body) {
-      body.orbital_angle += body.orbital_speed;
-      body.angle += body.rotation_speed;
-    }
-  }]);
-
-  return StarSystem;
-}();
-
-exports.default = StarSystem;
-
-});
-
-require.register("experimental/stellar_body.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _util = require("common/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _game = require("experimental/game");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var StellarBody = function StellarBody() {
-  _classCallCheck(this, StellarBody);
-
-  this.orbital_radius = 0;
-  this.radius = 0;
-  this.orbital_speed = 0;
-  this.rotation_speed = 0;
-  // temp
-  this.color = [0, 0, 0];
-
-  this.orbital_angle = 0;
-  this.angle = 0;
-};
-
-exports.default = StellarBody;
 
 });
 
@@ -4564,6 +4387,736 @@ var TextureGenerator = function () {
 }();
 
 exports.default = TextureGenerator;
+
+});
+
+require.register("planets/components/app.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _collapsible_panel = require('common/components/collapsible_panel');
+
+var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
+
+var _debug_info = require('experimental/components/debug_info');
+
+var _debug_info2 = _interopRequireDefault(_debug_info);
+
+var _generate_world_form = require('experimental/components/generate_world_form');
+
+var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var App = function (_React$Component) {
+  _inherits(App, _React$Component);
+
+  function App() {
+    _classCallCheck(this, App);
+
+    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+  }
+
+  _createClass(App, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'table',
+        { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
+        _react2.default.createElement(
+          'tbody',
+          null,
+          _react2.default.createElement(
+            'tr',
+            { style: { verticalAlign: 'top' } },
+            _react2.default.createElement(
+              'td',
+              null,
+              _react2.default.createElement(
+                'div',
+                { className: 'panel-group' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel panel-success' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(
+                      'div',
+                      { className: '', id: 'map_container' },
+                      _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
+                    )
+                  )
+                ),
+                _react2.default.createElement(_collapsible_panel2.default, { header: 'debug', name: 'debug', content_func: function content_func() {
+                    return _react2.default.createElement(_debug_info2.default);
+                  } })
+              )
+            ),
+            _react2.default.createElement(
+              'td',
+              { width: '100%' },
+              _react2.default.createElement(
+                'div',
+                { className: 'panel-group' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel panel-success' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
+                        return _react2.default.createElement(_generate_world_form2.default);
+                      } })
+                  ),
+                  _react2.default.createElement('div', { className: 'panel-footer' })
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return App;
+}(_react2.default.Component);
+
+exports.default = App;
+
+});
+
+require.register("planets/components/debug_info.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var DebugInfo = function (_React$Component) {
+  _inherits(DebugInfo, _React$Component);
+
+  function DebugInfo() {
+    _classCallCheck(this, DebugInfo);
+
+    return _possibleConstructorReturn(this, (DebugInfo.__proto__ || Object.getPrototypeOf(DebugInfo)).apply(this, arguments));
+  }
+
+  _createClass(DebugInfo, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        null,
+        _react2.default.createElement(
+          "div",
+          null,
+          "FPS: ",
+          _react2.default.createElement("span", { id: "fps_counter" })
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "map scale: ",
+          _react2.default.createElement("span", { id: "map_scale" })
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "mouse position: ",
+          _react2.default.createElement(
+            "span",
+            { id: "mouse_pos" },
+            (0, 0)
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          null,
+          "world point: ",
+          _react2.default.createElement(
+            "span",
+            { id: "world_pos" },
+            (0, 0)
+          )
+        )
+      );
+    }
+  }]);
+
+  return DebugInfo;
+}(_react2.default.Component);
+
+exports.default = DebugInfo;
+
+});
+
+require.register("planets/components/generate_world_form.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _input_spinner = require('common/components/input_spinner');
+
+var _input_spinner2 = _interopRequireDefault(_input_spinner);
+
+var _game = require('experimental/game');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var GenerateWorldForm = function (_React$Component) {
+  _inherits(GenerateWorldForm, _React$Component);
+
+  function GenerateWorldForm() {
+    _classCallCheck(this, GenerateWorldForm);
+
+    return _possibleConstructorReturn(this, (GenerateWorldForm.__proto__ || Object.getPrototypeOf(GenerateWorldForm)).apply(this, arguments));
+  }
+
+  _createClass(GenerateWorldForm, [{
+    key: 'submit',
+    value: function submit(e) {
+      e.preventDefault();
+      console.clear();
+      _game.game.map_drawer.map.stage.children.forEach(function (layer) {
+        return layer.removeChildren();
+      });
+      _game.game.generate_world();
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        _react2.default.createElement(
+          'form',
+          { className: 'form-horizontal' },
+          _react2.default.createElement(
+            'div',
+            { className: 'form-group' },
+            _react2.default.createElement(
+              'div',
+              { className: 'col-sm-offset-4 col-sm-8' },
+              _react2.default.createElement(
+                'button',
+                { type: 'button', className: 'btn btn-default', id: 'generate_world', onClick: this.submit.bind(this) },
+                'generate'
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return GenerateWorldForm;
+}(_react2.default.Component);
+
+exports.default = GenerateWorldForm;
+
+});
+
+require.register("planets/game.js", function(exports, require, module) {
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _star_system = require("planets/star_system");
+
+var _star_system2 = _interopRequireDefault(_star_system);
+
+var _interaction = require("planets/interaction");
+
+var _interaction2 = _interopRequireDefault(_interaction);
+
+var _map_drawer = require("planets/map_drawer");
+
+var _map_drawer2 = _interopRequireDefault(_map_drawer);
+
+var _app = require("planets/components/app");
+
+var _app2 = _interopRequireDefault(_app);
+
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Game = function () {
+  function Game() {
+    _classCallCheck(this, Game);
+
+    // CONST
+    this.width = 800;
+    this.height = 800;
+
+    this.map_drawer = new _map_drawer2.default();
+    this.interaction = new _interaction2.default();
+  }
+
+  _createClass(Game, [{
+    key: "generate_world",
+    value: function generate_world() {
+      this.star_system = new _star_system2.default();
+      this.star_system.generate();
+
+      this.ticks = 0;
+
+      this.map_drawer.init(this.width, this.height);
+      this.interaction.init();
+
+      this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
+
+      this.map_drawer.init_graphics();
+    }
+  }, {
+    key: "handle_tick",
+    value: function handle_tick() {
+      this.ticks++;
+      this.star_system.tick();
+      this.map_drawer.redraw();
+    }
+  }]);
+
+  return Game;
+}();
+
+var game = new Game();
+module.exports.game = game;
+
+document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
+  game.generate_world();
+});
+
+});
+
+require.register("planets/interaction.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _game = require("planets/game");
+
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Interaction = function () {
+  function Interaction() {
+    _classCallCheck(this, Interaction);
+
+    this.state = 'initial';
+  }
+
+  _createClass(Interaction, [{
+    key: "init",
+    value: function init() {
+      var _this = this;
+
+      this.game = _game.game;
+      this.map = this.game.map_drawer.map;
+      this.map.stage.interactive = true;
+
+      document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
+
+      d3.select('#map').on('click', this.map_click_handler.bind(this));
+
+      // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
+      d3.select('#map').call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
+
+      this.ticks = 0; // here?
+      this.fps_div = document.getElementById('fps_counter');
+      this.map.ticker.add(function () {
+        _this.ticks++;
+        if (_this.ticks % 10 == 0) {
+          d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
+        }
+      });
+      this.update_map_scale();
+    }
+  }, {
+    key: "map_mouse_move_handler",
+    value: function map_mouse_move_handler(event) {
+      if (event.target != this.map.view) {
+        //this.game.map_drawer.clear_cell_under_cursor();
+        //this.cell_under_cursor = null;
+        return false;
+      }
+      var mouse_coords = this.get_mouse_coords(event);
+
+      d3.select('#mouse_pos').html('{x: ' + mouse_coords.x + ', y: ' + mouse_coords.y + '}');
+      var world_pos = this.mouse_coords_to_world_coords(mouse_coords);
+      d3.select('#world_pos').html('{x: ' + world_pos.x + ', y: ' + world_pos.y + '}');
+    }
+  }, {
+    key: "map_click_handler",
+    value: function map_click_handler() {
+      var mouse_coords = this.get_mouse_coords(d3.event);
+    }
+  }, {
+    key: "map_zoom",
+    value: function map_zoom() {
+      this.map.stage.position.x = d3.event.transform.x;
+      this.map.stage.position.y = d3.event.transform.y;
+      this.map.stage.scale.x = d3.event.transform.k;
+      this.map.stage.scale.y = d3.event.transform.k;
+      this.update_map_scale();
+    }
+    ///////////////////////////////////////
+
+
+  }, {
+    key: "update_map_scale",
+    value: function update_map_scale() {
+      d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
+    }
+
+    ///////////////////////////////////////  
+    // UTILS
+    ///////////////////////////////////////
+
+  }, {
+    key: "get_mouse_coords",
+    value: function get_mouse_coords(event) {
+      return { x: event.offsetX, y: event.offsetY };
+    }
+  }, {
+    key: "mouse_coords_to_world_coords",
+    value: function mouse_coords_to_world_coords(mouse_coords) {
+      var xn = Math.floor((mouse_coords.x - this.map.stage.position.x) / this.map.stage.scale.x),
+          yn = Math.floor((mouse_coords.y - this.map.stage.position.y) / this.map.stage.scale.y);
+      return { x: xn, y: yn };
+    }
+  }]);
+
+  return Interaction;
+}();
+
+exports.default = Interaction;
+
+});
+
+require.register("planets/map_drawer.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _game = require("planets/game");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var MapDrawer = function () {
+  function MapDrawer() {
+    _classCallCheck(this, MapDrawer);
+  }
+
+  _createClass(MapDrawer, [{
+    key: "init",
+    value: function init(width, height) {
+      var _this = this;
+
+      var PIXI = require('pixi.js');
+      this.map = new PIXI.Application(width, height, {
+        backgroundColor: _color2.default.to_pixi([0, 0, 0]),
+        antialias: true,
+        view: document.getElementById('map')
+      });
+      console.log('renderer', this.map.renderer);
+
+      this.base_container = new PIXI.Container();
+      this.base_container.scale = { x: 6, y: 6 };
+      this.map.stage.addChild(this.base_container);
+      this.base_container.position.x = width / 2 | 0;
+      this.base_container.position.y = height / 2 | 0;
+
+      this.layers = {};
+      MapDrawer.layers().forEach(function (layer) {
+        _this.layers[layer] = new PIXI.Container();
+        _this.base_container.addChild(_this.layers[layer]);
+      });
+      document.getElementById('map_container').appendChild(this.map.view);
+      this.bodies_graphics = [];
+    }
+  }, {
+    key: "clear_all",
+    value: function clear_all() {
+      this.base_container.children.forEach(function (layer) {
+        return layer.removeChildren();
+      });
+    }
+  }, {
+    key: "init_graphics",
+    value: function init_graphics() {
+      var _this2 = this;
+
+      this.init_stellar_body(_game.game.star_system.star);
+      _game.game.star_system.planets.forEach(function (planet) {
+        return _this2.init_stellar_body(planet);
+      });
+    }
+  }, {
+    key: "redraw",
+    value: function redraw() {
+      var _this3 = this;
+
+      this.bodies_graphics.forEach(function (graphics) {
+        return _this3.update_stellar_body(graphics);
+      });
+    }
+  }, {
+    key: "init_stellar_body",
+    value: function init_stellar_body(stellar_body) {
+      var graphics = new PIXI.Graphics();
+      graphics.backlink = stellar_body;
+
+      var line_color = _color2.default.to_pixi(_color2.default.darker(stellar_body.color, 30));
+      graphics.lineStyle(stellar_body.radius / 10, line_color);
+      graphics.beginFill(_color2.default.to_pixi(stellar_body.color));
+      graphics.drawCircle(0, 0, stellar_body.radius);
+      graphics.closePath();
+      graphics.endFill();
+
+      this.small_circle(graphics, 0, 1, stellar_body, line_color);
+      this.small_circle(graphics, 0, -1, stellar_body, line_color);
+      this.small_circle(graphics, 1, 0, stellar_body, line_color);
+      this.small_circle(graphics, -1, 0, stellar_body, line_color);
+
+      this.layers['bodies'].addChild(graphics);
+      this.bodies_graphics.push(graphics);
+      this.update_stellar_body(graphics);
+      //console.log('DI', coords, stellar_body.orbital_angle, stellar_body.orbital_radius);
+    }
+  }, {
+    key: "update_stellar_body",
+    value: function update_stellar_body(graphics) {
+      var stellar_body = graphics.backlink;
+      var coords = _util2.default.from_polar_coords(stellar_body.orbital_angle, stellar_body.orbital_radius);
+      //console.log('SF', coords);
+      graphics.position.x = coords.x;
+      graphics.position.y = coords.y;
+      graphics.rotation = stellar_body.angle;
+    }
+  }, {
+    key: "small_circle",
+    value: function small_circle(graphics, x, y, stellar_body, color) {
+      graphics.lineStyle(stellar_body.radius / 10, _color2.default.to_pixi([0, 0, 0]));
+      graphics.beginFill(color);
+      graphics.drawCircle(x * (stellar_body.radius / 2), y * (stellar_body.radius / 2), stellar_body.radius / 3);
+      graphics.endFill();
+    }
+  }], [{
+    key: "layers",
+    value: function layers() {
+      return ['bodies', 'errors', 'test'];
+    }
+  }]);
+
+  return MapDrawer;
+}();
+
+exports.default = MapDrawer;
+
+});
+
+require.register("planets/star_system.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _game = require("planets/game");
+
+var _stellar_body = require("planets/stellar_body");
+
+var _stellar_body2 = _interopRequireDefault(_stellar_body);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var StarSystem = function () {
+  function StarSystem() {
+    _classCallCheck(this, StarSystem);
+
+    this.star = null;
+    this.planets = [];
+
+    this.orbital_speed_coef = 0.0025;
+    this.rotation_speed_coef = 0.01;
+  }
+
+  _createClass(StarSystem, [{
+    key: "generate",
+    value: function generate() {
+      this.star = new _stellar_body2.default();
+      this.star.radius = 8;
+      this.star.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
+      this.star.color = _color2.default.random_near([250, 50, 50]);
+
+      var count_planets = 5;
+      while (count_planets--) {
+        var planet = new _stellar_body2.default();
+        planet.orbital_radius = 10 * (count_planets + 2);
+        planet.radius = _util2.default.rand(1, 5);
+        planet.orbital_speed = this.orbital_speed_coef * _util2.default.rand(1, 10);
+        planet.rotation_speed = this.rotation_speed_coef * _util2.default.rand(1, 10);
+        planet.color = _color2.default.random([200, 200, 200]);
+
+        this.planets.push(planet);
+      }
+    }
+  }, {
+    key: "tick",
+    value: function tick() {
+      var _this = this;
+
+      this.update_stellar_body(this.star);
+      this.planets.forEach(function (planet) {
+        return _this.update_stellar_body(planet);
+      });
+    }
+  }, {
+    key: "update_stellar_body",
+    value: function update_stellar_body(body) {
+      body.orbital_angle += body.orbital_speed;
+      body.angle += body.rotation_speed;
+    }
+  }]);
+
+  return StarSystem;
+}();
+
+exports.default = StarSystem;
+
+});
+
+require.register("planets/stellar_body.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _game = require("planets/game");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var StellarBody = function StellarBody() {
+  _classCallCheck(this, StellarBody);
+
+  this.orbital_radius = 0;
+  this.radius = 0;
+  this.orbital_speed = 0;
+  this.rotation_speed = 0;
+  // temp
+  this.color = [0, 0, 0];
+
+  this.orbital_angle = 0;
+  this.angle = 0;
+};
+
+exports.default = StellarBody;
 
 });
 
