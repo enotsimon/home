@@ -60,11 +60,11 @@ export default class DensityMap {
   }
 
   check_average_distance(point) {
-    //let sum = this.calc_distance_sum(point);
-    //let value = this.zero_distance_sum / sum;
     let value = Util.find_min_and_max(this.points, (p) => Util.distance(p, point)).min;
-    console.log('value', value);
-    return value < this.average_distance_threshold;
+    //console.log('value', value);
+    // its like some little chanse for far points
+    let rand = value * Math.pow(Math.random(), 100);
+    return value < this.average_distance_threshold + rand;
   }
 
 
@@ -72,15 +72,6 @@ export default class DensityMap {
   draw(scale) {
     let graphics = new PIXI.Graphics();
     let radius = .01;
-    let bla = Util.find_min_and_max(this.points, (p) => this.calc_distance_sum(p)).max;
-    bla = Util.find_min_and_max(this.points, (p) => this.calc_distance_sum(p));
-    let max_distance_sum = bla.max;
-    let min_distance_sum = bla.min;
-
-    this.points.forEach(point => {
-      point.channel = Util.normalize_value(this.calc_distance_sum(point), max_distance_sum, 255, min_distance_sum) | 0;
-    });
-    this.points.sort((p1, p2) => p1.channel - p2.channel);
 
     this.points.forEach(point => {
       //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];

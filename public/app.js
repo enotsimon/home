@@ -1426,36 +1426,19 @@ var DensityMap = function () {
   }, {
     key: "check_average_distance",
     value: function check_average_distance(point) {
-      //let sum = this.calc_distance_sum(point);
-      //let value = this.zero_distance_sum / sum;
       var value = _util2.default.find_min_and_max(this.points, function (p) {
         return _util2.default.distance(p, point);
       }).min;
-      console.log('value', value);
-      return value < this.average_distance_threshold;
+      //console.log('value', value);
+      // its like some little chanse for far points
+      var rand = value * Math.pow(Math.random(), 100);
+      return value < this.average_distance_threshold + rand;
     }
   }, {
     key: "draw",
     value: function draw(scale) {
-      var _this = this;
-
       var graphics = new PIXI.Graphics();
       var radius = .01;
-      var bla = _util2.default.find_min_and_max(this.points, function (p) {
-        return _this.calc_distance_sum(p);
-      }).max;
-      bla = _util2.default.find_min_and_max(this.points, function (p) {
-        return _this.calc_distance_sum(p);
-      });
-      var max_distance_sum = bla.max;
-      var min_distance_sum = bla.min;
-
-      this.points.forEach(function (point) {
-        point.channel = _util2.default.normalize_value(_this.calc_distance_sum(point), max_distance_sum, 255, min_distance_sum) | 0;
-      });
-      this.points.sort(function (p1, p2) {
-        return p1.channel - p2.channel;
-      });
 
       this.points.forEach(function (point) {
         //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
