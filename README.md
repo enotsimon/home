@@ -1,5 +1,8 @@
 # my home js experiments
 
+### github pages
+https://enotsimon.github.io/home/
+
 ### install, setup
 * clone repo, enter folder
 * ```npm install```
