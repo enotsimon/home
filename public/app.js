@@ -1045,7 +1045,8 @@ var MapDrawer = function () {
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
       tg.generate(points_count);
-      var container = tg.draw(50);
+      var func = tg.draw_density_grid;
+      var container = tg.draw(50, func.bind(tg));
       //let container = tg.draw_triangles(50);
       this.layers['test'].addChild(container);
     }
@@ -1437,9 +1438,16 @@ var DensityMap = function () {
   }, {
     key: "draw",
     value: function draw(scale) {
-      var graphics = new PIXI.Graphics();
-      var radius = .01;
+      var func = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.draw_naive.bind(this);
 
+      var graphics = new PIXI.Graphics();
+      func(scale, graphics);
+      return graphics;
+    }
+  }, {
+    key: "draw_naive",
+    value: function draw_naive(scale, graphics) {
+      var radius = .01;
       this.points.forEach(function (point) {
         //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
         var color = point.initial ? [125, 255, 0] : [125, 0, 0];
@@ -1448,8 +1456,49 @@ var DensityMap = function () {
         graphics.closePath();
         graphics.endFill();
       });
+    }
+  }, {
+    key: "draw_density_grid",
+    value: function draw_density_grid(scale, graphics) {
+      var _this = this;
 
-      return graphics;
+      var size = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 100;
+
+      var step = (1 - -1) / size;
+      var grid_points = [];
+
+      var _loop = function _loop(y) {
+        var _loop2 = function _loop2(x) {
+          var grid_point = { x: x, y: y, density: 0 };
+          if (!_this.check_in_circle(grid_point)) {
+            return "continue";
+          }
+          grid_point.density = _this.points.filter(function (p) {
+            return p.x >= x && p.y >= y && p.x < x + step && p.y < y + step;
+          }).length;
+          grid_points.push(grid_point);
+        };
+
+        for (var x = -1; x < 1; x += step) {
+          var _ret2 = _loop2(x);
+
+          if (_ret2 === "continue") continue;
+        }
+      };
+
+      for (var y = -1; y < 1; y += step) {
+        _loop(y);
+      }
+      var max_density = _util2.default.find_min_and_max(grid_points, function (p) {
+        return p.density;
+      }).max;
+      grid_points.forEach(function (point) {
+        var channel = _util2.default.normalize_value(point.density, max_density, 255, 0, 20);
+        graphics.beginFill(_color2.default.to_pixi([channel, 0, 0]));
+        graphics.drawCircle(scale * point.x, scale * point.y, scale * (step / 2));
+        graphics.closePath();
+        graphics.endFill();
+      });
     }
   }]);
 

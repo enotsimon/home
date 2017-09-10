@@ -56,7 +56,8 @@ export default class MapDrawer {
     //tg.generate(points_count, PointsInCicrle.linear);
     //tg.generate(points_count, PointsInCicrle.pow);
     tg.generate(points_count);
-    let container = tg.draw(50);
+    let func = tg.draw_density_grid;
+    let container = tg.draw(50, func.bind(tg));
     //let container = tg.draw_triangles(50);
     this.layers['test'].addChild(container);
   }

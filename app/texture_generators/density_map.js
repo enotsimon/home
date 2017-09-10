@@ -69,10 +69,15 @@ export default class DensityMap {
 
 
 
-  draw(scale) {
+  draw(scale, func = this.draw_naive.bind(this)) {
     let graphics = new PIXI.Graphics();
-    let radius = .01;
+    func(scale, graphics);
+    return graphics;
+  }
 
+
+  draw_naive(scale, graphics) {
+    let radius = .01;
     this.points.forEach(point => {
       //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
       let color = point.initial ? [125, 255, 0] : [125, 0, 0];
@@ -81,9 +86,28 @@ export default class DensityMap {
       graphics.closePath();
       graphics.endFill();
     });
-
-    return graphics;
   }
 
-
+  draw_density_grid(scale, graphics, size = 100) {
+    let step = (1 - -1)/size;
+    let grid_points = [];
+    for (let y = -1; y < 1; y += step) {
+      for (let x = -1; x < 1; x += step) {
+        let grid_point = {x: x, y: y, density: 0};
+        if (!this.check_in_circle(grid_point)) {
+          continue;
+        }
+        grid_point.density = this.points.filter(p => p.x >= x && p.y >= y && p.x < x + step && p.y < y + step).length;
+        grid_points.push(grid_point);
+      }
+    }
+    let max_density = Util.find_min_and_max(grid_points, (p) => p.density).max;
+    grid_points.forEach(point => {
+      let channel = Util.normalize_value(point.density, max_density, 255, 0, 20);
+      graphics.beginFill(Color.to_pixi([channel, 0, 0]));
+      graphics.drawCircle(scale * point.x, scale * point.y, scale * (step / 2));
+      graphics.closePath();
+      graphics.endFill();
+    });
+  }
 }
