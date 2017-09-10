@@ -9,8 +9,8 @@ import React from 'react';
 class Game {
   constructor() {
     // CONST
-    this.width = 800;
-    this.height = 800;
+    this.width = 500;
+    this.height = 500;
 
     this.map_drawer = new MapDrawer();
     this.interaction = new Interaction();

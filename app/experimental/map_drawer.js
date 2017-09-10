@@ -5,6 +5,7 @@ import {game} from "experimental/game";
 import BlurGenerator from "experimental/texture_generators/blur_generator";
 import PointsInCicrle from "experimental/texture_generators/points_in_circle";
 import DensityMap from "experimental/texture_generators/density_map";
+import Links from "experimental/texture_generators/links";
 
 export default class MapDrawer {
   static layers() {
@@ -23,7 +24,7 @@ export default class MapDrawer {
     console.log('renderer', this.map.renderer);
 
     this.base_container = new PIXI.Container();
-    this.base_container.scale = {x: 6, y: 6};
+    this.base_container.scale = {x: 4, y: 4};
     this.map.stage.addChild(this.base_container);
     this.base_container.position.x = width / 2 | 0;
     this.base_container.position.y = height / 2 | 0;
@@ -46,11 +47,12 @@ export default class MapDrawer {
   init_graphics() {
     let points_count = 5000;
     //let tg = new PointsInCicrle();
-    let tg = new DensityMap();
+    //let tg = new DensityMap();
+    let tg = new Links();
     //tg.generate(points_count, PointsInCicrle.linear);
     //tg.generate(points_count, PointsInCicrle.pow);
     tg.generate(points_count);
-    let func = tg.draw_density_grid;
+    let func = tg.draw_naive;
     let container = tg.draw(50, func.bind(tg));
     //let container = tg.draw_triangles(50);
     this.layers['test'].addChild(container);
