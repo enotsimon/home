@@ -1,6 +1,6 @@
 import React from 'react';
-import InputSpinner from 'components/input_spinner';
-import {game} from "game";
+import InputSpinner from 'common/components/input_spinner';
+import {game} from "geo/game";
 
 export default class GenerateWorldForm extends React.Component {
 

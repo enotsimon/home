@@ -1,6 +1,6 @@
-import Util from "util";
-import RRTDiagram from "rrt_diagram";
-import MapDrawer from "map_drawer";
+import Util from "common/util";
+import RRTDiagram from "geo/rrt_diagram";
+import MapDrawer from "geo/map_drawer";
 
 
 /**

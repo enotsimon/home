@@ -1,4 +1,4 @@
-import Util from "util";
+import Util from "common/util";
 
 export default class RegionsGatherer {
   static gather_regions(diagram) {

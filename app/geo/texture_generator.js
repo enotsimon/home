@@ -1,5 +1,5 @@
-import Util from "util";
-import Color from "color";
+import Util from "common/util";
+import Color from "common/color";
 
 export default class TextureGenerator {
 

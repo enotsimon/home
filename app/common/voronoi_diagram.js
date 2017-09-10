@@ -1,4 +1,4 @@
-import Util from "util";
+import Util from "common/util";
 import * as d3 from "d3";
 
 /**

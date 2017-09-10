@@ -148,7 +148,7 @@ var __makeRelativeRequire = function(require, mappings, pref) {
     return require(name);
   }
 };
-require.register("a_star.js", function(exports, require, module) {
+require.register("common/a_star.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -299,75 +299,7 @@ exports.default = AStar;
 
 });
 
-require.register("balls_generator.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _voronoi_diagram = require("voronoi_diagram");
-
-var _voronoi_diagram2 = _interopRequireDefault(_voronoi_diagram);
-
-var _color = require("color");
-
-var _color2 = _interopRequireDefault(_color);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var BallsGenerator = function () {
-  function BallsGenerator(diagram, color_map, drawer) {
-    _classCallCheck(this, BallsGenerator);
-
-    this.diagram = diagram;
-    this.color_map = color_map;
-    this.drawer = drawer;
-  }
-
-  _createClass(BallsGenerator, [{
-    key: "generate",
-    value: function generate() {
-      var num_balls = 0.6 * this.drawer.map.view.width * this.drawer.map.view.height | 0;
-      console.log('num_balls', num_balls);
-      var ball_radius_min = 1;
-      var ball_radius_max = 5;
-      var color_step = 5;
-      var color_count = 2;
-      var graphics = new PIXI.Graphics();
-      while (num_balls--) {
-        var rx = _util2.default.rand(1, this.drawer.map.view.width - 1);
-        var ry = _util2.default.rand(1, this.drawer.map.view.height - 1);
-        var cell = _voronoi_diagram2.default.find({ x: rx, y: ry }, this.diagram);
-        var base = this.color_map[cell.geo_type];
-        var color = _color2.default.random_near(base, color_step, color_count);
-        var radius = _util2.default.rand(ball_radius_min, ball_radius_max);
-        graphics.beginFill(_color2.default.to_pixi(color));
-        graphics.drawCircle(rx, ry, radius);
-        graphics.endFill();
-      }
-      var texture = graphics.generateCanvasTexture(PIXI.SCALE_MODES.LINEAR);
-      var sprite = new PIXI.Sprite(texture);
-      this.drawer.layers['geo'].addChild(sprite);
-    }
-  }]);
-
-  return BallsGenerator;
-}();
-
-exports.default = BallsGenerator;
-
-});
-
-require.register("color.js", function(exports, require, module) {
+require.register("common/color.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -378,7 +310,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -470,7 +402,7 @@ exports.default = Color;
 
 });
 
-require.register("components/active_checkbox.jsx", function(exports, require, module) {
+require.register("common/components/active_checkbox.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -534,7 +466,681 @@ exports.default = ActiveCheckbox;
 
 });
 
-require.register("components/app.jsx", function(exports, require, module) {
+require.register("common/components/collapsible_panel.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CollapsiblePanel = function (_React$Component) {
+  _inherits(CollapsiblePanel, _React$Component);
+
+  function CollapsiblePanel(args) {
+    _classCallCheck(this, CollapsiblePanel);
+
+    var _this = _possibleConstructorReturn(this, (CollapsiblePanel.__proto__ || Object.getPrototypeOf(CollapsiblePanel)).call(this));
+
+    _this.header = args.header;
+    _this.name = args.name;
+    _this.content_func = args.content_func;
+    return _this;
+  }
+
+  _createClass(CollapsiblePanel, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "panel panel-success" },
+        _react2.default.createElement(
+          "div",
+          { className: "panel-heading" },
+          _react2.default.createElement(
+            "h4",
+            { className: "panel-title" },
+            _react2.default.createElement(
+              "a",
+              { "data-toggle": "collapse", href: '#' + this.name },
+              this.header,
+              " ",
+              _react2.default.createElement("span", { className: "caret" })
+            )
+          )
+        ),
+        _react2.default.createElement(
+          "div",
+          { id: this.name, className: "panel-collapse collapse" },
+          _react2.default.createElement(
+            "div",
+            { className: "panel-body" },
+            this.content_func()
+          )
+        )
+      );
+    }
+  }]);
+
+  return CollapsiblePanel;
+}(_react2.default.Component);
+
+exports.default = CollapsiblePanel;
+
+});
+
+require.register("common/components/input_spinner.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var InputSpinner = function (_React$Component) {
+  _inherits(InputSpinner, _React$Component);
+
+  function InputSpinner(args) {
+    _classCallCheck(this, InputSpinner);
+
+    var _this = _possibleConstructorReturn(this, (InputSpinner.__proto__ || Object.getPrototypeOf(InputSpinner)).call(this, args));
+
+    _this.state = { value: args.value };
+    _this.name = args.name;
+    _this.min = args.min ? args.min : 0;
+    _this.max = args.max ? args.max : Infinity;
+    return _this;
+  }
+
+  _createClass(InputSpinner, [{
+    key: "click_up",
+    value: function click_up(e) {
+      if (this.state.value >= this.max) {
+        return false;
+      }
+      this.update_value(this.state.value + 1);
+      e.preventDefault();
+    }
+  }, {
+    key: "click_down",
+    value: function click_down(e) {
+      if (this.state.value <= this.min) {
+        return false;
+      }
+      this.update_value(this.state.value - 1);
+      e.preventDefault();
+    }
+  }, {
+    key: "manual_set",
+    value: function manual_set(e) {
+      this.update_value(e.target.value);
+    }
+  }, {
+    key: "update_value",
+    value: function update_value(new_value) {
+      this.setState({ value: new_value });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "input-group" },
+        _react2.default.createElement(
+          "span",
+          { className: "input-group-btn" },
+          _react2.default.createElement(
+            "a",
+            { className: "btn btn-danger", onClick: this.click_down.bind(this) },
+            _react2.default.createElement("span", { className: "glyphicon glyphicon-minus" })
+          )
+        ),
+        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
+        _react2.default.createElement(
+          "span",
+          { className: "input-group-btn" },
+          _react2.default.createElement(
+            "a",
+            { className: "btn btn-info", onClick: this.click_up.bind(this) },
+            _react2.default.createElement("span", { className: "glyphicon glyphicon-plus" })
+          )
+        )
+      );
+    }
+  }]);
+
+  return InputSpinner;
+}(_react2.default.Component);
+
+exports.default = InputSpinner;
+
+});
+
+require.register("common/util.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Util = function () {
+  function Util() {
+    _classCallCheck(this, Util);
+  }
+
+  _createClass(Util, null, [{
+    key: 'exec_in_cycle_with_delay',
+    value: function exec_in_cycle_with_delay(index, limit, delay, func) {
+      var final_func = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function () {};
+
+      if (typeof limit === "function" && !limit() || index >= limit) {
+        final_func(index);
+        return;
+      }
+      func(index);
+      setTimeout(function () {
+        Util.exec_in_cycle_with_delay(index + 1, limit, delay, func, final_func);
+      }, delay);
+    }
+  }, {
+    key: 'rand',
+    value: function rand(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+  }, {
+    key: 'rand_element',
+    value: function rand_element(arr) {
+      if (arr.length == 0) return false;
+      return arr[Util.rand(0, arr.length - 1)];
+    }
+  }, {
+    key: 'rand_float',
+    value: function rand_float(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+  }, {
+    key: 'normalize_value',
+    value: function normalize_value(value, max, normal_max) {
+      var min = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+      var normal_min = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
+
+      if (value > max || value < min) {
+        console.log('value out of range', value, max, normal_max, min, normal_min);
+        throw 'value out of range';
+      }
+      return (value - min) * (normal_max - normal_min) / (max - min) + normal_min;
+    }
+
+    ///////////////////////////////////
+    // ARRAYS
+    ///////////////////////////////////
+
+  }, {
+    key: 'last',
+    value: function last(array) {
+      return array.length == 0 ? false : array[array.length - 1];
+    }
+  }, {
+    key: 'push_uniq',
+    value: function push_uniq(element, arr) {
+      if (arr.indexOf(element) == -1) {
+        arr.push(element);
+      }
+    }
+  }, {
+    key: 'merge',
+    value: function merge(arr1, arr2) {
+      arr2.forEach(function (e) {
+        return Util.push_uniq(e, arr1);
+      });
+    }
+  }, {
+    key: 'remove_element',
+    value: function remove_element(element, arr) {
+      var index = arr.indexOf(element);
+      if (index !== -1) {
+        arr.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+  }, {
+    key: 'for_all_consecutive_pairs',
+    value: function for_all_consecutive_pairs(array, fun) {
+      if (array.length < 2) {
+        return false;
+      }
+      for (var i = 0; i < array.length; i++) {
+        var cur = array[i];
+        var next_index = i + 1 == array.length ? 0 : i + 1;
+        var next = array[next_index];
+        fun(cur, next, i, next_index);
+      }
+    }
+  }, {
+    key: 'find_min_and_max',
+    value: function find_min_and_max(array, value_func) {
+      if (!array.length) return false;
+      var ret = { min: null, max: null, min_element: null, max_element: null };
+      array.forEach(function (e) {
+        var res = value_func(e);
+        if (isNaN(res) || res === null) return;
+        if (ret.min == null || ret.max == null) {
+          ret.min = res;
+          ret.max = res;
+          ret.min_element = e;
+          ret.max_element = e;
+          return;
+        }
+        if (res < ret.min) {
+          ret.min = res;
+          ret.min_element = e;
+        }
+        if (res > ret.max) {
+          ret.max = res;
+          ret.max_element = e;
+        }
+      });
+      return ret;
+    }
+
+    // ??? experimental. some standard routine for cyclic open_list processing
+
+  }, {
+    key: 'do_while_not_empty',
+    value: function do_while_not_empty(open_list, func) {
+      var length_before = void 0,
+          step = 0;
+      do {
+        length_before = open_list.length;
+        open_list = open_list.filter(function (element) {
+          return !func(element, step++);
+        });
+        if (length_before == open_list.length) {
+          console.log('do_while_not_empty() open_list length not chenged, bailing out', length_before, open_list);
+          return false;
+        }
+      } while (open_list.length);
+      return true;
+    }
+
+    //////////////////////////////////////////
+    // geometry
+    //////////////////////////////////////////
+
+  }, {
+    key: 'to_polar_coords',
+    value: function to_polar_coords(x, y) {
+      var radius = Math.sqrt(x * x + y * y);
+      var angle = Math.atan2(y, x);
+      return { angle: angle, radius: radius };
+    }
+  }, {
+    key: 'from_polar_coords',
+    value: function from_polar_coords(angle, radius) {
+      var x = radius * Math.cos(angle);
+      var y = radius * Math.sin(angle);
+      return { x: x, y: y };
+    }
+  }, {
+    key: 'radians',
+    value: function radians(degrees) {
+      return degrees * Math.PI / 180;
+    }
+  }, {
+    key: 'degrees',
+    value: function degrees(radians) {
+      return radians * 180 / Math.PI;
+    }
+  }, {
+    key: 'move_by_vector',
+    value: function move_by_vector(xf, yf, xt, yt, length) {
+      // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
+      return [xf + (xt - xf) * length, yf + (yt - yf) * length];
+    }
+  }, {
+    key: 'convex_polygon_centroid',
+    value: function convex_polygon_centroid(points) {
+      var p1 = points[0];
+      var square_sum = 0;
+      var xc = 0,
+          yc = 0;
+      for (var i = 1; i < points.length - 1; i++) {
+        var p2 = points[i];
+        var p3 = points[i + 1];
+        var square = ((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2; // triangle square
+        square_sum += square;
+        xc += square * (p1.x + p2.x + p3.x) / 3;
+        yc += square * (p1.y + p2.y + p3.y) / 3;
+      }
+      return { x: xc / square_sum, y: yc / square_sum };
+    }
+
+    // points should be sorted by angle to center!!!
+
+  }, {
+    key: 'convex_polygon_square',
+    value: function convex_polygon_square(points) {
+      var p1 = points[0];
+      var square = 0;
+      for (var i = 1; i < points.length - 1; i++) {
+        var p2 = points[i];
+        var p3 = points[i + 1];
+        square += Math.abs((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2;
+      }
+      return square;
+    }
+  }, {
+    key: 'distance',
+    value: function distance(p1, p2) {
+      return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+    }
+  }]);
+
+  return Util;
+}();
+
+exports.default = Util;
+
+});
+
+require.register("common/voronoi_diagram.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *  we take original voronoi diagram from d3,
+ *  add lloyd relaxation
+ *  and then reorganize its internal structure, cause its annoying and awful, for my taste
+ *  and to each cell we add array of links to neig nodes, sorted by distance
+ */
+var VoronoiDiagram = function () {
+  function VoronoiDiagram() {
+    _classCallCheck(this, VoronoiDiagram);
+  }
+
+  _createClass(VoronoiDiagram, null, [{
+    key: "generate",
+    value: function generate(nodes, width, height) {
+      var lloyd_relaxation_steps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+      var voronoi = d3.voronoi().x(function (p) {
+        return p.x;
+      }).y(function (p) {
+        return p.y;
+      }).size([width, height]);
+      var original_diagram = voronoi(nodes);
+      for (var i = 0; i < lloyd_relaxation_steps; i++) {
+        original_diagram = VoronoiDiagram.lloyd_relaxation(original_diagram, voronoi);
+      }
+      var diagram = {};
+      // rewrite edges and nodes
+      // the problem with original d3 diagram is not only that node is array(2), but also is that
+      // it has nodes duplicates! we are to "regather" all nodes
+      diagram.nodes = [];
+      diagram.edges = original_diagram.edges.map(function (edge) {
+        var node_from = void 0,
+            node_to = void 0;
+        diagram.nodes.forEach(function (node) {
+          if (VoronoiDiagram.seems_like_nodes_are_equal(node, edge[0])) {
+            node_from = node;
+          }
+          if (VoronoiDiagram.seems_like_nodes_are_equal(node, edge[1])) {
+            node_to = node;
+          }
+        });
+        if (!node_from) {
+          node_from = { x: edge[0][0], y: edge[0][1], cells: [], links: [] };
+          diagram.nodes.push(node_from);
+        }
+        if (!node_to) {
+          node_to = { x: edge[1][0], y: edge[1][1], cells: [], links: [] };
+          diagram.nodes.push(node_to);
+        }
+        //node_from.links.push(node_to);
+        _util2.default.push_uniq(node_to, node_from.links);
+        node_to.links.push(node_from);
+        _util2.default.push_uniq(node_from, node_to.links);
+
+        _util2.default.push_uniq(edge.left.data, node_from.cells);
+        _util2.default.push_uniq(edge.left.data, node_to.cells);
+        if (edge.right) {
+          _util2.default.push_uniq(edge.right.data, node_from.cells);
+          _util2.default.push_uniq(edge.right.data, node_to.cells);
+        }
+        return {
+          from: node_from,
+          to: node_to,
+          left: edge.left.data,
+          right: edge.right ? edge.right.data : undefined
+        };
+      });
+      // rewrite cells
+      diagram.cells = original_diagram.cells.map(function (orig_cell) {
+        var cell = orig_cell.site.data; // original object!!! and we change it here!!!
+        cell.nodes = diagram.nodes.filter(function (node) {
+          return node.cells.indexOf(cell) != -1;
+        });
+        cell.nodes.sort(function (n1, n2) {
+          var angle1 = _util2.default.to_polar_coords(n1.x - cell.x, n1.y - cell.y).angle;
+          var angle2 = _util2.default.to_polar_coords(n2.x - cell.x, n2.y - cell.y).angle;
+          return angle1 - angle2;
+        });
+        cell.halfedges = orig_cell.halfedges;
+        cell.index = orig_cell.site.index;
+        // !!! we rewrite origin coordinates that COULD change (after lloyd relaxation)
+        cell.x = orig_cell.site[0];
+        cell.y = orig_cell.site[1];
+        return cell;
+      });
+      diagram.cells.forEach(function (cell) {
+        var links = [];
+        cell.halfedges.forEach(function (halfedge_index) {
+          var halfedge = diagram.edges[halfedge_index];
+          var link_site = halfedge.left == cell ? halfedge.right : halfedge.left;
+          // near-border halfedges dont have right or left cell 
+          if (!link_site) {
+            return;
+          }
+          _util2.default.push_uniq(diagram.cells[link_site.index], links);
+        });
+        // links sorted by distance -- from lowest to highest!
+        links.sort(function (e1, e2) {
+          return _util2.default.distance(cell, e1) - _util2.default.distance(cell, e2);
+        });
+        cell.links = links;
+      });
+      diagram.width = width;
+      diagram.height = height;
+
+      // final checks
+      diagram.nodes.forEach(function (node) {
+        /* its normal -- 4 or more nodes lie on circle
+        if (node.links.length > 3) {
+          console.log("ITS TOTAL DISASTER", node.x, node.y);
+          node.links.forEach(e => console.log("DISASTER", e.x, e.y));
+          //throw('ITS TOTAL DISASTER voronoi diagram');
+        }
+        */
+        if (node.links.length < 2) {
+          console.log("a little split", node.x, node.y, node.links);
+          throw 'ITS TOTAL DISASTER voronoi diagram';
+        }
+        /* its normal too
+        if (node.cells.length > 3 || node.cells.length == 0) {
+          console.log("BAD cells", node.x, node.y, node.cells.length);
+          //throw('ITS TOTAL DISASTER voronoi diagram');
+        }
+        */
+      });
+
+      return diagram;
+    }
+
+    // TODO binary tree search
+
+  }, {
+    key: "find",
+    value: function find(point, diagram) {
+      return _util2.default.find_min_and_max(diagram.cells, function (e) {
+        return _util2.default.distance(point, e);
+      }).min_element;
+    }
+  }, {
+    key: "lloyd_relaxation",
+    value: function lloyd_relaxation(diagram, voronoi) {
+      var to_move = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
+      var new_points = diagram.polygons().map(function (p) {
+        // well, its not real lloyd relaxation, we move new cell center not to centroid, but move
+        // it by value of 'to_move' to direction to centroid
+        var poly = p.map(function (e) {
+          return { x: e[0], y: e[1] };
+        });
+        var pf = _util2.default.convex_polygon_centroid(poly);
+        var res = _util2.default.move_by_vector(p.data.x, p.data.y, pf.x, pf.y, to_move);
+        return { x: res[0], y: res[1] };
+      });
+      return voronoi(new_points);
+    }
+
+    // PRIVATE. TRY to heal shizophrenia -- different, but very close nodes
+    // but it can lead us to total 
+
+  }, {
+    key: "seems_like_nodes_are_equal",
+    value: function seems_like_nodes_are_equal(node, old_node) {
+      var very_close_is = 0.0000000000001;
+      return Math.abs(node.x - old_node[0]) < very_close_is && Math.abs(node.y - old_node[1]) < very_close_is;
+      //return node.x == old_node[0] && node.y == old_node[1];
+    }
+  }]);
+
+  return VoronoiDiagram;
+}();
+
+exports.default = VoronoiDiagram;
+
+});
+
+require.register("geo/balls_generator.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _voronoi_diagram = require("common/voronoi_diagram");
+
+var _voronoi_diagram2 = _interopRequireDefault(_voronoi_diagram);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BallsGenerator = function () {
+  function BallsGenerator(diagram, color_map, drawer) {
+    _classCallCheck(this, BallsGenerator);
+
+    this.diagram = diagram;
+    this.color_map = color_map;
+    this.drawer = drawer;
+  }
+
+  _createClass(BallsGenerator, [{
+    key: "generate",
+    value: function generate() {
+      var num_balls = 0.6 * this.drawer.map.view.width * this.drawer.map.view.height | 0;
+      console.log('num_balls', num_balls);
+      var ball_radius_min = 1;
+      var ball_radius_max = 5;
+      var color_step = 5;
+      var color_count = 2;
+      var graphics = new PIXI.Graphics();
+      while (num_balls--) {
+        var rx = _util2.default.rand(1, this.drawer.map.view.width - 1);
+        var ry = _util2.default.rand(1, this.drawer.map.view.height - 1);
+        var cell = _voronoi_diagram2.default.find({ x: rx, y: ry }, this.diagram);
+        var base = this.color_map[cell.geo_type];
+        var color = _color2.default.random_near(base, color_step, color_count);
+        var radius = _util2.default.rand(ball_radius_min, ball_radius_max);
+        graphics.beginFill(_color2.default.to_pixi(color));
+        graphics.drawCircle(rx, ry, radius);
+        graphics.endFill();
+      }
+      var texture = graphics.generateCanvasTexture(PIXI.SCALE_MODES.LINEAR);
+      var sprite = new PIXI.Sprite(texture);
+      this.drawer.layers['geo'].addChild(sprite);
+    }
+  }]);
+
+  return BallsGenerator;
+}();
+
+exports.default = BallsGenerator;
+
+});
+
+require.register("geo/components/app.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -547,27 +1153,27 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _collapsible_panel = require('components/collapsible_panel');
+var _collapsible_panel = require('common/components/collapsible_panel');
 
 var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
 
-var _debug_info = require('components/debug_info');
+var _debug_info = require('geo/components/debug_info');
 
 var _debug_info2 = _interopRequireDefault(_debug_info);
 
-var _generate_world_form = require('components/generate_world_form');
+var _generate_world_form = require('geo/components/generate_world_form');
 
 var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
 
-var _drawing_settings_form = require('components/drawing_settings_form');
+var _drawing_settings_form = require('geo/components/drawing_settings_form');
 
 var _drawing_settings_form2 = _interopRequireDefault(_drawing_settings_form);
 
-var _roads_form = require('components/roads_form');
+var _roads_form = require('geo/components/roads_form');
 
 var _roads_form2 = _interopRequireDefault(_roads_form);
 
-var _legend = require('components/legend');
+var _legend = require('geo/components/legend');
 
 var _legend2 = _interopRequireDefault(_legend);
 
@@ -669,83 +1275,7 @@ exports.default = App;
 
 });
 
-require.register("components/collapsible_panel.jsx", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CollapsiblePanel = function (_React$Component) {
-  _inherits(CollapsiblePanel, _React$Component);
-
-  function CollapsiblePanel(args) {
-    _classCallCheck(this, CollapsiblePanel);
-
-    var _this = _possibleConstructorReturn(this, (CollapsiblePanel.__proto__ || Object.getPrototypeOf(CollapsiblePanel)).call(this));
-
-    _this.header = args.header;
-    _this.name = args.name;
-    _this.content_func = args.content_func;
-    return _this;
-  }
-
-  _createClass(CollapsiblePanel, [{
-    key: "render",
-    value: function render() {
-      return _react2.default.createElement(
-        "div",
-        { className: "panel panel-success" },
-        _react2.default.createElement(
-          "div",
-          { className: "panel-heading" },
-          _react2.default.createElement(
-            "h4",
-            { className: "panel-title" },
-            _react2.default.createElement(
-              "a",
-              { "data-toggle": "collapse", href: '#' + this.name },
-              this.header,
-              " ",
-              _react2.default.createElement("span", { className: "caret" })
-            )
-          )
-        ),
-        _react2.default.createElement(
-          "div",
-          { id: this.name, className: "panel-collapse collapse" },
-          _react2.default.createElement(
-            "div",
-            { className: "panel-body" },
-            this.content_func()
-          )
-        )
-      );
-    }
-  }]);
-
-  return CollapsiblePanel;
-}(_react2.default.Component);
-
-exports.default = CollapsiblePanel;
-
-});
-
-require.register("components/debug_info.jsx", function(exports, require, module) {
+require.register("geo/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -824,7 +1354,7 @@ exports.default = DebugInfo;
 
 });
 
-require.register("components/drawing_settings_form.jsx", function(exports, require, module) {
+require.register("geo/components/drawing_settings_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -837,15 +1367,15 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _input_spinner = require('components/input_spinner');
+var _input_spinner = require('common/components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
-var _active_checkbox = require('components/active_checkbox');
+var _active_checkbox = require('common/components/active_checkbox');
 
 var _active_checkbox2 = _interopRequireDefault(_active_checkbox);
 
-var _game = require('game');
+var _game = require('geo/game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -913,7 +1443,7 @@ exports.default = DrawingSettingsForm;
 
 });
 
-require.register("components/generate_world_form.jsx", function(exports, require, module) {
+require.register("geo/components/generate_world_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -926,11 +1456,11 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _input_spinner = require('components/input_spinner');
+var _input_spinner = require('common/components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
-var _game = require('game');
+var _game = require('geo/game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1008,107 +1538,7 @@ exports.default = GenerateWorldForm;
 
 });
 
-require.register("components/input_spinner.jsx", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var InputSpinner = function (_React$Component) {
-  _inherits(InputSpinner, _React$Component);
-
-  function InputSpinner(args) {
-    _classCallCheck(this, InputSpinner);
-
-    var _this = _possibleConstructorReturn(this, (InputSpinner.__proto__ || Object.getPrototypeOf(InputSpinner)).call(this, args));
-
-    _this.state = { value: args.value };
-    _this.name = args.name;
-    _this.min = args.min ? args.min : 0;
-    _this.max = args.max ? args.max : Infinity;
-    return _this;
-  }
-
-  _createClass(InputSpinner, [{
-    key: "click_up",
-    value: function click_up(e) {
-      if (this.state.value >= this.max) {
-        return false;
-      }
-      this.update_value(this.state.value + 1);
-      e.preventDefault();
-    }
-  }, {
-    key: "click_down",
-    value: function click_down(e) {
-      if (this.state.value <= this.min) {
-        return false;
-      }
-      this.update_value(this.state.value - 1);
-      e.preventDefault();
-    }
-  }, {
-    key: "manual_set",
-    value: function manual_set(e) {
-      this.update_value(e.target.value);
-    }
-  }, {
-    key: "update_value",
-    value: function update_value(new_value) {
-      this.setState({ value: new_value });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return _react2.default.createElement(
-        "div",
-        { className: "input-group" },
-        _react2.default.createElement(
-          "span",
-          { className: "input-group-btn" },
-          _react2.default.createElement(
-            "a",
-            { className: "btn btn-danger", onClick: this.click_down.bind(this) },
-            _react2.default.createElement("span", { className: "glyphicon glyphicon-minus" })
-          )
-        ),
-        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
-        _react2.default.createElement(
-          "span",
-          { className: "input-group-btn" },
-          _react2.default.createElement(
-            "a",
-            { className: "btn btn-info", onClick: this.click_up.bind(this) },
-            _react2.default.createElement("span", { className: "glyphicon glyphicon-plus" })
-          )
-        )
-      );
-    }
-  }]);
-
-  return InputSpinner;
-}(_react2.default.Component);
-
-exports.default = InputSpinner;
-
-});
-
-require.register("components/legend.jsx", function(exports, require, module) {
+require.register("geo/components/legend.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1160,7 +1590,7 @@ exports.default = Legend;
 
 });
 
-require.register("components/roads_form.jsx", function(exports, require, module) {
+require.register("geo/components/roads_form.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1222,42 +1652,46 @@ exports.default = RoadsForm;
 
 });
 
-require.register("game.js", function(exports, require, module) {
+require.register("geo/game.js", function(exports, require, module) {
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _voronoi_diagram = require("voronoi_diagram");
+var _voronoi_diagram = require("common/voronoi_diagram");
 
 var _voronoi_diagram2 = _interopRequireDefault(_voronoi_diagram);
 
-var _regions_gatherer = require("regions_gatherer");
+var _regions_gatherer = require("geo/regions_gatherer");
 
 var _regions_gatherer2 = _interopRequireDefault(_regions_gatherer);
 
-var _rrt_diagram = require("rrt_diagram");
+var _rrt_diagram = require("geo/rrt_diagram");
 
 var _rrt_diagram2 = _interopRequireDefault(_rrt_diagram);
 
-var _geo = require("geo");
+var _geo = require("geo/geo");
 
 var _geo2 = _interopRequireDefault(_geo);
 
-var _a_star = require("a_star");
+var _a_star = require("common/a_star");
 
 var _a_star2 = _interopRequireDefault(_a_star);
 
-var _interaction = require("interaction");
+var _interaction = require("geo/interaction");
 
 var _interaction2 = _interopRequireDefault(_interaction);
 
-var _map_drawer = require("map_drawer");
+var _map_drawer = require("geo/map_drawer");
 
 var _map_drawer2 = _interopRequireDefault(_map_drawer);
+
+var _app = require("geo/components/app");
+
+var _app2 = _interopRequireDefault(_app);
 
 var _reactDom = require("react-dom");
 
@@ -1266,10 +1700,6 @@ var _reactDom2 = _interopRequireDefault(_reactDom);
 var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
-
-var _app = require("components/app");
-
-var _app2 = _interopRequireDefault(_app);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1344,7 +1774,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-require.register("geo.js", function(exports, require, module) {
+require.register("geo/geo.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1353,15 +1783,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _rrt_diagram = require("rrt_diagram");
+var _rrt_diagram = require("geo/rrt_diagram");
 
 var _rrt_diagram2 = _interopRequireDefault(_rrt_diagram);
 
-var _rivers_and_lakes_generator = require("rivers_and_lakes_generator");
+var _rivers_and_lakes_generator = require("geo/rivers_and_lakes_generator");
 
 var _rivers_and_lakes_generator2 = _interopRequireDefault(_rivers_and_lakes_generator);
 
@@ -1612,7 +2042,7 @@ exports.default = Geo;
 
 });
 
-require.register("interaction.js", function(exports, require, module) {
+require.register("geo/interaction.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1621,11 +2051,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _voronoi_diagram = require("voronoi_diagram");
+var _voronoi_diagram = require("common/voronoi_diagram");
 
 var _voronoi_diagram2 = _interopRequireDefault(_voronoi_diagram);
 
@@ -1633,7 +2063,7 @@ var _d = require("d3");
 
 var d3 = _interopRequireWildcard(_d);
 
-var _game = require("game");
+var _game = require("geo/game");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1793,7 +2223,7 @@ exports.default = Interaction;
 
 });
 
-require.register("map_drawer.js", function(exports, require, module) {
+require.register("geo/map_drawer.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1804,23 +2234,23 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _rrt_diagram = require("rrt_diagram");
+var _rrt_diagram = require("geo/rrt_diagram");
 
 var _rrt_diagram2 = _interopRequireDefault(_rrt_diagram);
 
-var _texture_generator = require("texture_generator");
+var _texture_generator = require("geo/texture_generator");
 
 var _texture_generator2 = _interopRequireDefault(_texture_generator);
 
-var _balls_generator = require("balls_generator");
+var _balls_generator = require("geo/balls_generator");
 
 var _balls_generator2 = _interopRequireDefault(_balls_generator);
 
-var _color = require("color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2271,7 +2701,7 @@ exports.default = MapDrawer;
 
 });
 
-require.register("regions_gatherer.js", function(exports, require, module) {
+require.register("geo/regions_gatherer.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2280,7 +2710,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require('util');
+var _util = require('common/util');
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2458,7 +2888,7 @@ exports.default = RegionsGatherer;
 
 });
 
-require.register("rivers_and_lakes_generator.js", function(exports, require, module) {
+require.register("geo/rivers_and_lakes_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2467,15 +2897,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _rrt_diagram = require("rrt_diagram");
+var _rrt_diagram = require("geo/rrt_diagram");
 
 var _rrt_diagram2 = _interopRequireDefault(_rrt_diagram);
 
-var _map_drawer = require("map_drawer");
+var _map_drawer = require("geo/map_drawer");
 
 var _map_drawer2 = _interopRequireDefault(_map_drawer);
 
@@ -2586,7 +3016,7 @@ exports.default = RiversAndLakesGenerator;
 
 });
 
-require.register("rrt_diagram.js", function(exports, require, module) {
+require.register("geo/rrt_diagram.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2597,7 +3027,7 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require('util');
+var _util = require('common/util');
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2896,7 +3326,7 @@ exports.default = RRTDiagram;
 
 });
 
-require.register("texture_generator.js", function(exports, require, module) {
+require.register("geo/texture_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2905,11 +3335,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2947,436 +3377,6 @@ var TextureGenerator = function () {
 }();
 
 exports.default = TextureGenerator;
-
-});
-
-require.register("util.js", function(exports, require, module) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Util = function () {
-  function Util() {
-    _classCallCheck(this, Util);
-  }
-
-  _createClass(Util, null, [{
-    key: 'exec_in_cycle_with_delay',
-    value: function exec_in_cycle_with_delay(index, limit, delay, func) {
-      var final_func = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function () {};
-
-      if (typeof limit === "function" && !limit() || index >= limit) {
-        final_func(index);
-        return;
-      }
-      func(index);
-      setTimeout(function () {
-        Util.exec_in_cycle_with_delay(index + 1, limit, delay, func, final_func);
-      }, delay);
-    }
-  }, {
-    key: 'rand',
-    value: function rand(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-  }, {
-    key: 'rand_element',
-    value: function rand_element(arr) {
-      if (arr.length == 0) return false;
-      return arr[Util.rand(0, arr.length - 1)];
-    }
-  }, {
-    key: 'rand_float',
-    value: function rand_float(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-  }, {
-    key: 'normalize_value',
-    value: function normalize_value(value, max, normal_max) {
-      var min = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-      var normal_min = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
-      if (value > max || value < min) {
-        console.log('value out of range', value, max, normal_max, min, normal_min);
-        throw 'value out of range';
-      }
-      return (value - min) * (normal_max - normal_min) / (max - min) + normal_min;
-    }
-
-    ///////////////////////////////////
-    // ARRAYS
-    ///////////////////////////////////
-
-  }, {
-    key: 'last',
-    value: function last(array) {
-      return array.length == 0 ? false : array[array.length - 1];
-    }
-  }, {
-    key: 'push_uniq',
-    value: function push_uniq(element, arr) {
-      if (arr.indexOf(element) == -1) {
-        arr.push(element);
-      }
-    }
-  }, {
-    key: 'merge',
-    value: function merge(arr1, arr2) {
-      arr2.forEach(function (e) {
-        return Util.push_uniq(e, arr1);
-      });
-    }
-  }, {
-    key: 'remove_element',
-    value: function remove_element(element, arr) {
-      var index = arr.indexOf(element);
-      if (index !== -1) {
-        arr.splice(index, 1);
-        return true;
-      }
-      return false;
-    }
-  }, {
-    key: 'for_all_consecutive_pairs',
-    value: function for_all_consecutive_pairs(array, fun) {
-      if (array.length < 2) {
-        return false;
-      }
-      for (var i = 0; i < array.length; i++) {
-        var cur = array[i];
-        var next_index = i + 1 == array.length ? 0 : i + 1;
-        var next = array[next_index];
-        fun(cur, next, i, next_index);
-      }
-    }
-  }, {
-    key: 'find_min_and_max',
-    value: function find_min_and_max(array, value_func) {
-      if (!array.length) return false;
-      var ret = { min: null, max: null, min_element: null, max_element: null };
-      array.forEach(function (e) {
-        var res = value_func(e);
-        if (isNaN(res) || res === null) return;
-        if (ret.min == null || ret.max == null) {
-          ret.min = res;
-          ret.max = res;
-          ret.min_element = e;
-          ret.max_element = e;
-          return;
-        }
-        if (res < ret.min) {
-          ret.min = res;
-          ret.min_element = e;
-        }
-        if (res > ret.max) {
-          ret.max = res;
-          ret.max_element = e;
-        }
-      });
-      return ret;
-    }
-
-    // ??? experimental. some standard routine for cyclic open_list processing
-
-  }, {
-    key: 'do_while_not_empty',
-    value: function do_while_not_empty(open_list, func) {
-      var length_before = void 0,
-          step = 0;
-      do {
-        length_before = open_list.length;
-        open_list = open_list.filter(function (element) {
-          return !func(element, step++);
-        });
-        if (length_before == open_list.length) {
-          console.log('do_while_not_empty() open_list length not chenged, bailing out', length_before, open_list);
-          return false;
-        }
-      } while (open_list.length);
-      return true;
-    }
-
-    //////////////////////////////////////////
-    // geometry
-    //////////////////////////////////////////
-
-  }, {
-    key: 'to_polar_coords',
-    value: function to_polar_coords(x, y) {
-      var radius = Math.sqrt(x * x + y * y);
-      var angle = Math.atan2(y, x);
-      return { angle: angle, radius: radius };
-    }
-  }, {
-    key: 'from_polar_coords',
-    value: function from_polar_coords(angle, radius) {
-      var x = radius * Math.cos(angle);
-      var y = radius * Math.sin(angle);
-      return { x: x, y: y };
-    }
-  }, {
-    key: 'radians',
-    value: function radians(degrees) {
-      return degrees * Math.PI / 180;
-    }
-  }, {
-    key: 'degrees',
-    value: function degrees(radians) {
-      return radians * 180 / Math.PI;
-    }
-  }, {
-    key: 'move_by_vector',
-    value: function move_by_vector(xf, yf, xt, yt, length) {
-      // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
-      return [xf + (xt - xf) * length, yf + (yt - yf) * length];
-    }
-  }, {
-    key: 'convex_polygon_centroid',
-    value: function convex_polygon_centroid(points) {
-      var p1 = points[0];
-      var square_sum = 0;
-      var xc = 0,
-          yc = 0;
-      for (var i = 1; i < points.length - 1; i++) {
-        var p2 = points[i];
-        var p3 = points[i + 1];
-        var square = ((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2; // triangle square
-        square_sum += square;
-        xc += square * (p1.x + p2.x + p3.x) / 3;
-        yc += square * (p1.y + p2.y + p3.y) / 3;
-      }
-      return { x: xc / square_sum, y: yc / square_sum };
-    }
-
-    // points should be sorted by angle to center!!!
-
-  }, {
-    key: 'convex_polygon_square',
-    value: function convex_polygon_square(points) {
-      var p1 = points[0];
-      var square = 0;
-      for (var i = 1; i < points.length - 1; i++) {
-        var p2 = points[i];
-        var p3 = points[i + 1];
-        square += Math.abs((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2;
-      }
-      return square;
-    }
-  }, {
-    key: 'distance',
-    value: function distance(p1, p2) {
-      return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-    }
-  }]);
-
-  return Util;
-}();
-
-exports.default = Util;
-
-});
-
-require.register("voronoi_diagram.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _d = require("d3");
-
-var d3 = _interopRequireWildcard(_d);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- *  we take original voronoi diagram from d3,
- *  add lloyd relaxation
- *  and then reorganize its internal structure, cause its annoying and awful, for my taste
- *  and to each cell we add array of links to neig nodes, sorted by distance
- */
-var VoronoiDiagram = function () {
-  function VoronoiDiagram() {
-    _classCallCheck(this, VoronoiDiagram);
-  }
-
-  _createClass(VoronoiDiagram, null, [{
-    key: "generate",
-    value: function generate(nodes, width, height) {
-      var lloyd_relaxation_steps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-
-      var voronoi = d3.voronoi().x(function (p) {
-        return p.x;
-      }).y(function (p) {
-        return p.y;
-      }).size([width, height]);
-      var original_diagram = voronoi(nodes);
-      for (var i = 0; i < lloyd_relaxation_steps; i++) {
-        original_diagram = VoronoiDiagram.lloyd_relaxation(original_diagram, voronoi);
-      }
-      var diagram = {};
-      // rewrite edges and nodes
-      // the problem with original d3 diagram is not only that node is array(2), but also is that
-      // it has nodes duplicates! we are to "regather" all nodes
-      diagram.nodes = [];
-      diagram.edges = original_diagram.edges.map(function (edge) {
-        var node_from = void 0,
-            node_to = void 0;
-        diagram.nodes.forEach(function (node) {
-          if (VoronoiDiagram.seems_like_nodes_are_equal(node, edge[0])) {
-            node_from = node;
-          }
-          if (VoronoiDiagram.seems_like_nodes_are_equal(node, edge[1])) {
-            node_to = node;
-          }
-        });
-        if (!node_from) {
-          node_from = { x: edge[0][0], y: edge[0][1], cells: [], links: [] };
-          diagram.nodes.push(node_from);
-        }
-        if (!node_to) {
-          node_to = { x: edge[1][0], y: edge[1][1], cells: [], links: [] };
-          diagram.nodes.push(node_to);
-        }
-        //node_from.links.push(node_to);
-        _util2.default.push_uniq(node_to, node_from.links);
-        node_to.links.push(node_from);
-        _util2.default.push_uniq(node_from, node_to.links);
-
-        _util2.default.push_uniq(edge.left.data, node_from.cells);
-        _util2.default.push_uniq(edge.left.data, node_to.cells);
-        if (edge.right) {
-          _util2.default.push_uniq(edge.right.data, node_from.cells);
-          _util2.default.push_uniq(edge.right.data, node_to.cells);
-        }
-        return {
-          from: node_from,
-          to: node_to,
-          left: edge.left.data,
-          right: edge.right ? edge.right.data : undefined
-        };
-      });
-      // rewrite cells
-      diagram.cells = original_diagram.cells.map(function (orig_cell) {
-        var cell = orig_cell.site.data; // original object!!! and we change it here!!!
-        cell.nodes = diagram.nodes.filter(function (node) {
-          return node.cells.indexOf(cell) != -1;
-        });
-        cell.nodes.sort(function (n1, n2) {
-          var angle1 = _util2.default.to_polar_coords(n1.x - cell.x, n1.y - cell.y).angle;
-          var angle2 = _util2.default.to_polar_coords(n2.x - cell.x, n2.y - cell.y).angle;
-          return angle1 - angle2;
-        });
-        cell.halfedges = orig_cell.halfedges;
-        cell.index = orig_cell.site.index;
-        // !!! we rewrite origin coordinates that COULD change (after lloyd relaxation)
-        cell.x = orig_cell.site[0];
-        cell.y = orig_cell.site[1];
-        return cell;
-      });
-      diagram.cells.forEach(function (cell) {
-        var links = [];
-        cell.halfedges.forEach(function (halfedge_index) {
-          var halfedge = diagram.edges[halfedge_index];
-          var link_site = halfedge.left == cell ? halfedge.right : halfedge.left;
-          // near-border halfedges dont have right or left cell 
-          if (!link_site) {
-            return;
-          }
-          _util2.default.push_uniq(diagram.cells[link_site.index], links);
-        });
-        // links sorted by distance -- from lowest to highest!
-        links.sort(function (e1, e2) {
-          return _util2.default.distance(cell, e1) - _util2.default.distance(cell, e2);
-        });
-        cell.links = links;
-      });
-      diagram.width = width;
-      diagram.height = height;
-
-      // final checks
-      diagram.nodes.forEach(function (node) {
-        /* its normal -- 4 or more nodes lie on circle
-        if (node.links.length > 3) {
-          console.log("ITS TOTAL DISASTER", node.x, node.y);
-          node.links.forEach(e => console.log("DISASTER", e.x, e.y));
-          //throw('ITS TOTAL DISASTER voronoi diagram');
-        }
-        */
-        if (node.links.length < 2) {
-          console.log("a little split", node.x, node.y, node.links);
-          throw 'ITS TOTAL DISASTER voronoi diagram';
-        }
-        /* its normal too
-        if (node.cells.length > 3 || node.cells.length == 0) {
-          console.log("BAD cells", node.x, node.y, node.cells.length);
-          //throw('ITS TOTAL DISASTER voronoi diagram');
-        }
-        */
-      });
-
-      return diagram;
-    }
-
-    // TODO binary tree search
-
-  }, {
-    key: "find",
-    value: function find(point, diagram) {
-      return _util2.default.find_min_and_max(diagram.cells, function (e) {
-        return _util2.default.distance(point, e);
-      }).min_element;
-    }
-  }, {
-    key: "lloyd_relaxation",
-    value: function lloyd_relaxation(diagram, voronoi) {
-      var to_move = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-
-      var new_points = diagram.polygons().map(function (p) {
-        // well, its not real lloyd relaxation, we move new cell center not to centroid, but move
-        // it by value of 'to_move' to direction to centroid
-        var poly = p.map(function (e) {
-          return { x: e[0], y: e[1] };
-        });
-        var pf = _util2.default.convex_polygon_centroid(poly);
-        var res = _util2.default.move_by_vector(p.data.x, p.data.y, pf.x, pf.y, to_move);
-        return { x: res[0], y: res[1] };
-      });
-      return voronoi(new_points);
-    }
-
-    // PRIVATE. TRY to heal shizophrenia -- different, but very close nodes
-    // but it can lead us to total 
-
-  }, {
-    key: "seems_like_nodes_are_equal",
-    value: function seems_like_nodes_are_equal(node, old_node) {
-      var very_close_is = 0.0000000000001;
-      return Math.abs(node.x - old_node[0]) < very_close_is && Math.abs(node.y - old_node[1]) < very_close_is;
-      //return node.x == old_node[0] && node.y == old_node[1];
-    }
-  }]);
-
-  return VoronoiDiagram;
-}();
-
-exports.default = VoronoiDiagram;
 
 });
 

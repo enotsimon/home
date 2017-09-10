@@ -1,6 +1,6 @@
-import Util from "util";
-import RRTDiagram from "rrt_diagram";
-import RiversAndLakesGenerator from "rivers_and_lakes_generator";
+import Util from "common/util";
+import RRTDiagram from "geo/rrt_diagram";
+import RiversAndLakesGenerator from "geo/rivers_and_lakes_generator";
 
 
 export default class Geo {

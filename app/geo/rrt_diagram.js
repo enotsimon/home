@@ -1,4 +1,4 @@
-import Util from "util";
+import Util from "common/util";
 
 class RRTNode {
   constructor(x, y) {

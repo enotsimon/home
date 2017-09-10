@@ -1,7 +1,7 @@
-import Util from "util";
-import VoronoiDiagram from "voronoi_diagram";
+import Util from "common/util";
+import VoronoiDiagram from "common/voronoi_diagram";
 import * as d3 from "d3";
-import {game} from "game";
+import {game} from "geo/game";
 
 export default class Interaction {
   constructor() {

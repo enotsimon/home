@@ -1,9 +1,9 @@
 
-import Util from "util";
-import RRTDiagram from "rrt_diagram";
-import TextureGenerator from "texture_generator";
-import BallsGenerator from "balls_generator";
-import Color from "color";
+import Util from "common/util";
+import RRTDiagram from "geo/rrt_diagram";
+import TextureGenerator from "geo/texture_generator";
+import BallsGenerator from "geo/balls_generator";
+import Color from "common/color";
 
 export default class MapDrawer {
   static layers() {

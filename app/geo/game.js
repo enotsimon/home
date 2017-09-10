@@ -1,17 +1,15 @@
 
-import Util from "util";
-import VoronoiDiagram from "voronoi_diagram";
-import RegionsGatherer from "regions_gatherer";
-import RRTDiagram from "rrt_diagram";
-import Geo from "geo";
-import AStar from "a_star";
-
-import Interaction from "interaction";
-import MapDrawer from "map_drawer";
-
+import Util from "common/util";
+import VoronoiDiagram from "common/voronoi_diagram";
+import RegionsGatherer from "geo/regions_gatherer";
+import RRTDiagram from "geo/rrt_diagram";
+import Geo from "geo/geo";
+import AStar from "common/a_star";
+import Interaction from "geo/interaction";
+import MapDrawer from "geo/map_drawer";
+import App from 'geo/components/app';
 import ReactDOM from 'react-dom';
 import React from 'react';
-import App from 'components/app';
 
 class Game {
   constructor() {

@@ -1,6 +1,6 @@
-import Util from "util";
-import VoronoiDiagram from "voronoi_diagram";
-import Color from "color";
+import Util from "common/util";
+import VoronoiDiagram from "common/voronoi_diagram";
+import Color from "common/color";
 
 export default class BallsGenerator {
   constructor(diagram, color_map, drawer) {

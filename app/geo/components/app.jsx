@@ -1,10 +1,10 @@
 import React from 'react';
-import CollapsiblePanel from 'components/collapsible_panel';
-import DebugInfo from 'components/debug_info';
-import GenerateWorldForm from 'components/generate_world_form';
-import DrawingSettingsForm from 'components/drawing_settings_form';
-import RoadsForm from 'components/roads_form';
-import Legend from 'components/legend';
+import CollapsiblePanel from 'common/components/collapsible_panel';
+import DebugInfo from 'geo/components/debug_info';
+import GenerateWorldForm from 'geo/components/generate_world_form';
+import DrawingSettingsForm from 'geo/components/drawing_settings_form';
+import RoadsForm from 'geo/components/roads_form';
+import Legend from 'geo/components/legend';
 
 export default class App extends React.Component {
   render() {

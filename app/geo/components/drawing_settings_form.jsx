@@ -1,7 +1,7 @@
 import React from 'react';
-import InputSpinner from 'components/input_spinner';
-import ActiveCheckbox from 'components/active_checkbox';
-import {game} from "game";
+import InputSpinner from 'common/components/input_spinner';
+import ActiveCheckbox from 'common/components/active_checkbox';
+import {game} from "geo/game";
 
 export default class DrawingSettingsForm extends React.Component {
 
