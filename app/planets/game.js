@@ -1,8 +1,9 @@
 
 import Util from "common/util";
-import Interaction from "experimental/interaction";
-import MapDrawer from "experimental/map_drawer";
-import App from 'experimental/components/app';
+import StarSystem from "planets/star_system";
+import Interaction from "planets/interaction";
+import MapDrawer from "planets/map_drawer";
+import App from 'planets/components/app';
 import ReactDOM from 'react-dom';
 import React from 'react';
 
@@ -17,6 +18,9 @@ class Game {
   }
 
   generate_world() {
+    this.star_system = new StarSystem();
+    this.star_system.generate();
+
     this.ticks = 0;
     
     this.map_drawer.init(this.width, this.height);
@@ -29,6 +33,7 @@ class Game {
 
   handle_tick() {
     this.ticks++;
+    this.star_system.tick();
     this.map_drawer.redraw();
   }
 }
