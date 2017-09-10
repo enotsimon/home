@@ -50,15 +50,15 @@ export default class MapDrawer {
     game.star_system.planets.forEach(planet => this.init_stellar_body(planet));
 
     this.clear_all();
-    let points_count = 100;
+    let points_count = 5000;
     //let tg = new PointsInCicrle();
     let tg = new DensityMap();
     //tg.generate(points_count, PointsInCicrle.linear);
     //tg.generate(points_count, PointsInCicrle.pow);
     tg.generate(points_count);
-    //let container = tg.draw(50);
+    let container = tg.draw(50);
     //let container = tg.draw_triangles(50);
-    //this.layers['test'].addChild(container);
+    this.layers['test'].addChild(container);
   }
 
   redraw() {
