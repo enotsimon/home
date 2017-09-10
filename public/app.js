@@ -470,6 +470,70 @@ exports.default = Color;
 
 });
 
+require.register("components/active_checkbox.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var ActiveCheckbox = function (_React$Component) {
+  _inherits(ActiveCheckbox, _React$Component);
+
+  function ActiveCheckbox(props) {
+    _classCallCheck(this, ActiveCheckbox);
+
+    var _this = _possibleConstructorReturn(this, (ActiveCheckbox.__proto__ || Object.getPrototypeOf(ActiveCheckbox)).call(this, props));
+
+    _this.state = { checked: props.checked };
+    console.log('SUKA', _this.state);
+    return _this;
+  }
+
+  _createClass(ActiveCheckbox, [{
+    key: 'handler',
+    value: function handler(event) {
+      var value = this.props.handler(event);
+      this.setState({ checked: value });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'form-check' },
+        _react2.default.createElement(
+          'label',
+          { className: 'form-check-label' },
+          _react2.default.createElement('input', { className: 'form-check-input', type: 'checkbox', onChange: this.handler.bind(this), defaultChecked: this.state.checked }),
+          '\xA0',
+          this.props.text
+        )
+      );
+    }
+  }]);
+
+  return ActiveCheckbox;
+}(_react2.default.Component);
+
+exports.default = ActiveCheckbox;
+
+});
+
 require.register("components/app.jsx", function(exports, require, module) {
 'use strict';
 
@@ -777,6 +841,10 @@ var _input_spinner = require('components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
+var _active_checkbox = require('components/active_checkbox');
+
+var _active_checkbox2 = _interopRequireDefault(_active_checkbox);
+
 var _game = require('game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -811,28 +879,28 @@ var DrawingSettingsForm = function (_React$Component) {
       this.setState({});
     }
   }, {
+    key: 'create_checkbox',
+    value: function create_checkbox(prop_name, text) {
+      return _react2.default.createElement(_active_checkbox2.default, {
+        checked: _game.game.map_drawer[prop_name],
+        handler: function handler() {
+          _game.game.map_drawer[prop_name] = !_game.game.map_drawer[prop_name];
+          _game.game.map_drawer.set_layers_visibility();
+          return _game.game.map_drawer[prop_name];
+        },
+        text: text
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      var _this2 = this;
-
       return _react2.default.createElement(
         'div',
         null,
         _react2.default.createElement(
           'form',
           { className: 'form-horizontal' },
-          _react2.default.createElement(
-            'div',
-            { className: 'form-check' },
-            _react2.default.createElement(
-              'label',
-              { className: 'form-check-label' },
-              _react2.default.createElement('input', { className: 'form-check-input', type: 'checkbox', onChange: function onChange(e) {
-                  return _this2.checkbox_handler(e, 'ds_voronoi_diagram');
-                }, checked: _game.game.map_drawer.draw_voronoi_diagram }),
-              '\xA0draw voronoi diagram'
-            )
-          )
+          this.create_checkbox('draw_voronoi_diagram', 'draw voronoi diagram')
         )
       );
     }
