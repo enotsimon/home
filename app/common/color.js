@@ -10,6 +10,13 @@ export default class Color {
     return Color.for_rgb([r, g, b], e => Color.random_by_floor(e, step));
   }
 
+  static brighter([r, g, b], step = 10) {
+    return [r, g, b].map(e => Math.min(e + step, 255));
+  }
+
+  static darker([r, g, b], step = 10) {
+    return [r, g, b].map(e => Math.max(e - step, 0));
+  }
 
   static to_pixi([r, g, b]) {
     return (r << 16) + (g << 8) + b;

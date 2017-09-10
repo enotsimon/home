@@ -1,6 +1,6 @@
 
-import Util from "experimental/util";
-import Color from "experimental/color";
+import Util from "common/util";
+import Color from "common/color";
 import {game} from "experimental/game";
 import BlurGenerator from "experimental/texture_generators/blur_generator";
 import PointsInCicrle from "experimental/texture_generators/points_in_circle";

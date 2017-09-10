@@ -1,5 +1,5 @@
 
-import Util from "experimental/util";
+import Util from "common/util";
 import StarSystem from "experimental/star_system";
 import Interaction from "experimental/interaction";
 import MapDrawer from "experimental/map_drawer";

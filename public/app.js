@@ -353,12 +353,40 @@ var Color = function () {
       });
     }
   }, {
-    key: "to_pixi",
-    value: function to_pixi(_ref5) {
+    key: "brighter",
+    value: function brighter(_ref5) {
       var _ref6 = _slicedToArray(_ref5, 3),
           r = _ref6[0],
           g = _ref6[1],
           b = _ref6[2];
+
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+      return [r, g, b].map(function (e) {
+        return Math.min(e + step, 255);
+      });
+    }
+  }, {
+    key: "darker",
+    value: function darker(_ref7) {
+      var _ref8 = _slicedToArray(_ref7, 3),
+          r = _ref8[0],
+          g = _ref8[1],
+          b = _ref8[2];
+
+      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+      return [r, g, b].map(function (e) {
+        return Math.max(e - step, 0);
+      });
+    }
+  }, {
+    key: "to_pixi",
+    value: function to_pixi(_ref9) {
+      var _ref10 = _slicedToArray(_ref9, 3),
+          r = _ref10[0],
+          g = _ref10[1],
+          b = _ref10[2];
 
       return (r << 16) + (g << 8) + b;
     }
@@ -367,11 +395,11 @@ var Color = function () {
 
   }, {
     key: "for_rgb",
-    value: function for_rgb(_ref7, func) {
-      var _ref8 = _slicedToArray(_ref7, 3),
-          r = _ref8[0],
-          g = _ref8[1],
-          b = _ref8[2];
+    value: function for_rgb(_ref11, func) {
+      var _ref12 = _slicedToArray(_ref11, 3),
+          r = _ref12[0],
+          g = _ref12[1],
+          b = _ref12[2];
 
       return [func(r), func(g), func(b)];
     }
@@ -1072,137 +1100,6 @@ exports.default = VoronoiDiagram;
 
 });
 
-require.register("experimental/color.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("experimental/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Color = function () {
-  function Color() {
-    _classCallCheck(this, Color);
-  }
-
-  _createClass(Color, null, [{
-    key: "random_near",
-    value: function random_near(_ref) {
-      var _ref2 = _slicedToArray(_ref, 3),
-          r = _ref2[0],
-          g = _ref2[1],
-          b = _ref2[2];
-
-      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-      var count = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 2;
-
-      return Color.for_rgb([r, g, b], function (e) {
-        return Color.random_channel(e, step, count);
-      });
-    }
-  }, {
-    key: "random",
-    value: function random(_ref3) {
-      var _ref4 = _slicedToArray(_ref3, 3),
-          r = _ref4[0],
-          g = _ref4[1],
-          b = _ref4[2];
-
-      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-
-      return Color.for_rgb([r, g, b], function (e) {
-        return Color.random_by_floor(e, step);
-      });
-    }
-  }, {
-    key: "brighter",
-    value: function brighter(_ref5) {
-      var _ref6 = _slicedToArray(_ref5, 3),
-          r = _ref6[0],
-          g = _ref6[1],
-          b = _ref6[2];
-
-      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-
-      return [r, g, b].map(function (e) {
-        return Math.min(e + step, 255);
-      });
-    }
-  }, {
-    key: "darker",
-    value: function darker(_ref7) {
-      var _ref8 = _slicedToArray(_ref7, 3),
-          r = _ref8[0],
-          g = _ref8[1],
-          b = _ref8[2];
-
-      var step = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
-
-      return [r, g, b].map(function (e) {
-        return Math.max(e - step, 0);
-      });
-    }
-  }, {
-    key: "to_pixi",
-    value: function to_pixi(_ref9) {
-      var _ref10 = _slicedToArray(_ref9, 3),
-          r = _ref10[0],
-          g = _ref10[1],
-          b = _ref10[2];
-
-      return (r << 16) + (g << 8) + b;
-    }
-
-    // PRIVATE
-
-  }, {
-    key: "for_rgb",
-    value: function for_rgb(_ref11, func) {
-      var _ref12 = _slicedToArray(_ref11, 3),
-          r = _ref12[0],
-          g = _ref12[1],
-          b = _ref12[2];
-
-      return [func(r), func(g), func(b)];
-    }
-
-    // PRIVATE
-
-  }, {
-    key: "random_channel",
-    value: function random_channel(base, step, count) {
-      var rand = step * _util2.default.rand(-count, count);
-      var res = base + rand;
-      return res > 255 ? 255 : res < 0 ? 0 : res;
-    }
-
-    // PRIVATE
-
-  }, {
-    key: "random_by_floor",
-    value: function random_by_floor(floor, step) {
-      return floor - step * _util2.default.rand(0, floor / step | 0);
-    }
-  }]);
-
-  return Color;
-}();
-
-exports.default = Color;
-
-});
-
 require.register("experimental/components/app.jsx", function(exports, require, module) {
 'use strict';
 
@@ -1212,7 +1109,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _collapsible_panel = require('experimental/components/collapsible_panel');
+var _collapsible_panel = require('common/components/collapsible_panel');
 
 var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
 
@@ -1314,82 +1211,6 @@ exports.default = App;
 
 });
 
-require.register("experimental/components/collapsible_panel.jsx", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var CollapsiblePanel = function (_React$Component) {
-  _inherits(CollapsiblePanel, _React$Component);
-
-  function CollapsiblePanel(args) {
-    _classCallCheck(this, CollapsiblePanel);
-
-    var _this = _possibleConstructorReturn(this, (CollapsiblePanel.__proto__ || Object.getPrototypeOf(CollapsiblePanel)).call(this));
-
-    _this.header = args.header;
-    _this.name = args.name;
-    _this.content_func = args.content_func;
-    return _this;
-  }
-
-  _createClass(CollapsiblePanel, [{
-    key: "render",
-    value: function render() {
-      return _react2.default.createElement(
-        "div",
-        { className: "panel panel-success" },
-        _react2.default.createElement(
-          "div",
-          { className: "panel-heading" },
-          _react2.default.createElement(
-            "h4",
-            { className: "panel-title" },
-            _react2.default.createElement(
-              "a",
-              { "data-toggle": "collapse", href: '#' + this.name },
-              this.header,
-              " ",
-              _react2.default.createElement("span", { className: "caret" })
-            )
-          )
-        ),
-        _react2.default.createElement(
-          "div",
-          { id: this.name, className: "panel-collapse collapse" },
-          _react2.default.createElement(
-            "div",
-            { className: "panel-body" },
-            this.content_func()
-          )
-        )
-      );
-    }
-  }]);
-
-  return CollapsiblePanel;
-}(_react2.default.Component);
-
-exports.default = CollapsiblePanel;
-
-});
-
 require.register("experimental/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
@@ -1482,7 +1303,7 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _input_spinner = require('experimental/components/input_spinner');
+var _input_spinner = require('common/components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
@@ -1549,112 +1370,12 @@ exports.default = GenerateWorldForm;
 
 });
 
-require.register("experimental/components/input_spinner.jsx", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var InputSpinner = function (_React$Component) {
-  _inherits(InputSpinner, _React$Component);
-
-  function InputSpinner(args) {
-    _classCallCheck(this, InputSpinner);
-
-    var _this = _possibleConstructorReturn(this, (InputSpinner.__proto__ || Object.getPrototypeOf(InputSpinner)).call(this, args));
-
-    _this.state = { value: args.value };
-    _this.name = args.name;
-    _this.min = args.min ? args.min : 0;
-    _this.max = args.max ? args.max : Infinity;
-    return _this;
-  }
-
-  _createClass(InputSpinner, [{
-    key: "click_up",
-    value: function click_up(e) {
-      if (this.state.value >= this.max) {
-        return false;
-      }
-      this.update_value(this.state.value + 1);
-      e.preventDefault();
-    }
-  }, {
-    key: "click_down",
-    value: function click_down(e) {
-      if (this.state.value <= this.min) {
-        return false;
-      }
-      this.update_value(this.state.value - 1);
-      e.preventDefault();
-    }
-  }, {
-    key: "manual_set",
-    value: function manual_set(e) {
-      this.update_value(e.target.value);
-    }
-  }, {
-    key: "update_value",
-    value: function update_value(new_value) {
-      this.setState({ value: new_value });
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      return _react2.default.createElement(
-        "div",
-        { className: "input-group" },
-        _react2.default.createElement(
-          "span",
-          { className: "input-group-btn" },
-          _react2.default.createElement(
-            "a",
-            { className: "btn btn-danger", onClick: this.click_down.bind(this) },
-            _react2.default.createElement("span", { className: "glyphicon glyphicon-minus" })
-          )
-        ),
-        _react2.default.createElement("input", { id: this.name, type: "text", className: "form-control text-center", value: this.state.value, onChange: this.manual_set.bind(this) }),
-        _react2.default.createElement(
-          "span",
-          { className: "input-group-btn" },
-          _react2.default.createElement(
-            "a",
-            { className: "btn btn-info", onClick: this.click_up.bind(this) },
-            _react2.default.createElement("span", { className: "glyphicon glyphicon-plus" })
-          )
-        )
-      );
-    }
-  }]);
-
-  return InputSpinner;
-}(_react2.default.Component);
-
-exports.default = InputSpinner;
-
-});
-
 require.register("experimental/game.js", function(exports, require, module) {
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1744,7 +1465,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -1864,11 +1585,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("experimental/color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2020,7 +1741,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2030,7 +1751,7 @@ var _stellar_body = require("experimental/stellar_body");
 
 var _stellar_body2 = _interopRequireDefault(_stellar_body);
 
-var _color = require("experimental/color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2101,7 +1822,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
@@ -2140,11 +1861,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _game = require("experimental/game");
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("experimental/color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2241,11 +1962,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _game = require("experimental/game");
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("experimental/color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2421,11 +2142,11 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _game = require("experimental/game");
 
-var _util = require("experimental/util");
+var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
-var _color = require("experimental/color");
+var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
@@ -2535,238 +2256,6 @@ var PointsInCicrle = function () {
 }();
 
 exports.default = PointsInCicrle;
-
-});
-
-require.register("experimental/util.js", function(exports, require, module) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Util = function () {
-  function Util() {
-    _classCallCheck(this, Util);
-  }
-
-  _createClass(Util, null, [{
-    key: 'exec_in_cycle_with_delay',
-    value: function exec_in_cycle_with_delay(index, limit, delay, func) {
-      var final_func = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : function () {};
-
-      if (typeof limit === "function" && !limit() || index >= limit) {
-        final_func(index);
-        return;
-      }
-      func(index);
-      setTimeout(function () {
-        Util.exec_in_cycle_with_delay(index + 1, limit, delay, func, final_func);
-      }, delay);
-    }
-  }, {
-    key: 'rand',
-    value: function rand(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-  }, {
-    key: 'rand_element',
-    value: function rand_element(arr) {
-      if (arr.length == 0) return false;
-      return arr[Util.rand(0, arr.length - 1)];
-    }
-  }, {
-    key: 'rand_float',
-    value: function rand_float(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-  }, {
-    key: 'normalize_value',
-    value: function normalize_value(value, max, normal_max) {
-      var min = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-      var normal_min = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
-      if (value > max || value < min) {
-        console.log('value out of range', value, max, normal_max, min, normal_min);
-        throw 'value out of range';
-      }
-      return (value - min) * (normal_max - normal_min) / (max - min) + normal_min;
-    }
-
-    ///////////////////////////////////
-    // ARRAYS
-    ///////////////////////////////////
-
-  }, {
-    key: 'last',
-    value: function last(array) {
-      return array.length == 0 ? false : array[array.length - 1];
-    }
-  }, {
-    key: 'push_uniq',
-    value: function push_uniq(element, arr) {
-      if (arr.indexOf(element) == -1) {
-        arr.push(element);
-      }
-    }
-  }, {
-    key: 'merge',
-    value: function merge(arr1, arr2) {
-      arr2.forEach(function (e) {
-        return Util.push_uniq(e, arr1);
-      });
-    }
-  }, {
-    key: 'remove_element',
-    value: function remove_element(element, arr) {
-      var index = arr.indexOf(element);
-      if (index !== -1) {
-        arr.splice(index, 1);
-        return true;
-      }
-      return false;
-    }
-  }, {
-    key: 'for_all_consecutive_pairs',
-    value: function for_all_consecutive_pairs(array, fun) {
-      if (array.length < 2) {
-        return false;
-      }
-      for (var i = 0; i < array.length; i++) {
-        var cur = array[i];
-        var next_index = i + 1 == array.length ? 0 : i + 1;
-        var next = array[next_index];
-        fun(cur, next, i, next_index);
-      }
-    }
-  }, {
-    key: 'find_min_and_max',
-    value: function find_min_and_max(array, value_func) {
-      if (!array.length) return false;
-      var ret = { min: null, max: null, min_element: null, max_element: null };
-      array.forEach(function (e) {
-        var res = value_func(e);
-        if (isNaN(res) || res === null) return;
-        if (ret.min == null || ret.max == null) {
-          ret.min = res;
-          ret.max = res;
-          ret.min_element = e;
-          ret.max_element = e;
-          return;
-        }
-        if (res < ret.min) {
-          ret.min = res;
-          ret.min_element = e;
-        }
-        if (res > ret.max) {
-          ret.max = res;
-          ret.max_element = e;
-        }
-      });
-      return ret;
-    }
-
-    // ??? experimental. some standard routine for cyclic open_list processing
-
-  }, {
-    key: 'do_while_not_empty',
-    value: function do_while_not_empty(open_list, func) {
-      var length_before = void 0,
-          step = 0;
-      do {
-        length_before = open_list.length;
-        open_list = open_list.filter(function (element) {
-          return !func(element, step++);
-        });
-        if (length_before == open_list.length) {
-          console.log('do_while_not_empty() open_list length not chenged, bailing out', length_before, open_list);
-          return false;
-        }
-      } while (open_list.length);
-      return true;
-    }
-
-    //////////////////////////////////////////
-    // geometry
-    //////////////////////////////////////////
-
-  }, {
-    key: 'to_polar_coords',
-    value: function to_polar_coords(x, y) {
-      var radius = Math.sqrt(x * x + y * y);
-      var angle = Math.atan2(y, x);
-      return { angle: angle, radius: radius };
-    }
-  }, {
-    key: 'from_polar_coords',
-    value: function from_polar_coords(angle, radius) {
-      var x = radius * Math.cos(angle);
-      var y = radius * Math.sin(angle);
-      return { x: x, y: y };
-    }
-  }, {
-    key: 'radians',
-    value: function radians(degrees) {
-      return degrees * Math.PI / 180;
-    }
-  }, {
-    key: 'degrees',
-    value: function degrees(radians) {
-      return radians * 180 / Math.PI;
-    }
-  }, {
-    key: 'move_by_vector',
-    value: function move_by_vector(xf, yf, xt, yt, length) {
-      // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
-      return [xf + (xt - xf) * length, yf + (yt - yf) * length];
-    }
-  }, {
-    key: 'convex_polygon_centroid',
-    value: function convex_polygon_centroid(points) {
-      var p1 = points[0];
-      var square_sum = 0;
-      var xc = 0,
-          yc = 0;
-      for (var i = 1; i < points.length - 1; i++) {
-        var p2 = points[i];
-        var p3 = points[i + 1];
-        var square = ((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2; // triangle square
-        square_sum += square;
-        xc += square * (p1.x + p2.x + p3.x) / 3;
-        yc += square * (p1.y + p2.y + p3.y) / 3;
-      }
-      return { x: xc / square_sum, y: yc / square_sum };
-    }
-
-    // points should be sorted by angle to center!!!
-
-  }, {
-    key: 'convex_polygon_square',
-    value: function convex_polygon_square(points) {
-      var p1 = points[0];
-      var square = 0;
-      for (var i = 1; i < points.length - 1; i++) {
-        var p2 = points[i];
-        var p3 = points[i + 1];
-        square += Math.abs((p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y)) / 2;
-      }
-      return square;
-    }
-  }, {
-    key: 'distance',
-    value: function distance(p1, p2) {
-      return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
-    }
-  }]);
-
-  return Util;
-}();
-
-exports.default = Util;
 
 });
 
