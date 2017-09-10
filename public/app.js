@@ -115,12 +115,7 @@
 })();
 
 (function() {
-var global = typeof window === 'undefined' ? this : window;require.register("child_process", function(exports, require, module) {
-  module.exports = {};
-});
-require.register("fs", function(exports, require, module) {
-  module.exports = {};
-});
+var global = typeof window === 'undefined' ? this : window;
 var process;
 var __makeRelativeRequire = function(require, mappings, pref) {
   var none = {};
@@ -1044,15 +1039,15 @@ var MapDrawer = function () {
       });
 
       this.clear_all();
-      var points_count = 100;
+      var points_count = 5000;
       //let tg = new PointsInCicrle();
       var tg = new _density_map2.default();
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
       tg.generate(points_count);
-      //let container = tg.draw(50);
+      var container = tg.draw(50);
       //let container = tg.draw_triangles(50);
-      //this.layers['test'].addChild(container);
+      this.layers['test'].addChild(container);
     }
   }, {
     key: "redraw",
@@ -1366,20 +1361,29 @@ var DensityMap = function () {
   function DensityMap() {
     _classCallCheck(this, DensityMap);
 
-    this.reject_limit = 50;
-    this.average_distance_threshold = 0.25;
+    this.reject_limit = 500;
+    this.average_distance_threshold = 0.05;
+    this.zero_distance_sum = 0;
   }
 
   _createClass(DensityMap, [{
+    key: "random_point",
+    value: function random_point() {
+      var initial = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      return { x: 2 * Math.random() - 1, y: 2 * Math.random() - 1, initial: initial };
+    }
+  }, {
     key: "generate",
     value: function generate(count) {
       var count_basic = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
 
       var reject_counter = this.reject_limit;
+      var total_rejects = 0;
       this.points = [];
       // basic points
       while (count_basic) {
-        var point = { x: Math.random(), y: Math.random() };
+        var point = this.random_point(true);
         if (this.check_in_circle(point)) {
           this.points.push(point);
           count_basic--;
@@ -1387,23 +1391,24 @@ var DensityMap = function () {
       }
       // regular points
       while (this.points.length < count) {
-        var _point = { x: Math.random(), y: Math.random() };
+        var _point = this.random_point(false);
         if (!this.check_in_circle(_point)) {
           continue; // do not decrement reject_counter
         }
         if (!this.check_average_distance(_point)) {
           reject_counter--;
-          console.log('now reject count', reject_counter);
+          total_rejects++;
         } else {
           reject_counter = this.reject_limit;
           this.points.push(_point);
-          console.log('now push', this.points.length);
+          this.zero_distance_sum += _util2.default.distance(_point, { x: 0, y: 0 });
         }
         if (!reject_counter) {
           console.log("DensityMap.generate() reject limit " + this.reject_limit + " reached, bailing out");
           break;
         }
       }
+      console.log('done, total_rejects: ', total_rejects);
       return true;
     }
   }, {
@@ -1412,19 +1417,56 @@ var DensityMap = function () {
       return _util2.default.distance(point, { x: 0, y: 0 }) <= 1;
     }
   }, {
-    key: "check_average_distance",
-    value: function check_average_distance(point) {
-      var sum = this.points.reduce(function (acc, e) {
+    key: "calc_distance_sum",
+    value: function calc_distance_sum(point) {
+      return this.points.reduce(function (acc, e) {
         return acc + _util2.default.distance(point, e);
       }, 0);
-      var average = sum / this.points.length;
-      console.log('average', average);
-      return Math.random() * average < this.average_distance_threshold;
+    }
+  }, {
+    key: "check_average_distance",
+    value: function check_average_distance(point) {
+      //let sum = this.calc_distance_sum(point);
+      //let value = this.zero_distance_sum / sum;
+      var value = _util2.default.find_min_and_max(this.points, function (p) {
+        return _util2.default.distance(p, point);
+      }).min;
+      console.log('value', value);
+      return value < this.average_distance_threshold;
     }
   }, {
     key: "draw",
     value: function draw(scale) {
-      var color = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [150, 75, 0];
+      var _this = this;
+
+      var graphics = new PIXI.Graphics();
+      var radius = .01;
+      var bla = _util2.default.find_min_and_max(this.points, function (p) {
+        return _this.calc_distance_sum(p);
+      }).max;
+      bla = _util2.default.find_min_and_max(this.points, function (p) {
+        return _this.calc_distance_sum(p);
+      });
+      var max_distance_sum = bla.max;
+      var min_distance_sum = bla.min;
+
+      this.points.forEach(function (point) {
+        point.channel = _util2.default.normalize_value(_this.calc_distance_sum(point), max_distance_sum, 255, min_distance_sum) | 0;
+      });
+      this.points.sort(function (p1, p2) {
+        return p1.channel - p2.channel;
+      });
+
+      this.points.forEach(function (point) {
+        //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
+        var color = point.initial ? [125, 255, 0] : [125, 0, 0];
+        graphics.beginFill(_color2.default.to_pixi(color));
+        graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
+        graphics.closePath();
+        graphics.endFill();
+      });
+
+      return graphics;
     }
   }]);
 
@@ -1796,14 +1838,10 @@ exports.default = Util;
 });
 
 require.alias("buffer/index.js", "buffer");
-require.alias("events/events.js", "events");
-require.alias("stream-http/index.js", "http");
-require.alias("https-browserify/index.js", "https");
 require.alias("path-browserify/index.js", "path");
 require.alias("process/browser.js", "process");
 require.alias("punycode/punycode.js", "punycode");
 require.alias("querystring-es3/index.js", "querystring");
-require.alias("stream-browserify/index.js", "stream");
 require.alias("url/url.js", "url");process = require('process');require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
