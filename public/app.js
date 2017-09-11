@@ -2009,6 +2009,8 @@ var Links = function () {
   }, {
     key: "generate",
     value: function generate() {
+      var _this = this;
+
       var border_points = [];
       var grid_points = [];
       for (var a = 0; a < Math.PI * 2; a += this.angle) {
@@ -2028,19 +2030,22 @@ var Links = function () {
           grid_points.push(_point);
         }
       }
-      border_points.sort(function () {
-        return Math.random() - .5;
-      });
+      //border_points.sort(() => Math.random() - .5);
+      var border_links = [];
       border_points.forEach(function (point) {
-        var filtered = grid_points.filter(function (p) {
-          return !p.from;
-        });
-        var closest = _util2.default.find_min_and_max(filtered, function (p) {
-          return _util2.default.distance(p, point);
-        }).min_element;
-        point.to = closest;
-        closest.from = point;
+        var closest = _this.find_my_closest_free_grid_point(point, grid_points);
+        border_links.push({ from: point, to: closest });
       });
+    }
+  }, {
+    key: "find_my_closest_free_grid_point",
+    value: function find_my_closest_free_grid_point(from, grid_points) {
+      var filtered = grid_points.filter(function (p) {
+        return !p.from;
+      });
+      return _util2.default.find_min_and_max(filtered, function (p) {
+        return _util2.default.distance(p, from);
+      }).min_element;
     }
   }, {
     key: "check_in_circle",
