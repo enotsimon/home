@@ -59,27 +59,27 @@ export default class Links {
 
   draw(scale, func = this.draw_naive.bind(this)) {
     let graphics = new PIXI.Graphics();
-    graphics.scale = {x: scale, y: scale};
-    func(graphics);
+    //graphics.scale = {x: scale, y: scale};
+    func(graphics, scale);
     return graphics;
   }
 
 
-  draw_naive(graphics) {
+  draw_naive(graphics, scale = 1) {
     let step = this.calc_step();
     let radius = step / 6;
     let color = [150, 0, 0];
     
     this.points.forEach(point => {
       graphics.beginFill(Color.to_pixi(color));
-      graphics.drawCircle(point.x, point.y, radius);
+      graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
       graphics.closePath();
       graphics.endFill();
 
       if (point.to) {
-        graphics.lineStyle(step / 10, Color.to_pixi(color));
-        graphics.moveTo(point.x, point.y);
-        graphics.lineTo(point.to.x, point.to.y);
+        graphics.lineStyle(scale * step / 10, Color.to_pixi(color));
+        graphics.moveTo(scale * point.x, scale * point.y);
+        graphics.lineTo(scale * point.to.x, scale * point.to.y);
         graphics.closePath();
         graphics.lineStyle(0, Color.to_pixi(color));
       }
