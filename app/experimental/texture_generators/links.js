@@ -56,7 +56,6 @@ export default class Links {
     let radius = step / 6;
     this.points.forEach(point => {
       let color = [150, 0, 0];
-      console.log('P', point);
       graphics.beginFill(Color.to_pixi(color));
       graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
       graphics.closePath();
