@@ -1656,8 +1656,8 @@ var MapDrawer = function () {
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
       tg.generate(20);
-      var func = function func(graphics) {
-        return tg.draw_naive(graphics);
+      var func = function func(graphics, scale) {
+        return tg.draw_naive(graphics, scale);
       };
       var container = tg.draw(80, func);
       //let container = tg.draw_triangles(50);
@@ -2065,27 +2065,29 @@ var Links = function () {
       var func = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.draw_naive.bind(this);
 
       var graphics = new PIXI.Graphics();
-      graphics.scale = { x: scale, y: scale };
-      func(graphics);
+      //graphics.scale = {x: scale, y: scale};
+      func(graphics, scale);
       return graphics;
     }
   }, {
     key: "draw_naive",
     value: function draw_naive(graphics) {
+      var scale = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
       var step = this.calc_step();
       var radius = step / 6;
       var color = [150, 0, 0];
 
       this.points.forEach(function (point) {
         graphics.beginFill(_color2.default.to_pixi(color));
-        graphics.drawCircle(point.x, point.y, radius);
+        graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
         graphics.closePath();
         graphics.endFill();
 
         if (point.to) {
-          graphics.lineStyle(step / 10, _color2.default.to_pixi(color));
-          graphics.moveTo(point.x, point.y);
-          graphics.lineTo(point.to.x, point.to.y);
+          graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(color));
+          graphics.moveTo(scale * point.x, scale * point.y);
+          graphics.lineTo(scale * point.to.x, scale * point.to.y);
           graphics.closePath();
           graphics.lineStyle(0, _color2.default.to_pixi(color));
         }
