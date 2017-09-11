@@ -2070,7 +2070,7 @@ var Links = function () {
       // on first path step we cannot go to another border point
       var all_points = prev_point ? grid_points.concat(border_points) : grid_points;
       var possible_links = all_points.filter(function (p) {
-        return !p.from && !p.to && _util2.default.distance(point, p) <= 1.5 * step;
+        return !p.from && !p.to && _util2.default.distance(point, p) <= 1.9 * step;
       });
       if (!possible_links.length) {
         return false;

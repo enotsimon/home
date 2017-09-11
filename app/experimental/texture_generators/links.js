@@ -63,7 +63,7 @@ export default class Links {
     let step = this.calc_step();
     // on first path step we cannot go to another border point
     let all_points = prev_point ? grid_points.concat(border_points) : grid_points;
-    let possible_links = all_points.filter(p => !p.from && !p.to && Util.distance(point, p) <= 1.5 * step);
+    let possible_links = all_points.filter(p => !p.from && !p.to && Util.distance(point, p) <= 1.9 * step);
     if (!possible_links.length) {
       return false;
     }
