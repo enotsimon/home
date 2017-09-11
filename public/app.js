@@ -2009,8 +2009,6 @@ var Links = function () {
   }, {
     key: "generate",
     value: function generate() {
-      var _this = this;
-
       var border_points = [];
       var grid_points = [];
       for (var a = 0; a < Math.PI * 2; a += this.angle) {
@@ -2030,15 +2028,22 @@ var Links = function () {
           grid_points.push(_point);
         }
       }
-      border_points.sort(function () {
-        return Math.random() - .5;
-      });
-      var links = [];
-      border_points.forEach(function (border_point) {
+      /*
+      border_points.sort(() => Math.random() - .5);
+      let links = [];
+      border_points.forEach(border_point => {
         if (border_point.to || border_point.from) {
           return false; // path already build
         }
-        _this.build_path(border_point, null, grid_points, border_points);
+        this.build_path(border_point, null, grid_points, border_points)
+      });*/
+      var all_points = grid_points.concat(border_points);
+      grid_points.forEach(function (point) {
+        var possible_links = all_points.filter(function (p) {
+          return _util2.default.distance(point, p) <= 1.5 * step;
+        });
+        // TEMP DEBUG
+        point.possible_links = possible_links;
       });
     }
   }, {
@@ -2116,6 +2121,18 @@ var Links = function () {
           graphics.lineTo(scale * point.to.x, scale * point.to.y);
           graphics.closePath();
           graphics.lineStyle(0, _color2.default.to_pixi(color));
+        }
+
+        // TEMP DEBUG
+        var pl_color = [0, 150, 0];
+        if (point.possible_links) {
+          point.possible_links.forEach(function (link) {
+            graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(pl_color));
+            graphics.moveTo(scale * point.x, scale * point.y);
+            graphics.lineTo(scale * link.x, scale * link.y);
+            graphics.closePath();
+            graphics.lineStyle(0, _color2.default.to_pixi(color));
+          });
         }
       });
     }

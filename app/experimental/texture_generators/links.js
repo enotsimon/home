@@ -36,6 +36,7 @@ export default class Links {
         grid_points.push(point);
       }
     }
+    /*
     border_points.sort(() => Math.random() - .5);
     let links = [];
     border_points.forEach(border_point => {
@@ -43,6 +44,12 @@ export default class Links {
         return false; // path already build
       }
       this.build_path(border_point, null, grid_points, border_points)
+    });*/
+    let all_points = grid_points.concat(border_points);
+    grid_points.forEach(point => {
+      let possible_links = all_points.filter(p => Util.distance(point, p) <= 1.5 * step);
+      // TEMP DEBUG
+      point.possible_links = possible_links;
     });
   }
 
@@ -106,6 +113,18 @@ export default class Links {
         graphics.lineTo(scale * point.to.x, scale * point.to.y);
         graphics.closePath();
         graphics.lineStyle(0, Color.to_pixi(color));
+      }
+
+      // TEMP DEBUG
+      let pl_color = [0, 150, 0];
+      if (point.possible_links) {
+        point.possible_links.forEach(link => {
+          graphics.lineStyle(scale * step / 10, Color.to_pixi(pl_color));
+          graphics.moveTo(scale * point.x, scale * point.y);
+          graphics.lineTo(scale * link.x, scale * link.y);
+          graphics.closePath();
+          graphics.lineStyle(0, Color.to_pixi(color));
+        });
       }
     });
   }
