@@ -1169,7 +1169,7 @@ var App = function (_React$Component) {
                     _react2.default.createElement(
                       'div',
                       { className: '', id: 'map_container' },
-                      _react2.default.createElement('canvas', { id: 'map', width: '600', height: '600' })
+                      _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
                     )
                   )
                 ),
@@ -1408,8 +1408,8 @@ var Game = function () {
     _classCallCheck(this, Game);
 
     // CONST
-    this.width = 500;
-    this.height = 500;
+    this.width = 800;
+    this.height = 800;
 
     this.map_drawer = new _map_drawer2.default();
     this.interaction = new _interaction2.default();
@@ -1655,9 +1655,11 @@ var MapDrawer = function () {
       var tg = new _links2.default();
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
-      tg.generate(points_count);
-      var func = tg.draw_naive;
-      var container = tg.draw(50, func.bind(tg));
+      tg.generate(20);
+      var func = function func(scale, graphics) {
+        return tg.draw_naive(scale, graphics);
+      };
+      var container = tg.draw(50, func);
       //let container = tg.draw_triangles(50);
       this.layers['test'].addChild(container);
     }
@@ -1992,8 +1994,9 @@ var Links = function () {
   function Links() {
     _classCallCheck(this, Links);
 
-    this.angle = Math.PI / 60;
+    this.angle = Math.PI / 30;
     this.points = [];
+    this.size = 20;
   }
 
   _createClass(Links, [{
@@ -2004,18 +2007,16 @@ var Links = function () {
   }, {
     key: "generate",
     value: function generate() {
-      var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
-
       for (var a = 0; a < Math.PI * 2; a += this.angle) {
         var point = _util2.default.from_polar_coords(a, 1);
         point.on_border = true;
         this.points.push(point);
       }
-      var step = (1 - -1) / size;
+      var step = this.calc_step();
       for (var y = -1; y < 1; y += step) {
         for (var x = -1; x < 1; x += step) {
           var _point = { x: x, y: y, on_border: false };
-          if (!this.check_in_circle(_point)) {
+          if (!this.check_in_circle(_point, 1 - step / 2)) {
             continue;
           }
           this.points.push(_point);
@@ -2026,7 +2027,14 @@ var Links = function () {
   }, {
     key: "check_in_circle",
     value: function check_in_circle(point) {
-      return _util2.default.distance(point, { x: 0, y: 0 }) < 1;
+      var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
+      return _util2.default.distance(point, { x: 0, y: 0 }) < radius;
+    }
+  }, {
+    key: "calc_step",
+    value: function calc_step() {
+      return (1 - -1) / this.size;
     }
   }, {
     key: "draw",
@@ -2040,10 +2048,11 @@ var Links = function () {
   }, {
     key: "draw_naive",
     value: function draw_naive(scale, graphics) {
-      var radius = .01;
+      var step = this.calc_step();
+      var radius = step / 6;
       this.points.forEach(function (point) {
-        //let color = point.initial ? [125, 255, 0] : [point.channel, 0, 0];
-        var color = [255, 0, 0];
+        var color = [150, 0, 0];
+        console.log('P', point);
         graphics.beginFill(_color2.default.to_pixi(color));
         graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
         graphics.closePath();
