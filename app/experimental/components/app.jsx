@@ -15,7 +15,7 @@ export default class App extends React.Component {
               <div className="panel panel-success">
                 <div className="panel-body">
                   <div className="" id="map_container">
-                    <canvas id='map' width='600' height='600'></canvas>
+                    <canvas id='map' width='800' height='800'></canvas>
                   </div>
                 </div>
               </div>
