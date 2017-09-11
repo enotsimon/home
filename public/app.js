@@ -1659,7 +1659,7 @@ var MapDrawer = function () {
       var func = function func(graphics) {
         return tg.draw_naive(graphics);
       };
-      var container = tg.draw(50, func);
+      var container = tg.draw(80, func);
       //let container = tg.draw_triangles(50);
       this.layers['test'].addChild(container);
     }
@@ -1994,9 +1994,11 @@ var Links = function () {
   function Links() {
     _classCallCheck(this, Links);
 
-    this.angle = Math.PI / 30;
     this.points = [];
-    this.size = 20;
+    this.size = 10;
+    var angle_divider = 1.5 * this.size | 0;
+    this.angle = Math.PI / angle_divider;
+    console.log("Links size: " + this.size + ", angle divider: " + angle_divider);
   }
 
   _createClass(Links, [{
@@ -2026,11 +2028,18 @@ var Links = function () {
           grid_points.push(_point);
         }
       }
+      border_points.sort(function () {
+        return Math.random() - .5;
+      });
       border_points.forEach(function (point) {
-        var closest = _util2.default.find_min_and_max(grid_points, function (p) {
+        var filtered = grid_points.filter(function (p) {
+          return !p.from;
+        });
+        var closest = _util2.default.find_min_and_max(filtered, function (p) {
           return _util2.default.distance(p, point);
         }).min_element;
-        point.link = closest;
+        point.to = closest;
+        closest.from = point;
       });
     }
   }, {
@@ -2068,10 +2077,10 @@ var Links = function () {
         graphics.closePath();
         graphics.endFill();
 
-        if (point.link) {
+        if (point.to) {
           graphics.lineStyle(step / 10, _color2.default.to_pixi(color));
           graphics.moveTo(point.x, point.y);
-          graphics.lineTo(point.link.x, point.link.y);
+          graphics.lineTo(point.to.x, point.to.y);
           graphics.closePath();
           graphics.lineStyle(0, _color2.default.to_pixi(color));
         }

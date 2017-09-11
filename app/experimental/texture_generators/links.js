@@ -5,9 +5,11 @@ import * as d3 from "d3";
 
 export default class Links {
   constructor() {
-    this.angle = Math.PI / 30;
     this.points = [];
-    this.size = 20;
+    this.size = 10;
+    let angle_divider = 1.5 * this.size | 0;
+    this.angle = Math.PI / angle_divider;
+    console.log(`Links size: ${this.size}, angle divider: ${angle_divider}`);
   }
 
   random_point() {
@@ -34,9 +36,12 @@ export default class Links {
         grid_points.push(point);
       }
     }
+    border_points.sort(() => Math.random() - .5);
     border_points.forEach(point => {
-      let closest = Util.find_min_and_max(grid_points, p => Util.distance(p, point)).min_element;
-      point.link = closest;
+      let filtered = grid_points.filter(p => !p.from);
+      let closest = Util.find_min_and_max(filtered, p => Util.distance(p, point)).min_element;
+      point.to = closest;
+      closest.from = point;
     });
   }
 
@@ -68,10 +73,10 @@ export default class Links {
       graphics.closePath();
       graphics.endFill();
 
-      if (point.link) {
+      if (point.to) {
         graphics.lineStyle(step / 10, Color.to_pixi(color));
         graphics.moveTo(point.x, point.y);
-        graphics.lineTo(point.link.x, point.link.y);
+        graphics.lineTo(point.to.x, point.to.y);
         graphics.closePath();
         graphics.lineStyle(0, Color.to_pixi(color));
       }
