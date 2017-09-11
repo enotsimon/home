@@ -2030,11 +2030,15 @@ var Links = function () {
           grid_points.push(_point);
         }
       }
-      //border_points.sort(() => Math.random() - .5);
-      var border_links = [];
-      border_points.forEach(function (point) {
-        var closest = _this.find_my_closest_free_grid_point(point, grid_points);
-        border_links.push({ from: point, to: closest });
+      border_points.sort(function () {
+        return Math.random() - .5;
+      });
+      var links = [];
+      border_points.forEach(function (border_point) {
+        if (border_point.to || border_point.from) {
+          return false; // path already build
+        }
+        _this.build_path(border_point, null, grid_points, border_points);
       });
     }
   }, {
@@ -2058,6 +2062,28 @@ var Links = function () {
     key: "calc_step",
     value: function calc_step() {
       return (1 - -1) / this.size;
+    }
+  }, {
+    key: "build_path",
+    value: function build_path(point, prev_point, grid_points, border_points) {
+      var step = this.calc_step();
+      // on first path step we cannot go to another border point
+      var all_points = prev_point ? grid_points.concat(border_points) : grid_points;
+      var possible_links = all_points.filter(function (p) {
+        return !p.from && !p.to && _util2.default.distance(point, p) <= 1.5 * step;
+      });
+      if (!possible_links.length) {
+        return false;
+      }
+      // TODO should add preferred direction and max angle
+      var to = _util2.default.rand_element(possible_links);
+      point.to = to;
+      to.from = point;
+      if (to.on_border) {
+        return true;
+      } else {
+        this.build_path(to, point, grid_points, border_points);
+      }
     }
   }, {
     key: "draw",
