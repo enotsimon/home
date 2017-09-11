@@ -36,11 +36,13 @@ export default class Links {
         grid_points.push(point);
       }
     }
-    //border_points.sort(() => Math.random() - .5);
-    let border_links = [];
-    border_points.forEach(point => {
-      let closest = this.find_my_closest_free_grid_point(point, grid_points);
-      border_links.push({from: point, to: closest});
+    border_points.sort(() => Math.random() - .5);
+    let links = [];
+    border_points.forEach(border_point => {
+      if (border_point.to || border_point.from) {
+        return false; // path already build
+      }
+      this.build_path(border_point, null, grid_points, border_points)
     });
   }
 
@@ -56,6 +58,28 @@ export default class Links {
   calc_step() {
     return (1 - -1)/this.size;
   }
+
+  build_path(point, prev_point, grid_points, border_points) {
+    let step = this.calc_step();
+    // on first path step we cannot go to another border point
+    let all_points = prev_point ? grid_points.concat(border_points) : grid_points;
+    let possible_links = all_points.filter(p => !p.from && !p.to && Util.distance(point, p) <= 1.5 * step);
+    if (!possible_links.length) {
+      return false;
+    }
+    // TODO should add preferred direction and max angle
+    let to = Util.rand_element(possible_links);
+    point.to = to;
+    to.from = point;
+    if (to.on_border) {
+      return true;
+    } else {
+      this.build_path(to, point, grid_points, border_points);
+    }
+  }
+
+
+
 
   draw(scale, func = this.draw_naive.bind(this)) {
     let graphics = new PIXI.Graphics();
