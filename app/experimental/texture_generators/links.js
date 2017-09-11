@@ -15,10 +15,13 @@ export default class Links {
   }
 
   generate() {
+    let border_points = [];
+    let grid_points = [];
     for (let a = 0; a < Math.PI * 2; a += this.angle) {
       let point = Util.from_polar_coords(a, 1);
       point.on_border = true;
       this.points.push(point);
+      border_points.push(point);
     }
     let step = this.calc_step();
     for (let y = -1; y < 1; y += step) {
@@ -28,10 +31,12 @@ export default class Links {
           continue;
         }
         this.points.push(point);
+        grid_points.push(point);
       }
     }
-    this.points.forEach(point => {
-      
+    border_points.forEach(point => {
+      let closest = Util.find_min_and_max(grid_points, p => Util.distance(p, point)).min_element;
+      point.link = closest;
     });
   }
 
@@ -46,20 +51,30 @@ export default class Links {
 
   draw(scale, func = this.draw_naive.bind(this)) {
     let graphics = new PIXI.Graphics();
-    func(scale, graphics);
+    graphics.scale = {x: scale, y: scale};
+    func(graphics);
     return graphics;
   }
 
 
-  draw_naive(scale, graphics) {
+  draw_naive(graphics) {
     let step = this.calc_step();
     let radius = step / 6;
+    let color = [150, 0, 0];
+    
     this.points.forEach(point => {
-      let color = [150, 0, 0];
       graphics.beginFill(Color.to_pixi(color));
-      graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
+      graphics.drawCircle(point.x, point.y, radius);
       graphics.closePath();
       graphics.endFill();
+
+      if (point.link) {
+        graphics.lineStyle(step / 10, Color.to_pixi(color));
+        graphics.moveTo(point.x, point.y);
+        graphics.lineTo(point.link.x, point.link.y);
+        graphics.closePath();
+        graphics.lineStyle(0, Color.to_pixi(color));
+      }
     });
   }
 }

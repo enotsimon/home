@@ -1656,8 +1656,8 @@ var MapDrawer = function () {
       //tg.generate(points_count, PointsInCicrle.linear);
       //tg.generate(points_count, PointsInCicrle.pow);
       tg.generate(20);
-      var func = function func(scale, graphics) {
-        return tg.draw_naive(scale, graphics);
+      var func = function func(graphics) {
+        return tg.draw_naive(graphics);
       };
       var container = tg.draw(50, func);
       //let container = tg.draw_triangles(50);
@@ -2007,10 +2007,13 @@ var Links = function () {
   }, {
     key: "generate",
     value: function generate() {
+      var border_points = [];
+      var grid_points = [];
       for (var a = 0; a < Math.PI * 2; a += this.angle) {
         var point = _util2.default.from_polar_coords(a, 1);
         point.on_border = true;
         this.points.push(point);
+        border_points.push(point);
       }
       var step = this.calc_step();
       for (var y = -1; y < 1; y += step) {
@@ -2020,9 +2023,15 @@ var Links = function () {
             continue;
           }
           this.points.push(_point);
+          grid_points.push(_point);
         }
       }
-      this.points.forEach(function (point) {});
+      border_points.forEach(function (point) {
+        var closest = _util2.default.find_min_and_max(grid_points, function (p) {
+          return _util2.default.distance(p, point);
+        }).min_element;
+        point.link = closest;
+      });
     }
   }, {
     key: "check_in_circle",
@@ -2042,20 +2051,30 @@ var Links = function () {
       var func = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.draw_naive.bind(this);
 
       var graphics = new PIXI.Graphics();
-      func(scale, graphics);
+      graphics.scale = { x: scale, y: scale };
+      func(graphics);
       return graphics;
     }
   }, {
     key: "draw_naive",
-    value: function draw_naive(scale, graphics) {
+    value: function draw_naive(graphics) {
       var step = this.calc_step();
       var radius = step / 6;
+      var color = [150, 0, 0];
+
       this.points.forEach(function (point) {
-        var color = [150, 0, 0];
         graphics.beginFill(_color2.default.to_pixi(color));
-        graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
+        graphics.drawCircle(point.x, point.y, radius);
         graphics.closePath();
         graphics.endFill();
+
+        if (point.link) {
+          graphics.lineStyle(step / 10, _color2.default.to_pixi(color));
+          graphics.moveTo(point.x, point.y);
+          graphics.lineTo(point.link.x, point.link.y);
+          graphics.closePath();
+          graphics.lineStyle(0, _color2.default.to_pixi(color));
+        }
       });
     }
   }]);
