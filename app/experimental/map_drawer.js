@@ -51,9 +51,9 @@ export default class MapDrawer {
     let tg = new Links();
     //tg.generate(points_count, PointsInCicrle.linear);
     //tg.generate(points_count, PointsInCicrle.pow);
-    tg.generate(points_count);
-    let func = tg.draw_naive;
-    let container = tg.draw(50, func.bind(tg));
+    tg.generate(20);
+    let func = (scale, graphics) => tg.draw_naive(scale, graphics);
+    let container = tg.draw(50, func);
     //let container = tg.draw_triangles(50);
     this.layers['test'].addChild(container);
   }
