@@ -36,15 +36,18 @@ export default class Links {
         grid_points.push(point);
       }
     }
-    border_points.sort(() => Math.random() - .5);
+    //border_points.sort(() => Math.random() - .5);
+    let border_links = [];
     border_points.forEach(point => {
-      let filtered = grid_points.filter(p => !p.from);
-      let closest = Util.find_min_and_max(filtered, p => Util.distance(p, point)).min_element;
-      point.to = closest;
-      closest.from = point;
+      let closest = this.find_my_closest_free_grid_point(point, grid_points);
+      border_links.push({from: point, to: closest});
     });
   }
 
+  find_my_closest_free_grid_point(from, grid_points) {
+    let filtered = grid_points.filter(p => !p.from);
+    return Util.find_min_and_max(filtered, p => Util.distance(p, from)).min_element;
+  }
 
   check_in_circle(point, radius = 1) {
     return Util.distance(point, {x: 0, y: 0}) < radius;
