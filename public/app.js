@@ -2052,7 +2052,6 @@ var Links = function () {
       var radius = step / 6;
       this.points.forEach(function (point) {
         var color = [150, 0, 0];
-        console.log('P', point);
         graphics.beginFill(_color2.default.to_pixi(color));
         graphics.drawCircle(scale * point.x, scale * point.y, scale * radius);
         graphics.closePath();
