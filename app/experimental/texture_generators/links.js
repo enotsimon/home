@@ -45,36 +45,12 @@ export default class Links {
     });
   }
 
-  find_my_closest_free_grid_point(from, grid_points) {
-    let filtered = grid_points.filter(p => !p.from);
-    return Util.find_min_and_max(filtered, p => Util.distance(p, from)).min_element;
-  }
-
   check_in_circle(point, radius = 1) {
     return Util.distance(point, {x: 0, y: 0}) < radius;
   }
 
   calc_step() {
     return (1 - -1)/this.size;
-  }
-
-  build_path(point, prev_point, grid_points, border_points) {
-    let step = this.calc_step();
-    // on first path step we cannot go to another border point
-    let all_points = prev_point ? grid_points.concat(border_points) : grid_points;
-    let possible_links = all_points.filter(p => !p.from && !p.to && Util.distance(point, p) <= 1.9 * step);
-    if (!possible_links.length) {
-      return false;
-    }
-    // TODO should add preferred direction and max angle
-    let to = Util.rand_element(possible_links);
-    point.to = to;
-    to.from = point;
-    if (to.on_border) {
-      return true;
-    } else {
-      this.build_path(to, point, grid_points, border_points);
-    }
   }
 
 
