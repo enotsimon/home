@@ -2039,16 +2039,6 @@ var Links = function () {
       });
     }
   }, {
-    key: "find_my_closest_free_grid_point",
-    value: function find_my_closest_free_grid_point(from, grid_points) {
-      var filtered = grid_points.filter(function (p) {
-        return !p.from;
-      });
-      return _util2.default.find_min_and_max(filtered, function (p) {
-        return _util2.default.distance(p, from);
-      }).min_element;
-    }
-  }, {
     key: "check_in_circle",
     value: function check_in_circle(point) {
       var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
@@ -2059,28 +2049,6 @@ var Links = function () {
     key: "calc_step",
     value: function calc_step() {
       return (1 - -1) / this.size;
-    }
-  }, {
-    key: "build_path",
-    value: function build_path(point, prev_point, grid_points, border_points) {
-      var step = this.calc_step();
-      // on first path step we cannot go to another border point
-      var all_points = prev_point ? grid_points.concat(border_points) : grid_points;
-      var possible_links = all_points.filter(function (p) {
-        return !p.from && !p.to && _util2.default.distance(point, p) <= 1.9 * step;
-      });
-      if (!possible_links.length) {
-        return false;
-      }
-      // TODO should add preferred direction and max angle
-      var to = _util2.default.rand_element(possible_links);
-      point.to = to;
-      to.from = point;
-      if (to.on_border) {
-        return true;
-      } else {
-        this.build_path(to, point, grid_points, border_points);
-      }
     }
   }, {
     key: "draw",
