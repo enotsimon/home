@@ -36,15 +36,7 @@ export default class Links {
         grid_points.push(point);
       }
     }
-    /*
-    border_points.sort(() => Math.random() - .5);
-    let links = [];
-    border_points.forEach(border_point => {
-      if (border_point.to || border_point.from) {
-        return false; // path already build
-      }
-      this.build_path(border_point, null, grid_points, border_points)
-    });*/
+    
     let all_points = grid_points.concat(border_points);
     grid_points.forEach(point => {
       let possible_links = all_points.filter(p => Util.distance(point, p) <= 1.5 * step);
@@ -99,7 +91,7 @@ export default class Links {
   draw_naive(graphics, scale = 1) {
     let step = this.calc_step();
     let radius = step / 6;
-    let color = [150, 0, 0];
+    let color = [30, 0, 0];
     
     this.points.forEach(point => {
       graphics.beginFill(Color.to_pixi(color));
@@ -107,19 +99,9 @@ export default class Links {
       graphics.closePath();
       graphics.endFill();
 
-      if (point.to) {
-        graphics.lineStyle(scale * step / 10, Color.to_pixi(color));
-        graphics.moveTo(scale * point.x, scale * point.y);
-        graphics.lineTo(scale * point.to.x, scale * point.to.y);
-        graphics.closePath();
-        graphics.lineStyle(0, Color.to_pixi(color));
-      }
-
-      // TEMP DEBUG
-      let pl_color = [0, 150, 0];
       if (point.possible_links) {
         point.possible_links.forEach(link => {
-          graphics.lineStyle(scale * step / 10, Color.to_pixi(pl_color));
+          graphics.lineStyle(scale * step / 10, Color.to_pixi(color));
           graphics.moveTo(scale * point.x, scale * point.y);
           graphics.lineTo(scale * link.x, scale * link.y);
           graphics.closePath();

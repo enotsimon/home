@@ -2028,15 +2028,7 @@ var Links = function () {
           grid_points.push(_point);
         }
       }
-      /*
-      border_points.sort(() => Math.random() - .5);
-      let links = [];
-      border_points.forEach(border_point => {
-        if (border_point.to || border_point.from) {
-          return false; // path already build
-        }
-        this.build_path(border_point, null, grid_points, border_points)
-      });*/
+
       var all_points = grid_points.concat(border_points);
       grid_points.forEach(function (point) {
         var possible_links = all_points.filter(function (p) {
@@ -2107,7 +2099,7 @@ var Links = function () {
 
       var step = this.calc_step();
       var radius = step / 6;
-      var color = [150, 0, 0];
+      var color = [30, 0, 0];
 
       this.points.forEach(function (point) {
         graphics.beginFill(_color2.default.to_pixi(color));
@@ -2115,19 +2107,9 @@ var Links = function () {
         graphics.closePath();
         graphics.endFill();
 
-        if (point.to) {
-          graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(color));
-          graphics.moveTo(scale * point.x, scale * point.y);
-          graphics.lineTo(scale * point.to.x, scale * point.to.y);
-          graphics.closePath();
-          graphics.lineStyle(0, _color2.default.to_pixi(color));
-        }
-
-        // TEMP DEBUG
-        var pl_color = [0, 150, 0];
         if (point.possible_links) {
           point.possible_links.forEach(function (link) {
-            graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(pl_color));
+            graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(color));
             graphics.moveTo(scale * point.x, scale * point.y);
             graphics.lineTo(scale * link.x, scale * link.y);
             graphics.closePath();
