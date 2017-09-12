@@ -38,11 +38,41 @@ export default class Links {
     }
     
     let all_points = grid_points.concat(border_points);
-    grid_points.forEach(point => {
-      let possible_links = all_points.filter(p => Util.distance(point, p) <= 1.5 * step);
-      // TEMP DEBUG
-      point.possible_links = possible_links;
-    });
+    grid_points.forEach(point => point.links = all_points.filter(p => Util.distance(point, p) <= 1.5 * step));
+    let open_list = grid_points.slice();
+    // note that we process only grid points!
+    this.process_links(open_list);
+  }
+
+  process_links(open_list) {
+    if (!open_list.length) {
+      return;
+    }
+    let element = Util.rand_element(open_list);
+    if (element.links.length < 2) {
+      throw('bad element, less than 2 links');
+    }
+    let count_border = element.links.filter(e => e.on_border).length;
+    // if only one link to border point left, dont delete it
+    let links_to_process = count_border > 1 ? element.links : element.links.filter(e => !e.on_border);
+    let link_to_delete = Util.rand_element(links_to_process);
+    Util.remove_element(link_to_delete, element.links);
+    if (element.links.length <= 2) {
+      Util.remove_element(element, open_list);
+    }
+    // on-border points dont have links
+    if (!link_to_delete.on_border) {
+      if (!Util.remove_element(element, link_to_delete.links)) {
+        console.log('WARNING! linked element had no backlink', link_to_delete, element);
+      }
+      if (link_to_delete.links.length < 2 && !link_to_delete.on_border) {
+        console.log('too bad but some point now has less that 2 links', link_to_delete);
+      }
+      if (link_to_delete.links.length <= 2) {
+        Util.remove_element(link_to_delete, open_list);
+      }
+    }
+    this.process_links(open_list);
   }
 
   check_in_circle(point, radius = 1) {
@@ -75,8 +105,8 @@ export default class Links {
       graphics.closePath();
       graphics.endFill();
 
-      if (point.possible_links) {
-        point.possible_links.forEach(link => {
+      if (point.links) {
+        point.links.forEach(link => {
           graphics.lineStyle(scale * step / 10, Color.to_pixi(color));
           graphics.moveTo(scale * point.x, scale * point.y);
           graphics.lineTo(scale * link.x, scale * link.y);

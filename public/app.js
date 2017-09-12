@@ -2031,12 +2031,49 @@ var Links = function () {
 
       var all_points = grid_points.concat(border_points);
       grid_points.forEach(function (point) {
-        var possible_links = all_points.filter(function (p) {
+        return point.links = all_points.filter(function (p) {
           return _util2.default.distance(point, p) <= 1.5 * step;
         });
-        // TEMP DEBUG
-        point.possible_links = possible_links;
       });
+      var open_list = grid_points.slice();
+      // note that we process only grid points!
+      this.process_links(open_list);
+    }
+  }, {
+    key: "process_links",
+    value: function process_links(open_list) {
+      if (!open_list.length) {
+        return;
+      }
+      var element = _util2.default.rand_element(open_list);
+      if (element.links.length < 2) {
+        throw 'bad element, less than 2 links';
+      }
+      var count_border = element.links.filter(function (e) {
+        return e.on_border;
+      }).length;
+      // if only one link to border point left, dont delete it
+      var links_to_process = count_border > 1 ? element.links : element.links.filter(function (e) {
+        return !e.on_border;
+      });
+      var link_to_delete = _util2.default.rand_element(links_to_process);
+      _util2.default.remove_element(link_to_delete, element.links);
+      if (element.links.length <= 2) {
+        _util2.default.remove_element(element, open_list);
+      }
+      // on-border points dont have links
+      if (!link_to_delete.on_border) {
+        if (!_util2.default.remove_element(element, link_to_delete.links)) {
+          console.log('WARNING! linked element had no backlink', link_to_delete, element);
+        }
+        if (link_to_delete.links.length < 2 && !link_to_delete.on_border) {
+          console.log('too bad but some point now has less that 2 links', link_to_delete);
+        }
+        if (link_to_delete.links.length <= 2) {
+          _util2.default.remove_element(link_to_delete, open_list);
+        }
+      }
+      this.process_links(open_list);
     }
   }, {
     key: "check_in_circle",
@@ -2075,8 +2112,8 @@ var Links = function () {
         graphics.closePath();
         graphics.endFill();
 
-        if (point.possible_links) {
-          point.possible_links.forEach(function (link) {
+        if (point.links) {
+          point.links.forEach(function (link) {
             graphics.lineStyle(scale * step / 10, _color2.default.to_pixi(color));
             graphics.moveTo(scale * point.x, scale * point.y);
             graphics.lineTo(scale * link.x, scale * link.y);
