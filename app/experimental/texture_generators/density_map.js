@@ -1,8 +1,11 @@
-import {game} from "experimental/game";
+
 import Util from "common/util";
 import Color from "common/color";
 import * as d3 from "d3";
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 export default class DensityMap {
   constructor() {
     this.reject_limit = 500;

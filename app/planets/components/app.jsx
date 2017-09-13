@@ -1,6 +1,6 @@
 import CollapsiblePanel from 'common/components/collapsible_panel';
-import DebugInfo from 'experimental/components/debug_info';
-import GenerateWorldForm from 'experimental/components/generate_world_form';
+import DebugInfo from 'planets/components/debug_info';
+import GenerateWorldForm from 'planets/components/generate_world_form';
 import React from 'react';
 
 export default class App extends React.Component {

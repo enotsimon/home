@@ -1100,6 +1100,150 @@ exports.default = VoronoiDiagram;
 
 });
 
+require.register("experimental/basic_drawer.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
+var _app = require("experimental/components/app");
+
+var _app2 = _interopRequireDefault(_app);
+
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var BasicDrawer = function () {
+  function BasicDrawer(regime) {
+    var _this = this;
+
+    _classCallCheck(this, BasicDrawer);
+
+    this.size = 800;
+    this.regime = regime;
+    this.ticks = 0;
+    this.delay = 0;
+    this.basic_interval = 100;
+    this.speed = 1;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
+      _this.init();
+    });
+  }
+
+  _createClass(BasicDrawer, [{
+    key: "init",
+    value: function init() {
+      var _this2 = this;
+
+      //let PIXI = require('pixi.js');
+      this.pixi = new PIXI.Application(this.size, this.size, {
+        backgroundColor: _color2.default.to_pixi([0, 0, 0]),
+        antialias: true,
+        view: document.getElementById('view')
+      });
+      this.pixi.stage.interactive = true; // ??
+      console.log('renderer', this.pixi.renderer);
+
+      this.base_container = new PIXI.Container();
+      if (this.regime == 'square') {
+        // do nothing
+      } else if (this.regime == 'circle') {
+        this.base_container.position.x = this.size / 2 | 0;
+        this.base_container.position.y = this.size / 2 | 0;
+      } else if (!this.regime) {
+        throw 'regime is not set';
+      } else {
+        throw 'unknown regime: ' + regime;
+      }
+
+      this.pixi.stage.addChild(this.base_container);
+      document.getElementById('view_container').appendChild(this.pixi.view);
+
+      // copy-paste from Interation
+      document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false);
+
+      this.ticks = 0; // here?
+      this.pixi.ticker.add(function () {
+        _this2.delay += 100; // DEBUG! set pixi.delay here
+        _this2.ticks++;
+        if (_this2.ticks % 10 == 0) {
+          d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
+        }
+        if (_this2.delay >= _this2.basic_interval * _this2.speed) {
+          _this2.delay = 0;
+          _this2.redraw();
+        }
+      });
+      //////////////////////////////////
+
+      this.init_graphics();
+    }
+  }, {
+    key: "clear_all",
+    value: function clear_all() {
+      this.base_container.removeChildren();
+    }
+  }, {
+    key: "init_graphics",
+    value: function init_graphics() {}
+  }, {
+    key: "redraw",
+    value: function redraw() {}
+  }, {
+    key: "mouse_move_handler",
+    value: function mouse_move_handler(event) {
+      if (event.target != this.pixi.view) {
+        return false;
+      }
+      var mouse_coords = this.get_mouse_coords(event);
+      d3.select('#mouse_pos').html('{x: ' + mouse_coords.x + ', y: ' + mouse_coords.y + '}');
+    }
+  }, {
+    key: "get_mouse_coords",
+    value: function get_mouse_coords(event) {
+      return { x: event.offsetX, y: event.offsetY };
+    }
+  }]);
+
+  return BasicDrawer;
+}();
+
+exports.default = BasicDrawer;
+
+});
+
 require.register("experimental/components/app.jsx", function(exports, require, module) {
 'use strict';
 
@@ -1109,17 +1253,9 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _collapsible_panel = require('common/components/collapsible_panel');
-
-var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
-
 var _debug_info = require('experimental/components/debug_info');
 
 var _debug_info2 = _interopRequireDefault(_debug_info);
-
-var _generate_world_form = require('experimental/components/generate_world_form');
-
-var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
 
 var _react = require('react');
 
@@ -1146,55 +1282,44 @@ var App = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        'table',
-        { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
+        'div',
+        { className: 'panel-group' },
         _react2.default.createElement(
-          'tbody',
-          null,
+          'div',
+          { className: 'panel panel-success' },
           _react2.default.createElement(
-            'tr',
-            { style: { verticalAlign: 'top' } },
+            'div',
+            { className: 'panel-body' },
             _react2.default.createElement(
-              'td',
+              'div',
+              { className: '', id: 'view_container' },
+              _react2.default.createElement('canvas', { id: 'view', width: '800', height: '800' })
+            )
+          )
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'panel panel-success' },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-body' },
+            _react2.default.createElement(
+              'div',
               null,
               _react2.default.createElement(
                 'div',
-                { className: 'panel-group' },
-                _react2.default.createElement(
-                  'div',
-                  { className: 'panel panel-success' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'panel-body' },
-                    _react2.default.createElement(
-                      'div',
-                      { className: '', id: 'map_container' },
-                      _react2.default.createElement('canvas', { id: 'map', width: '800', height: '800' })
-                    )
-                  )
-                ),
-                _react2.default.createElement(_collapsible_panel2.default, { header: 'debug', name: 'debug', content_func: function content_func() {
-                    return _react2.default.createElement(_debug_info2.default);
-                  } })
-              )
-            ),
-            _react2.default.createElement(
-              'td',
-              { width: '100%' },
+                null,
+                'FPS: ',
+                _react2.default.createElement('span', { id: 'fps_counter' })
+              ),
               _react2.default.createElement(
                 'div',
-                { className: 'panel-group' },
+                null,
+                'mouse position: ',
                 _react2.default.createElement(
-                  'div',
-                  { className: 'panel panel-success' },
-                  _react2.default.createElement(
-                    'div',
-                    { className: 'panel-body' },
-                    _react2.default.createElement(_collapsible_panel2.default, { header: 'world generating', name: 'generate_world', content_func: function content_func() {
-                        return _react2.default.createElement(_generate_world_form2.default);
-                      } })
-                  ),
-                  _react2.default.createElement('div', { className: 'panel-footer' })
+                  'span',
+                  { id: 'mouse_pos' },
+                  (0, 0)
                 )
               )
             )
@@ -1290,285 +1415,7 @@ exports.default = DebugInfo;
 
 });
 
-require.register("experimental/components/generate_world_form.jsx", function(exports, require, module) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _input_spinner = require('common/components/input_spinner');
-
-var _input_spinner2 = _interopRequireDefault(_input_spinner);
-
-var _game = require('experimental/game');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var GenerateWorldForm = function (_React$Component) {
-  _inherits(GenerateWorldForm, _React$Component);
-
-  function GenerateWorldForm() {
-    _classCallCheck(this, GenerateWorldForm);
-
-    return _possibleConstructorReturn(this, (GenerateWorldForm.__proto__ || Object.getPrototypeOf(GenerateWorldForm)).apply(this, arguments));
-  }
-
-  _createClass(GenerateWorldForm, [{
-    key: 'submit',
-    value: function submit(e) {
-      e.preventDefault();
-      console.clear();
-      _game.game.map_drawer.map.stage.children.forEach(function (layer) {
-        return layer.removeChildren();
-      });
-      _game.game.generate_world();
-    }
-  }, {
-    key: 'render',
-    value: function render() {
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(
-          'form',
-          { className: 'form-horizontal' },
-          _react2.default.createElement(
-            'div',
-            { className: 'form-group' },
-            _react2.default.createElement(
-              'div',
-              { className: 'col-sm-offset-4 col-sm-8' },
-              _react2.default.createElement(
-                'button',
-                { type: 'button', className: 'btn btn-default', id: 'generate_world', onClick: this.submit.bind(this) },
-                'generate'
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
-
-  return GenerateWorldForm;
-}(_react2.default.Component);
-
-exports.default = GenerateWorldForm;
-
-});
-
-require.register("experimental/game.js", function(exports, require, module) {
-"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("common/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _interaction = require("experimental/interaction");
-
-var _interaction2 = _interopRequireDefault(_interaction);
-
-var _map_drawer = require("experimental/map_drawer");
-
-var _map_drawer2 = _interopRequireDefault(_map_drawer);
-
-var _app = require("experimental/components/app");
-
-var _app2 = _interopRequireDefault(_app);
-
-var _reactDom = require("react-dom");
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
-var _react = require("react");
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Game = function () {
-  function Game() {
-    _classCallCheck(this, Game);
-
-    // CONST
-    this.width = 800;
-    this.height = 800;
-
-    this.map_drawer = new _map_drawer2.default();
-    this.interaction = new _interaction2.default();
-  }
-
-  _createClass(Game, [{
-    key: "generate_world",
-    value: function generate_world() {
-      this.ticks = 0;
-
-      this.map_drawer.init(this.width, this.height);
-      this.interaction.init();
-
-      this.map_drawer.map.ticker.add(this.handle_tick.bind(this));
-
-      this.map_drawer.init_graphics();
-    }
-  }, {
-    key: "handle_tick",
-    value: function handle_tick() {
-      this.ticks++;
-      this.map_drawer.redraw();
-    }
-  }]);
-
-  return Game;
-}();
-
-var game = new Game();
-module.exports.game = game;
-
-document.addEventListener('DOMContentLoaded', function () {
-  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
-  game.generate_world();
-});
-
-});
-
-require.register("experimental/interaction.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("common/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _game = require("experimental/game");
-
-var _d = require("d3");
-
-var d3 = _interopRequireWildcard(_d);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Interaction = function () {
-  function Interaction() {
-    _classCallCheck(this, Interaction);
-
-    this.state = 'initial';
-  }
-
-  _createClass(Interaction, [{
-    key: "init",
-    value: function init() {
-      var _this = this;
-
-      this.game = _game.game;
-      this.map = this.game.map_drawer.map;
-      this.map.stage.interactive = true;
-
-      document.addEventListener('mousemove', this.map_mouse_move_handler.bind(this), false);
-
-      d3.select('#map').on('click', this.map_click_handler.bind(this));
-
-      // from https://bl.ocks.org/pkerpedjiev/cf791db09ebcabaec0669362f4df1776
-      d3.select('#map').call(d3.zoom().scaleExtent([1, 4]).translateExtent([[0, 0], [this.map.view.width, this.map.view.height]]).on("zoom", this.map_zoom.bind(this)));
-
-      this.ticks = 0; // here?
-      this.fps_div = document.getElementById('fps_counter');
-      this.map.ticker.add(function () {
-        _this.ticks++;
-        if (_this.ticks % 10 == 0) {
-          d3.select('#fps_counter').html(_this.map.ticker.FPS | 0);
-        }
-      });
-      this.update_map_scale();
-    }
-  }, {
-    key: "map_mouse_move_handler",
-    value: function map_mouse_move_handler(event) {
-      if (event.target != this.map.view) {
-        //this.game.map_drawer.clear_cell_under_cursor();
-        //this.cell_under_cursor = null;
-        return false;
-      }
-      var mouse_coords = this.get_mouse_coords(event);
-
-      d3.select('#mouse_pos').html('{x: ' + mouse_coords.x + ', y: ' + mouse_coords.y + '}');
-      var world_pos = this.mouse_coords_to_world_coords(mouse_coords);
-      d3.select('#world_pos').html('{x: ' + world_pos.x + ', y: ' + world_pos.y + '}');
-    }
-  }, {
-    key: "map_click_handler",
-    value: function map_click_handler() {
-      var mouse_coords = this.get_mouse_coords(d3.event);
-    }
-  }, {
-    key: "map_zoom",
-    value: function map_zoom() {
-      this.map.stage.position.x = d3.event.transform.x;
-      this.map.stage.position.y = d3.event.transform.y;
-      this.map.stage.scale.x = d3.event.transform.k;
-      this.map.stage.scale.y = d3.event.transform.k;
-      this.update_map_scale();
-    }
-    ///////////////////////////////////////
-
-
-  }, {
-    key: "update_map_scale",
-    value: function update_map_scale() {
-      d3.select('#map_scale').html('{x: ' + this.map.stage.scale.x + ', y: ' + this.map.stage.scale.y + '}');
-    }
-
-    ///////////////////////////////////////  
-    // UTILS
-    ///////////////////////////////////////
-
-  }, {
-    key: "get_mouse_coords",
-    value: function get_mouse_coords(event) {
-      return { x: event.offsetX, y: event.offsetY };
-    }
-  }, {
-    key: "mouse_coords_to_world_coords",
-    value: function mouse_coords_to_world_coords(mouse_coords) {
-      var xn = Math.floor((mouse_coords.x - this.map.stage.position.x) / this.map.stage.scale.x),
-          yn = Math.floor((mouse_coords.y - this.map.stage.position.y) / this.map.stage.scale.y);
-      return { x: xn, y: yn };
-    }
-  }]);
-
-  return Interaction;
-}();
-
-exports.default = Interaction;
-
-});
-
-require.register("experimental/map_drawer.js", function(exports, require, module) {
+require.register("experimental/moving_arrows.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1585,98 +1432,53 @@ var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
-var _game = require("experimental/game");
+var _d = require("d3");
 
-var _blur_generator = require("experimental/texture_generators/blur_generator");
+var d3 = _interopRequireWildcard(_d);
 
-var _blur_generator2 = _interopRequireDefault(_blur_generator);
+var _basic_drawer = require("experimental/basic_drawer");
 
-var _points_in_circle = require("experimental/texture_generators/points_in_circle");
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
 
-var _points_in_circle2 = _interopRequireDefault(_points_in_circle);
-
-var _density_map = require("experimental/texture_generators/density_map");
-
-var _density_map2 = _interopRequireDefault(_density_map);
-
-var _links = require("experimental/texture_generators/links");
-
-var _links2 = _interopRequireDefault(_links);
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var MapDrawer = function () {
-  function MapDrawer() {
-    _classCallCheck(this, MapDrawer);
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MovingArrows = function (_BasicDrawer) {
+  _inherits(MovingArrows, _BasicDrawer);
+
+  function MovingArrows() {
+    _classCallCheck(this, MovingArrows);
+
+    var _this = _possibleConstructorReturn(this, (MovingArrows.__proto__ || Object.getPrototypeOf(MovingArrows)).call(this, 'square'));
+
+    _this.generate();
+    return _this;
   }
 
-  _createClass(MapDrawer, [{
-    key: "init",
-    value: function init(width, height) {
-      var _this = this;
-
-      var PIXI = require('pixi.js');
-      this.map = new PIXI.Application(width, height, {
-        backgroundColor: _color2.default.to_pixi([0, 0, 0]),
-        antialias: true,
-        view: document.getElementById('map')
-      });
-      console.log('renderer', this.map.renderer);
-
-      this.base_container = new PIXI.Container();
-      this.base_container.scale = { x: 4, y: 4 };
-      this.map.stage.addChild(this.base_container);
-      this.base_container.position.x = width / 2 | 0;
-      this.base_container.position.y = height / 2 | 0;
-
-      this.layers = {};
-      MapDrawer.layers().forEach(function (layer) {
-        _this.layers[layer] = new PIXI.Container();
-        _this.base_container.addChild(_this.layers[layer]);
-      });
-      document.getElementById('map_container').appendChild(this.map.view);
-      this.bodies_graphics = [];
-    }
-  }, {
-    key: "clear_all",
-    value: function clear_all() {
-      this.base_container.children.forEach(function (layer) {
-        return layer.removeChildren();
-      });
-    }
-  }, {
-    key: "init_graphics",
-    value: function init_graphics() {
-      var points_count = 5000;
-      //let tg = new PointsInCicrle();
-      //let tg = new DensityMap();
-      var tg = new _links2.default();
-      //tg.generate(points_count, PointsInCicrle.linear);
-      //tg.generate(points_count, PointsInCicrle.pow);
-      tg.generate(20);
-      var func = function func(graphics, scale) {
-        return tg.draw_naive(graphics, scale);
-      };
-      var container = tg.draw(80, func);
-      //let container = tg.draw_triangles(50);
-      this.layers['test'].addChild(container);
+  _createClass(MovingArrows, [{
+    key: "generate",
+    value: function generate() {
+      console.log('call MovingArrows generate');
     }
   }, {
     key: "redraw",
     value: function redraw() {}
-  }], [{
-    key: "layers",
-    value: function layers() {
-      return ['test'];
-    }
   }]);
 
-  return MapDrawer;
-}();
+  return MovingArrows;
+}(_basic_drawer2.default);
 
-exports.default = MapDrawer;
+exports.default = MovingArrows;
+
+
+var app = new MovingArrows();
 
 });
 
@@ -1689,8 +1491,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("experimental/game");
-
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -1703,11 +1503,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 var BlurGenerator = function () {
   function BlurGenerator() {
     _classCallCheck(this, BlurGenerator);
 
-    this.map = _game.game.map_drawer.map;
+    this.map = game.map_drawer.map;
     this.exp_container = new PIXI.Container();
     this.map.stage.addChild(this.exp_container);
   }
@@ -1790,8 +1593,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("experimental/game");
-
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -1810,6 +1611,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 var DensityMap = function () {
   function DensityMap() {
     _classCallCheck(this, DensityMap);
@@ -1970,8 +1774,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("experimental/game");
-
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -1990,6 +1792,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 var Links = function () {
   function Links() {
     _classCallCheck(this, Links);
@@ -2141,8 +1946,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _game = require("experimental/game");
-
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -2161,6 +1964,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 var PointsInCicrle = function () {
   function PointsInCicrle() {
     _classCallCheck(this, PointsInCicrle);
@@ -4581,11 +4387,11 @@ var _collapsible_panel = require('common/components/collapsible_panel');
 
 var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
 
-var _debug_info = require('experimental/components/debug_info');
+var _debug_info = require('planets/components/debug_info');
 
 var _debug_info2 = _interopRequireDefault(_debug_info);
 
-var _generate_world_form = require('experimental/components/generate_world_form');
+var _generate_world_form = require('planets/components/generate_world_form');
 
 var _generate_world_form2 = _interopRequireDefault(_generate_world_form);
 
@@ -4775,7 +4581,7 @@ var _input_spinner = require('common/components/input_spinner');
 
 var _input_spinner2 = _interopRequireDefault(_input_spinner);
 
-var _game = require('experimental/game');
+var _game = require('planets/game');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
