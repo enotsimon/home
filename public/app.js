@@ -1149,7 +1149,7 @@ var BasicDrawer = function () {
 
     _classCallCheck(this, BasicDrawer);
 
-    this.size = 800;
+    this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.delay = 0;
@@ -1168,7 +1168,7 @@ var BasicDrawer = function () {
       var _this2 = this;
 
       //let PIXI = require('pixi.js');
-      this.pixi = new PIXI.Application(this.size, this.size, {
+      this.pixi = new PIXI.Application(this.real_size, this.real_size, {
         backgroundColor: _color2.default.to_pixi([0, 0, 0]),
         antialias: true,
         view: document.getElementById('view')
@@ -1178,10 +1178,17 @@ var BasicDrawer = function () {
 
       this.base_container = new PIXI.Container();
       if (this.regime == 'square') {
-        // do nothing
+        // square map is 100x100 size
+        this.size = 100;
+        var scale = this.real_size / this.size | 0;
+        this.base_container.scale = { x: scale, y: scale };
       } else if (this.regime == 'circle') {
-        this.base_container.position.x = this.size / 2 | 0;
-        this.base_container.position.y = this.size / 2 | 0;
+        // circle map is circle with radils=100, coords from -100 to 100
+        this.size = 200;
+        var _scale = this.real_size / this.size | 0;
+        this.base_container.scale = { x: _scale, y: _scale };
+        this.base_container.position.x = this.real_size / 2 | 0;
+        this.base_container.position.y = this.real_size / 2 | 0;
       } else if (!this.regime) {
         throw 'regime is not set';
       } else {
@@ -1465,7 +1472,11 @@ var MovingArrows = function (_BasicDrawer) {
   _createClass(MovingArrows, [{
     key: "generate",
     value: function generate() {
-      console.log('call MovingArrows generate');
+      this.step = this.size / 10 | 0;
+      this.matrix_size = this.size / 2 | 0; // TEMP
+      for (var y = 0; y < this.matrix_size; y += this.step) {
+        for (var x = 0; x < this.matrix_size; x += this.step) {}
+      }
     }
   }, {
     key: "redraw",
