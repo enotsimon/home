@@ -12,10 +12,9 @@ export default class BasicDrawer {
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
-    this.delay = 0;
+    this.tick_delay = 0;
     this.basic_interval = 100;
-    this.speed = 1;
-
+    this.tick_speed = 1;
     document.addEventListener('DOMContentLoaded', () => {
       ReactDOM.render(<App />, document.querySelector('#app'));
       this.init();
@@ -23,7 +22,6 @@ export default class BasicDrawer {
   }
 
   init() {
-    //let PIXI = require('pixi.js');
     this.pixi = new PIXI.Application(this.real_size, this.real_size, {
       backgroundColor : Color.to_pixi([0, 0, 0]),
       antialias: true,
@@ -59,18 +57,17 @@ export default class BasicDrawer {
     
     this.ticks = 0; // here?
     this.pixi.ticker.add(() => {
-      this.delay += 100; // DEBUG! set pixi.delay here
+      this.tick_delay += 100; // DEBUG! set pixi.delay here
       this.ticks++;
       if (this.ticks % 10 == 0) {
         d3.select('#fps_counter').html(this.pixi.ticker.FPS | 0);
       }
-      if (this.delay >= this.basic_interval * this.speed) {
-        this.delay = 0;
+      if (this.tick_delay >= this.basic_interval * this.tick_speed) {
+        this.tick_delay = 0;
         this.redraw();
       }
     });
     //////////////////////////////////
-
     this.init_graphics();
   }
 
