@@ -9,7 +9,7 @@ import * as PIXI from "pixi.js";
 
 export default class BasicDrawer {
   constructor(regime) {
-    this.size = 800;
+    this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.delay = 0;
@@ -24,7 +24,7 @@ export default class BasicDrawer {
 
   init() {
     //let PIXI = require('pixi.js');
-    this.pixi = new PIXI.Application(this.size, this.size, {
+    this.pixi = new PIXI.Application(this.real_size, this.real_size, {
       backgroundColor : Color.to_pixi([0, 0, 0]),
       antialias: true,
       view: document.getElementById('view'),
@@ -34,10 +34,17 @@ export default class BasicDrawer {
 
     this.base_container = new PIXI.Container();
     if (this.regime == 'square') {
-      // do nothing
+      // square map is 100x100 size
+      this.size = 100;
+      let scale = this.real_size/this.size | 0;
+      this.base_container.scale = {x: scale, y: scale};
     } else if (this.regime == 'circle') {
-      this.base_container.position.x = this.size / 2 | 0;
-      this.base_container.position.y = this.size / 2 | 0;
+      // circle map is circle with radils=100, coords from -100 to 100
+      this.size = 200;
+      let scale = this.real_size/this.size | 0;
+      this.base_container.scale = {x: scale, y: scale};
+      this.base_container.position.x = this.real_size / 2 | 0;
+      this.base_container.position.y = this.real_size / 2 | 0;
     } else if (!this.regime) {
       throw('regime is not set');
     } else {
