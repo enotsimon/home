@@ -1,7 +1,10 @@
-import {game} from "experimental/game";
+
 import Util from "common/util";
 import Color from "common/color";
 
+////////////////////////////////////////////////
+// WARNING!!! doesnt work, rewite to BasicDrawer
+////////////////////////////////////////////////
 export default class BlurGenerator {
   constructor() {
     this.map = game.map_drawer.map;
