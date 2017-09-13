@@ -1152,10 +1152,9 @@ var BasicDrawer = function () {
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
-    this.delay = 0;
+    this.tick_delay = 0;
     this.basic_interval = 100;
-    this.speed = 1;
-
+    this.tick_speed = 1;
     document.addEventListener('DOMContentLoaded', function () {
       _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
       _this.init();
@@ -1167,7 +1166,6 @@ var BasicDrawer = function () {
     value: function init() {
       var _this2 = this;
 
-      //let PIXI = require('pixi.js');
       this.pixi = new PIXI.Application(this.real_size, this.real_size, {
         backgroundColor: _color2.default.to_pixi([0, 0, 0]),
         antialias: true,
@@ -1203,18 +1201,17 @@ var BasicDrawer = function () {
 
       this.ticks = 0; // here?
       this.pixi.ticker.add(function () {
-        _this2.delay += 100; // DEBUG! set pixi.delay here
+        _this2.tick_delay += 100; // DEBUG! set pixi.delay here
         _this2.ticks++;
         if (_this2.ticks % 10 == 0) {
           d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
         }
-        if (_this2.delay >= _this2.basic_interval * _this2.speed) {
-          _this2.delay = 0;
+        if (_this2.tick_delay >= _this2.basic_interval * _this2.tick_speed) {
+          _this2.tick_delay = 0;
           _this2.redraw();
         }
       });
       //////////////////////////////////
-
       this.init_graphics();
     }
   }, {
@@ -1439,13 +1436,13 @@ var _color = require("common/color");
 
 var _color2 = _interopRequireDefault(_color);
 
-var _d = require("d3");
-
-var d3 = _interopRequireWildcard(_d);
-
 var _basic_drawer = require("experimental/basic_drawer");
 
 var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -1463,24 +1460,68 @@ var MovingArrows = function (_BasicDrawer) {
   function MovingArrows() {
     _classCallCheck(this, MovingArrows);
 
-    var _this = _possibleConstructorReturn(this, (MovingArrows.__proto__ || Object.getPrototypeOf(MovingArrows)).call(this, 'square'));
-
-    _this.generate();
-    return _this;
+    return _possibleConstructorReturn(this, (MovingArrows.__proto__ || Object.getPrototypeOf(MovingArrows)).call(this, 'square'));
   }
 
   _createClass(MovingArrows, [{
-    key: "generate",
-    value: function generate() {
-      this.step = this.size / 10 | 0;
-      this.matrix_size = this.size / 2 | 0; // TEMP
-      for (var y = 0; y < this.matrix_size; y += this.step) {
-        for (var x = 0; x < this.matrix_size; x += this.step) {}
+    key: "init_graphics",
+    value: function init_graphics() {
+      var _this2 = this;
+
+      this.size_coef = 6;
+      this.step = this.size / this.size_coef;
+      this.matrix_size = 2 * this.size;
+      this.arrows = [];
+      this.angle = 0;
+      this.angle_inc = 0;
+      this.angle_inc_max = Math.PI / 60;
+      this.acceleration = 0;
+      this.speed = 0;
+      this.max_speed = 20;
+      this.color = [255, 255, 255];
+      this.plan = [];
+      this.matrix_container = new PIXI.Container();
+      this.matrix_container.x = -this.step;
+      this.matrix_container.y = -this.step;
+      this.base_container.addChild(this.matrix_container);
+
+      for (var y = -this.step; y < this.matrix_size; y += this.step) {
+        for (var x = -this.step; x < this.matrix_size; x += this.step) {
+          // git very bad quality on big scales, so we have to set it small and big font size
+          var size = this.step * 9;
+          var arrow = new PIXI.Text('⇨', { fontFamily: 'Arial', fontSize: size, fill: _color2.default.to_pixi(this.color) });
+          arrow.scale = { x: 0.1, y: 0.1 };
+          arrow.x = x;
+          arrow.y = y;
+          arrow.rotation = this.angle;
+          this.arrows.push(arrow);
+        }
       }
+      this.arrows.forEach(function (arrow) {
+        return _this2.matrix_container.addChild(arrow);
+      });
     }
   }, {
     key: "redraw",
-    value: function redraw() {}
+    value: function redraw() {
+      var _this3 = this;
+
+      this.speed = .5;
+      this.angle += this.angle_inc;
+      if (Math.random() <= 0.1) {
+        this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);
+      }
+
+      var radius = this.speed;
+      var angle = this.angle;
+      var diff = _util2.default.from_polar_coords(angle, radius);
+      this.arrows.forEach(function (arrow) {
+        // TODO seems too complicated. is there better way?
+        arrow.x = (arrow.x + diff.x) % _this3.matrix_size + (arrow.x < 0 ? _this3.matrix_size : 0);
+        arrow.y = (arrow.y + diff.y) % _this3.matrix_size + (arrow.y < 0 ? _this3.matrix_size : 0);
+        arrow.rotation = _this3.angle;
+      });
+    }
   }]);
 
   return MovingArrows;
