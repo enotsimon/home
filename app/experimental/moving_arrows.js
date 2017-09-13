@@ -44,7 +44,7 @@ export default class MovingArrows extends BasicDrawer {
 
 
   redraw() {
-    this.speed = .5;
+    this.speed = .9;
     this.angle += this.angle_inc;
     if (Math.random() <= 0.1) {
       this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);

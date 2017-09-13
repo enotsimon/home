@@ -1153,7 +1153,7 @@ var BasicDrawer = function () {
     this.regime = regime;
     this.ticks = 0;
     this.tick_delay = 0;
-    this.basic_interval = 100;
+    this.basic_interval = 25;
     this.tick_speed = 1;
     document.addEventListener('DOMContentLoaded', function () {
       _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
@@ -1201,12 +1201,13 @@ var BasicDrawer = function () {
 
       this.ticks = 0; // here?
       this.pixi.ticker.add(function () {
-        _this2.tick_delay += 100; // DEBUG! set pixi.delay here
-        _this2.ticks++;
-        if (_this2.ticks % 10 == 0) {
-          d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
-        }
-        if (_this2.tick_delay >= _this2.basic_interval * _this2.tick_speed) {
+        // this prevents from leaps on pixi FPS peaks
+        _this2.tick_delay += _this2.pixi.ticker.elapsedMS;
+        if (_this2.tick_delay >= _this2.basic_interval / _this2.tick_speed) {
+          _this2.ticks++;
+          if (_this2.ticks % 10 == 0) {
+            d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
+          }
           _this2.tick_delay = 0;
           _this2.redraw();
         }
@@ -1506,7 +1507,7 @@ var MovingArrows = function (_BasicDrawer) {
     value: function redraw() {
       var _this3 = this;
 
-      this.speed = .5;
+      this.speed = .9;
       this.angle += this.angle_inc;
       if (Math.random() <= 0.1) {
         this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);
