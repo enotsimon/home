@@ -40,6 +40,7 @@ export default class MovingArrows extends BasicDrawer {
       }
     }
     this.arrows.forEach(arrow => this.matrix_container.addChild(arrow));
+    console.log('this works');
   }
 
 
