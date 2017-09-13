@@ -1475,7 +1475,7 @@ var MovingArrows = function (_BasicDrawer) {
       this.arrows = [];
       this.angle = 0;
       this.angle_inc = 0;
-      this.angle_inc_max = Math.PI / 60;
+      this.angle_inc_max = Math.PI / 180;
       this.acceleration = 0;
       this.speed = 0;
       this.max_speed = 20;
@@ -1501,7 +1501,6 @@ var MovingArrows = function (_BasicDrawer) {
       this.arrows.forEach(function (arrow) {
         return _this2.matrix_container.addChild(arrow);
       });
-      console.log('this works');
     }
   }, {
     key: "redraw",
@@ -1510,7 +1509,7 @@ var MovingArrows = function (_BasicDrawer) {
 
       this.speed = .9;
       this.angle += this.angle_inc;
-      if (Math.random() <= 0.1) {
+      if (Math.random() <= 0.05) {
         this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);
       }
 
