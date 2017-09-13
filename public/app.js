@@ -1501,6 +1501,7 @@ var MovingArrows = function (_BasicDrawer) {
       this.arrows.forEach(function (arrow) {
         return _this2.matrix_container.addChild(arrow);
       });
+      console.log('this works');
     }
   }, {
     key: "redraw",
