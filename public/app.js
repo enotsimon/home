@@ -1455,6 +1455,12 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+/**
+ *  TODO:
+ *    - add debug info of angle_inc, acceleration, speed
+ *    - zooming with speed change? tried, looks bad
+ *    - fix graphics redraw leaps!!!
+ */
 var MovingArrows = function (_BasicDrawer) {
   _inherits(MovingArrows, _BasicDrawer);
 
@@ -1473,6 +1479,7 @@ var MovingArrows = function (_BasicDrawer) {
       this.step = this.size / this.size_coef;
       this.matrix_size = 2 * this.size;
       this.arrows = [];
+      this.change_angle_chance = .05;
       this.angle = 0;
       this.angle_inc = 0;
       this.angle_inc_max = 2 * Math.PI / 90;
@@ -1507,8 +1514,8 @@ var MovingArrows = function (_BasicDrawer) {
     value: function redraw() {
       var _this3 = this;
 
-      if (Math.random() <= 0.05) {
-        this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);
+      if (Math.random() <= this.change_angle_chance) {
+        this.angle_inc = this.cos_interpolation(-this.angle_inc_max, this.angle_inc_max, Math.random());
       }
       this.angle += this.angle_inc;
       var acceleration = this.angle_inc_max / 2 - Math.abs(this.angle_inc);
@@ -1524,6 +1531,16 @@ var MovingArrows = function (_BasicDrawer) {
         arrow.y = (arrow.y + diff.y) % _this3.matrix_size + (arrow.y < 0 ? _this3.matrix_size : 0);
         arrow.rotation = _this3.angle;
       });
+    }
+
+    // took it from http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
+    // russian https://habrahabr.ru/post/142592/
+
+  }, {
+    key: "cos_interpolation",
+    value: function cos_interpolation(min, max, x) {
+      var f = (1 - Math.cos(Math.PI * x)) * .5;
+      return min * (1 - f) + max * f;
     }
   }]);
 
