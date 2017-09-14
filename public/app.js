@@ -1554,6 +1554,117 @@ var app = new MovingArrows();
 
 });
 
+require.register("experimental/planets_focus.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *  TODO:
+ *    - add debug info of angle_inc, acceleration, speed
+ *    - zooming with speed change? tried, looks bad
+ *    - fix graphics redraw leaps!!!
+ */
+var PlanetsFocus = function (_BasicDrawer) {
+  _inherits(PlanetsFocus, _BasicDrawer);
+
+  function PlanetsFocus() {
+    _classCallCheck(this, PlanetsFocus);
+
+    return _possibleConstructorReturn(this, (PlanetsFocus.__proto__ || Object.getPrototypeOf(PlanetsFocus)).call(this, 'circle'));
+  }
+
+  _createClass(PlanetsFocus, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      this.matrix = new PIXI.Container();
+      this.init_bodies();
+    }
+  }, {
+    key: "redraw",
+    value: function redraw() {}
+  }, {
+    key: "init_bodies",
+    value: function init_bodies() {
+      this.bodies = [];
+
+      this.star = this.init_body('star', null, 0, 10, 0, .01);
+      this.planet1 = this.init_body('planet1', this.star, 20, 3, .01, .02);
+      this.moon1 = this.init_body('moon1', this.planet1, 6, 1, .02, .02);
+      this.planet2 = this.init_body('planet2', this.star, 40, 5, .03, .02);
+      this.moon21 = this.init_body('moon21', this.planet2, 8, 1, .03, .001);
+      this.moon22 = this.init_body('moon22', this.planet2, 10, 2, .05, .01);
+    }
+  }, {
+    key: "init_body",
+    value: function init_body(name, parent, orbital_radius, radius, orbital_speed, rotation_speed) {
+      var body = new StellarBody(name, parent, orbital_radius, radius, orbital_speed, rotation_speed);
+      body.graphics = new PIXI.Graphics();
+      this.matrix.addChild(body.graphics);
+      this.bodies.push(body);
+    }
+  }, {
+    key: "init_body_graphics",
+    value: function init_body_graphics(body, graphics) {
+      graphics.lineStyle(body.radius / 10, _color2.default.to_pixi([255, 255, 255]));
+    }
+  }]);
+
+  return PlanetsFocus;
+}(_basic_drawer2.default);
+
+exports.default = PlanetsFocus;
+
+var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orbital_speed, rotation_speed) {
+  var orbital_angle = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : false;
+  var angle = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : false;
+
+  _classCallCheck(this, StellarBody);
+
+  this.name = name;
+  this.parent = parent;
+  this.orbital_radius = orbital_radius;
+  this.radius = radius;
+  this.orbital_speed = orbital_speed;
+  this.rotation_speed = rotation_speed;
+  this.orbital_angle = orbital_angle ? orbital_angle : 2 * Math.PI * Math.random();
+  this.angle = angle ? angle : 2 * Math.PI * Math.random();
+};
+
+var app = new PlanetsFocus();
+
+});
+
 require.register("experimental/texture_generators/blur_generator.js", function(exports, require, module) {
 "use strict";
 
