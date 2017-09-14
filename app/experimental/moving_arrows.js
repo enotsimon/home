@@ -38,7 +38,7 @@ export default class MovingArrows extends BasicDrawer {
       for (let x = -2 * this.step; x < this.matrix_size; x += this.step) {
         // git very bad quality on big scales, so we have to set it small and big font size
         let size = this.step * 9;
-        let arrow = new PIXI.Text('⇨', {fontFamily: 'Arial', fontSize: size, fill: Color.to_pixi(this.color)});
+        let arrow = new PIXI.Text('➔', {fontFamily: 'Arial', fontSize: size, fill: Color.to_pixi(this.color)});
         arrow.scale = {x: 0.1, y: 0.1};
         arrow.x = x;
         arrow.y = y;

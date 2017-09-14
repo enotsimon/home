@@ -1497,7 +1497,7 @@ var MovingArrows = function (_BasicDrawer) {
         for (var x = -2 * this.step; x < this.matrix_size; x += this.step) {
           // git very bad quality on big scales, so we have to set it small and big font size
           var size = this.step * 9;
-          var arrow = new PIXI.Text('⇨', { fontFamily: 'Arial', fontSize: size, fill: _color2.default.to_pixi(this.color) });
+          var arrow = new PIXI.Text('➔', { fontFamily: 'Arial', fontSize: size, fill: _color2.default.to_pixi(this.color) });
           arrow.scale = { x: 0.1, y: 0.1 };
           arrow.x = x;
           arrow.y = y;
