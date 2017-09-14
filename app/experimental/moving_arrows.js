@@ -4,6 +4,12 @@ import Color from "common/color";
 import BasicDrawer from "experimental/basic_drawer";
 import * as PIXI from "pixi.js";
 
+/**
+ *  TODO:
+ *    - add debug info of angle_inc, acceleration, speed
+ *    - zooming with speed change? tried, looks bad
+ *    - fix graphics redraw leaps!!!
+ */
 export default class MovingArrows extends BasicDrawer {
   constructor() {
     super('square');
@@ -14,6 +20,7 @@ export default class MovingArrows extends BasicDrawer {
     this.step = this.size / this.size_coef;
     this.matrix_size = 2 * this.size;
     this.arrows = [];
+    this.change_angle_chance = .05;
     this.angle = 0;
     this.angle_inc = 0;
     this.angle_inc_max = 2 * Math.PI / 90;
@@ -44,8 +51,8 @@ export default class MovingArrows extends BasicDrawer {
 
 
   redraw() {
-    if (Math.random() <= 0.05) {
-      this.angle_inc = this.angle_inc_max * (2 * Math.random() - 1);
+    if (Math.random() <= this.change_angle_chance) {
+      this.angle_inc = this.cos_interpolation(-this.angle_inc_max, this.angle_inc_max, Math.random());
     }
     this.angle += this.angle_inc;
     let acceleration = this.angle_inc_max / 2 - Math.abs(this.angle_inc);
@@ -61,6 +68,13 @@ export default class MovingArrows extends BasicDrawer {
       arrow.y = (arrow.y + diff.y) % this.matrix_size + (arrow.y < 0 ? this.matrix_size : 0);
       arrow.rotation = this.angle;
     });
+  }
+
+  // took it from http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
+  // russian https://habrahabr.ru/post/142592/
+  cos_interpolation(min, max, x) {
+    let f = (1 - Math.cos(Math.PI * x)) * .5;
+    return min*(1-f) + max*f;
   }
 }
 
