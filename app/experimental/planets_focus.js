@@ -35,11 +35,11 @@ export default class PlanetsFocus extends BasicDrawer {
     this.bodies = [];
     // name, parent, orbital_radius, radius, orbital_speed, rotation_speed, [orbital_angle], [angle]
     this.star = this.init_body('star', null, 0, 10, 0, 1);
-    this.planet1 = this.init_body('planet1', this.star, 20, 3, 1, 2);
+    this.planet1 = this.init_body('planet1', this.star, 20, 3, 2, 2);
     this.moon1 = this.init_body('moon1', this.planet1, 6, 1, 2, 2);
-    this.planet2 = this.init_body('planet2', this.star, 40, 5, 3, 2);
+    this.planet2 = this.init_body('planet2', this.star, 40, 5, 1, 3);
     this.moon21 = this.init_body('moon21', this.planet2, 8, 2, 3, .1);
-    this.moon22 = this.init_body('moon22', this.planet2, 12, 1, 5, 1);
+    this.moon22 = this.init_body('moon22', this.planet2, 12, 1, 4, 1);
   }
 
   init_body(name, parent, orbital_radius, radius, orbital_speed, rotation_speed) {
