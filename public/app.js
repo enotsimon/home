@@ -1420,6 +1420,184 @@ exports.default = DebugInfo;
 
 });
 
+require.register("experimental/components/sample_preview.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SamplePreview = function (_React$Component) {
+  _inherits(SamplePreview, _React$Component);
+
+  function SamplePreview(props) {
+    _classCallCheck(this, SamplePreview);
+
+    var _this = _possibleConstructorReturn(this, (SamplePreview.__proto__ || Object.getPrototypeOf(SamplePreview)).call(this));
+
+    var valid_statuses = ['draft', 'in_progress', 'almost_ready', 'ready'];
+
+    if (!props.name || !props.description || !props.sample_url || !props.img_path || !props.status) {
+      console.log('some params missing', props);
+      throw 'some params missing';
+    }
+    if (valid_statuses.indexOf(props.status) == -1) {
+      console.log('wrong status', props.status);
+      throw 'wrong status';
+    }
+    _this.state = { status_text: props.status.replace(/_/g, ' ') };
+    return _this;
+  }
+
+  _createClass(SamplePreview, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'sample_preview' },
+        _react2.default.createElement(
+          'div',
+          { className: 'panel panel-success' },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-heading' },
+            _react2.default.createElement(
+              'div',
+              { className: 'panel-title navbar-text' },
+              this.props.name
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'label label-primary status_' + this.props.status },
+              this.state.status_text
+            )
+          ),
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-body' },
+            _react2.default.createElement(
+              'a',
+              { href: this.props.sample_url, className: 'thumbnail' },
+              _react2.default.createElement('img', { width: '200', height: '200', src: this.props.img_path })
+            ),
+            _react2.default.createElement(
+              'div',
+              { className: 'width200' },
+              _react2.default.createElement(
+                'p',
+                null,
+                this.props.description
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return SamplePreview;
+}(_react2.default.Component);
+
+exports.default = SamplePreview;
+
+});
+
+require.register("experimental/components/samples_collection.jsx", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _sample_preview = require("experimental/components/sample_preview");
+
+var _sample_preview2 = _interopRequireDefault(_sample_preview);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SamplesCollecton = function (_React$Component) {
+  _inherits(SamplesCollecton, _React$Component);
+
+  function SamplesCollecton() {
+    _classCallCheck(this, SamplesCollecton);
+
+    return _possibleConstructorReturn(this, (SamplesCollecton.__proto__ || Object.getPrototypeOf(SamplesCollecton)).apply(this, arguments));
+  }
+
+  _createClass(SamplesCollecton, [{
+    key: "render",
+    value: function render() {
+      return _react2.default.createElement(
+        "div",
+        { className: "col-md-8 col-md-offset-2" },
+        _react2.default.createElement(
+          "div",
+          { className: "panel panel-success" },
+          _react2.default.createElement(
+            "div",
+            { className: "panel-heading" },
+            _react2.default.createElement(
+              "h4",
+              { className: "panel-title" },
+              "a collection of funny graphics samples"
+            )
+          ),
+          _react2.default.createElement(
+            "div",
+            { className: "panel-body" },
+            _react2.default.createElement(_sample_preview2.default, {
+              name: 'moving arrows',
+              description: "schizophreniac arrows moving all around.\n                add cosinus interpolation on arrow's turns",
+              sample_url: './moving_arrows.html',
+              img_path: './thumbnails/moving_arrows.png',
+              status: 'almost_ready'
+            }),
+            _react2.default.createElement(_sample_preview2.default, {
+              name: 'planets focus',
+              description: "star system emulation, where we\n                dynamically change focus on random stellar body,\n                i.e. move it to the center of coordinates and make all others spin around it",
+              sample_url: './planets_focus.html',
+              img_path: './thumbnails/planets_focus.jpg',
+              status: 'draft'
+            })
+          )
+        )
+      );
+    }
+  }]);
+
+  return SamplesCollecton;
+}(_react2.default.Component);
+
+exports.default = SamplesCollecton;
+
+});
+
 require.register("experimental/moving_arrows.js", function(exports, require, module) {
 "use strict";
 
@@ -1628,11 +1806,11 @@ var PlanetsFocus = function (_BasicDrawer) {
       this.bodies = [];
       // name, parent, orbital_radius, radius, orbital_speed, rotation_speed, [orbital_angle], [angle]
       this.star = this.init_body('star', null, 0, 10, 0, 1);
-      this.planet1 = this.init_body('planet1', this.star, 20, 3, 1, 2);
+      this.planet1 = this.init_body('planet1', this.star, 20, 3, 2, 2);
       this.moon1 = this.init_body('moon1', this.planet1, 6, 1, 2, 2);
-      this.planet2 = this.init_body('planet2', this.star, 40, 5, 3, 2);
+      this.planet2 = this.init_body('planet2', this.star, 40, 5, 1, 3);
       this.moon21 = this.init_body('moon21', this.planet2, 8, 2, 3, .1);
-      this.moon22 = this.init_body('moon22', this.planet2, 12, 1, 5, 1);
+      this.moon22 = this.init_body('moon22', this.planet2, 12, 1, 4, 1);
     }
   }, {
     key: "init_body",
@@ -1696,6 +1874,29 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
 };
 
 var app = new PlanetsFocus();
+
+});
+
+require.register("experimental/samples_collection_init.js", function(exports, require, module) {
+'use strict';
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _samples_collection = require('experimental/components/samples_collection');
+
+var _samples_collection2 = _interopRequireDefault(_samples_collection);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(_samples_collection2.default, null), document.querySelector('#main'));
+});
 
 });
 
