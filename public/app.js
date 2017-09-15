@@ -1608,35 +1608,68 @@ var PlanetsFocus = function (_BasicDrawer) {
     key: "init_graphics",
     value: function init_graphics() {
       this.matrix = new PIXI.Container();
+      this.base_container.addChild(this.matrix);
       this.init_bodies();
     }
   }, {
     key: "redraw",
-    value: function redraw() {}
+    value: function redraw() {
+      var _this2 = this;
+
+      this.bodies.forEach(function (body) {
+        body.orbital_angle += body.orbital_speed;
+        body.angle += body.orbital_speed + body.rotation_speed;
+        _this2.set_graphics_transform_by_stellar_coords(body);
+      });
+    }
   }, {
     key: "init_bodies",
     value: function init_bodies() {
       this.bodies = [];
-
-      this.star = this.init_body('star', null, 0, 10, 0, .01);
-      this.planet1 = this.init_body('planet1', this.star, 20, 3, .01, .02);
-      this.moon1 = this.init_body('moon1', this.planet1, 6, 1, .02, .02);
-      this.planet2 = this.init_body('planet2', this.star, 40, 5, .03, .02);
-      this.moon21 = this.init_body('moon21', this.planet2, 8, 1, .03, .001);
-      this.moon22 = this.init_body('moon22', this.planet2, 10, 2, .05, .01);
+      // name, parent, orbital_radius, radius, orbital_speed, rotation_speed, [orbital_angle], [angle]
+      this.star = this.init_body('star', null, 0, 10, 0, 1);
+      this.planet1 = this.init_body('planet1', this.star, 20, 3, 1, 2);
+      this.moon1 = this.init_body('moon1', this.planet1, 6, 1, 2, 2);
+      this.planet2 = this.init_body('planet2', this.star, 40, 5, 3, 2);
+      this.moon21 = this.init_body('moon21', this.planet2, 8, 2, 3, .1);
+      this.moon22 = this.init_body('moon22', this.planet2, 12, 1, 5, 1);
     }
   }, {
     key: "init_body",
     value: function init_body(name, parent, orbital_radius, radius, orbital_speed, rotation_speed) {
       var body = new StellarBody(name, parent, orbital_radius, radius, orbital_speed, rotation_speed);
-      body.graphics = new PIXI.Graphics();
-      this.matrix.addChild(body.graphics);
+      this.init_body_graphics(body, parent);
+      var parent_graphics = parent ? parent.base_container : this.matrix;
+      parent_graphics.addChild(body.base_container);
       this.bodies.push(body);
+      return body;
     }
   }, {
     key: "init_body_graphics",
-    value: function init_body_graphics(body, graphics) {
-      graphics.lineStyle(body.radius / 10, _color2.default.to_pixi([255, 255, 255]));
+    value: function init_body_graphics(body, parent) {
+      // thats because base_container do not rotate with planet rotation, otherwise
+      // all moons rotate with planet's self rotations
+      body.base_container = new PIXI.Graphics();
+      body.graphics = new PIXI.Graphics();
+      body.base_container.addChild(body.graphics);
+      this.set_graphics_transform_by_stellar_coords(body);
+      body.graphics.lineStyle(body.radius / 10, _color2.default.to_pixi([255, 255, 255]));
+      body.graphics.drawCircle(0, 0, body.radius);
+      body.graphics.closePath();
+      [1, 2, 3].forEach(function (i) {
+        var coords = _util2.default.from_polar_coords(i * 2 * Math.PI / 3, body.radius / 2);
+        body.graphics.drawCircle(coords.x, coords.y, body.radius / 4);
+        body.graphics.closePath();
+      });
+    }
+  }, {
+    key: "set_graphics_transform_by_stellar_coords",
+    value: function set_graphics_transform_by_stellar_coords(body) {
+      var coords = _util2.default.from_polar_coords(body.orbital_angle, body.orbital_radius);
+      // thats not a mistake, see comment below
+      body.base_container.x = coords.x;
+      body.base_container.y = coords.y;
+      body.graphics.rotation = body.angle;
     }
   }]);
 
@@ -1655,8 +1688,9 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
   this.parent = parent;
   this.orbital_radius = orbital_radius;
   this.radius = radius;
-  this.orbital_speed = orbital_speed;
-  this.rotation_speed = rotation_speed;
+  var tick_factor = 1;
+  this.orbital_speed = tick_factor * _util2.default.radians(orbital_speed);
+  this.rotation_speed = tick_factor * _util2.default.radians(rotation_speed);
   this.orbital_angle = orbital_angle ? orbital_angle : 2 * Math.PI * Math.random();
   this.angle = angle ? angle : 2 * Math.PI * Math.random();
 };
