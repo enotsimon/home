@@ -3,15 +3,15 @@
 }
 
 .status_in_progress {
-  background-color: orange;
+  background-color: #ffa500;
 }
 
 .status_almost_ready {
-  background-color: goldenrod;
+  background-color: #f3da0b;
 }
 
 .status_ready {
-  background-color: green;
+  background-color: #85cf17;
 }
 
 .sample_preview {
