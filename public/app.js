@@ -1781,7 +1781,6 @@ var PlanetsFocus = function (_BasicDrawer) {
       this.matrix = new PIXI.Container();
       this.base_container.addChild(this.matrix);
       this.init_bodies();
-      this.focus = this.bodies[0];
     }
   }, {
     key: "redraw",
