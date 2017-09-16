@@ -5,10 +5,7 @@ import BasicDrawer from "experimental/basic_drawer";
 import * as PIXI from "pixi.js";
 
 /**
- *  TODO:
- *    - add debug info of angle_inc, acceleration, speed
- *    - zooming with speed change? tried, looks bad
- *    - fix graphics redraw leaps!!!
+ *
  */
 export default class PlanetsFocus extends BasicDrawer {
   constructor() {
@@ -21,11 +18,10 @@ export default class PlanetsFocus extends BasicDrawer {
     this.init_bodies();
   }
 
-
   redraw() {
     this.bodies.forEach(body => {
-      body.orbital_angle += body.orbital_speed;
-      body.angle += body.orbital_speed + body.rotation_speed;
+      body.orbital_angle += this.tick_delta * body.orbital_speed;
+      body.angle += this.tick_delta * (body.orbital_speed + body.rotation_speed);
       this.set_graphics_transform_by_stellar_coords(body);
     });
   }
@@ -83,9 +79,8 @@ class StellarBody {
     this.parent = parent;
     this.orbital_radius = orbital_radius;
     this.radius = radius;
-    let tick_factor = 1;
-    this.orbital_speed = tick_factor * Util.radians(orbital_speed);
-    this.rotation_speed = tick_factor * Util.radians(rotation_speed);
+    this.orbital_speed = Util.radians(orbital_speed);
+    this.rotation_speed = Util.radians(rotation_speed);
     this.orbital_angle = orbital_angle ? orbital_angle : 2 * Math.PI * Math.random();
     this.angle = angle ? angle : 2 * Math.PI * Math.random();
   }
