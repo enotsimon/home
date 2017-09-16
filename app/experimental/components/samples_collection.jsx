@@ -30,7 +30,7 @@ export default class SamplesCollecton extends React.Component {
                 i.e. move it to the center of coordinates and make all others spin around it`,
               sample_url: './planets_focus.html',
               img_path: './thumbnails/planets_focus.jpg',
-              status: 'draft',
+              status: 'in_progress',
             })}
 
           </div>

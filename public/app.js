@@ -1577,7 +1577,7 @@ var SamplesCollecton = function (_React$Component) {
               description: "star system emulation, where we\n                dynamically change focus on random stellar body,\n                i.e. move it to the center of coordinates and make all others spin around it",
               sample_url: './planets_focus.html',
               img_path: './thumbnails/planets_focus.jpg',
-              status: 'draft'
+              status: 'in_progress'
             })
           )
         )
@@ -1793,7 +1793,7 @@ var PlanetsFocus = function (_BasicDrawer) {
       this.init_bodies();
       this.forced_focus = false;
       this.focused_body = this.bodies[0];
-      this.focus_change_threshold = 500;
+      this.focus_change_threshold = 300;
       this.focus_change_tick = this.focus_change_threshold;
       this.update_matrix_by_focus();
     }
