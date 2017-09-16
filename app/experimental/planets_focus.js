@@ -19,7 +19,7 @@ export default class PlanetsFocus extends BasicDrawer {
     this.init_bodies();
     this.forced_focus = false;
     this.focused_body = this.bodies[0];
-    this.focus_change_threshold = 500;
+    this.focus_change_threshold = 300;
     this.focus_change_tick = this.focus_change_threshold;
     this.update_matrix_by_focus();
   }
