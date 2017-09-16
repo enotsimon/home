@@ -1152,8 +1152,6 @@ var BasicDrawer = function () {
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
-    this.tick_delay = 0;
-    this.basic_interval = 25;
     this.tick_speed = 1;
     document.addEventListener('DOMContentLoaded', function () {
       _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
@@ -1200,17 +1198,13 @@ var BasicDrawer = function () {
       document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false);
 
       this.ticks = 0; // here?
-      this.pixi.ticker.add(function () {
-        // this prevents from leaps on pixi FPS peaks
-        _this2.tick_delay += _this2.pixi.ticker.elapsedMS;
-        if (_this2.tick_delay >= _this2.basic_interval / _this2.tick_speed) {
-          _this2.ticks++;
-          if (_this2.ticks % 10 == 0) {
-            d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
-          }
-          _this2.tick_delay = 0;
-          _this2.redraw();
+      this.pixi.ticker.add(function (delta) {
+        _this2.ticks++;
+        if (_this2.ticks % 10 == 0) {
+          d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
         }
+        _this2.tick_delta = delta;
+        _this2.redraw();
       });
       //////////////////////////////////
       this.init_graphics();
@@ -1660,10 +1654,10 @@ var MovingArrows = function (_BasicDrawer) {
       this.change_angle_chance = .05;
       this.angle = 0;
       this.angle_inc = 0;
-      this.angle_inc_max = 2 * Math.PI / 90;
+      this.angle_inc_max = 2 * Math.PI / 180;
       this.acceleration = 0;
-      this.max_speed = 3;
-      this.min_speed = 1.5;
+      this.max_speed = 0.8;
+      this.min_speed = 0.4;
       this.speed = (this.max_speed - this.min_speed) / 2;
       this.color = [255, 255, 255];
       this.matrix_container = new PIXI.Container();
@@ -1696,8 +1690,10 @@ var MovingArrows = function (_BasicDrawer) {
         this.angle_inc = this.cos_interpolation(-this.angle_inc_max, this.angle_inc_max, Math.random());
       }
       this.angle += this.angle_inc;
+      // TODO its very bad that speed depends totally on angle
       var acceleration = this.angle_inc_max / 2 - Math.abs(this.angle_inc);
       var new_speed = this.speed + acceleration;
+      new_speed *= this.tick_delta;
       this.speed = Math.max(this.min_speed, Math.min(new_speed, this.max_speed));
 
       var radius = this.speed;
@@ -1768,10 +1764,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- *  TODO:
- *    - add debug info of angle_inc, acceleration, speed
- *    - zooming with speed change? tried, looks bad
- *    - fix graphics redraw leaps!!!
+ *
  */
 var PlanetsFocus = function (_BasicDrawer) {
   _inherits(PlanetsFocus, _BasicDrawer);
@@ -1788,6 +1781,7 @@ var PlanetsFocus = function (_BasicDrawer) {
       this.matrix = new PIXI.Container();
       this.base_container.addChild(this.matrix);
       this.init_bodies();
+      this.focus = this.bodies[0];
     }
   }, {
     key: "redraw",
@@ -1795,8 +1789,8 @@ var PlanetsFocus = function (_BasicDrawer) {
       var _this2 = this;
 
       this.bodies.forEach(function (body) {
-        body.orbital_angle += body.orbital_speed;
-        body.angle += body.orbital_speed + body.rotation_speed;
+        body.orbital_angle += _this2.tick_delta * body.orbital_speed;
+        body.angle += _this2.tick_delta * (body.orbital_speed + body.rotation_speed);
         _this2.set_graphics_transform_by_stellar_coords(body);
       });
     }
@@ -1866,9 +1860,8 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
   this.parent = parent;
   this.orbital_radius = orbital_radius;
   this.radius = radius;
-  var tick_factor = 1;
-  this.orbital_speed = tick_factor * _util2.default.radians(orbital_speed);
-  this.rotation_speed = tick_factor * _util2.default.radians(rotation_speed);
+  this.orbital_speed = _util2.default.radians(orbital_speed);
+  this.rotation_speed = _util2.default.radians(rotation_speed);
   this.orbital_angle = orbital_angle ? orbital_angle : 2 * Math.PI * Math.random();
   this.angle = angle ? angle : 2 * Math.PI * Math.random();
 };

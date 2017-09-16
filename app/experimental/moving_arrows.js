@@ -23,10 +23,10 @@ export default class MovingArrows extends BasicDrawer {
     this.change_angle_chance = .05;
     this.angle = 0;
     this.angle_inc = 0;
-    this.angle_inc_max = 2 * Math.PI / 90;
+    this.angle_inc_max = 2 * Math.PI / 180;
     this.acceleration = 0;
-    this.max_speed = 3;
-    this.min_speed = 1.5;
+    this.max_speed = 0.8;
+    this.min_speed = 0.4;
     this.speed = (this.max_speed - this.min_speed)/2;
     this.color = [255, 255, 255];
     this.matrix_container = new PIXI.Container();
@@ -55,8 +55,10 @@ export default class MovingArrows extends BasicDrawer {
       this.angle_inc = this.cos_interpolation(-this.angle_inc_max, this.angle_inc_max, Math.random());
     }
     this.angle += this.angle_inc;
+    // TODO its very bad that speed depends totally on angle
     let acceleration = this.angle_inc_max / 2 - Math.abs(this.angle_inc);
     let new_speed = this.speed + acceleration;
+    new_speed *= this.tick_delta;
     this.speed = Math.max(this.min_speed, Math.min(new_speed, this.max_speed));
     
     let radius = this.speed;
