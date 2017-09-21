@@ -3,13 +3,15 @@ import Util from "common/util";
 import Color from "common/color";
 import BasicDrawer from "experimental/basic_drawer";
 import * as PIXI from "pixi.js";
+import * as d3 from "d3";
 
 /**
  *
  */
 export default class PlanetsFocus extends BasicDrawer {
   constructor() {
-    super('circle');
+    let debug_additional = [{id: 'debug_info_focus_on', text: 'now focus on'}];
+    super('circle', debug_additional);
   }
 
   init_graphics() {
@@ -39,6 +41,7 @@ export default class PlanetsFocus extends BasicDrawer {
       }
     }
     this.update_matrix_by_focus();
+    d3.select('#debug_info_focus_on').html(this.focused_body.name);
   }
 
 

@@ -25,7 +25,7 @@ export default class App extends React.Component {
             <div>
               <div>FPS: <span id="fps_counter"></span></div>
               <div>mouse position: <span id="mouse_pos">{0, 0}</span></div>
-              {this.state.additional.forEach(e => <div>{e.text}: <span id={e.id}>{e.default}</span></div>)}
+              {this.state.additional.map(e => <div key={e.id}>{e.text}: <span id={e.id}>{e.value}</span></div>)}
             </div>
           </div>
         </div>
