@@ -852,9 +852,9 @@ var Util = function () {
     }
   }, {
     key: 'move_by_vector',
-    value: function move_by_vector(xf, yf, xt, yt, length) {
+    value: function move_by_vector(from, to, length) {
       // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
-      return [xf + (xt - xf) * length, yf + (yt - yf) * length];
+      return { x: from.x + (to.x - from.x) * length, y: from.y + (to.y - from.y) * length };
     }
   }, {
     key: 'convex_polygon_centroid',
@@ -1075,8 +1075,7 @@ var VoronoiDiagram = function () {
           return { x: e[0], y: e[1] };
         });
         var pf = _util2.default.convex_polygon_centroid(poly);
-        var res = _util2.default.move_by_vector(p.data.x, p.data.y, pf.x, pf.y, to_move);
-        return { x: res[0], y: res[1] };
+        return _util2.default.move_by_vector(p.data, pf, to_move);
       });
       return voronoi(new_points);
     }
@@ -4114,7 +4113,7 @@ var MapDrawer = function () {
     key: "draw_smoothed_polygon",
     value: function draw_smoothed_polygon(graphics, polygon, center, water_color) {
       polygon = polygon.map(function (node) {
-        return MapDrawer.move_by_vector(node, center, _util2.default.rand_float(0.1, 0.3));
+        return _util2.default.move_by_vector(node, center, _util2.default.rand_float(0.1, 0.3));
       });
       var mid_radius = polygon.reduce(function (sum, e) {
         return sum + _util2.default.distance(e, center);
@@ -4145,12 +4144,6 @@ var MapDrawer = function () {
       graphics.lineTo(mid_point.x, mid_point.y);
       graphics.moveTo(mid_point.x, mid_point.y);
       graphics.lineTo(c2.x, c2.y);
-    }
-  }, {
-    key: "move_by_vector",
-    value: function move_by_vector(from, to, length) {
-      var bla = _util2.default.move_by_vector(from.x, from.y, to.x, to.y, length);
-      return { x: bla[0], y: bla[1] };
     }
   }, {
     key: "two_cells_edge_midpoint",

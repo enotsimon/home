@@ -125,8 +125,7 @@ export default class VoronoiDiagram {
       // it by value of 'to_move' to direction to centroid
       let poly = p.map(e => { return {x: e[0], y: e[1]} });
       let pf = Util.convex_polygon_centroid(poly);
-      let res = Util.move_by_vector(p.data.x, p.data.y, pf.x, pf.y, to_move);
-      return {x: res[0], y: res[1]};
+      return Util.move_by_vector(p.data, pf, to_move);
     });
     return voronoi(new_points);
   }

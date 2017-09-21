@@ -129,9 +129,9 @@ export default class Util {
   static degrees(radians) { return radians * 180 / Math.PI; }
 
 
-  static move_by_vector(xf, yf, xt, yt, length) {
+  static move_by_vector(from, to, length) {
     // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
-    return [xf + (xt - xf)*length, yf + (yt - yf)*length];
+    return {x: from.x + (to.x - from.x)*length, y: from.y + (to.y - from.y)*length};
   }
 
 
