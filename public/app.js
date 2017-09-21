@@ -1147,17 +1147,23 @@ var BasicDrawer = function () {
   function BasicDrawer(regime) {
     var _this = this;
 
+    var debug_additional = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+
     _classCallCheck(this, BasicDrawer);
 
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.tick_speed = 1;
+    this.react_app = _react2.default.createElement(_app2.default, { additional: debug_additional });
     document.addEventListener('DOMContentLoaded', function () {
-      _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
+      _reactDom2.default.render(_this.react_app, document.querySelector('#app'));
       _this.init();
     });
   }
+
+  // TODO update debug info not directly, but from setState()
+
 
   _createClass(BasicDrawer, [{
     key: "init",
@@ -1324,16 +1330,16 @@ var App = function (_React$Component) {
                   (0, 0)
                 )
               ),
-              this.state.additional.forEach(function (e) {
+              this.state.additional.map(function (e) {
                 return _react2.default.createElement(
                   'div',
-                  null,
+                  { key: e.id },
                   e.text,
                   ': ',
                   _react2.default.createElement(
                     'span',
                     { id: e.id },
-                    e.default
+                    e.value
                   )
                 );
               })
@@ -1778,6 +1784,10 @@ var _pixi = require("pixi.js");
 
 var PIXI = _interopRequireWildcard(_pixi);
 
+var _d = require("d3");
+
+var d3 = _interopRequireWildcard(_d);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -1797,7 +1807,8 @@ var PlanetsFocus = function (_BasicDrawer) {
   function PlanetsFocus() {
     _classCallCheck(this, PlanetsFocus);
 
-    return _possibleConstructorReturn(this, (PlanetsFocus.__proto__ || Object.getPrototypeOf(PlanetsFocus)).call(this, 'circle'));
+    var debug_additional = [{ id: 'debug_info_focus_on', text: 'now focus on' }];
+    return _possibleConstructorReturn(this, (PlanetsFocus.__proto__ || Object.getPrototypeOf(PlanetsFocus)).call(this, 'circle', debug_additional));
   }
 
   _createClass(PlanetsFocus, [{
@@ -1832,6 +1843,7 @@ var PlanetsFocus = function (_BasicDrawer) {
         }
       }
       this.update_matrix_by_focus();
+      d3.select('#debug_info_focus_on').html(this.focused_body.name);
     }
   }, {
     key: "update_matrix_by_focus",

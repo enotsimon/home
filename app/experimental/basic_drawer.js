@@ -8,17 +8,19 @@ import React from 'react';
 import * as PIXI from "pixi.js";
 
 export default class BasicDrawer {
-  constructor(regime) {
+  constructor(regime, debug_additional = []) {
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.tick_speed = 1;
+    this.react_app = React.createElement(App, {additional: debug_additional});
     document.addEventListener('DOMContentLoaded', () => {
-      ReactDOM.render(<App />, document.querySelector('#app'));
+      ReactDOM.render(this.react_app, document.querySelector('#app'));
       this.init();
     });
   }
 
+  // TODO update debug info not directly, but from setState()
   init() {
     this.pixi = new PIXI.Application(this.real_size, this.real_size, {
       backgroundColor : Color.to_pixi([0, 0, 0]),
