@@ -345,7 +345,7 @@ export default class MapDrawer {
 
 
   static draw_smoothed_polygon(graphics, polygon, center, water_color) {
-    polygon = polygon.map(node => MapDrawer.move_by_vector(node, center, Util.rand_float(0.1, 0.3)));
+    polygon = polygon.map(node => Util.move_by_vector(node, center, Util.rand_float(0.1, 0.3)));
     let mid_radius = polygon.reduce((sum, e) => sum + Util.distance(e, center), 0)/polygon.length;
     polygon = polygon.filter((node, i) => {
       let next_i = (i + 1 == polygon.length) ? 0 : i + 1;
@@ -371,13 +371,6 @@ export default class MapDrawer {
     graphics.lineTo(mid_point.x, mid_point.y);
     graphics.moveTo(mid_point.x, mid_point.y);
     graphics.lineTo(c2.x, c2.y);
-  }
-
-
-
-  static move_by_vector(from, to, length) {
-    let bla = Util.move_by_vector(from.x, from.y, to.x, to.y, length);
-    return {x: bla[0], y: bla[1]};
   }
 
 
