@@ -5580,6 +5580,225 @@ exports.default = StellarBody;
 
 });
 
+require.register("sheepland/creature_names.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *  its like relation that requires some other relations + injects some
+ *  REQUIRE: species, sex, id
+ *  INJECT: name
+ */
+var CreatureNames = function () {
+  function CreatureNames() {
+    _classCallCheck(this, CreatureNames);
+
+    this.names = {};
+    this.named_species = ['human'];
+    // ???
+    this.required_props = ['species', 'sex', 'id'];
+    this.strategy = 'random';
+    this.init_names_stat(require('sheepland/names/male_names').list, 'human', 'male');
+    this.init_names_stat(require('sheepland/names/female_names').list, 'human', 'female');
+  }
+
+  _createClass(CreatureNames, [{
+    key: "init_names_stat",
+    value: function init_names_stat(list, species, sex) {
+      var _this = this;
+
+      list.forEach(function (name) {
+        _this.init_name_stat(name);
+        _util2.default.push_uniq(species, _this.names[name].species);
+        _util2.default.push_uniq(sex, _this.names[name].sex);
+      });
+    }
+  }, {
+    key: "init_name_stat",
+    value: function init_name_stat(name) {
+      if (!this.names[name]) {
+        this.names[name] = { species: [], sex: [], creatures: [] };
+        return true;
+      }
+      return false;
+    }
+  }, {
+    key: "creature_link",
+    value: function creature_link(creature) {
+      return creature.id;
+    }
+  }, {
+    key: "filter_names",
+    value: function filter_names(func) {
+      var ret = {};
+      for (var i in this.names) {
+        if (func(this.names[i])) {
+          ret[i] = this.names[i];
+        }
+      }
+      return ret;
+    }
+
+    //////////////////////////////////////////////////////////
+    // public
+    //////////////////////////////////////////////////////////
+
+  }, {
+    key: "generate",
+    value: function generate(creature) {
+      this.required_props.forEach(function (prop) {
+        if (!creature[prop]) {
+          throw "creature has no property " + prop;
+        }
+      });
+      // animals have their species as name
+      if (this.named_species.indexOf(creature.species) == -1) {
+        creature.name = creature.species;
+        return;
+      }
+      var filtered = {};
+      if (this.strategy == 'random') {
+        filtered = this.filter_names(function (name) {
+          return name.species.indexOf(creature.species) != -1 && name.sex.indexOf(creature.sex) != -1;
+        });
+      } else if (this.strategy == 'evenly') {
+        filtered = this.filter_names(function (name) {
+          return name.species.indexOf(creature.species) != -1 && name.sex.indexOf(creature.sex) != -1;
+        });
+        var min = _util2.default.find_min_and_max(filtered, function (name) {
+          return name.creatures.length;
+        }).min;
+        filtered = this.filter_names(function (name) {
+          return name.creatures.length == min;
+        });
+      } else {
+        throw 'unknown names strategy: ' + this.strategy;
+      }
+      filtered = Object.keys(filtered);
+      if (!filtered.length) {
+        throw 'dunno wly, but no names for choose, bad species?';
+      }
+      var name = _util2.default.rand_element(filtered);
+      this.set_name(creature, name);
+    }
+  }, {
+    key: "set_name",
+    value: function set_name(creature, name) {
+      this.init_name_stat(name);
+      _util2.default.push_uniq(this.creature_link(creature), this.names[name].creatures);
+      creature.name = name;
+    }
+  }, {
+    key: "clear_name",
+    value: function clear_name(creature) {
+      if (!creature.name) {
+        return false;
+      }
+      if (!this.names[creature.name]) {
+        if (creature.name != creature.species) {
+          throw 'creature has name, its not its species, and theres no name stat';
+        }
+        return false;
+      }
+      _util2.default.remove_element(this.creature_link(creature), this.names[creature.name].creatures);
+      creature.name = null;
+      return true;
+    }
+  }]);
+
+  return CreatureNames;
+}();
+
+exports.default = CreatureNames;
+
+});
+
+require.register("sheepland/names/female_names.js", function(exports, require, module) {
+"use strict";
+
+var list = ["agrona", "andraste", "angharad", "aoife", "arianrhod", "bébhinn", "bébinn", "béibhinn", "bláthnat", "blodeuwedd", "boudicca", "branwen", "bríd", "brighid", "brigit", "britannia", "brittania", "brittany", "céibhfhionn", "ciannait", "clídna", "clíodhna", "derdriu", "doireann", "eadan", "éadaoin", "eigyr", "éimhear", "emer", "enid", "epona", "ériu", "étaín", "feidelm", "feidlimid", "finnguala", "fionnuala", "gobnait", "gráinne", "gwenhwyfar", "laoise", "luigsech", "luíseach", "méabh", "meadhbh", "medb", "morgaine", "morgan", "morgen", "morrigan", "mórríghan", "mór", "muirgen", "muirín", "muirne", "neas", "neasa", "niamh", "rigantona", "ríoghnach", "sadb", "sadhbh", "shannon", "sionann"];
+
+//export $list;
+module.exports.list = list;
+
+});
+
+require.register("sheepland/names/male_names.js", function(exports, require, module) {
+"use strict";
+
+var list = ["áed", "áedán", "aengus", "ailill", "arawn", "arthfael", "bedivere", "bedwyr", "belenus", "bradán", "bran", "bréanainn", "brennus", "bricius", "cadeyrn", "cáel", "caiside", "caomh", "caomhán", "caratacos", "cathasach", "cernunnos", "cian", "cianán", "coilean", "conchobhar", "conchúr", "conlaoch", "corraidhín", "cúchulainn", "cuidightheach", "culhwch", "cunobelinus", "cynbel", "cynwrig", "dagda", "dáire", "diarmaid", "donnchad", "donndubhán", "drust", "drustan", "dubhán", "dubhshláine", "dubhthach", "dwyn", "éber", "éibhear", "elisedd", "fachtna", "fáelán", "faolán", "feidhlim", "feidhlimidh", "feidlimid", "fiachra", "finnagán", "finnán", "fintan", "fionn", "fionnán", "galchobhar", "gobán", "goibniu", "goronwy", "gwalchmei", "gwrtheyrn", "gwydion", "haerviu", "iudicael", "laoghaire", "llyr", "lóegaire", "lugus", "mabon", "máedóc", "math", "mathghamhain", "mathúin", "medraut", "mochán", "morcant", "myrddin", "nuada", "nuallán", "nynniaw", "óengus", "oisín", "perceval", "peredur", "pryderi", "pwyll", "seanán", "senán", "shannon", "sluaghadhán", "suibne", "taranis", "urien", "uthyr", "vercingetorix", "walganus"];
+
+//export $list;
+module.exports.list = list;
+
+});
+
+require.register("sheepland/sheepland.js", function(exports, require, module) {
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _creature_names = require("sheepland/creature_names");
+
+var _creature_names2 = _interopRequireDefault(_creature_names);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Sheepland = function () {
+  function Sheepland() {
+    _classCallCheck(this, Sheepland);
+
+    this.creature_names = new _creature_names2.default();
+  }
+
+  _createClass(Sheepland, [{
+    key: "test",
+    value: function test() {
+      var count = 100;
+      while (--count) {
+        this.generate_creature(count);
+      }
+    }
+  }, {
+    key: "generate_creature",
+    value: function generate_creature(i) {
+      var sex = Math.random() < 0.5 ? 'male' : 'female';
+      var creature = { id: i, sex: sex, species: 'human' };
+      this.creature_names.generate(creature);
+      console.log("GE", sex, creature.name);
+    }
+  }]);
+
+  return Sheepland;
+}();
+
+var game = new Sheepland();
+game.test();
+module.exports.game = game;
+
+});
+
 require.alias("buffer/index.js", "buffer");
 require.alias("path-browserify/index.js", "path");
 require.alias("process/browser.js", "process");

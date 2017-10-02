@@ -1,4 +1,4 @@
-let $list = [
+let list = [
   "áed",
   "áedán",
   "aengus",

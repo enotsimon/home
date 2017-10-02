@@ -3,7 +3,7 @@ import CreatureNames from "sheepland/creature_names";
 
 class Sheepland {
   constructor() {
-    let creature_names = new CreatureNames();
+    this.creature_names = new CreatureNames();
   }
 
   test() {
@@ -15,8 +15,9 @@ class Sheepland {
 
   generate_creature(i) {
     let sex = Math.random() < 0.5 ? 'male' : 'female';
-    let creature = {id: i, sex, species: 'human'};
+    let creature = {id: i, sex: sex, species: 'human'};
     this.creature_names.generate(creature);
+    console.log("GE", sex, creature.name);
   }
 }
 
