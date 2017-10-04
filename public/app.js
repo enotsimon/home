@@ -5580,6 +5580,83 @@ exports.default = StellarBody;
 
 });
 
+require.register("sheepland/calendar.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Calendar = function () {
+  function Calendar() {
+    _classCallCheck(this, Calendar);
+
+    this.game = _sheepland.game;
+    console.log('DA', _sheepland.game);
+    this.ticks_per_day = 1000 / _sheepland.game.tick_basic_delay * 60 * 5; // day lasts 5 min
+    this.basic_time_ratio = 1000 * 60 * 60 * 24 / this.ticks_per_day;
+
+    this.date = new Date(-1346, 10, 4, 12, 5, 1, 0); // just for fun
+  }
+
+  _createClass(Calendar, [{
+    key: "handleTick",
+    value: function handleTick() {
+      this.date.setTime(this.date.getTime() + this.basic_time_ratio * _sheepland.game.tick_speed);
+    }
+  }]);
+
+  return Calendar;
+}();
+
+exports.default = Calendar;
+
+});
+
+require.register("sheepland/creature_age.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *  its like relation that requires some other relations + injects some
+ *  REQUIRE: id
+ *  INJECT: age()
+ */
+var CreatureAge = function CreatureAge() {
+  //this.creatures = 
+
+  _classCallCheck(this, CreatureAge);
+};
+
+exports.default = CreatureAge;
+
+});
+
 require.register("sheepland/creature_names.js", function(exports, require, module) {
 "use strict";
 
@@ -5761,6 +5838,10 @@ var _creature_names = require("sheepland/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
 
+var _calendar = require("sheepland/calendar");
+
+var _calendar2 = _interopRequireDefault(_calendar);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -5769,10 +5850,22 @@ var Sheepland = function () {
   function Sheepland() {
     _classCallCheck(this, Sheepland);
 
-    this.creature_names = new _creature_names2.default();
+    this.ticks = 0;
+    this.tick_basic_delay = 10;
+    this.tick_speed = 1;
+    this.tick_handlers = [];
   }
 
   _createClass(Sheepland, [{
+    key: "init",
+    value: function init() {
+      this.calendar = new _calendar2.default();
+      this.creature_names = new _creature_names2.default();
+      //this.creature_age = new CreatureAge();
+
+      this.tick();
+    }
+  }, {
     key: "test",
     value: function test() {
       var count = 100;
@@ -5786,7 +5879,19 @@ var Sheepland = function () {
       var sex = Math.random() < 0.5 ? 'male' : 'female';
       var creature = { id: i, sex: sex, species: 'human' };
       this.creature_names.generate(creature);
-      console.log("GE", sex, creature.name);
+      //console.log("GE", sex, creature.name);
+    }
+  }, {
+    key: "tick",
+    value: function tick() {
+      this.ticks++;
+      this.calendar.handleTick();
+
+      if (this.ticks % 100 == 0) {
+        console.log('date', this.calendar.date.toString());
+      }
+
+      setTimeout(this.tick.bind(this), this.tick_basic_delay * this.tick_speed);
     }
   }]);
 
@@ -5794,8 +5899,11 @@ var Sheepland = function () {
 }();
 
 var game = new Sheepland();
-game.test();
+
 module.exports.game = game;
+
+game.init();
+game.test();
 
 });
 
