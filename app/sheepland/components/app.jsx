@@ -7,17 +7,27 @@ import {game} from "sheepland/sheepland";
 export default class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {date: ''};
+    this.state = {date: '', creatures: []};
     // !!! im shure its not good way, but i dont know better...
     game.app = this;
+
   }
 
   set_date(date) {
-    let new_state = Object.assign({}, this.state);
-    new_state.date = date;
-    this.setState(new_state);
+    let state = Object.assign({}, this.state, {date: date});
+    this.setState(state);
   }
 
+
+  set_creatures_list(creatures) {
+    let state = Object.assign({}, this.state, {creatures: []});
+    creatures.forEach(creature => {
+      let copy = Object.assign({}, creature, {age: game.creature_age.get_age(creature)});
+      state.creatures.push(copy);
+    });
+    console.log('state', state);
+    this.setState(state);
+  }
 
 
   render() {
@@ -46,7 +56,7 @@ export default class App extends React.Component {
                   </h4>
                 </div>
                 <div className="panel-body">
-                  <CreaturesList />
+                  <CreaturesList creatures={this.state.creatures}/>
                 </div>
               </div>
 

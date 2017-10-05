@@ -5612,7 +5612,20 @@ var Calendar = function () {
   _createClass(Calendar, [{
     key: "handleTick",
     value: function handleTick() {
-      this.date.setTime(this.date.getTime() + this.basic_time_ratio * _sheepland.game.tick_speed);
+      this.date.setTime(this.date.getTime() + this.time_ratio());
+    }
+  }, {
+    key: "current_ts",
+    value: function current_ts() {
+      return this.date.getUTCMilliseconds();
+    }
+
+    // ???
+
+  }, {
+    key: "time_ratio",
+    value: function time_ratio() {
+      return this.basic_time_ratio * _sheepland.game.tick_speed;
     }
   }]);
 
@@ -5662,18 +5675,29 @@ var App = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
-    _this.state = { date: '' };
+    _this.state = { date: '', creatures: [] };
     // !!! im shure its not good way, but i dont know better...
     _sheepland.game.app = _this;
+
     return _this;
   }
 
   _createClass(App, [{
     key: 'set_date',
     value: function set_date(date) {
-      var new_state = Object.assign({}, this.state);
-      new_state.date = date;
-      this.setState(new_state);
+      var state = Object.assign({}, this.state, { date: date });
+      this.setState(state);
+    }
+  }, {
+    key: 'set_creatures_list',
+    value: function set_creatures_list(creatures) {
+      var state = Object.assign({}, this.state, { creatures: [] });
+      creatures.forEach(function (creature) {
+        var copy = Object.assign({}, creature, { age: _sheepland.game.creature_age.get_age(creature) });
+        state.creatures.push(copy);
+      });
+      console.log('state', state);
+      this.setState(state);
     }
   }, {
     key: 'render',
@@ -5726,7 +5750,7 @@ var App = function (_React$Component) {
                   _react2.default.createElement(
                     'div',
                     { className: 'panel-body' },
-                    _react2.default.createElement(_creatures_list2.default, null)
+                    _react2.default.createElement(_creatures_list2.default, { creatures: this.state.creatures })
                   )
                 )
               )
@@ -5745,7 +5769,7 @@ exports.default = App;
 });
 
 require.register("sheepland/components/creatures_list.jsx", function(exports, require, module) {
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -5753,13 +5777,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _collapsible_panel = require('common/components/collapsible_panel');
-
-var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
-
-var _react = require('react');
+var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
+
+var _sheepland = require("sheepland/sheepland");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5772,26 +5794,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var CreaturesList = function (_React$Component) {
   _inherits(CreaturesList, _React$Component);
 
-  function CreaturesList(props) {
+  function CreaturesList() {
     _classCallCheck(this, CreaturesList);
 
-    var _this = _possibleConstructorReturn(this, (CreaturesList.__proto__ || Object.getPrototypeOf(CreaturesList)).call(this, props));
-
-    _this.state = { creatures: [] };
-    return _this;
+    return _possibleConstructorReturn(this, (CreaturesList.__proto__ || Object.getPrototypeOf(CreaturesList)).apply(this, arguments));
   }
 
   _createClass(CreaturesList, [{
-    key: 'render',
+    key: "render",
     value: function render() {
       return _react2.default.createElement(
-        'div',
+        "div",
         null,
-        this.state.creatures.forEach(function (creature) {
-          _react2.default.createElement(
-            'div',
-            { id: creature.id },
-            'da creature'
+        this.props.creatures.map(function (creature) {
+          //console.log('DPO', creature);
+          return _react2.default.createElement(
+            "div",
+            { key: creature.id },
+            _react2.default.createElement(
+              "span",
+              null,
+              creature.name
+            ),
+            "\xA0",
+            _react2.default.createElement(
+              "span",
+              null,
+              "(",
+              creature.species,
+              " ",
+              creature.sex,
+              ")"
+            ),
+            "\xA0",
+            _react2.default.createElement(
+              "span",
+              null,
+              "age: ",
+              creature.age.years,
+              " years, ",
+              creature.age.months,
+              " months, ",
+              creature.age.days,
+              " days"
+            )
           );
         })
       );
@@ -5812,6 +5858,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -5825,13 +5873,45 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  *  its like relation that requires some other relations + injects some
  *  REQUIRE: id
- *  INJECT: age()
+ *  INJECT: birth_ts
  */
-var CreatureAge = function CreatureAge() {
-  //this.creatures = 
+var CreatureAge = function () {
+  function CreatureAge() {
+    _classCallCheck(this, CreatureAge);
 
-  _classCallCheck(this, CreatureAge);
-};
+    this.max_random_age = 1000 * 60 * 60 * 24 * 365 * 50; // 50 years
+  }
+
+  _createClass(CreatureAge, [{
+    key: "generate",
+    value: function generate(creature) {
+      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (birth_ts && birth_ts > _sheepland.game.calendar.current_ts()) {
+        console.log('creature birth_ts greater than current ts', birth_ts, _sheepland.game.calendar.current_ts());
+        return false;
+      }
+      if (!birth_ts) {
+        birth_ts = _sheepland.game.calendar.current_ts() - _util2.default.rand(0, this.max_random_age);
+      }
+      creature.birth_ts = birth_ts;
+    }
+
+    // incorrect, but we dont care
+    // slow, ineffective?
+
+  }, {
+    key: "get_age",
+    value: function get_age(creature) {
+      var diff = Math.abs(creature.birth_ts - _sheepland.game.calendar.current_ts());
+      var date = new Date();
+      date.setTime(diff);
+      return { years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate() };
+    }
+  }]);
+
+  return CreatureAge;
+}();
 
 exports.default = CreatureAge;
 
@@ -6022,6 +6102,10 @@ var _creature_names = require("sheepland/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
 
+var _creature_age = require("sheepland/creature_age");
+
+var _creature_age2 = _interopRequireDefault(_creature_age);
+
 var _app = require("sheepland/components/app");
 
 var _app2 = _interopRequireDefault(_app);
@@ -6051,27 +6135,38 @@ var Sheepland = function () {
   _createClass(Sheepland, [{
     key: "generate_world",
     value: function generate_world() {
+      this.creatures = []; // TEMP
       this.calendar = new _calendar2.default();
       this.creature_names = new _creature_names2.default();
-      //this.creature_age = new CreatureAge();
+      this.creature_age = new _creature_age2.default();
+
+      this.test(); // TEMP
 
       this.tick();
     }
   }, {
     key: "test",
     value: function test() {
-      var count = 100;
+      var count = 15;
       while (--count) {
-        this.generate_creature(count);
+        var creature = this.generate_creature(count);
+        this.creatures.push(creature);
       }
     }
   }, {
     key: "generate_creature",
     value: function generate_creature(i) {
-      var sex = Math.random() < 0.5 ? 'male' : 'female';
+      var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var age = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      if (!sex) {
+        sex = Math.random() < 0.5 ? 'male' : 'female';
+      }
       var creature = { id: i, sex: sex, species: 'human' };
       this.creature_names.generate(creature);
+      this.creature_age.generate(creature);
       //console.log("GE", sex, creature.name);
+      return creature;
     }
   }, {
     key: "tick",
@@ -6080,6 +6175,9 @@ var Sheepland = function () {
 
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());
+      }
+      if (this.ticks % 1000 == 0) {
+        this.app.set_creatures_list(this.creatures);
       }
 
       this.ticks++;
@@ -6096,7 +6194,6 @@ module.exports.game = game;
 document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_world();
-  game.test();
 });
 
 });

@@ -1,6 +1,7 @@
 import Util from "common/util";
 import Calendar from "sheepland/calendar";
 import CreatureNames from "sheepland/creature_names";
+import CreatureAge from "sheepland/creature_age";
 
 import App from 'sheepland/components/app';
 import ReactDOM from 'react-dom';
@@ -16,27 +17,35 @@ class Sheepland {
 
 
   generate_world() {
+    this.creatures = []; // TEMP
     this.calendar = new Calendar();
     this.creature_names = new CreatureNames();
-    //this.creature_age = new CreatureAge();
+    this.creature_age = new CreatureAge();
+
+    this.test(); // TEMP
 
     this.tick();
   }
 
 
   test() {
-    let count = 100;
+    let count = 15;
     while (--count) {
-      this.generate_creature(count);
+      let creature = this.generate_creature(count);
+      this.creatures.push(creature);
     }
   }
 
 
-  generate_creature(i) {
-    let sex = Math.random() < 0.5 ? 'male' : 'female';
+  generate_creature(i, sex = false, age = false) {
+    if (!sex) {
+      sex = Math.random() < 0.5 ? 'male' : 'female';
+    }
     let creature = {id: i, sex: sex, species: 'human'};
     this.creature_names.generate(creature);
+    this.creature_age.generate(creature);
     //console.log("GE", sex, creature.name);
+    return creature;
   }
 
 
@@ -45,6 +54,9 @@ class Sheepland {
 
     if (this.ticks % 10 == 0) {
       this.app.set_date(this.calendar.date.toUTCString());
+    }
+    if (this.ticks % 1000 == 0) {
+      this.app.set_creatures_list(this.creatures);
     }
 
     this.ticks++;
@@ -60,5 +72,4 @@ module.exports.game = game;
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<App/>, document.querySelector('#app'));
   game.generate_world();
-  game.test();
 });

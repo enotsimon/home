@@ -12,6 +12,16 @@ export default class Calendar {
 
 
   handleTick() {
-    this.date.setTime(this.date.getTime() + this.basic_time_ratio * game.tick_speed);
+    this.date.setTime(this.date.getTime() + this.time_ratio());
+  }
+
+
+  current_ts() {
+    return this.date.getUTCMilliseconds();
+  }
+
+  // ???
+  time_ratio() {
+    return this.basic_time_ratio * game.tick_speed;
   }
 }
