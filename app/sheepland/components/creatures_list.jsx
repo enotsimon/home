@@ -9,7 +9,6 @@ export default class CreaturesList extends React.Component {
     return (
       <div>
         {this.props.creatures.map(creature => {
-          //console.log('DPO', creature);
           return (<div key={creature.id}>
               <span>{creature.name}</span>&nbsp;
               <span>({creature.species} {creature.sex})</span>&nbsp;

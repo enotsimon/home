@@ -55,8 +55,14 @@ class Sheepland {
     if (this.ticks % 10 == 0) {
       this.app.set_date(this.calendar.date.toUTCString());
     }
-    if (this.ticks % 1000 == 0) {
-      this.app.set_creatures_list(this.creatures);
+    if (this.ticks % 100 == 0) {
+      let creature_list = this.creatures.map(creature => {
+        let copy = Object.assign({}, creature);
+        copy.age = game.creature_age.get_age(creature);
+        return copy;
+      });
+      this.app.set_creatures_list(creature_list);
+      console.log('SU', game.creature_age.get_age(this.creatures[0]), this.calendar.current_ts());
     }
 
     this.ticks++;

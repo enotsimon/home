@@ -20,12 +20,7 @@ export default class App extends React.Component {
 
 
   set_creatures_list(creatures) {
-    let state = Object.assign({}, this.state, {creatures: []});
-    creatures.forEach(creature => {
-      let copy = Object.assign({}, creature, {age: game.creature_age.get_age(creature)});
-      state.creatures.push(copy);
-    });
-    console.log('state', state);
+    let state = Object.assign({}, this.state, {creatures: creatures});
     this.setState(state);
   }
 

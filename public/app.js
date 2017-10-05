@@ -5603,7 +5603,8 @@ var Calendar = function () {
   function Calendar() {
     _classCallCheck(this, Calendar);
 
-    this.ticks_per_day = 1000 / _sheepland.game.tick_basic_delay * 60 * 5; // day lasts 5 min
+    //this.ticks_per_day = 1000/game.tick_basic_delay*60*5; // day lasts 5 min
+    this.ticks_per_day = 1000 / _sheepland.game.tick_basic_delay * 5; // day lasts 1 min
     this.basic_time_ratio = 1000 * 60 * 60 * 24 / this.ticks_per_day;
 
     this.date = new Date(-1346, 10, 4, 12, 5, 1, 0); // just for fun
@@ -5617,7 +5618,7 @@ var Calendar = function () {
   }, {
     key: "current_ts",
     value: function current_ts() {
-      return this.date.getUTCMilliseconds();
+      return this.date.getTime();
     }
 
     // ???
@@ -5691,12 +5692,7 @@ var App = function (_React$Component) {
   }, {
     key: 'set_creatures_list',
     value: function set_creatures_list(creatures) {
-      var state = Object.assign({}, this.state, { creatures: [] });
-      creatures.forEach(function (creature) {
-        var copy = Object.assign({}, creature, { age: _sheepland.game.creature_age.get_age(creature) });
-        state.creatures.push(copy);
-      });
-      console.log('state', state);
+      var state = Object.assign({}, this.state, { creatures: creatures });
       this.setState(state);
     }
   }, {
@@ -5807,7 +5803,6 @@ var CreaturesList = function (_React$Component) {
         "div",
         null,
         this.props.creatures.map(function (creature) {
-          //console.log('DPO', creature);
           return _react2.default.createElement(
             "div",
             { key: creature.id },
@@ -6176,8 +6171,14 @@ var Sheepland = function () {
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());
       }
-      if (this.ticks % 1000 == 0) {
-        this.app.set_creatures_list(this.creatures);
+      if (this.ticks % 100 == 0) {
+        var creature_list = this.creatures.map(function (creature) {
+          var copy = Object.assign({}, creature);
+          copy.age = game.creature_age.get_age(creature);
+          return copy;
+        });
+        this.app.set_creatures_list(creature_list);
+        console.log('SU', game.creature_age.get_age(this.creatures[0]), this.calendar.current_ts());
       }
 
       this.ticks++;
