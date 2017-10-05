@@ -6178,7 +6178,6 @@ var Sheepland = function () {
           return copy;
         });
         this.app.set_creatures_list(creature_list);
-        console.log('SU', game.creature_age.get_age(this.creatures[0]), this.calendar.current_ts());
       }
 
       this.ticks++;
