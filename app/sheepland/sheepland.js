@@ -1,6 +1,10 @@
 import Util from "common/util";
-import CreatureNames from "sheepland/creature_names";
 import Calendar from "sheepland/calendar";
+import CreatureNames from "sheepland/creature_names";
+
+import App from 'sheepland/components/app';
+import ReactDOM from 'react-dom';
+import React from 'react';
 
 class Sheepland {
   constructor() {
@@ -11,7 +15,7 @@ class Sheepland {
   }
 
 
-  init() {
+  generate_world() {
     this.calendar = new Calendar();
     this.creature_names = new CreatureNames();
     //this.creature_age = new CreatureAge();
@@ -37,20 +41,24 @@ class Sheepland {
 
 
   tick() {
-    this.ticks++;
     this.calendar.handleTick();
 
-    if (this.ticks % 100 == 0) {
-      console.log('date', this.calendar.date.toString());
+    if (this.ticks % 10 == 0) {
+      this.app.set_date(this.calendar.date.toUTCString());
     }
 
+    this.ticks++;
     setTimeout(this.tick.bind(this), this.tick_basic_delay * this.tick_speed);
   }
 }
 
-let game = new Sheepland();
 
+
+let game = new Sheepland();
 module.exports.game = game;
 
-game.init();
-game.test();
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(<App/>, document.querySelector('#app'));
+  game.generate_world();
+  game.test();
+});

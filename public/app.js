@@ -5603,8 +5603,6 @@ var Calendar = function () {
   function Calendar() {
     _classCallCheck(this, Calendar);
 
-    this.game = _sheepland.game;
-    console.log('DA', _sheepland.game);
     this.ticks_per_day = 1000 / _sheepland.game.tick_basic_delay * 60 * 5; // day lasts 5 min
     this.basic_time_ratio = 1000 * 60 * 60 * 24 / this.ticks_per_day;
 
@@ -5622,6 +5620,188 @@ var Calendar = function () {
 }();
 
 exports.default = Calendar;
+
+});
+
+require.register("sheepland/components/app.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _collapsible_panel = require('common/components/collapsible_panel');
+
+var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
+
+var _creatures_list = require('sheepland/components/creatures_list');
+
+var _creatures_list2 = _interopRequireDefault(_creatures_list);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _sheepland = require('sheepland/sheepland');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var App = function (_React$Component) {
+  _inherits(App, _React$Component);
+
+  function App(props) {
+    _classCallCheck(this, App);
+
+    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+    _this.state = { date: '' };
+    // !!! im shure its not good way, but i dont know better...
+    _sheepland.game.app = _this;
+    return _this;
+  }
+
+  _createClass(App, [{
+    key: 'set_date',
+    value: function set_date(date) {
+      var new_state = Object.assign({}, this.state);
+      new_state.date = date;
+      this.setState(new_state);
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'table',
+        { style: { margin: '5px', borderSpacing: '5px', borderCollapse: 'separate' } },
+        _react2.default.createElement(
+          'tbody',
+          null,
+          _react2.default.createElement(
+            'tr',
+            { style: { verticalAlign: 'top' } },
+            _react2.default.createElement(
+              'td',
+              null,
+              _react2.default.createElement(
+                'div',
+                { className: 'panel-group' },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel panel-success' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-heading' },
+                    _react2.default.createElement(
+                      'h4',
+                      { className: 'panel-title' },
+                      'date'
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    this.state.date
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'panel panel-success' },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-heading' },
+                    _react2.default.createElement(
+                      'h4',
+                      { className: 'panel-title' },
+                      'creatures list'
+                    )
+                  ),
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(_creatures_list2.default, null)
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return App;
+}(_react2.default.Component);
+
+exports.default = App;
+
+});
+
+require.register("sheepland/components/creatures_list.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _collapsible_panel = require('common/components/collapsible_panel');
+
+var _collapsible_panel2 = _interopRequireDefault(_collapsible_panel);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var CreaturesList = function (_React$Component) {
+  _inherits(CreaturesList, _React$Component);
+
+  function CreaturesList(props) {
+    _classCallCheck(this, CreaturesList);
+
+    var _this = _possibleConstructorReturn(this, (CreaturesList.__proto__ || Object.getPrototypeOf(CreaturesList)).call(this, props));
+
+    _this.state = { creatures: [] };
+    return _this;
+  }
+
+  _createClass(CreaturesList, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        null,
+        this.state.creatures.forEach(function (creature) {
+          _react2.default.createElement(
+            'div',
+            { id: creature.id },
+            'da creature'
+          );
+        })
+      );
+    }
+  }]);
+
+  return CreaturesList;
+}(_react2.default.Component);
+
+exports.default = CreaturesList;
 
 });
 
@@ -5834,13 +6014,25 @@ var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
+var _calendar = require("sheepland/calendar");
+
+var _calendar2 = _interopRequireDefault(_calendar);
+
 var _creature_names = require("sheepland/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
 
-var _calendar = require("sheepland/calendar");
+var _app = require("sheepland/components/app");
 
-var _calendar2 = _interopRequireDefault(_calendar);
+var _app2 = _interopRequireDefault(_app);
+
+var _reactDom = require("react-dom");
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5857,8 +6049,8 @@ var Sheepland = function () {
   }
 
   _createClass(Sheepland, [{
-    key: "init",
-    value: function init() {
+    key: "generate_world",
+    value: function generate_world() {
       this.calendar = new _calendar2.default();
       this.creature_names = new _creature_names2.default();
       //this.creature_age = new CreatureAge();
@@ -5884,13 +6076,13 @@ var Sheepland = function () {
   }, {
     key: "tick",
     value: function tick() {
-      this.ticks++;
       this.calendar.handleTick();
 
-      if (this.ticks % 100 == 0) {
-        console.log('date', this.calendar.date.toString());
+      if (this.ticks % 10 == 0) {
+        this.app.set_date(this.calendar.date.toUTCString());
       }
 
+      this.ticks++;
       setTimeout(this.tick.bind(this), this.tick_basic_delay * this.tick_speed);
     }
   }]);
@@ -5899,11 +6091,13 @@ var Sheepland = function () {
 }();
 
 var game = new Sheepland();
-
 module.exports.game = game;
 
-game.init();
-game.test();
+document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
+  game.generate_world();
+  game.test();
+});
 
 });
 
