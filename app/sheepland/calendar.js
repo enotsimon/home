@@ -17,7 +17,7 @@ export default class Calendar {
 
 
   current_ts() {
-    return this.date.getUTCMilliseconds();
+    return this.date.getTime();
   }
 
   // ???
