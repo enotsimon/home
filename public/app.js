@@ -5765,7 +5765,7 @@ exports.default = App;
 });
 
 require.register("sheepland/components/creatures_list.jsx", function(exports, require, module) {
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -5773,11 +5773,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _sheepland = require("sheepland/sheepland");
+var _sheepland = require('sheepland/sheepland');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5797,41 +5797,56 @@ var CreaturesList = function (_React$Component) {
   }
 
   _createClass(CreaturesList, [{
-    key: "render",
+    key: 'render',
     value: function render() {
       return _react2.default.createElement(
-        "div",
+        'div',
         null,
         this.props.creatures.map(function (creature) {
           return _react2.default.createElement(
-            "div",
+            'div',
             { key: creature.id },
             _react2.default.createElement(
-              "span",
+              'span',
               null,
               creature.name
             ),
-            "\xA0",
+            '\xA0',
             _react2.default.createElement(
-              "span",
+              'span',
               null,
-              "(",
+              '(',
               creature.species,
-              " ",
+              ' ',
               creature.sex,
-              ")"
+              ')'
             ),
-            "\xA0",
+            '\xA0',
             _react2.default.createElement(
-              "span",
+              'span',
               null,
-              "age: ",
+              'age: ',
               creature.age.years,
-              " years, ",
+              ' years, ',
               creature.age.months,
-              " months, ",
+              ' months, ',
               creature.age.days,
-              " days"
+              ' days'
+            ),
+            '\xA0',
+            _react2.default.createElement(
+              'span',
+              null,
+              '(',
+              creature.life_cycle,
+              ')'
+            ),
+            '\xA0',
+            _react2.default.createElement(
+              'span',
+              null,
+              'fertile: ',
+              creature.fertile ? 'yes' : 'no'
             )
           );
         })
@@ -6141,7 +6156,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- *  
+ *  REQUIRE: species, sex
+ *  INJECT: fertile, life_cycle
  */
 var LifeCycle = function () {
   function LifeCycle() {
@@ -6179,6 +6195,47 @@ var LifeCycle = function () {
         throw 'unknown creature species: ' + creature.species;
       }
       this.update_creature_status(creature);
+    }
+  }, {
+    key: "handle_tick",
+    value: function handle_tick() {
+      var _this = this;
+
+      // TODO maybe not every tick?
+      _sheepland.game.creatures.forEach(function (creature) {
+        return _this.update_creature_status(creature);
+      });
+    }
+  }, {
+    key: "update_creature_status",
+    value: function update_creature_status(creature) {
+      creature.life_cycle = this.calc_life_cycle(creature);
+      creature.fertile = this.calc_fertility(creature);
+    }
+  }, {
+    key: "calc_life_cycle",
+    value: function calc_life_cycle(creature) {
+      var spec = this.config[creature.species];
+      var creature_age = _sheepland.game.creature_age.get_age(creature).years;
+      if (creature_age < spec.adult_from) {
+        return 'child';
+      } else if (creature_age < spec.old_from) {
+        return 'adult';
+      } else {
+        return 'old';
+      }
+    }
+  }, {
+    key: "calc_fertility",
+    value: function calc_fertility(creature) {
+      if (creature.sex == 'male') {
+        return creature.life_cycle == 'adult' || creature.life_cycle == 'old';
+      } else if (creature.sex == 'female') {
+        return creature.life_cycle == 'adult';
+      } else {
+        console.log("bad sex for calc_fertility", creature);
+        throw 'bad sex for calc_fertility: ' + creature.sex;
+      }
     }
   }]);
 
@@ -6234,6 +6291,10 @@ var _creature_age = require("sheepland/creatures/creature_age");
 
 var _creature_age2 = _interopRequireDefault(_creature_age);
 
+var _life_cycle = require("sheepland/creatures/life_cycle");
+
+var _life_cycle2 = _interopRequireDefault(_life_cycle);
+
 var _app = require("sheepland/components/app");
 
 var _app2 = _interopRequireDefault(_app);
@@ -6267,6 +6328,7 @@ var Sheepland = function () {
       this.calendar = new _calendar2.default();
       this.creature_names = new _creature_names2.default();
       this.creature_age = new _creature_age2.default();
+      this.life_cycle = new _life_cycle2.default();
 
       this.test(); // TEMP
 
@@ -6297,6 +6359,7 @@ var Sheepland = function () {
     key: "tick",
     value: function tick() {
       this.calendar.handle_tick();
+      this.life_cycle.handle_tick();
 
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());

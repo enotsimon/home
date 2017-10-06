@@ -3,6 +3,7 @@ import Calendar from "sheepland/calendar";
 import Creature from "sheepland/creatures/creature";
 import CreatureNames from "sheepland/creatures/creature_names";
 import CreatureAge from "sheepland/creatures/creature_age";
+import LifeCycle from "sheepland/creatures/life_cycle";
 
 import App from 'sheepland/components/app';
 import ReactDOM from 'react-dom';
@@ -22,6 +23,7 @@ class Sheepland {
     this.calendar = new Calendar();
     this.creature_names = new CreatureNames();
     this.creature_age = new CreatureAge();
+    this.life_cycle = new LifeCycle();
 
     this.test(); // TEMP
 
@@ -49,6 +51,7 @@ class Sheepland {
 
   tick() {
     this.calendar.handle_tick();
+    this.life_cycle.handle_tick();
 
     if (this.ticks % 10 == 0) {
       this.app.set_date(this.calendar.date.toUTCString());
