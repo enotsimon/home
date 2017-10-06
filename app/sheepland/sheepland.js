@@ -44,7 +44,7 @@ class Sheepland {
     let creature = new Creature("human", sex);
     this.creature_names.generate(creature);
     this.creature_age.generate(creature);
-    //console.log("GE", sex, creature.name);
+    this.life_cycle.generate(creature);
     return creature;
   }
 

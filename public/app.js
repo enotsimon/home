@@ -893,6 +893,11 @@ var Util = function () {
     value: function distance(p1, p2) {
       return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
+  }, {
+    key: 'gauss_function',
+    value: function gauss_function(x, sigma, mu) {
+      return 1 / (sigma * Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, -(Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2))));
+    }
   }]);
 
   return Util;
@@ -5847,7 +5852,18 @@ var CreaturesList = function (_React$Component) {
               null,
               'fertile: ',
               creature.fertile ? 'yes' : 'no'
-            )
+            ),
+            '\xA0',
+            _react2.default.createElement(
+              'span',
+              null,
+              'life duration: ',
+              _sheepland.game.life_cycle.life_duration_in_days(creature),
+              ' days (',
+              _sheepland.game.life_cycle.left_to_live_in_days(creature),
+              ' days left)'
+            ),
+            '\xA0'
           );
         })
       );
@@ -6156,8 +6172,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
- *  REQUIRE: species, sex
- *  INJECT: fertile, life_cycle
+ *  REQUIRE: species, sex, birth_ts
+ *  INJECT: fertile, life_cycle, life_duration
  */
 var LifeCycle = function () {
   function LifeCycle() {
@@ -6194,7 +6210,37 @@ var LifeCycle = function () {
         console.log("unknown creature species", creature);
         throw 'unknown creature species: ' + creature.species;
       }
+      if (!creature.birth_ts) {
+        throw 'no creature.birth_ts';
+      }
+      creature.life_duration = this.calc_life_duration(creature);
       this.update_creature_status(creature);
+    }
+  }, {
+    key: "life_duration_in_days",
+    value: function life_duration_in_days(creature) {
+      return Math.floor(creature.life_duration / (1000 * 60 * 60 * 24));
+    }
+  }, {
+    key: "left_to_live_in_days",
+    value: function left_to_live_in_days(creature) {
+      return Math.floor((creature.life_duration - Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts)) / (1000 * 60 * 60 * 24));
+    }
+
+    ///////////////////////////////////////
+    // private
+    ///////////////////////////////////////
+
+  }, {
+    key: "calc_life_duration",
+    value: function calc_life_duration(creature) {
+      var basic_duration = this.config[creature.species].life_duration;
+      var diff = Math.round(basic_duration / 3);
+      var cur_life_duration = Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts);
+      var years_lived = _sheepland.game.creature_age.get_age(creature).years;
+      // in ticks
+      var life_duration = cur_life_duration + _util2.default.rand(0, (basic_duration + diff - years_lived) * 1000 * 60 * 60 * 24 * 365);
+      return life_duration;
     }
   }, {
     key: "handle_tick",
@@ -6217,7 +6263,9 @@ var LifeCycle = function () {
     value: function calc_life_cycle(creature) {
       var spec = this.config[creature.species];
       var creature_age = _sheepland.game.creature_age.get_age(creature).years;
-      if (creature_age < spec.adult_from) {
+      if (_sheepland.game.calendar.current_ts() > creature.birth_ts + creature.life_duration) {
+        return 'dead';
+      } else if (creature_age < spec.adult_from) {
         return 'child';
       } else if (creature_age < spec.old_from) {
         return 'adult';
@@ -6352,7 +6400,7 @@ var Sheepland = function () {
       var creature = new _creature2.default("human", sex);
       this.creature_names.generate(creature);
       this.creature_age.generate(creature);
-      //console.log("GE", sex, creature.name);
+      this.life_cycle.generate(creature);
       return creature;
     }
   }, {

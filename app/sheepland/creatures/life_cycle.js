@@ -2,8 +2,8 @@ import Util from "common/util";
 import {game} from "sheepland/sheepland";
 
 /**
- *  REQUIRE: species, sex
- *  INJECT: fertile, life_cycle
+ *  REQUIRE: species, sex, birth_ts
+ *  INJECT: fertile, life_cycle, life_duration
  */
 export default class LifeCycle {
   constructor() {
@@ -34,8 +34,37 @@ export default class LifeCycle {
       console.log("unknown creature species", creature);
       throw('unknown creature species: '+creature.species);
     }
+    if (!creature.birth_ts) {
+      throw('no creature.birth_ts');
+    }
+    creature.life_duration = this.calc_life_duration(creature);
     this.update_creature_status(creature);
   }
+
+  life_duration_in_days(creature) {
+    return Math.floor(creature.life_duration / (1000*60*60*24)); 
+  }
+
+  left_to_live_in_days(creature) {
+    return Math.floor((creature.life_duration - Math.abs(game.calendar.current_ts() - creature.birth_ts)) / (1000*60*60*24)); 
+  }
+
+
+
+
+  ///////////////////////////////////////
+  // private
+  ///////////////////////////////////////
+  calc_life_duration(creature) {
+    let basic_duration = this.config[creature.species].life_duration;
+    let diff = Math.round(basic_duration/3);
+    let cur_life_duration = Math.abs(game.calendar.current_ts() - creature.birth_ts);
+    let years_lived = game.creature_age.get_age(creature).years;
+    // in ticks
+    let life_duration = cur_life_duration + Util.rand(0, (basic_duration + diff - years_lived)*1000*60*60*24*365);
+    return life_duration;
+  }
+
 
 
   handle_tick() {
@@ -53,7 +82,9 @@ export default class LifeCycle {
   calc_life_cycle(creature) {
     let spec = this.config[creature.species];
     let creature_age = game.creature_age.get_age(creature).years;
-    if (creature_age < spec.adult_from) {
+    if (game.calendar.current_ts() > creature.birth_ts + creature.life_duration) {
+      return 'dead';
+    } else if (creature_age < spec.adult_from) {
       return 'child';
     } else if (creature_age < spec.old_from) {
       return 'adult';
