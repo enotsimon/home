@@ -5846,6 +5846,67 @@ exports.default = CreaturesList;
 
 });
 
+require.register("sheepland/creature.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+var _uuid = require("uuid");
+
+var UUID = _interopRequireWildcard(_uuid);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *  species, sex -- should move from here
+ */
+var Creature = function () {
+  function Creature(species) {
+    var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+    _classCallCheck(this, Creature);
+
+    if (!sex) {
+      sex = Math.random() < 0.5 ? 'male' : 'female';
+    }
+    this.id = UUID.v1();
+    this.species = species;
+    this.sex = sex;
+  }
+
+  _createClass(Creature, [{
+    key: "allowed_sex",
+    value: function allowed_sex() {
+      return ['male', 'female'];
+    }
+  }, {
+    key: "allowed_species",
+    value: function allowed_species() {
+      return ['human', 'sheep'];
+    }
+  }]);
+
+  return Creature;
+}();
+
+exports.default = Creature;
+
+});
+
 require.register("sheepland/creature_age.js", function(exports, require, module) {
 "use strict";
 
@@ -6093,6 +6154,10 @@ var _calendar = require("sheepland/calendar");
 
 var _calendar2 = _interopRequireDefault(_calendar);
 
+var _creature = require("sheepland/creature");
+
+var _creature2 = _interopRequireDefault(_creature);
+
 var _creature_names = require("sheepland/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
@@ -6154,10 +6219,7 @@ var Sheepland = function () {
       var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var age = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      if (!sex) {
-        sex = Math.random() < 0.5 ? 'male' : 'female';
-      }
-      var creature = { id: i, sex: sex, species: 'human' };
+      var creature = new _creature2.default("human", sex);
       this.creature_names.generate(creature);
       this.creature_age.generate(creature);
       //console.log("GE", sex, creature.name);

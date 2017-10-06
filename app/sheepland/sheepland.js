@@ -1,5 +1,6 @@
 import Util from "common/util";
 import Calendar from "sheepland/calendar";
+import Creature from "sheepland/creature";
 import CreatureNames from "sheepland/creature_names";
 import CreatureAge from "sheepland/creature_age";
 
@@ -38,10 +39,7 @@ class Sheepland {
 
 
   generate_creature(i, sex = false, age = false) {
-    if (!sex) {
-      sex = Math.random() < 0.5 ? 'male' : 'female';
-    }
-    let creature = {id: i, sex: sex, species: 'human'};
+    let creature = new Creature("human", sex);
     this.creature_names.generate(creature);
     this.creature_age.generate(creature);
     //console.log("GE", sex, creature.name);
