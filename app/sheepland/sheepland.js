@@ -1,8 +1,8 @@
 import Util from "common/util";
 import Calendar from "sheepland/calendar";
-import Creature from "sheepland/creature";
-import CreatureNames from "sheepland/creature_names";
-import CreatureAge from "sheepland/creature_age";
+import Creature from "sheepland/creatures/creature";
+import CreatureNames from "sheepland/creatures/creature_names";
+import CreatureAge from "sheepland/creatures/creature_age";
 
 import App from 'sheepland/components/app';
 import ReactDOM from 'react-dom';

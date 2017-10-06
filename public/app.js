@@ -5846,7 +5846,7 @@ exports.default = CreaturesList;
 
 });
 
-require.register("sheepland/creature.js", function(exports, require, module) {
+require.register("sheepland/creatures/creature.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5907,7 +5907,7 @@ exports.default = Creature;
 
 });
 
-require.register("sheepland/creature_age.js", function(exports, require, module) {
+require.register("sheepland/creatures/creature_age.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5973,7 +5973,7 @@ exports.default = CreatureAge;
 
 });
 
-require.register("sheepland/creature_names.js", function(exports, require, module) {
+require.register("sheepland/creatures/creature_names.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6006,8 +6006,8 @@ var CreatureNames = function () {
     // ???
     this.required_props = ['species', 'sex', 'id'];
     this.strategy = 'random';
-    this.init_names_stat(require('sheepland/names/male_names').list, 'human', 'male');
-    this.init_names_stat(require('sheepland/names/female_names').list, 'human', 'female');
+    this.init_names_stat(require('sheepland/creatures/names/male_names').list, 'human', 'male');
+    this.init_names_stat(require('sheepland/creatures/names/female_names').list, 'human', 'female');
   }
 
   _createClass(CreatureNames, [{
@@ -6121,7 +6121,35 @@ exports.default = CreatureNames;
 
 });
 
-require.register("sheepland/names/female_names.js", function(exports, require, module) {
+require.register("sheepland/creatures/life_cycle.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *  
+ */
+var LifeCycle = function LifeCycle(creature) {
+  _classCallCheck(this, LifeCycle);
+};
+
+exports.default = LifeCycle;
+
+});
+
+require.register("sheepland/creatures/names/female_names.js", function(exports, require, module) {
 "use strict";
 
 var list = ["agrona", "andraste", "angharad", "aoife", "arianrhod", "bébhinn", "bébinn", "béibhinn", "bláthnat", "blodeuwedd", "boudicca", "branwen", "bríd", "brighid", "brigit", "britannia", "brittania", "brittany", "céibhfhionn", "ciannait", "clídna", "clíodhna", "derdriu", "doireann", "eadan", "éadaoin", "eigyr", "éimhear", "emer", "enid", "epona", "ériu", "étaín", "feidelm", "feidlimid", "finnguala", "fionnuala", "gobnait", "gráinne", "gwenhwyfar", "laoise", "luigsech", "luíseach", "méabh", "meadhbh", "medb", "morgaine", "morgan", "morgen", "morrigan", "mórríghan", "mór", "muirgen", "muirín", "muirne", "neas", "neasa", "niamh", "rigantona", "ríoghnach", "sadb", "sadhbh", "shannon", "sionann"];
@@ -6131,7 +6159,7 @@ module.exports.list = list;
 
 });
 
-require.register("sheepland/names/male_names.js", function(exports, require, module) {
+require.register("sheepland/creatures/names/male_names.js", function(exports, require, module) {
 "use strict";
 
 var list = ["áed", "áedán", "aengus", "ailill", "arawn", "arthfael", "bedivere", "bedwyr", "belenus", "bradán", "bran", "bréanainn", "brennus", "bricius", "cadeyrn", "cáel", "caiside", "caomh", "caomhán", "caratacos", "cathasach", "cernunnos", "cian", "cianán", "coilean", "conchobhar", "conchúr", "conlaoch", "corraidhín", "cúchulainn", "cuidightheach", "culhwch", "cunobelinus", "cynbel", "cynwrig", "dagda", "dáire", "diarmaid", "donnchad", "donndubhán", "drust", "drustan", "dubhán", "dubhshláine", "dubhthach", "dwyn", "éber", "éibhear", "elisedd", "fachtna", "fáelán", "faolán", "feidhlim", "feidhlimidh", "feidlimid", "fiachra", "finnagán", "finnán", "fintan", "fionn", "fionnán", "galchobhar", "gobán", "goibniu", "goronwy", "gwalchmei", "gwrtheyrn", "gwydion", "haerviu", "iudicael", "laoghaire", "llyr", "lóegaire", "lugus", "mabon", "máedóc", "math", "mathghamhain", "mathúin", "medraut", "mochán", "morcant", "myrddin", "nuada", "nuallán", "nynniaw", "óengus", "oisín", "perceval", "peredur", "pryderi", "pwyll", "seanán", "senán", "shannon", "sluaghadhán", "suibne", "taranis", "urien", "uthyr", "vercingetorix", "walganus"];
@@ -6154,15 +6182,15 @@ var _calendar = require("sheepland/calendar");
 
 var _calendar2 = _interopRequireDefault(_calendar);
 
-var _creature = require("sheepland/creature");
+var _creature = require("sheepland/creatures/creature");
 
 var _creature2 = _interopRequireDefault(_creature);
 
-var _creature_names = require("sheepland/creature_names");
+var _creature_names = require("sheepland/creatures/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
 
-var _creature_age = require("sheepland/creature_age");
+var _creature_age = require("sheepland/creatures/creature_age");
 
 var _creature_age2 = _interopRequireDefault(_creature_age);
 

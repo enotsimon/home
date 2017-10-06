@@ -13,8 +13,8 @@ export default class CreatureNames {
     // ???
     this.required_props = ['species', 'sex', 'id'];
     this.strategy = 'random';
-    this.init_names_stat(require('sheepland/names/male_names').list, 'human', 'male');
-    this.init_names_stat(require('sheepland/names/female_names').list, 'human', 'female');
+    this.init_names_stat(require('sheepland/creatures/names/male_names').list, 'human', 'male');
+    this.init_names_stat(require('sheepland/creatures/names/female_names').list, 'human', 'female');
   }
 
   init_names_stat(list, species, sex) {
