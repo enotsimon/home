@@ -40,10 +40,10 @@ class Sheepland {
   }
 
 
-  generate_creature(i, sex = false, age = false) {
+  generate_creature(i, sex = false, birth_ts = false) {
     let creature = new Creature("human", sex);
     this.creature_names.generate(creature);
-    this.creature_age.generate(creature);
+    this.creature_age.generate(creature, birth_ts);
     this.life_cycle.generate(creature);
     return creature;
   }

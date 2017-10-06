@@ -11,7 +11,7 @@ export default class CreatureAge {
     this.max_random_age = 1000*60*60*24*365*50; // 50 years
   }
 
-    generate(creature, birth_ts = false) {
+  generate(creature, birth_ts = false) {
     if (birth_ts && birth_ts > game.calendar.current_ts()) {
       console.log('creature birth_ts greater than current ts', birth_ts, game.calendar.current_ts());
       return false;
