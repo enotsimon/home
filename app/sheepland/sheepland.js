@@ -34,14 +34,14 @@ class Sheepland {
   test() {
     let count = 15;
     while (--count) {
-      let creature = this.generate_creature(count);
+      let creature = this.generate_creature("human");
       this.creatures.push(creature);
     }
   }
 
 
-  generate_creature(i, sex = false, birth_ts = false) {
-    let creature = new Creature("human", sex);
+  generate_creature(species, sex = false, birth_ts = false) {
+    let creature = new Creature(species, sex);
     this.creature_names.generate(creature);
     this.creature_age.generate(creature, birth_ts);
     this.life_cycle.generate(creature);

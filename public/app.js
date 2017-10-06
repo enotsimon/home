@@ -6387,17 +6387,17 @@ var Sheepland = function () {
     value: function test() {
       var count = 15;
       while (--count) {
-        var creature = this.generate_creature(count);
+        var creature = this.generate_creature("human");
         this.creatures.push(creature);
       }
     }
   }, {
     key: "generate_creature",
-    value: function generate_creature(i) {
+    value: function generate_creature(species) {
       var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var birth_ts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var creature = new _creature2.default("human", sex);
+      var creature = new _creature2.default(species, sex);
       this.creature_names.generate(creature);
       this.creature_age.generate(creature, birth_ts);
       this.life_cycle.generate(creature);
