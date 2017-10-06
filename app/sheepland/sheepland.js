@@ -48,7 +48,7 @@ class Sheepland {
 
 
   tick() {
-    this.calendar.handleTick();
+    this.calendar.handle_tick();
 
     if (this.ticks % 10 == 0) {
       this.app.set_date(this.calendar.date.toUTCString());

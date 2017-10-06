@@ -12,7 +12,7 @@ export default class Calendar {
   }
 
 
-  handleTick() {
+  handle_tick() {
     this.date.setTime(this.date.getTime() + this.time_ratio());
   }
 

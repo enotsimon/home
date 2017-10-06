@@ -5611,8 +5611,8 @@ var Calendar = function () {
   }
 
   _createClass(Calendar, [{
-    key: "handleTick",
-    value: function handleTick() {
+    key: "handle_tick",
+    value: function handle_tick() {
       this.date.setTime(this.date.getTime() + this.time_ratio());
     }
   }, {
@@ -6128,6 +6128,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -6141,9 +6143,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 /**
  *  
  */
-var LifeCycle = function LifeCycle(creature) {
-  _classCallCheck(this, LifeCycle);
-};
+var LifeCycle = function () {
+  function LifeCycle() {
+    _classCallCheck(this, LifeCycle);
+
+    this.config = this.get_config();
+  }
+
+  // different
+
+
+  _createClass(LifeCycle, [{
+    key: "get_config",
+    value: function get_config() {
+      return {
+        human: {
+          life_duration: 75,
+          adult_from: 15,
+          old_from: 45
+          //female_fertile_till: 35,
+        },
+        sheep: {
+          life_duration: 10,
+          adult_from: 1,
+          old_from: 6
+          //female_fertile_till: 6,
+        }
+      };
+    }
+  }, {
+    key: "generate",
+    value: function generate(creature) {
+      if (!this.config[creature.species]) {
+        console.log("unknown creature species", creature);
+        throw 'unknown creature species: ' + creature.species;
+      }
+      this.update_creature_status(creature);
+    }
+  }]);
+
+  return LifeCycle;
+}();
 
 exports.default = LifeCycle;
 
@@ -6256,7 +6296,7 @@ var Sheepland = function () {
   }, {
     key: "tick",
     value: function tick() {
-      this.calendar.handleTick();
+      this.calendar.handle_tick();
 
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());
