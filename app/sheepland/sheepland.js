@@ -37,6 +37,11 @@ class Sheepland {
       let creature = this.generate_creature("human");
       this.creatures.push(creature);
     }
+    count = 15;
+    while (--count) {
+      let creature = this.generate_creature("sheep");
+      this.creatures.push(creature);
+    }
   }
 
 

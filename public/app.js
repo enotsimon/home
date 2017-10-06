@@ -6327,9 +6327,9 @@ var _calendar = require("sheepland/calendar");
 
 var _calendar2 = _interopRequireDefault(_calendar);
 
-var _creature = require("sheepland/creatures/creature");
+var _creature2 = require("sheepland/creatures/creature");
 
-var _creature2 = _interopRequireDefault(_creature);
+var _creature3 = _interopRequireDefault(_creature2);
 
 var _creature_names = require("sheepland/creatures/creature_names");
 
@@ -6390,6 +6390,11 @@ var Sheepland = function () {
         var creature = this.generate_creature("human");
         this.creatures.push(creature);
       }
+      count = 15;
+      while (--count) {
+        var _creature = this.generate_creature("sheep");
+        this.creatures.push(_creature);
+      }
     }
   }, {
     key: "generate_creature",
@@ -6397,7 +6402,7 @@ var Sheepland = function () {
       var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var birth_ts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var creature = new _creature2.default(species, sex);
+      var creature = new _creature3.default(species, sex);
       this.creature_names.generate(creature);
       this.creature_age.generate(creature, birth_ts);
       this.life_cycle.generate(creature);
