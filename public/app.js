@@ -5938,72 +5938,6 @@ exports.default = Creature;
 
 });
 
-require.register("sheepland/creatures/creature_age.js", function(exports, require, module) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _util = require("common/util");
-
-var _util2 = _interopRequireDefault(_util);
-
-var _sheepland = require("sheepland/sheepland");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- *  its like relation that requires some other relations + injects some
- *  REQUIRE: id
- *  INJECT: birth_ts
- */
-var CreatureAge = function () {
-  function CreatureAge() {
-    _classCallCheck(this, CreatureAge);
-
-    this.max_random_age = 1000 * 60 * 60 * 24 * 365 * 50; // 50 years
-  }
-
-  _createClass(CreatureAge, [{
-    key: "generate",
-    value: function generate(creature) {
-      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      if (birth_ts && birth_ts > _sheepland.game.calendar.current_ts()) {
-        console.log('creature birth_ts greater than current ts', birth_ts, _sheepland.game.calendar.current_ts());
-        return false;
-      }
-      if (!birth_ts) {
-        birth_ts = _sheepland.game.calendar.current_ts() - _util2.default.rand(0, this.max_random_age);
-      }
-      creature.birth_ts = birth_ts;
-    }
-
-    // incorrect, but we dont care
-    // slow, ineffective?
-
-  }, {
-    key: "get_age",
-    value: function get_age(creature) {
-      var diff = Math.abs(creature.birth_ts - _sheepland.game.calendar.current_ts());
-      var date = new Date();
-      date.setTime(diff);
-      return { years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate() };
-    }
-  }]);
-
-  return CreatureAge;
-}();
-
-exports.default = CreatureAge;
-
-});
-
 require.register("sheepland/creatures/creature_names.js", function(exports, require, module) {
 "use strict";
 
@@ -6206,6 +6140,8 @@ var LifeCycle = function () {
   }, {
     key: "generate",
     value: function generate(creature) {
+      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       if (!this.config[creature.species]) {
         console.log("unknown creature species", creature);
         throw 'unknown creature species: ' + creature.species;
@@ -6213,6 +6149,8 @@ var LifeCycle = function () {
       if (!creature.birth_ts) {
         throw 'no creature.birth_ts';
       }
+
+      creature.birth_ts = this.calc_birth_ts(creature, birth_ts);
       creature.life_duration = this.calc_life_duration(creature);
       this.update_creature_status(creature);
     }
@@ -6227,10 +6165,35 @@ var LifeCycle = function () {
       return Math.floor((creature.life_duration - Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts)) / (1000 * 60 * 60 * 24));
     }
 
+    // incorrect, but we dont care
+    // slow, ineffective?
+
+  }, {
+    key: "get_age",
+    value: function get_age(creature) {
+      var diff = Math.abs(creature.birth_ts - _sheepland.game.calendar.current_ts());
+      var date = new Date();
+      date.setTime(diff);
+      return { years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate() };
+    }
+
     ///////////////////////////////////////
     // private
     ///////////////////////////////////////
 
+  }, {
+    key: "calc_birth_ts",
+    value: function calc_birth_ts(creature, birth_ts) {
+      var max_random_age = 1000 * 60 * 60 * 24 * 365 * Math.ceil(this.config[creature.species].life_duration / 2);
+      if (birth_ts && birth_ts > _sheepland.game.calendar.current_ts()) {
+        console.log('creature birth_ts greater than current ts', birth_ts, _sheepland.game.calendar.current_ts());
+        return false;
+      }
+      if (!birth_ts) {
+        birth_ts = _sheepland.game.calendar.current_ts() - _util2.default.rand(0, max_random_age);
+      }
+      return birth_ts;
+    }
   }, {
     key: "calc_life_duration",
     value: function calc_life_duration(creature) {
@@ -6335,10 +6298,6 @@ var _creature_names = require("sheepland/creatures/creature_names");
 
 var _creature_names2 = _interopRequireDefault(_creature_names);
 
-var _creature_age = require("sheepland/creatures/creature_age");
-
-var _creature_age2 = _interopRequireDefault(_creature_age);
-
 var _life_cycle = require("sheepland/creatures/life_cycle");
 
 var _life_cycle2 = _interopRequireDefault(_life_cycle);
@@ -6375,7 +6334,6 @@ var Sheepland = function () {
       this.creatures = []; // TEMP
       this.calendar = new _calendar2.default();
       this.creature_names = new _creature_names2.default();
-      this.creature_age = new _creature_age2.default();
       this.life_cycle = new _life_cycle2.default();
 
       this.test(); // TEMP
@@ -6404,7 +6362,6 @@ var Sheepland = function () {
 
       var creature = new _creature3.default(species, sex);
       this.creature_names.generate(creature);
-      this.creature_age.generate(creature, birth_ts);
       this.life_cycle.generate(creature);
       return creature;
     }
@@ -6420,7 +6377,7 @@ var Sheepland = function () {
       if (this.ticks % 100 == 0) {
         var creature_list = this.creatures.map(function (creature) {
           var copy = Object.assign({}, creature);
-          copy.age = game.creature_age.get_age(creature);
+          copy.age = game.life_cycle.get_age(creature);
           return copy;
         });
         this.app.set_creatures_list(creature_list);

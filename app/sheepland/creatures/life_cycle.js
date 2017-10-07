@@ -29,7 +29,7 @@ export default class LifeCycle {
   }
 
 
-  generate(creature) {
+  generate(creature, birth_ts = false) {
     if (!this.config[creature.species]) {
       console.log("unknown creature species", creature);
       throw('unknown creature species: '+creature.species);
@@ -37,6 +37,8 @@ export default class LifeCycle {
     if (!creature.birth_ts) {
       throw('no creature.birth_ts');
     }
+
+    creature.birth_ts = this.calc_birth_ts(creature, birth_ts);
     creature.life_duration = this.calc_life_duration(creature);
     this.update_creature_status(creature);
   }
@@ -50,11 +52,35 @@ export default class LifeCycle {
   }
 
 
+  
+  // incorrect, but we dont care
+  // slow, ineffective?
+  get_age(creature) {
+    let diff = Math.abs(creature.birth_ts - game.calendar.current_ts());
+    let date = new Date();
+    date.setTime(diff);
+    return {years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate()};
+  }
+
+
 
 
   ///////////////////////////////////////
   // private
   ///////////////////////////////////////
+  calc_birth_ts(creature, birth_ts) {
+    let max_random_age = 1000*60*60*24*365*Math.ceil(this.config[creature.species].life_duration / 2);
+    if (birth_ts && birth_ts > game.calendar.current_ts()) {
+      console.log('creature birth_ts greater than current ts', birth_ts, game.calendar.current_ts());
+      return false;
+    }
+    if (!birth_ts) {
+      birth_ts = game.calendar.current_ts() - Util.rand(0, max_random_age);
+    }
+    return birth_ts;
+  }
+
+
   calc_life_duration(creature) {
     let basic_duration = this.config[creature.species].life_duration;
     let diff = Math.round(basic_duration/3);
