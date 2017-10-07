@@ -6146,9 +6146,6 @@ var LifeCycle = function () {
         console.log("unknown creature species", creature);
         throw 'unknown creature species: ' + creature.species;
       }
-      if (!creature.birth_ts) {
-        throw 'no creature.birth_ts';
-      }
 
       creature.birth_ts = this.calc_birth_ts(creature, birth_ts);
       creature.life_duration = this.calc_life_duration(creature);
@@ -6200,7 +6197,7 @@ var LifeCycle = function () {
       var basic_duration = this.config[creature.species].life_duration;
       var diff = Math.round(basic_duration / 3);
       var cur_life_duration = Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts);
-      var years_lived = _sheepland.game.creature_age.get_age(creature).years;
+      var years_lived = this.get_age(creature).years;
       // in ticks
       var life_duration = cur_life_duration + _util2.default.rand(0, (basic_duration + diff - years_lived) * 1000 * 60 * 60 * 24 * 365);
       return life_duration;
@@ -6225,7 +6222,7 @@ var LifeCycle = function () {
     key: "calc_life_cycle",
     value: function calc_life_cycle(creature) {
       var spec = this.config[creature.species];
-      var creature_age = _sheepland.game.creature_age.get_age(creature).years;
+      var creature_age = this.get_age(creature).years;
       if (_sheepland.game.calendar.current_ts() > creature.birth_ts + creature.life_duration) {
         return 'dead';
       } else if (creature_age < spec.adult_from) {

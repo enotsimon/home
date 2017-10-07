@@ -34,9 +34,6 @@ export default class LifeCycle {
       console.log("unknown creature species", creature);
       throw('unknown creature species: '+creature.species);
     }
-    if (!creature.birth_ts) {
-      throw('no creature.birth_ts');
-    }
 
     creature.birth_ts = this.calc_birth_ts(creature, birth_ts);
     creature.life_duration = this.calc_life_duration(creature);
@@ -85,7 +82,7 @@ export default class LifeCycle {
     let basic_duration = this.config[creature.species].life_duration;
     let diff = Math.round(basic_duration/3);
     let cur_life_duration = Math.abs(game.calendar.current_ts() - creature.birth_ts);
-    let years_lived = game.creature_age.get_age(creature).years;
+    let years_lived = this.get_age(creature).years;
     // in ticks
     let life_duration = cur_life_duration + Util.rand(0, (basic_duration + diff - years_lived)*1000*60*60*24*365);
     return life_duration;
@@ -107,7 +104,7 @@ export default class LifeCycle {
 
   calc_life_cycle(creature) {
     let spec = this.config[creature.species];
-    let creature_age = game.creature_age.get_age(creature).years;
+    let creature_age = this.get_age(creature).years;
     if (game.calendar.current_ts() > creature.birth_ts + creature.life_duration) {
       return 'dead';
     } else if (creature_age < spec.adult_from) {
