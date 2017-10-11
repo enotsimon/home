@@ -8,6 +8,10 @@ import App from 'sheepland/components/app';
 import ReactDOM from 'react-dom';
 import React from 'react';
 
+import TestRelation1 from 'sheepland/test_relation_1';
+import TestRelation2 from 'sheepland/test_relation_2';
+
+
 class Sheepland {
   constructor() {
     this.ticks = 0;
@@ -22,6 +26,9 @@ class Sheepland {
     this.calendar = new Calendar();
     this.creature_names = new CreatureNames();
     this.life_cycle = new LifeCycle();
+
+    this.test_relation_1 = new TestRelation1();
+    this.test_relation_2 = new TestRelation2();
 
     this.test(); // TEMP
 
@@ -47,6 +54,11 @@ class Sheepland {
     let creature = new Creature(species, sex);
     this.creature_names.generate(creature);
     this.life_cycle.generate(creature);
+
+    this.test_relation_1.generate(creature);
+    this.test_relation_2.generate(creature);
+    console.log('test_relation', creature.test_val(), creature.test_val_2());
+
     return creature;
   }
 

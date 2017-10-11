@@ -6274,6 +6274,80 @@ module.exports.list = list;
 
 });
 
+require.register("sheepland/relation.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *
+ */
+var Relation = function () {
+  function Relation() {
+    _classCallCheck(this, Relation);
+
+    this.data = {};
+  }
+
+  _createClass(Relation, [{
+    key: "exports",
+    value: function exports() {
+      return {};
+    }
+  }, {
+    key: "deps",
+    value: function deps() {
+      return [];
+    }
+  }, {
+    key: "generate",
+    value: function generate(client) {
+      if (!client.id) {
+        console.log('no client id', client);
+        throw 'no client id';
+      }
+
+      this.deps().forEach(function (dep_class) {
+        var instance = new dep_class();
+        for (var name in instance.exports()) {
+          if (!client[name]) {
+            console.log('dependency method does not present', name, dep);
+            throw 'dependency method does not present';
+          }
+        }
+      });
+      this.init(client);
+      var exports = this.exports();
+      for (var name in exports) {
+        client[name] = exports[name].bind(client, this);
+      }
+    }
+  }, {
+    key: "init",
+    value: function init(client) {}
+  }]);
+
+  return Relation;
+}();
+
+exports.default = Relation;
+
+});
+
 require.register("sheepland/sheepland.js", function(exports, require, module) {
 "use strict";
 
@@ -6311,6 +6385,14 @@ var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
 
+var _test_relation_ = require("sheepland/test_relation_1");
+
+var _test_relation_2 = _interopRequireDefault(_test_relation_);
+
+var _test_relation_3 = require("sheepland/test_relation_2");
+
+var _test_relation_4 = _interopRequireDefault(_test_relation_3);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -6332,6 +6414,9 @@ var Sheepland = function () {
       this.calendar = new _calendar2.default();
       this.creature_names = new _creature_names2.default();
       this.life_cycle = new _life_cycle2.default();
+
+      this.test_relation_1 = new _test_relation_2.default();
+      this.test_relation_2 = new _test_relation_4.default();
 
       this.test(); // TEMP
 
@@ -6360,6 +6445,11 @@ var Sheepland = function () {
       var creature = new _creature3.default(species, sex);
       this.creature_names.generate(creature);
       this.life_cycle.generate(creature);
+
+      this.test_relation_1.generate(creature);
+      this.test_relation_2.generate(creature);
+      console.log('test_relation', creature.test_val(), creature.test_val_2());
+
       return creature;
     }
   }, {
@@ -6395,6 +6485,150 @@ document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_world();
 });
+
+});
+
+require.register("sheepland/test_relation_1.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+var _relation = require("sheepland/relation");
+
+var _relation2 = _interopRequireDefault(_relation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *
+ */
+var TestRelation1 = function (_Relation) {
+  _inherits(TestRelation1, _Relation);
+
+  function TestRelation1() {
+    _classCallCheck(this, TestRelation1);
+
+    return _possibleConstructorReturn(this, (TestRelation1.__proto__ || Object.getPrototypeOf(TestRelation1)).apply(this, arguments));
+  }
+
+  _createClass(TestRelation1, [{
+    key: "deps",
+    value: function deps() {
+      return [];
+    }
+  }, {
+    key: "exports",
+    value: function exports() {
+      return {
+        test_val: this.test_val
+      };
+    }
+  }, {
+    key: "init",
+    value: function init(client) {
+      this.data[client.id] = { test_val: _util2.default.rand(1, 10) };
+    }
+  }, {
+    key: "test_val",
+    value: function test_val(registry) {
+      return registry.data[this.id].test_val;
+    }
+  }]);
+
+  return TestRelation1;
+}(_relation2.default);
+
+exports.default = TestRelation1;
+
+});
+
+require.register("sheepland/test_relation_2.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _sheepland = require("sheepland/sheepland");
+
+var _relation = require("sheepland/relation");
+
+var _relation2 = _interopRequireDefault(_relation);
+
+var _test_relation_ = require("sheepland/test_relation_1");
+
+var _test_relation_2 = _interopRequireDefault(_test_relation_);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *
+ */
+var TestRelation2 = function (_Relation) {
+  _inherits(TestRelation2, _Relation);
+
+  function TestRelation2() {
+    _classCallCheck(this, TestRelation2);
+
+    return _possibleConstructorReturn(this, (TestRelation2.__proto__ || Object.getPrototypeOf(TestRelation2)).apply(this, arguments));
+  }
+
+  _createClass(TestRelation2, [{
+    key: "deps",
+    value: function deps() {
+      return [_test_relation_2.default];
+    }
+  }, {
+    key: "exports",
+    value: function exports() {
+      return {
+        test_val_2: this.test_val_2
+      };
+    }
+  }, {
+    key: "init",
+    value: function init(client) {
+      this.data[client.id] = { test_val_2: _util2.default.rand(1, 10) };
+    }
+  }, {
+    key: "test_val_2",
+    value: function test_val_2(registry) {
+      return registry.data[this.id].test_val_2;
+    }
+  }]);
+
+  return TestRelation2;
+}(_relation2.default);
+
+exports.default = TestRelation2;
 
 });
 
