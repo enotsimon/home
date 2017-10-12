@@ -6303,11 +6303,6 @@ var Entity = function () {
   }
 
   _createClass(Entity, [{
-    key: "id",
-    value: function id() {
-      return this.id;
-    }
-  }, {
     key: "init",
     value: function init() {
       var _this = this;

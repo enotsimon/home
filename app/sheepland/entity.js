@@ -10,10 +10,6 @@ export default class Entity {
     this.id = UUID.v1();
   }
 
-  id() {
-    return this.id;
-  }
-
   init() {
     this.relations().forEach(relation => {
       let relation_instance = this.relation_manager[relation];
