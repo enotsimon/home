@@ -1,12 +1,12 @@
-import Util from "common/util";
-import {game} from "sheepland/sheepland";
+
 
 /**
  *
  */
 export default class Relation {
 
-  constructor() {
+  constructor(relation_manager) {
+    this.relation_manager = relation_manager;
     this.data = {};
   }
 
@@ -16,6 +16,7 @@ export default class Relation {
   }
 
 
+  // strings -- class names
   deps() {
     return [];
   }
@@ -28,7 +29,7 @@ export default class Relation {
     }
 
     this.deps().forEach(dep_class => {
-      let instance = new dep_class();
+      let instance = this.relation_manager[dep_class];
       for (let name in instance.exports()) {
         if (!client[name]) {
           console.log('dependency method does not present', name, dep);

@@ -10,6 +10,8 @@ import React from 'react';
 
 import TestRelation1 from 'sheepland/test_relation_1';
 import TestRelation2 from 'sheepland/test_relation_2';
+import RelationManager from 'sheepland/relation_manager';
+import TestEntity from 'sheepland/test_entity';
 
 
 class Sheepland {
@@ -22,13 +24,13 @@ class Sheepland {
 
 
   generate_world() {
+    let relations_list = [TestRelation1, TestRelation2];
+    this.relations = new RelationManager(relations_list);
+    
     this.creatures = []; // TEMP
     this.calendar = new Calendar();
     this.creature_names = new CreatureNames();
     this.life_cycle = new LifeCycle();
-
-    this.test_relation_1 = new TestRelation1();
-    this.test_relation_2 = new TestRelation2();
 
     this.test(); // TEMP
 
@@ -55,9 +57,9 @@ class Sheepland {
     this.creature_names.generate(creature);
     this.life_cycle.generate(creature);
 
-    this.test_relation_1.generate(creature);
-    this.test_relation_2.generate(creature);
-    console.log('test_relation', creature.test_val(), creature.test_val_2());
+    let test_entity = new TestEntity(this.relations);
+    test_entity.init();
+    console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
 
     return creature;
   }

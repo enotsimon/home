@@ -1,5 +1,4 @@
 import Util from "common/util";
-import {game} from "sheepland/sheepland";
 
 import Relation from 'sheepland/relation';
 

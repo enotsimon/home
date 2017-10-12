@@ -1,8 +1,6 @@
 import Util from "common/util";
-import {game} from "sheepland/sheepland";
 
 import Relation from 'sheepland/relation';
-import TestRelation1 from 'sheepland/test_relation_1';
 
 /**
  *
@@ -10,7 +8,7 @@ import TestRelation1 from 'sheepland/test_relation_1';
 export default class TestRelation2 extends Relation {
 
   deps() {
-    return [TestRelation1];
+    return ['TestRelation1'];
   }
 
   exports() {
