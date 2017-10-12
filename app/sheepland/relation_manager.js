@@ -3,6 +3,7 @@
  *
  */
 export default class RelationManager {
+  // TODO add entities list?
   constructor(relations_list) {
     relations_list.forEach(this.create_relation.bind(this));
   }

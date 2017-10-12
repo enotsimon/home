@@ -26,6 +26,7 @@ class Sheepland {
   generate_world() {
     let relations_list = [TestRelation1, TestRelation2];
     this.relations = new RelationManager(relations_list);
+    this.test_entities = new TestEntity(this.relations);
     
     this.creatures = []; // TEMP
     this.calendar = new Calendar();
@@ -57,8 +58,7 @@ class Sheepland {
     this.creature_names.generate(creature);
     this.life_cycle.generate(creature);
 
-    let test_entity = new TestEntity(this.relations);
-    test_entity.init();
+    let test_entity = this.test_entities.create();
     console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
 
     return creature;

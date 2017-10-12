@@ -6299,19 +6299,27 @@ var Entity = function () {
     _classCallCheck(this, Entity);
 
     this.relation_manager = relation_manager;
-    this.id = UUID.v1();
+    this.entities = {};
   }
 
   _createClass(Entity, [{
-    key: "init",
-    value: function init() {
+    key: "create",
+    value: function create() {
       var _this = this;
 
+      var entity = { id: UUID.v1() };
       this.relations().forEach(function (relation) {
         var relation_instance = _this.relation_manager[relation];
-        relation_instance.generate(_this);
+        relation_instance.create(entity);
       });
+      this.entities[entity.id] = entity; // wut???
+      return entity;
     }
+  }, {
+    key: "delete",
+    value: function _delete() {}
+    // TODO
+
 
     // strings -- class names
 
@@ -6365,8 +6373,8 @@ var Relation = function () {
       return [];
     }
   }, {
-    key: 'generate',
-    value: function generate(client) {
+    key: 'create',
+    value: function create(client) {
       var _this = this;
 
       if (!client.id) {
@@ -6388,6 +6396,11 @@ var Relation = function () {
       for (var name in exports) {
         client[name] = exports[name].bind(client, this);
       }
+    }
+  }, {
+    key: 'delete',
+    value: function _delete() {
+      // TODO
     }
   }, {
     key: 'init',
@@ -6416,6 +6429,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  */
 var RelationManager = function () {
+  // TODO add entities list?
   function RelationManager(relations_list) {
     _classCallCheck(this, RelationManager);
 
@@ -6512,6 +6526,7 @@ var Sheepland = function () {
     value: function generate_world() {
       var relations_list = [_test_relation_2.default, _test_relation_4.default];
       this.relations = new _relation_manager2.default(relations_list);
+      this.test_entities = new _test_entity2.default(this.relations);
 
       this.creatures = []; // TEMP
       this.calendar = new _calendar2.default();
@@ -6546,8 +6561,7 @@ var Sheepland = function () {
       this.creature_names.generate(creature);
       this.life_cycle.generate(creature);
 
-      var test_entity = new _test_entity2.default(this.relations);
-      test_entity.init();
+      var test_entity = this.test_entities.create();
       console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
 
       return creature;

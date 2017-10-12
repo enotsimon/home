@@ -22,7 +22,7 @@ export default class Relation {
   }
 
 
-  generate(client) {
+  create(client) {
     if (!client.id) {
       console.log('no client id', client);
       throw('no client id');
@@ -44,6 +44,11 @@ export default class Relation {
     }
   }
   
+
+  delete() {
+    // TODO
+  }
+
 
   init(client) {
   }
