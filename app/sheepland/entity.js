@@ -7,16 +7,16 @@ export default class Entity {
 
   constructor(relation_manager) {
     this.relation_manager = relation_manager;
-    this.entities = {};
+    this.data = {};
   }
 
-  create() {
+  create(props) {
     let entity = {id: UUID.v1()};
     this.relations().forEach(relation => {
       let relation_instance = this.relation_manager[relation];
-      relation_instance.create(entity);
+      relation_instance.create(entity, props);
     });
-    this.entities[entity.id] = entity; // wut???
+    this.data[entity.id] = entity; // wut???
     return entity;
   }
 

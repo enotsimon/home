@@ -21,8 +21,8 @@ export default class Relation {
     return [];
   }
 
-
-  create(client) {
+  // TODO what to do with props?
+  create(client, props) {
     if (!client.id) {
       console.log('no client id', client);
       throw('no client id');
@@ -37,19 +37,25 @@ export default class Relation {
         }
       }
     });
-    this.init(client);
     let exports = this.exports();
     for (let name in exports) {
       client[name] = exports[name].bind(this, client);
     }
+    this.data[client.id] = {};
   }
   
 
-  delete() {
-    // TODO
+  get_key(client, key) {
+    return this.data[client.id][key];
   }
 
 
-  init(client) {
+  set_key(client, key, value) {
+    this.data[client.id][key] = value;
+  }
+
+
+  delete() {
+    // TODO
   }
 }

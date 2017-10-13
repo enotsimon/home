@@ -13,18 +13,13 @@ export default class TestRelation1 extends Relation {
 
   exports() {
     return {
-      test_val: this.test_val,
+      test_val: (client) => this.get_key(client, 'test_val'),
     };
   }
 
 
-  init(client) {
-    this.data[client.id] = {test_val: Util.rand(1, 10)};
-  }
-
-
-
-  test_val(client) {
-    return this.data[client.id].test_val;
+  create(client) {
+    super.create(client);
+    this.data[client.id].test_val = Util.rand(1, 10);
   }
 }

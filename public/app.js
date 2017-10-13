@@ -5808,13 +5808,14 @@ var CreaturesList = function (_React$Component) {
         'div',
         null,
         this.props.creatures.map(function (creature) {
+          var age = creature.age();
           return _react2.default.createElement(
             'div',
             { key: creature.id },
             _react2.default.createElement(
               'span',
               null,
-              creature.name
+              creature.name()
             ),
             '\xA0',
             _react2.default.createElement(
@@ -5831,11 +5832,11 @@ var CreaturesList = function (_React$Component) {
               'span',
               null,
               'age: ',
-              creature.age.years,
+              age.years,
               ' years, ',
-              creature.age.months,
+              age.months,
               ' months, ',
-              creature.age.days,
+              age.days,
               ' days'
             ),
             '\xA0',
@@ -5843,7 +5844,7 @@ var CreaturesList = function (_React$Component) {
               'span',
               null,
               '(',
-              creature.life_cycle,
+              creature.life_cycle(),
               ')'
             ),
             '\xA0',
@@ -5851,16 +5852,16 @@ var CreaturesList = function (_React$Component) {
               'span',
               null,
               'fertile: ',
-              creature.fertile ? 'yes' : 'no'
+              creature.fertile() ? 'yes' : 'no'
             ),
             '\xA0',
             _react2.default.createElement(
               'span',
               null,
               'life duration: ',
-              _sheepland.game.life_cycle.life_duration_in_days(creature),
+              creature.life_duration_in_days(),
               ' days (',
-              _sheepland.game.life_cycle.left_to_live_in_days(creature),
+              creature.left_to_live_in_days(),
               ' days left)'
             ),
             '\xA0'
@@ -5878,7 +5879,7 @@ exports.default = CreaturesList;
 });
 
 require.register("sheepland/creatures/creature.js", function(exports, require, module) {
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -5886,53 +5887,43 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("common/util");
+var _util = require('common/util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var _sheepland = require("sheepland/sheepland");
+var _entity = require('sheepland/entity');
 
-var _uuid = require("uuid");
-
-var UUID = _interopRequireWildcard(_uuid);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+var _entity2 = _interopRequireDefault(_entity);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**
- *  species, sex -- should move from here
- */
-var Creature = function () {
-  function Creature(species) {
-    var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *  TODO species, sex -- should move from here
+ */
+var Creature = function (_Entity) {
+  _inherits(Creature, _Entity);
+
+  function Creature() {
     _classCallCheck(this, Creature);
 
-    if (!sex) {
-      sex = Math.random() < 0.5 ? 'male' : 'female';
-    }
-    this.id = UUID.v1();
-    this.species = species;
-    this.sex = sex;
+    return _possibleConstructorReturn(this, (Creature.__proto__ || Object.getPrototypeOf(Creature)).apply(this, arguments));
   }
 
   _createClass(Creature, [{
-    key: "allowed_sex",
-    value: function allowed_sex() {
-      return ['male', 'female'];
-    }
-  }, {
-    key: "allowed_species",
-    value: function allowed_species() {
-      return ['human', 'sheep'];
+    key: 'relations',
+    value: function relations() {
+      return ['CreatureSpecies', 'CreatureSex', 'CreatureNames', 'LifeCycle'];
     }
   }]);
 
   return Creature;
-}();
+}(_entity2.default);
 
 exports.default = Creature;
 
@@ -5947,43 +5938,54 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
 var _sheepland = require("sheepland/sheepland");
 
+var _relation = require("sheepland/relation");
+
+var _relation2 = _interopRequireDefault(_relation);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 /**
  *  its like relation that requires some other relations + injects some
- *  REQUIRE: species, sex, id
- *  INJECT: name
  */
-var CreatureNames = function () {
-  function CreatureNames() {
+var CreatureNames = function (_Relation) {
+  _inherits(CreatureNames, _Relation);
+
+  function CreatureNames(relation_manager) {
     _classCallCheck(this, CreatureNames);
 
-    this.names = {};
-    this.named_species = ['human'];
-    // ???
-    this.required_props = ['species', 'sex', 'id'];
-    this.strategy = 'random';
-    this.init_names_stat(require('sheepland/creatures/names/male_names').list, 'human', 'male');
-    this.init_names_stat(require('sheepland/creatures/names/female_names').list, 'human', 'female');
+    var _this = _possibleConstructorReturn(this, (CreatureNames.__proto__ || Object.getPrototypeOf(CreatureNames)).call(this, relation_manager));
+
+    _this.names = {};
+    _this.named_species = ['human'];
+    _this.strategy = 'random';
+    _this.init_names_stat(require('sheepland/creatures/names/male_names').list, 'human', 'male');
+    _this.init_names_stat(require('sheepland/creatures/names/female_names').list, 'human', 'female');
+    return _this;
   }
 
   _createClass(CreatureNames, [{
     key: "init_names_stat",
     value: function init_names_stat(list, species, sex) {
-      var _this = this;
+      var _this2 = this;
 
       list.forEach(function (name) {
-        _this.init_name_stat(name);
-        _util2.default.push_uniq(species, _this.names[name].species);
-        _util2.default.push_uniq(sex, _this.names[name].sex);
+        _this2.init_name_stat(name);
+        _util2.default.push_uniq(species, _this2.names[name].species);
+        _util2.default.push_uniq(sex, _this2.names[name].sex);
       });
     }
   }, {
@@ -5994,11 +5996,6 @@ var CreatureNames = function () {
         return true;
       }
       return false;
-    }
-  }, {
-    key: "creature_link",
-    value: function creature_link(creature) {
-      return creature.id;
     }
   }, {
     key: "filter_names",
@@ -6017,26 +6014,22 @@ var CreatureNames = function () {
     //////////////////////////////////////////////////////////
 
   }, {
-    key: "generate",
-    value: function generate(creature) {
-      this.required_props.forEach(function (prop) {
-        if (!creature[prop]) {
-          throw "creature has no property " + prop;
-        }
-      });
+    key: "create",
+    value: function create(creature) {
+      _get(CreatureNames.prototype.__proto__ || Object.getPrototypeOf(CreatureNames.prototype), "create", this).call(this, creature);
       // animals have their species as name
-      if (this.named_species.indexOf(creature.species) == -1) {
-        creature.name = creature.species;
+      if (this.named_species.indexOf(creature.species()) == -1) {
+        this.set_name(creature, creature.species());
         return;
       }
       var filtered = {};
       if (this.strategy == 'random') {
         filtered = this.filter_names(function (name) {
-          return name.species.indexOf(creature.species) != -1 && name.sex.indexOf(creature.sex) != -1;
+          return name.species.indexOf(creature.species()) != -1 && name.sex.indexOf(creature.sex()) != -1;
         });
       } else if (this.strategy == 'evenly') {
         filtered = this.filter_names(function (name) {
-          return name.species.indexOf(creature.species) != -1 && name.sex.indexOf(creature.sex) != -1;
+          return name.species.indexOf(creature.species()) != -1 && name.sex.indexOf(creature.sex()) != -1;
         });
         var min = _util2.default.find_min_and_max(filtered, function (name) {
           return name.creatures.length;
@@ -6055,34 +6048,201 @@ var CreatureNames = function () {
       this.set_name(creature, name);
     }
   }, {
+    key: "deps",
+    value: function deps() {
+      return ['CreatureSpecies', 'CreatureSex'];
+    }
+  }, {
+    key: "exports",
+    value: function exports() {
+      var _this3 = this;
+
+      return {
+        name: function name() {
+          return _this3.get_key('name');
+        }
+      };
+    }
+  }, {
     key: "set_name",
     value: function set_name(creature, name) {
       this.init_name_stat(name);
-      _util2.default.push_uniq(this.creature_link(creature), this.names[name].creatures);
-      creature.name = name;
+      _util2.default.push_uniq(creature.id, this.names[name].creatures);
+      this.set_key(creature, 'name', name);
     }
   }, {
     key: "clear_name",
     value: function clear_name(creature) {
-      if (!creature.name) {
+      if (!creature.name()) {
         return false;
       }
-      if (!this.names[creature.name]) {
-        if (creature.name != creature.species) {
+      if (!this.names[creature.name()]) {
+        if (creature.name() != creature.species()) {
           throw 'creature has name, its not its species, and theres no name stat';
         }
         return false;
       }
-      _util2.default.remove_element(this.creature_link(creature), this.names[creature.name].creatures);
-      creature.name = null;
+      _util2.default.remove_element(creature.id, this.names[creature.name()].creatures);
+      this.set_key(creature, 'name', null);
       return true;
     }
   }]);
 
   return CreatureNames;
-}();
+}(_relation2.default);
 
 exports.default = CreatureNames;
+
+});
+
+require.register("sheepland/creatures/creature_sex.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _relation = require('sheepland/relation');
+
+var _relation2 = _interopRequireDefault(_relation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *
+ */
+var CreatureSex = function (_Relation) {
+  _inherits(CreatureSex, _Relation);
+
+  function CreatureSex() {
+    _classCallCheck(this, CreatureSex);
+
+    return _possibleConstructorReturn(this, (CreatureSex.__proto__ || Object.getPrototypeOf(CreatureSex)).apply(this, arguments));
+  }
+
+  _createClass(CreatureSex, [{
+    key: 'exports',
+    value: function exports() {
+      var _this2 = this;
+
+      return {
+        sex: function sex(creature) {
+          return _this2.get_key(creature, 'sex');
+        }
+      };
+    }
+
+    // strings -- class names
+
+  }, {
+    key: 'deps',
+    value: function deps() {
+      return [];
+    }
+  }, {
+    key: 'create',
+    value: function create(creature, props) {
+      _get(CreatureSex.prototype.__proto__ || Object.getPrototypeOf(CreatureSex.prototype), 'create', this).call(this, creature, props);
+      if (!props.sex) {
+        props.sex = Math.random() < 0.5 ? 'male' : 'female';
+      }
+      this.set_key(creature, 'sex', props.sex);
+    }
+  }, {
+    key: 'allowed_sex',
+    value: function allowed_sex() {
+      return ['male', 'female'];
+    }
+  }]);
+
+  return CreatureSex;
+}(_relation2.default);
+
+exports.default = CreatureSex;
+
+});
+
+require.register("sheepland/creatures/creature_species.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _relation = require('sheepland/relation');
+
+var _relation2 = _interopRequireDefault(_relation);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *
+ */
+var CreatureSpecies = function (_Relation) {
+  _inherits(CreatureSpecies, _Relation);
+
+  function CreatureSpecies() {
+    _classCallCheck(this, CreatureSpecies);
+
+    return _possibleConstructorReturn(this, (CreatureSpecies.__proto__ || Object.getPrototypeOf(CreatureSpecies)).apply(this, arguments));
+  }
+
+  _createClass(CreatureSpecies, [{
+    key: 'exports',
+    value: function exports() {
+      var _this2 = this;
+
+      return {
+        species: function species(creature) {
+          return _this2.get_key(creature, 'species');
+        }
+      };
+    }
+
+    // strings -- class names
+
+  }, {
+    key: 'deps',
+    value: function deps() {
+      return [];
+    }
+  }, {
+    key: 'create',
+    value: function create(creature, props) {
+      _get(CreatureSpecies.prototype.__proto__ || Object.getPrototypeOf(CreatureSpecies.prototype), 'create', this).call(this, creature, props);
+      this.set_key(creature, 'species', props.species);
+    }
+  }, {
+    key: 'allowed_species',
+    value: function allowed_species() {
+      return ['human', 'sheep'];
+    }
+  }]);
+
+  return CreatureSpecies;
+}(_relation2.default);
+
+exports.default = CreatureSpecies;
 
 });
 
@@ -6095,31 +6255,111 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
 
 var _sheepland = require("sheepland/sheepland");
 
+var _relation = require("sheepland/relation");
+
+var _relation2 = _interopRequireDefault(_relation);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 /**
- *  REQUIRE: species, sex, birth_ts
- *  INJECT: fertile, life_cycle, life_duration
+ *
  */
-var LifeCycle = function () {
-  function LifeCycle() {
+var LifeCycle = function (_Relation) {
+  _inherits(LifeCycle, _Relation);
+
+  function LifeCycle(relation_manager) {
     _classCallCheck(this, LifeCycle);
 
-    this.config = this.get_config();
+    var _this = _possibleConstructorReturn(this, (LifeCycle.__proto__ || Object.getPrototypeOf(LifeCycle)).call(this, relation_manager));
+
+    _this.config = _this.get_config();
+    return _this;
   }
 
-  // different
-
-
   _createClass(LifeCycle, [{
+    key: "create",
+    value: function create(creature) {
+      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+      if (!this.config[creature.species()]) {
+        console.log("unknown creature.species()", creature);
+        throw 'unknown creature.species(): ' + creature.species();
+      }
+      _get(LifeCycle.prototype.__proto__ || Object.getPrototypeOf(LifeCycle.prototype), "create", this).call(this, creature);
+      this.data[creature.id].birth_ts = this.calc_birth_ts(creature, birth_ts);
+      this.data[creature.id].life_duration = this.calc_life_duration(creature);
+      this.update_creature_status(creature);
+    }
+  }, {
+    key: "deps",
+    value: function deps() {
+      return ['CreatureSpecies', 'CreatureSex'];
+    }
+  }, {
+    key: "exports",
+    value: function exports() {
+      var _this2 = this;
+
+      return {
+        birth_ts: function birth_ts(creature) {
+          return _this2.get_key(creature, 'birth_ts');
+        },
+        life_duration: function life_duration(creature) {
+          return _this2.get_key(creature, 'life_duration');
+        },
+        life_cycle: function life_cycle(creature) {
+          return _this2.get_key(creature, 'life_cycle');
+        },
+        fertile: function fertile(creature) {
+          return _this2.get_key(creature, 'fertile');
+        },
+        life_duration_in_days: this.life_duration_in_days,
+        left_to_live_in_days: this.left_to_live_in_days,
+        age: this.age
+      };
+    }
+  }, {
+    key: "life_duration_in_days",
+    value: function life_duration_in_days(creature) {
+      return Math.floor(creature.life_duration() / (1000 * 60 * 60 * 24));
+    }
+  }, {
+    key: "left_to_live_in_days",
+    value: function left_to_live_in_days(creature) {
+      return Math.floor((creature.life_duration() - Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts())) / (1000 * 60 * 60 * 24));
+    }
+
+    // incorrect, but we dont care
+    // slow, ineffective?
+
+  }, {
+    key: "age",
+    value: function age(creature) {
+      var diff = Math.abs(creature.birth_ts() - _sheepland.game.calendar.current_ts());
+      var date = new Date();
+      date.setTime(diff);
+      return { years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate() };
+    }
+
+    ///////////////////////////////////////
+    // private
+    ///////////////////////////////////////
+
+  }, {
     key: "get_config",
     value: function get_config() {
       return {
@@ -6138,50 +6378,9 @@ var LifeCycle = function () {
       };
     }
   }, {
-    key: "generate",
-    value: function generate(creature) {
-      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-      if (!this.config[creature.species]) {
-        console.log("unknown creature species", creature);
-        throw 'unknown creature species: ' + creature.species;
-      }
-
-      creature.birth_ts = this.calc_birth_ts(creature, birth_ts);
-      creature.life_duration = this.calc_life_duration(creature);
-      this.update_creature_status(creature);
-    }
-  }, {
-    key: "life_duration_in_days",
-    value: function life_duration_in_days(creature) {
-      return Math.floor(creature.life_duration / (1000 * 60 * 60 * 24));
-    }
-  }, {
-    key: "left_to_live_in_days",
-    value: function left_to_live_in_days(creature) {
-      return Math.floor((creature.life_duration - Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts)) / (1000 * 60 * 60 * 24));
-    }
-
-    // incorrect, but we dont care
-    // slow, ineffective?
-
-  }, {
-    key: "get_age",
-    value: function get_age(creature) {
-      var diff = Math.abs(creature.birth_ts - _sheepland.game.calendar.current_ts());
-      var date = new Date();
-      date.setTime(diff);
-      return { years: date.getFullYear() - 1970, months: date.getUTCMonth() + 1, days: date.getUTCDate() };
-    }
-
-    ///////////////////////////////////////
-    // private
-    ///////////////////////////////////////
-
-  }, {
     key: "calc_birth_ts",
     value: function calc_birth_ts(creature, birth_ts) {
-      var max_random_age = 1000 * 60 * 60 * 24 * 365 * Math.ceil(this.config[creature.species].life_duration / 2);
+      var max_random_age = 1000 * 60 * 60 * 24 * 365 * Math.ceil(this.config[creature.species()].life_duration / 2);
       if (birth_ts && birth_ts > _sheepland.game.calendar.current_ts()) {
         console.log('creature birth_ts greater than current ts', birth_ts, _sheepland.game.calendar.current_ts());
         return false;
@@ -6194,10 +6393,10 @@ var LifeCycle = function () {
   }, {
     key: "calc_life_duration",
     value: function calc_life_duration(creature) {
-      var basic_duration = this.config[creature.species].life_duration;
+      var basic_duration = this.config[creature.species()].life_duration;
       var diff = Math.round(basic_duration / 3);
-      var cur_life_duration = Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts);
-      var years_lived = this.get_age(creature).years;
+      var cur_life_duration = Math.abs(_sheepland.game.calendar.current_ts() - creature.birth_ts());
+      var years_lived = this.age(creature).years;
       // in ticks
       var life_duration = cur_life_duration + _util2.default.rand(0, (basic_duration + diff - years_lived) * 1000 * 60 * 60 * 24 * 365);
       return life_duration;
@@ -6205,25 +6404,23 @@ var LifeCycle = function () {
   }, {
     key: "handle_tick",
     value: function handle_tick() {
-      var _this = this;
-
       // TODO maybe not every tick?
-      _sheepland.game.creatures.forEach(function (creature) {
-        return _this.update_creature_status(creature);
-      });
+      for (var id in this.data) {
+        this.update_creature_status({ id: id });
+      }
     }
   }, {
     key: "update_creature_status",
     value: function update_creature_status(creature) {
-      creature.life_cycle = this.calc_life_cycle(creature);
-      creature.fertile = this.calc_fertility(creature);
+      this.data[creature.id].life_cycle = this.calc_life_cycle(creature);
+      this.data[creature.id].fertile = this.calc_fertility(creature);
     }
   }, {
     key: "calc_life_cycle",
     value: function calc_life_cycle(creature) {
-      var spec = this.config[creature.species];
-      var creature_age = this.get_age(creature).years;
-      if (_sheepland.game.calendar.current_ts() > creature.birth_ts + creature.life_duration) {
+      var spec = this.config[creature.species()];
+      var creature_age = this.age(creature).years;
+      if (_sheepland.game.calendar.current_ts() > creature.birth_ts() + creature.life_duration()) {
         return 'dead';
       } else if (creature_age < spec.adult_from) {
         return 'child';
@@ -6236,19 +6433,19 @@ var LifeCycle = function () {
   }, {
     key: "calc_fertility",
     value: function calc_fertility(creature) {
-      if (creature.sex == 'male') {
-        return creature.life_cycle == 'adult' || creature.life_cycle == 'old';
-      } else if (creature.sex == 'female') {
-        return creature.life_cycle == 'adult';
+      if (creature.sex() == 'male') {
+        return creature.life_cycle() == 'adult' || creature.life_cycle() == 'old';
+      } else if (creature.sex() == 'female') {
+        return creature.life_cycle() == 'adult';
       } else {
         console.log("bad sex for calc_fertility", creature);
-        throw 'bad sex for calc_fertility: ' + creature.sex;
+        throw 'bad sex for calc_fertility: ' + creature.sex();
       }
     }
   }]);
 
   return LifeCycle;
-}();
+}(_relation2.default);
 
 exports.default = LifeCycle;
 
@@ -6299,20 +6496,20 @@ var Entity = function () {
     _classCallCheck(this, Entity);
 
     this.relation_manager = relation_manager;
-    this.entities = {};
+    this.data = {};
   }
 
   _createClass(Entity, [{
     key: "create",
-    value: function create() {
+    value: function create(props) {
       var _this = this;
 
       var entity = { id: UUID.v1() };
       this.relations().forEach(function (relation) {
         var relation_instance = _this.relation_manager[relation];
-        relation_instance.create(entity);
+        relation_instance.create(entity, props);
       });
-      this.entities[entity.id] = entity; // wut???
+      this.data[entity.id] = entity; // wut???
       return entity;
     }
   }, {
@@ -6372,9 +6569,12 @@ var Relation = function () {
     value: function deps() {
       return [];
     }
+
+    // TODO what to do with props?
+
   }, {
     key: 'create',
-    value: function create(client) {
+    value: function create(client, props) {
       var _this = this;
 
       if (!client.id) {
@@ -6391,20 +6591,27 @@ var Relation = function () {
           }
         }
       });
-      this.init(client);
       var exports = this.exports();
       for (var name in exports) {
-        client[name] = exports[name].bind(client, this);
+        client[name] = exports[name].bind(this, client);
       }
+      this.data[client.id] = {};
+    }
+  }, {
+    key: 'get_key',
+    value: function get_key(client, key) {
+      return this.data[client.id][key];
+    }
+  }, {
+    key: 'set_key',
+    value: function set_key(client, key, value) {
+      this.data[client.id][key] = value;
     }
   }, {
     key: 'delete',
     value: function _delete() {
       // TODO
     }
-  }, {
-    key: 'init',
-    value: function init(client) {}
   }]);
 
   return Relation;
@@ -6467,9 +6674,17 @@ var _calendar = require("sheepland/calendar");
 
 var _calendar2 = _interopRequireDefault(_calendar);
 
-var _creature2 = require("sheepland/creatures/creature");
+var _creature = require("sheepland/creatures/creature");
 
-var _creature3 = _interopRequireDefault(_creature2);
+var _creature2 = _interopRequireDefault(_creature);
+
+var _creature_species = require("sheepland/creatures/creature_species");
+
+var _creature_species2 = _interopRequireDefault(_creature_species);
+
+var _creature_sex = require("sheepland/creatures/creature_sex");
+
+var _creature_sex2 = _interopRequireDefault(_creature_sex);
 
 var _creature_names = require("sheepland/creatures/creature_names");
 
@@ -6524,14 +6739,12 @@ var Sheepland = function () {
   _createClass(Sheepland, [{
     key: "generate_world",
     value: function generate_world() {
-      var relations_list = [_test_relation_2.default, _test_relation_4.default];
+      var relations_list = [_test_relation_2.default, _test_relation_4.default, _creature_species2.default, _creature_sex2.default, _creature_names2.default, _life_cycle2.default];
       this.relations = new _relation_manager2.default(relations_list);
       this.test_entities = new _test_entity2.default(this.relations);
 
-      this.creatures = []; // TEMP
+      this.creatures = new _creature2.default(this.relations);
       this.calendar = new _calendar2.default();
-      this.creature_names = new _creature_names2.default();
-      this.life_cycle = new _life_cycle2.default();
 
       this.test(); // TEMP
 
@@ -6542,13 +6755,11 @@ var Sheepland = function () {
     value: function test() {
       var count = 15;
       while (--count) {
-        var creature = this.generate_creature("human");
-        this.creatures.push(creature);
+        this.generate_creature("human");
       }
       count = 15;
       while (--count) {
-        var _creature = this.generate_creature("sheep");
-        this.creatures.push(_creature);
+        this.generate_creature("sheep");
       }
     }
   }, {
@@ -6557,9 +6768,7 @@ var Sheepland = function () {
       var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var birth_ts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var creature = new _creature3.default(species, sex);
-      this.creature_names.generate(creature);
-      this.life_cycle.generate(creature);
+      var creature = this.creatures.create({ species: species, sex: sex, birth_ts: birth_ts });
 
       var test_entity = this.test_entities.create();
       console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
@@ -6570,17 +6779,13 @@ var Sheepland = function () {
     key: "tick",
     value: function tick() {
       this.calendar.handle_tick();
-      this.life_cycle.handle_tick();
+      this.relations.LifeCycle.handle_tick();
 
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());
       }
       if (this.ticks % 100 == 0) {
-        var creature_list = this.creatures.map(function (creature) {
-          var copy = Object.assign({}, creature);
-          copy.age = game.life_cycle.get_age(creature);
-          return copy;
-        });
+        var creature_list = Object.values(this.creatures.data);
         this.app.set_creatures_list(creature_list);
       }
 
@@ -6653,7 +6858,7 @@ exports.default = TestEntity;
 });
 
 require.register("sheepland/test_relation_1.js", function(exports, require, module) {
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6661,11 +6866,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _util = require("common/util");
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require('common/util');
 
 var _util2 = _interopRequireDefault(_util);
 
-var _relation = require("sheepland/relation");
+var _relation = require('sheepland/relation');
 
 var _relation2 = _interopRequireDefault(_relation);
 
@@ -6690,26 +6897,26 @@ var TestRelation1 = function (_Relation) {
   }
 
   _createClass(TestRelation1, [{
-    key: "deps",
+    key: 'deps',
     value: function deps() {
       return [];
     }
   }, {
-    key: "exports",
+    key: 'exports',
     value: function exports() {
+      var _this2 = this;
+
       return {
-        test_val: this.test_val
+        test_val: function test_val(client) {
+          return _this2.get_key(client, 'test_val');
+        }
       };
     }
   }, {
-    key: "init",
-    value: function init(client) {
-      this.data[client.id] = { test_val: _util2.default.rand(1, 10) };
-    }
-  }, {
-    key: "test_val",
-    value: function test_val(registry) {
-      return registry.data[this.id].test_val;
+    key: 'create',
+    value: function create(client) {
+      _get(TestRelation1.prototype.__proto__ || Object.getPrototypeOf(TestRelation1.prototype), 'create', this).call(this, client);
+      this.data[client.id].test_val = _util2.default.rand(1, 10);
     }
   }]);
 
@@ -6728,6 +6935,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 var _util = require('common/util');
 
@@ -6765,19 +6974,19 @@ var TestRelation2 = function (_Relation) {
   }, {
     key: 'exports',
     value: function exports() {
+      var _this2 = this;
+
       return {
-        test_val_2: this.test_val_2
+        test_val_2: function test_val_2(client) {
+          return _this2.get_key(client, 'test_val_2');
+        }
       };
     }
   }, {
-    key: 'init',
-    value: function init(client) {
-      this.data[client.id] = { test_val_2: _util2.default.rand(1, 10) };
-    }
-  }, {
-    key: 'test_val_2',
-    value: function test_val_2(registry) {
-      return registry.data[this.id].test_val_2;
+    key: 'create',
+    value: function create(client) {
+      _get(TestRelation2.prototype.__proto__ || Object.getPrototypeOf(TestRelation2.prototype), 'create', this).call(this, client);
+      this.data[client.id].test_val_2 = _util2.default.rand(1, 10);
     }
   }]);
 
