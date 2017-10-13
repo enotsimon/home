@@ -40,7 +40,7 @@ export default class Relation {
     this.init(client);
     let exports = this.exports();
     for (let name in exports) {
-      client[name] = exports[name].bind(client, this);
+      client[name] = exports[name].bind(this, client);
     }
   }
   

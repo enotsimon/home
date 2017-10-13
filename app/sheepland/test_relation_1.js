@@ -24,7 +24,7 @@ export default class TestRelation1 extends Relation {
 
 
 
-  test_val(registry) {
-    return registry.data[this.id].test_val;
+  test_val(client) {
+    return this.data[client.id].test_val;
   }
 }

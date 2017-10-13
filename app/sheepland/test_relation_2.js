@@ -23,8 +23,8 @@ export default class TestRelation2 extends Relation {
   }
 
 
-
-  test_val_2(registry) {
-    return registry.data[this.id].test_val_2;
+  test_val_2(client, bla) {
+    console.log("test_val_2", this, client, bla);
+    return this.data[client.id].test_val_2;
   }
 }
