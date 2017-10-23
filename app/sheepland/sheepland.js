@@ -27,10 +27,12 @@ class Sheepland {
 
   generate_world() {
     let relations_list = [TestRelation1, TestRelation2, CreatureSpecies, CreatureSex, CreatureNames, LifeCycle];
-    this.relations = new RelationManager(relations_list);
-    this.test_entities = new TestEntity(this.relations);
+    let entities_list = [Creature];
+    let links_list = [];
+    this.rm = new RelationManager(relations_list, entities_list, links_list);
+    this.test_entities = new TestEntity(this.rm);
     
-    this.creatures = new Creature(this.relations);
+    this.rm.Creature = new Creature(this.rm);
     this.calendar = new Calendar();
 
     this.test(); // TEMP
@@ -52,7 +54,7 @@ class Sheepland {
 
 
   generate_creature(species, sex = false, birth_ts = false) {
-    let creature = this.creatures.create({species, sex, birth_ts});
+    let creature = this.rm.Creature.create({species, sex, birth_ts});
     
     let test_entity = this.test_entities.create();
     console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
@@ -63,13 +65,13 @@ class Sheepland {
 
   tick() {
     this.calendar.handle_tick();
-    this.relations.LifeCycle.handle_tick();
+    this.rm.LifeCycle.handle_tick();
 
     if (this.ticks % 10 == 0) {
       this.app.set_date(this.calendar.date.toUTCString());
     }
     if (this.ticks % 100 == 0) {
-      let creature_list = Object.values(this.creatures.data);
+      let creature_list = Object.values(this.rm.Creature.data);
       this.app.set_creatures_list(creature_list);
     }
 

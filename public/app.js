@@ -6534,6 +6534,76 @@ exports.default = Entity;
 
 });
 
+require.register("sheepland/link.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _uuid = require("uuid");
+
+var UUID = _interopRequireWildcard(_uuid);
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ *
+ */
+var Link = function () {
+  function Link(relation_manager) {
+    _classCallCheck(this, Link);
+
+    this.relation_manager = relation_manager;
+    this.data = {};
+    this.backlinks = {};
+  }
+
+  _createClass(Link, [{
+    key: "create",
+    value: function create(from, to) {
+      var link = { id: UUID.v1(), from: from, to: to };
+      this.data[link.id] = link; // wut???
+      // TODO: add exports? what about link exports on entity create?
+      // ???
+      _util2.default.push_uniq(to.id, this.backlinks[from.id]);
+      _util2.default.push_uniq(from.id, this.backlinks[to.id]);
+      return link;
+    }
+  }, {
+    key: "delete",
+    value: function _delete(from, to) {
+      // TODO
+    }
+  }, {
+    key: "from_exports",
+    value: function from_exports() {
+      return {};
+    }
+  }, {
+    key: "to_exports",
+    value: function to_exports() {
+      return {};
+    }
+  }]);
+
+  return Link;
+}();
+
+exports.default = Link;
+
+});
+
 require.register("sheepland/relation.js", function(exports, require, module) {
 'use strict';
 
@@ -6593,6 +6663,9 @@ var Relation = function () {
       });
       var exports = this.exports();
       for (var name in exports) {
+        if (client[name]) {
+          throw 'cannot create exported method on client cause it already exists: ' + name;
+        }
         client[name] = exports[name].bind(this, client);
       }
       this.data[client.id] = {};
@@ -6637,10 +6710,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var RelationManager = function () {
   // TODO add entities list?
-  function RelationManager(relations_list) {
+  function RelationManager(relations_list, entities_list, links_list) {
     _classCallCheck(this, RelationManager);
 
     relations_list.forEach(this.create_relation.bind(this));
+    entities_list.forEach(this.create_entity.bind(this));
+    links_list.forEach(this.create_link.bind(this));
   }
 
   // in root?
@@ -6648,9 +6723,24 @@ var RelationManager = function () {
 
   _createClass(RelationManager, [{
     key: "create_relation",
-    value: function create_relation(relation_class) {
-      //this.relations[relation_class.name] = new relation_class(this);
-      this[relation_class.name] = new relation_class(this);
+    value: function create_relation(class_name) {
+      this[class_name.name] = new class_name(this);
+    }
+
+    // in root?
+
+  }, {
+    key: "create_entity",
+    value: function create_entity(class_name) {
+      this[class_name.name] = new class_name(this);
+    }
+
+    // in root?
+
+  }, {
+    key: "create_link",
+    value: function create_link(class_name) {
+      this[class_name.name] = new class_name(this);
     }
   }]);
 
@@ -6740,10 +6830,12 @@ var Sheepland = function () {
     key: "generate_world",
     value: function generate_world() {
       var relations_list = [_test_relation_2.default, _test_relation_4.default, _creature_species2.default, _creature_sex2.default, _creature_names2.default, _life_cycle2.default];
-      this.relations = new _relation_manager2.default(relations_list);
-      this.test_entities = new _test_entity2.default(this.relations);
+      var entities_list = [_creature2.default];
+      var links_list = [];
+      this.rm = new _relation_manager2.default(relations_list, entities_list, links_list);
+      this.test_entities = new _test_entity2.default(this.rm);
 
-      this.creatures = new _creature2.default(this.relations);
+      this.rm.Creature = new _creature2.default(this.rm);
       this.calendar = new _calendar2.default();
 
       this.test(); // TEMP
@@ -6768,7 +6860,7 @@ var Sheepland = function () {
       var sex = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
       var birth_ts = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-      var creature = this.creatures.create({ species: species, sex: sex, birth_ts: birth_ts });
+      var creature = this.rm.Creature.create({ species: species, sex: sex, birth_ts: birth_ts });
 
       var test_entity = this.test_entities.create();
       console.log('test_relation', test_entity.test_val(), test_entity.test_val_2());
@@ -6779,13 +6871,13 @@ var Sheepland = function () {
     key: "tick",
     value: function tick() {
       this.calendar.handle_tick();
-      this.relations.LifeCycle.handle_tick();
+      this.rm.LifeCycle.handle_tick();
 
       if (this.ticks % 10 == 0) {
         this.app.set_date(this.calendar.date.toUTCString());
       }
       if (this.ticks % 100 == 0) {
-        var creature_list = Object.values(this.creatures.data);
+        var creature_list = Object.values(this.rm.Creature.data);
         this.app.set_creatures_list(creature_list);
       }
 

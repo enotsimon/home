@@ -39,6 +39,9 @@ export default class Relation {
     });
     let exports = this.exports();
     for (let name in exports) {
+      if (client[name]) {
+        throw('cannot create exported method on client cause it already exists: '+name);
+      }
       client[name] = exports[name].bind(this, client);
     }
     this.data[client.id] = {};
