@@ -6155,6 +6155,8 @@ var CreatureSex = function (_Relation) {
       _get(CreatureSex.prototype.__proto__ || Object.getPrototypeOf(CreatureSex.prototype), 'create', this).call(this, creature, props);
       if (!props.sex) {
         props.sex = Math.random() < 0.5 ? 'male' : 'female';
+      } else if (this.allowed_sex().indexOf(props.sex) == -1) {
+        throw 'wrong sex given: ' + props.sex;
       }
       this.set_key(creature, 'sex', props.sex);
     }
@@ -6230,6 +6232,12 @@ var CreatureSpecies = function (_Relation) {
     key: 'create',
     value: function create(creature, props) {
       _get(CreatureSpecies.prototype.__proto__ || Object.getPrototypeOf(CreatureSpecies.prototype), 'create', this).call(this, creature, props);
+      if (!props.species) {
+        throw 'no species given';
+      }
+      if (this.allowed_species().indexOf(props.species) == -1) {
+        throw 'wrong species given: ' + props.species;
+      }
       this.set_key(creature, 'species', props.species);
     }
   }, {

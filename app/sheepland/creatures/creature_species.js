@@ -20,6 +20,12 @@ export default class CreatureSpecies extends Relation {
 
   create(creature, props) {
     super.create(creature, props);
+    if (!props.species) {
+      throw('no species given');
+    }
+    if (this.allowed_species().indexOf(props.species) == -1) {
+      throw('wrong species given: '+props.species);
+    }
     this.set_key(creature, 'species', props.species);
   }
 
