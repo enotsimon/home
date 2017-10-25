@@ -32,7 +32,6 @@ class Sheepland {
     this.rm = new RelationManager(relations_list, entities_list, links_list);
     this.test_entities = new TestEntity(this.rm);
     
-    this.rm.Creature = new Creature(this.rm);
     this.calendar = new Calendar();
 
     this.test(); // TEMP

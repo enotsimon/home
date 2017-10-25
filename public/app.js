@@ -6841,7 +6841,6 @@ var Sheepland = function () {
       this.rm = new _relation_manager2.default(relations_list, entities_list, links_list);
       this.test_entities = new _test_entity2.default(this.rm);
 
-      this.rm.Creature = new _creature2.default(this.rm);
       this.calendar = new _calendar2.default();
 
       this.test(); // TEMP
