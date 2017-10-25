@@ -13,13 +13,13 @@ export default class LifeCycle extends Relation {
   }
 
 
-  create(creature, birth_ts = false) {
+  create(creature, props) {
     if (!this.config[creature.species()]) {
       console.log("unknown creature.species()", creature);
       throw('unknown creature.species(): '+creature.species());
     }
     super.create(creature);
-    this.data[creature.id].birth_ts = this.calc_birth_ts(creature, birth_ts);
+    this.data[creature.id].birth_ts = this.calc_birth_ts(creature, props.birth_ts);
     this.data[creature.id].life_duration = this.calc_life_duration(creature);
     this.update_creature_status(creature);
   }
@@ -114,7 +114,7 @@ export default class LifeCycle extends Relation {
   handle_tick() {
     // TODO maybe not every tick?
     for (let id in this.data) {
-      this.update_creature_status({id: id});
+      this.update_creature_status(this.relation_manager.Creature.data[id]);
     }
   }
 

@@ -31,9 +31,9 @@ export default class Relation {
     this.deps().forEach(dep_class => {
       let instance = this.relation_manager[dep_class];
       for (let name in instance.exports()) {
-        if (!client[name]) {
-          console.log('dependency method does not present', name, dep);
-          throw('dependency method does not present');
+        if (!client[name] || typeof client[name] !== "function") {
+          console.log('dependency method does not present or its not a function', name, dep_class, client);
+          throw('dependency method does not present  or its not a function');
         }
       }
     });

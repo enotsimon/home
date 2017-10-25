@@ -5822,9 +5822,9 @@ var CreaturesList = function (_React$Component) {
               'span',
               null,
               '(',
-              creature.species,
+              creature.species(),
               ' ',
-              creature.sex,
+              creature.sex(),
               ')'
             ),
             '\xA0',
@@ -6058,8 +6058,8 @@ var CreatureNames = function (_Relation) {
       var _this3 = this;
 
       return {
-        name: function name() {
-          return _this3.get_key('name');
+        name: function name(creature) {
+          return _this3.get_key(creature, 'name');
         }
       };
     }
@@ -6300,15 +6300,13 @@ var LifeCycle = function (_Relation) {
 
   _createClass(LifeCycle, [{
     key: "create",
-    value: function create(creature) {
-      var birth_ts = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
+    value: function create(creature, props) {
       if (!this.config[creature.species()]) {
         console.log("unknown creature.species()", creature);
         throw 'unknown creature.species(): ' + creature.species();
       }
       _get(LifeCycle.prototype.__proto__ || Object.getPrototypeOf(LifeCycle.prototype), "create", this).call(this, creature);
-      this.data[creature.id].birth_ts = this.calc_birth_ts(creature, birth_ts);
+      this.data[creature.id].birth_ts = this.calc_birth_ts(creature, props.birth_ts);
       this.data[creature.id].life_duration = this.calc_life_duration(creature);
       this.update_creature_status(creature);
     }
@@ -6414,7 +6412,7 @@ var LifeCycle = function (_Relation) {
     value: function handle_tick() {
       // TODO maybe not every tick?
       for (var id in this.data) {
-        this.update_creature_status({ id: id });
+        this.update_creature_status(this.relation_manager.Creature.data[id]);
       }
     }
   }, {
@@ -6663,9 +6661,9 @@ var Relation = function () {
       this.deps().forEach(function (dep_class) {
         var instance = _this.relation_manager[dep_class];
         for (var name in instance.exports()) {
-          if (!client[name]) {
-            console.log('dependency method does not present', name, dep);
-            throw 'dependency method does not present';
+          if (!client[name] || typeof client[name] !== "function") {
+            console.log('dependency method does not present or its not a function', name, dep_class, client);
+            throw 'dependency method does not present  or its not a function';
           }
         }
       });

@@ -79,7 +79,7 @@ export default class CreatureNames extends Relation {
 
   exports() {
     return {
-      name: () => this.get_key('name'),
+      name: (creature) => this.get_key(creature, 'name'),
     };
   }
 
