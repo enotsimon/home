@@ -5585,6 +5585,51 @@ exports.default = StellarBody;
 
 });
 
+require.register("sheepland/buildings/building.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _entity = require('sheepland/entity');
+
+var _entity2 = _interopRequireDefault(_entity);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Building = function (_Entity) {
+  _inherits(Building, _Entity);
+
+  function Building() {
+    _classCallCheck(this, Building);
+
+    return _possibleConstructorReturn(this, (Building.__proto__ || Object.getPrototypeOf(Building)).apply(this, arguments));
+  }
+
+  _createClass(Building, [{
+    key: 'relations',
+    value: function relations() {
+      //return ['BuildingType'];
+      return [];
+    }
+  }]);
+
+  return Building;
+}(_entity2.default);
+
+exports.default = Building;
+
+});
+
 require.register("sheepland/calendar.js", function(exports, require, module) {
 "use strict";
 
@@ -6573,6 +6618,8 @@ var Link = function () {
     this.relation_manager = relation_manager;
     this.data = {};
     this.backlinks = {};
+    this.from_links_limit = 1;
+    this.to_links_limit = 1;
   }
 
   _createClass(Link, [{
@@ -6580,11 +6627,37 @@ var Link = function () {
     value: function create(from, to) {
       var link = { id: UUID.v1(), from: from, to: to };
       this.data[link.id] = link; // wut???
-      // TODO: add exports? what about link exports on entity create?
+      if (this.backlinks[from.id] && this.backlinks[from.id].length > this.from_links_limit) {
+        throw 'cannot add link, "from" links limit reached'; // throw? return false; ?
+      }
+      if (this.backlinks[to.id] && this.backlinks[to.id].length > this.to_links_limit) {
+        throw 'cannot add link, "to" links limit reached'; // throw? return false; ?
+      }
       // ???
       _util2.default.push_uniq(to.id, this.backlinks[from.id]);
       _util2.default.push_uniq(from.id, this.backlinks[to.id]);
       return link;
+    }
+  }, {
+    key: "init_from",
+    value: function init_from(client) {
+      return this.init(client, this.from_exports());
+    }
+  }, {
+    key: "init_to",
+    value: function init_to(client) {
+      return this.init(client, this.to_exports());
+    }
+  }, {
+    key: "init",
+    value: function init(client, exports) {
+      //let exports = this.from_exports();
+      for (var name in exports) {
+        if (client[name]) {
+          throw 'cannot create exported method on client cause it already exists: ' + name;
+        }
+        client[name] = exports[name].bind(this, client);
+      }
     }
   }, {
     key: "delete",
