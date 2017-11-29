@@ -7,6 +7,14 @@ export default class Drawer {
   
   init(width, height) {
     this.game = game;
-    console.log('Interaction init ok');
+    console.log('Drawer init ok');
+  }
+
+  draw_scene(scene) {
+
+  }
+
+  draw_main_menu(draw_main_menu) {
+    
   }
 }
