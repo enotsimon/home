@@ -4,11 +4,15 @@ import * as d3 from "d3";
 
 export default class Interaction {
   constructor() {
-    this.state = 'initial';
+    this.mode = 'initial';
   }
 
   init() {
     this.game = game;
     console.log('Interaction init ok');
+  }
+
+  init_actions_mode() {
+    this.mode = 'actions';
   }
 }
