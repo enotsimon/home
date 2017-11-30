@@ -8,13 +8,22 @@ export default class App extends React.Component {
 
 
   render() {
+    // TEMPORARY FAKE DATA
+    let main_menu_data = {
+      elements: [
+        {id: 'go_to', text: 'go to ...'},
+        {id: 'speak_to', text: 'speak to ...'},
+      ],
+      on_element_click: (id) => console.log('dont believe it works! click on', id),
+    };
+
     return (
       <div className="row">
         <div className="col-md-8 col-md-offset-2">
 
           <Scene/>
 
-          <MainMenu/>
+          <MainMenu {...main_menu_data}/>
 
         </div>
       </div>

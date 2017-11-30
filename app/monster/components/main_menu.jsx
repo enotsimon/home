@@ -1,15 +1,9 @@
 
 import React from 'react';
+import PropTypes from 'prop-types';
+import MainMenuElement from 'monster/components/main_menu_element';
 
-export default class MainMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      go_to: {id: 'go_to', text: "go to"},
-      speak_to: {id: 'speak_to', text: "speak to"},
-    };
-  }
-
+class MainMenu extends React.Component {
   render() {
     return (
       <div className="panel panel-success">
@@ -19,14 +13,23 @@ export default class MainMenu extends React.Component {
           </h4>
         </div>
         <div className="panel-body">
-          <button id={this.state.go_to.id} type="button" className="btn btn-default btn-block">
-            {this.state.go_to.text}
-          </button>
-          <button id={this.state.speak_to.id} type="button" className="btn btn-default btn-block">
-            {this.state.speak_to.text}
-          </button>
+          {this.props.elements.map((e, i) => (
+            <MainMenuElement key={i} {...e} on_click={() => this.props.on_element_click(e.id)} />
+          ))}
         </div>
       </div>
     );
   }
 }
+
+MainMenu.propTypes = {
+  elements: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired
+    }).isRequired
+  ).isRequired,
+  on_element_click: PropTypes.func.isRequired,
+};
+
+export default MainMenu;
