@@ -3,11 +3,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class MainMenuElement extends React.Component {
-  render() {
-    console.log('MainMenuElement', this.props);
+  btn_class() {
+    let btn_type = this.props.active ? 'btn-success' : 'btn-default';
+    return `btn ${btn_type} btn-block`;
+  }
 
+  render() {
     return (
-      <button id={this.props.id} type="button" className="btn btn-default btn-block" onClick={this.props.on_click}>
+      <button id={this.props.id} type="button" className={this.btn_class()} onClick={this.props.on_click}>
         {this.props.text}
       </button>
     );
@@ -18,6 +21,7 @@ MainMenuElement.propTypes = {
   on_click: PropTypes.func.isRequired,
   text: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
+  active: PropTypes.bool.isRequired,
 };
 
 export default MainMenuElement;
