@@ -893,6 +893,11 @@ var Util = function () {
     value: function distance(p1, p2) {
       return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     }
+  }, {
+    key: 'gauss_function',
+    value: function gauss_function(x, sigma, mu) {
+      return 1 / (sigma * Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, -(Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2))));
+    }
   }]);
 
   return Util;
@@ -1599,6 +1604,13 @@ var SamplesCollecton = function (_React$Component) {
               sample_url: './planets_focus.html',
               img_path: './thumbnails/planets_focus.jpg',
               status: 'in_progress'
+            }),
+            _react2.default.createElement(_sample_preview2.default, {
+              name: 'basic tableau',
+              description: "random start configuration, pixels change their colors smoothly",
+              sample_url: './basic_tableau.html',
+              img_path: './thumbnails/planets_focus.jpg',
+              status: 'in_progress'
             })
           )
         )
@@ -1961,6 +1973,139 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_samples_collection2.default, null), document.querySelector('#main'));
 });
+
+});
+
+require.register("experimental/tableau.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ *
+ */
+var Tableau = function (_BasicDrawer) {
+  _inherits(Tableau, _BasicDrawer);
+
+  function Tableau() {
+    _classCallCheck(this, Tableau);
+
+    var debug_additional = [];
+    return _possibleConstructorReturn(this, (Tableau.__proto__ || Object.getPrototypeOf(Tableau)).call(this, 'square', debug_additional));
+  }
+
+  _createClass(Tableau, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      this.x_size = 100;
+      this.y_size = 100;
+      this.data = [];
+      var radius = Math.min(this.size / (2 * this.x_size), this.size / (2 * this.y_size));
+      for (var y = 0; y < this.y_size; y++) {
+        this.data[y] = [];
+        for (var x = 0; x < this.x_size; x++) {
+          var graphics = new PIXI.Graphics();
+          graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
+          graphics.drawCircle(_util2.default.normalize_value(x + radius, this.x_size, this.size), _util2.default.normalize_value(y + radius, this.y_size, this.size), radius);
+          graphics.endFill();
+          this.base_container.addChild(graphics);
+          this.data[y][x] = {
+            x: x,
+            y: y,
+            color: 0,
+            new_color: 0,
+            graphics: graphics
+          };
+        }
+      }
+      this.init_state();
+      this.update_circles();
+    }
+  }, {
+    key: "redraw",
+    value: function redraw() {
+      this.mutate_state();
+      this.update_circles();
+    }
+  }, {
+    key: "update_circles",
+    value: function update_circles() {
+      this.for_all_elements(function (element) {
+        return element.graphics.alpha = element.color;
+      });
+    }
+  }, {
+    key: "for_all_elements",
+    value: function for_all_elements(func) {
+      this.data.forEach(function (line) {
+        line.forEach(function (element) {
+          func(element);
+        });
+      });
+    }
+  }, {
+    key: "init_state",
+    value: function init_state() {
+      this.for_all_elements(function (element) {
+        return element.color = Math.random();
+      });
+    }
+  }, {
+    key: "mutate_state",
+    value: function mutate_state() {
+      var _this2 = this;
+
+      this.for_all_elements(function (element) {
+        return element.new_color = _this2.mutate_element_state(element);
+      });
+      this.for_all_elements(function (element) {
+        return element.color = element.new_color;
+      });
+    }
+  }, {
+    key: "mutate_element_state",
+    value: function mutate_element_state(element) {
+      return (element.color + 16 / 256) % 1;
+    }
+  }]);
+
+  return Tableau;
+}(_basic_drawer2.default);
+
+exports.default = Tableau;
+
+
+var app = new Tableau();
 
 });
 

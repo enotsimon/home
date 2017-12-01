@@ -33,6 +33,14 @@ export default class SamplesCollecton extends React.Component {
               status: 'in_progress',
             })}
 
+            {React.createElement(SamplePreview, {
+              name: 'basic tableau',
+              description: `random start configuration, pixels change their colors smoothly`,
+              sample_url: './basic_tableau.html',
+              img_path: './thumbnails/planets_focus.jpg',
+              status: 'in_progress',
+            })}
+
           </div>
         </div>
       </div>
