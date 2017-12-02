@@ -17,16 +17,17 @@ export default class Tableau extends BasicDrawer {
     this.x_size = 100;
     this.y_size = 100;
     this.data = [];
-    let radius = Math.min(this.size / (2 * this.x_size), this.size / (2 * this.y_size));
+    let square_size = Math.min(this.size / this.x_size, this.size / this.y_size);
     for (let y = 0; y < this.y_size; y++) {
       this.data[y] = [];
       for (let x = 0; x < this.x_size; x++) {
         let graphics = new PIXI.Graphics();
         graphics.beginFill(Color.to_pixi([255, 255, 255]));
-        graphics.drawCircle(
-          Util.normalize_value(x + radius, this.x_size, this.size),
-          Util.normalize_value(y + radius, this.y_size, this.size),
-          radius
+        graphics.drawRect(
+          Util.normalize_value(x, this.x_size, this.size),
+          Util.normalize_value(y, this.y_size, this.size),
+          square_size,
+          square_size
         );
         graphics.endFill();
         this.base_container.addChild(graphics);
@@ -70,7 +71,7 @@ export default class Tableau extends BasicDrawer {
   }
 
   mutate_element_state(element) {
-    return (element.color + (16 / 256)) % 1;
+    return (element.color + (8 / 256)) % 1;
   }
 }
 
