@@ -8,9 +8,25 @@ export default class App extends React.Component {
     this.state = {additional: props.additional ? props.additional : []};
   }
 
+  // bad. but i dont care for now
+  go_back() {
+    window.location.href = "./samples_collection,html";
+  }
+
   render() {
     return (
       <div className="panel-group">
+
+        <div className="panel panel-success">
+          <div className="panel-body">
+            <div className="" id="back_link">
+              <button type="button" className="btn btn-success btn" onClick={this.go_back}>
+                <span className="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                &nbsp;back to collection
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div className="panel panel-success">
           <div className="panel-body">
