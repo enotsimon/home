@@ -21,9 +21,10 @@ export default class SamplePreview extends React.Component {
   render() {
     return (
       <div className="sample_preview">
-        <div className="panel panel-success">
+        <div className="panel panel-success" style={{width: 250}}>
           <div className="panel-heading">
-            <div className="panel-title navbar-text">
+            {/* class navbar-text?*/}
+            <div className="panel-title">
               {this.props.name}
             </div>
             <span className={`label label-primary status_${this.props.status}`}>
@@ -34,7 +35,7 @@ export default class SamplePreview extends React.Component {
             <a href={this.props.sample_url} className="thumbnail">
               <img width="200" height="200" src={this.props.img_path}/>
             </a>
-            <div className="width200">
+            <div className="">
               <p>{this.props.description}</p>
             </div>
           </div>
