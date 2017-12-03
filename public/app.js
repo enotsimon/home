@@ -1517,7 +1517,7 @@ var SamplePreview = function (_React$Component) {
         { className: 'sample_preview' },
         _react2.default.createElement(
           'div',
-          { className: 'panel panel-success', style: { width: 250 } },
+          { className: 'panel panel-success', style: { width: 220 } },
           _react2.default.createElement(
             'div',
             { className: 'panel-heading' },

@@ -21,7 +21,7 @@ export default class SamplePreview extends React.Component {
   render() {
     return (
       <div className="sample_preview">
-        <div className="panel panel-success" style={{width: 250}}>
+        <div className="panel panel-success" style={{width: 220}}>
           <div className="panel-heading">
             {/* class navbar-text?*/}
             <div className="panel-title">
