@@ -1290,12 +1290,38 @@ var App = function (_React$Component) {
     return _this;
   }
 
+  // bad. but i dont care for now
+
+
   _createClass(App, [{
+    key: 'go_back',
+    value: function go_back() {
+      window.location.href = "./samples_collection,html";
+    }
+  }, {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(
         'div',
         { className: 'panel-group' },
+        _react2.default.createElement(
+          'div',
+          { className: 'panel panel-success' },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-body' },
+            _react2.default.createElement(
+              'div',
+              { className: '', id: 'back_link' },
+              _react2.default.createElement(
+                'button',
+                { type: 'button', className: 'btn btn-success btn', onClick: this.go_back },
+                _react2.default.createElement('span', { className: 'glyphicon glyphicon-triangle-left', 'aria-hidden': 'true' }),
+                '\xA0back to collection'
+              )
+            )
+          )
+        ),
         _react2.default.createElement(
           'div',
           { className: 'panel panel-success' },
