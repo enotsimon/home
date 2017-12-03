@@ -34,10 +34,18 @@ export default class SamplesCollecton extends React.Component {
             })}
 
             {React.createElement(SamplePreview, {
-              name: 'basic tableau',
-              description: `random start configuration, pixels change their colors smoothly`,
+              name: 'basic random tableau',
+              description: `random start configuration, pixels change their colors with edgy jump from white to black`,
               sample_url: './basic_tableau.html',
-              img_path: './thumbnails/planets_focus.jpg',
+              img_path: './thumbnails/basic_tableau.jpg',
+              status: 'in_progress',
+            })}
+
+            {React.createElement(SamplePreview, {
+              name: 'smooth random tableau',
+              description: `random start configuration, pixels change their colors smoothly -- black to white and backward`,
+              sample_url: './smooth_tableau.html',
+              img_path: './thumbnails/smooth_tableau.jpg',
               status: 'in_progress',
             })}
 

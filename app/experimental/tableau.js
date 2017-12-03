@@ -14,6 +14,8 @@ export default class Tableau extends BasicDrawer {
   }
 
   init_graphics() {
+    this.tick = 0;
+    this.color_change_per_tick = 8;
     this.x_size = 100;
     this.y_size = 100;
     this.data = [];
@@ -47,6 +49,7 @@ export default class Tableau extends BasicDrawer {
   redraw() {
     this.mutate_state();    
     this.update_circles();
+    this.tick++;
   }
 
   update_circles() {
@@ -62,16 +65,21 @@ export default class Tableau extends BasicDrawer {
   }
 
   init_state() {
-    this.for_all_elements(element => element.color = Math.random());
+    this.for_all_elements(element => this.init_element_state(element));
+  }
+
+  init_element_state(element) {
+    element.color = Math.random();
   }
 
   mutate_state() {
-    this.for_all_elements(element => element.new_color = this.mutate_element_state(element));
+    this.for_all_elements(element => this.mutate_element_state(element));
     this.for_all_elements(element => element.color = element.new_color);
   }
 
+  // this func suppose to change new_color prop, not color!
   mutate_element_state(element) {
-    return (element.color + (8 / 256)) % 1;
+    element.new_color = (element.color + (this.color_change_per_tick / 256)) % 1;
   }
 }
 
