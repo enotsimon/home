@@ -1491,13 +1491,13 @@ var SamplePreview = function (_React$Component) {
         { className: 'sample_preview' },
         _react2.default.createElement(
           'div',
-          { className: 'panel panel-success' },
+          { className: 'panel panel-success', style: { width: 250 } },
           _react2.default.createElement(
             'div',
             { className: 'panel-heading' },
             _react2.default.createElement(
               'div',
-              { className: 'panel-title navbar-text' },
+              { className: 'panel-title' },
               this.props.name
             ),
             _react2.default.createElement(
@@ -1516,7 +1516,7 @@ var SamplePreview = function (_React$Component) {
             ),
             _react2.default.createElement(
               'div',
-              { className: 'width200' },
+              { className: '' },
               _react2.default.createElement(
                 'p',
                 null,
@@ -1610,14 +1610,14 @@ var SamplesCollecton = function (_React$Component) {
               description: "random start configuration, pixels change their colors with edgy jump from white to black",
               sample_url: './basic_tableau.html',
               img_path: './thumbnails/basic_tableau.jpg',
-              status: 'in_progress'
+              status: 'ready'
             }),
             _react2.default.createElement(_sample_preview2.default, {
               name: 'smooth random tableau',
               description: "random start configuration, pixels change their colors smoothly -- black to white and backward",
               sample_url: './smooth_tableau.html',
               img_path: './thumbnails/smooth_tableau.jpg',
-              status: 'in_progress'
+              status: 'ready'
             })
           )
         )

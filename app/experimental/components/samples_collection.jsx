@@ -38,7 +38,7 @@ export default class SamplesCollecton extends React.Component {
               description: `random start configuration, pixels change their colors with edgy jump from white to black`,
               sample_url: './basic_tableau.html',
               img_path: './thumbnails/basic_tableau.jpg',
-              status: 'in_progress',
+              status: 'ready',
             })}
 
             {React.createElement(SamplePreview, {
@@ -46,7 +46,7 @@ export default class SamplesCollecton extends React.Component {
               description: `random start configuration, pixels change their colors smoothly -- black to white and backward`,
               sample_url: './smooth_tableau.html',
               img_path: './thumbnails/smooth_tableau.jpg',
-              status: 'in_progress',
+              status: 'ready',
             })}
 
           </div>
