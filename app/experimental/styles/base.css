@@ -19,9 +19,3 @@
   display: inline-block;
   vertical-align: top;
 }
-
-.width200 {
-   width:200px;
-   max-width:200px;
-   display: inline-block;
-}
