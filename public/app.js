@@ -1750,21 +1750,19 @@ var Luna = function (_BasicDrawer) {
       this.phi = this.tick * this.basic_angle;
       this.theta = 0.025 * this.tick * this.basic_angle;
       this.radius = 0.9 * 0.5 * this.size;
-
-      var precession = this.theta;
-      var turn_angle = this.theta;
-      var radius_min = Math.sin(turn_angle);
-      var sp = Math.sin(this.phi + precession);
-      var cp = Math.cos(this.phi + precession);
-      var radius_multiplier = radius_min / Math.sqrt(sp * sp + radius_min * radius_min * cp * cp);
-      this.radius *= radius_multiplier;
     }
   }, {
     key: "get_coords",
     value: function get_coords() {
-      var x = this.radius * Math.cos(this.phi);
+      var x = this.radius * Math.cos(this.phi) * Math.sin(this.theta);
       var y = this.radius * Math.sin(this.phi);
-      return { x: x, y: y };
+      // rotation exp
+      var precession = this.theta;
+      var sp = Math.sin(precession);
+      var cp = Math.cos(precession);
+      var nx = x * cp - y * sp;
+      var ny = x * sp + y * cp;
+      return { x: nx, y: ny };
     }
   }, {
     key: "update_point_place",
