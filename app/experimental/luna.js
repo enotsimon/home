@@ -46,20 +46,18 @@ export default class Luna extends BasicDrawer {
     this.phi = this.tick * this.basic_angle;
     this.theta = 0.025 * this.tick * this.basic_angle;
     this.radius = 0.9 * 0.5 * this.size;
-
-    let precession = this.theta;
-    let turn_angle = this.theta;
-    let radius_min = Math.sin(turn_angle);
-    let sp = Math.sin(this.phi + precession);
-    let cp = Math.cos(this.phi + precession);
-    let radius_multiplier = radius_min / Math.sqrt(sp * sp + radius_min * radius_min * cp * cp);
-    this.radius *= radius_multiplier;
   }
 
   get_coords() {
-    let x = this.radius * Math.cos(this.phi);
+    let x = this.radius * Math.cos(this.phi) * Math.sin(this.theta);
     let y = this.radius * Math.sin(this.phi);
-    return {x: x, y: y};
+    // rotation exp
+    let precession = this.theta;
+    let sp = Math.sin(precession);
+    let cp = Math.cos(precession);
+    let nx = x * cp - y * sp;
+    let ny = x * sp + y * cp;
+    return {x: nx, y: ny};
   }
 
   update_point_place() {
