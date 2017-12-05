@@ -22,9 +22,6 @@ export default class Luna extends BasicDrawer {
     this.precession_coef = .0025 * Util.rand_float(-3, 3);
     this.nutation_coef = .025 * Util.rand_float(1, 3);
     this.tick = 0;
-    this.phi = 0;
-    this.theta = 0;
-    this.theta_divider = 1;
     this.radius = 0.9 * 0.5 * this.size;
 
     this.graphics = new PIXI.Graphics();
