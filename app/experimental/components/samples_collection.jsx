@@ -49,6 +49,14 @@ export default class SamplesCollecton extends React.Component {
               status: 'ready',
             })}
 
+            {React.createElement(SamplePreview, {
+              name: 'luna',
+              description: `experiment with 3d polar functions`,
+              sample_url: './luna.html',
+              img_path: './thumbnails/smooth_tableau.jpg',
+              status: 'draft',
+            })}
+
           </div>
         </div>
       </div>
