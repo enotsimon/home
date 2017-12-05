@@ -4,12 +4,12 @@ import Color from "common/color";
 import BasicDrawer from "experimental/basic_drawer";
 import * as PIXI from "pixi.js";
 
-/**
- *
- */
 export default class Luna extends BasicDrawer {
   constructor() {
-    let debug_additional = [{id: 'debug_info_theta', text: 'theta value'}];
+    let debug_additional = [
+      {id: 'debug_info_precession', text: 'precession speed'},
+      {id: 'debug_info_nutation', text: 'nutation speed'},
+    ];
     super('circle', debug_additional);
   }
 
@@ -19,6 +19,8 @@ export default class Luna extends BasicDrawer {
     this.trajectory = new PIXI.Container();
     this.base_container.addChild(this.trajectory);
 
+    this.precession_coef = .0025 * Util.rand_float(-3, 3);
+    this.nutation_coef = .025 * Util.rand_float(1, 3);
     this.tick = 0;
     this.phi = 0;
     this.theta = 0;
@@ -26,33 +28,25 @@ export default class Luna extends BasicDrawer {
     this.radius = 0.9 * 0.5 * this.size;
 
     this.graphics = new PIXI.Graphics();
-    this.graphics.beginFill(Color.to_pixi([255, 255, 255]));
-    this.graphics.drawRect(0, 0, .5, .5);
-    this.graphics.endFill();
     this.luna.addChild(this.graphics);
-    this.update_point_place();
+
+    document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
+    document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
+
   }
 
   redraw() {
     this.update_angles();
-    this.update_point_place();
-    this.clone_point();
-    document.getElementById('debug_info_theta').innerHTML = 'divider: ' + this.theta_divider + ', theta: ' + this.theta;
+    this.draw_full_circle(this.graphics);
   }
 
   update_angles() {
     this.tick++;
-    this.basic_angle = (2 * Math.PI / 360);
-    this.phi = this.tick * this.basic_angle;
-    this.theta = 0.025 * this.tick * this.basic_angle;
-    this.radius = 0.9 * 0.5 * this.size;
   }
 
-  get_coords() {
-    let x = this.radius * Math.cos(this.phi) * Math.sin(this.theta);
-    let y = this.radius * Math.sin(this.phi);
-    // rotation exp
-    let precession = this.theta;
+  get_coords(radius, angle, precession, nutation) {
+    let x = radius * Math.cos(angle) * Math.sin(nutation);
+    let y = radius * Math.sin(angle);
     let sp = Math.sin(precession);
     let cp = Math.cos(precession);
     let nx = x * cp - y * sp;
@@ -60,21 +54,13 @@ export default class Luna extends BasicDrawer {
     return {x: nx, y: ny};
   }
 
-  update_point_place() {
-    let coords = this.get_coords();
-    this.graphics.x = coords.x;
-    this.graphics.y = coords.y;
-  }
-
-  clone_point() {
-    let clone = this.graphics.clone();
-    clone.x = this.graphics.x;
-    clone.y = this.graphics.y;
-    clone.alpha = 0.5;
-    this.trajectory.addChild(clone);
-    if (this.trajectory.children.length > 1000) {
-      this.trajectory.addChild(clone);
-      this.trajectory.removeChildAt(0);
+  draw_full_circle(graphics) {
+    graphics.clear();
+    for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
+      let coords = this.get_coords(this.radius, angle, this.precession_coef * this.tick, this.nutation_coef * this.tick);
+      this.graphics.beginFill(Color.to_pixi([255, 255, 255]));
+      this.graphics.drawRect(coords.x, coords.y, .5, .5);
+      this.graphics.endFill();
     }
   }
 }

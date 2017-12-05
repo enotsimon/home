@@ -1700,16 +1700,13 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-/**
- *
- */
 var Luna = function (_BasicDrawer) {
   _inherits(Luna, _BasicDrawer);
 
   function Luna() {
     _classCallCheck(this, Luna);
 
-    var debug_additional = [{ id: 'debug_info_theta', text: 'theta value' }];
+    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }];
     return _possibleConstructorReturn(this, (Luna.__proto__ || Object.getPrototypeOf(Luna)).call(this, 'circle', debug_additional));
   }
 
@@ -1721,6 +1718,8 @@ var Luna = function (_BasicDrawer) {
       this.trajectory = new PIXI.Container();
       this.base_container.addChild(this.trajectory);
 
+      this.precession_coef = .0025 * _util2.default.rand_float(-3, 3);
+      this.nutation_coef = .025 * _util2.default.rand_float(1, 3);
       this.tick = 0;
       this.phi = 0;
       this.theta = 0;
@@ -1728,36 +1727,27 @@ var Luna = function (_BasicDrawer) {
       this.radius = 0.9 * 0.5 * this.size;
 
       this.graphics = new PIXI.Graphics();
-      this.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
-      this.graphics.drawRect(0, 0, .5, .5);
-      this.graphics.endFill();
       this.luna.addChild(this.graphics);
-      this.update_point_place();
+
+      document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
+      document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
     }
   }, {
     key: "redraw",
     value: function redraw() {
       this.update_angles();
-      this.update_point_place();
-      this.clone_point();
-      document.getElementById('debug_info_theta').innerHTML = 'divider: ' + this.theta_divider + ', theta: ' + this.theta;
+      this.draw_full_circle(this.graphics);
     }
   }, {
     key: "update_angles",
     value: function update_angles() {
       this.tick++;
-      this.basic_angle = 2 * Math.PI / 360;
-      this.phi = this.tick * this.basic_angle;
-      this.theta = 0.025 * this.tick * this.basic_angle;
-      this.radius = 0.9 * 0.5 * this.size;
     }
   }, {
     key: "get_coords",
-    value: function get_coords() {
-      var x = this.radius * Math.cos(this.phi) * Math.sin(this.theta);
-      var y = this.radius * Math.sin(this.phi);
-      // rotation exp
-      var precession = this.theta;
+    value: function get_coords(radius, angle, precession, nutation) {
+      var x = radius * Math.cos(angle) * Math.sin(nutation);
+      var y = radius * Math.sin(angle);
       var sp = Math.sin(precession);
       var cp = Math.cos(precession);
       var nx = x * cp - y * sp;
@@ -1765,23 +1755,14 @@ var Luna = function (_BasicDrawer) {
       return { x: nx, y: ny };
     }
   }, {
-    key: "update_point_place",
-    value: function update_point_place() {
-      var coords = this.get_coords();
-      this.graphics.x = coords.x;
-      this.graphics.y = coords.y;
-    }
-  }, {
-    key: "clone_point",
-    value: function clone_point() {
-      var clone = this.graphics.clone();
-      clone.x = this.graphics.x;
-      clone.y = this.graphics.y;
-      clone.alpha = 0.5;
-      this.trajectory.addChild(clone);
-      if (this.trajectory.children.length > 1000) {
-        this.trajectory.addChild(clone);
-        this.trajectory.removeChildAt(0);
+    key: "draw_full_circle",
+    value: function draw_full_circle(graphics) {
+      graphics.clear();
+      for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
+        var coords = this.get_coords(this.radius, angle, this.precession_coef * this.tick, this.nutation_coef * this.tick);
+        this.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
+        this.graphics.drawRect(coords.x, coords.y, .5, .5);
+        this.graphics.endFill();
       }
     }
   }]);
