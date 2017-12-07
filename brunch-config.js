@@ -10,7 +10,10 @@ exports.files = {
 };
 
 exports.plugins = {
-  babel: {presets: ['latest', 'react']}
+  babel: {
+    presets: ['latest', 'react'],
+    plugins: ["transform-object-rest-spread"]
+  }
 };
 
 exports.server = {
