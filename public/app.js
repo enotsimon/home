@@ -1694,6 +1694,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -1713,18 +1715,21 @@ var Luna = function (_BasicDrawer) {
   _createClass(Luna, [{
     key: "init_graphics",
     value: function init_graphics() {
-      this.luna = new PIXI.Container();
-      this.base_container.addChild(this.luna);
-      this.trajectory = new PIXI.Container();
-      this.base_container.addChild(this.trajectory);
+      var _this2 = this;
 
-      this.precession_coef = .0025 * _util2.default.rand_float(-3, 3);
-      this.nutation_coef = .025 * _util2.default.rand_float(1, 3);
       this.tick = 0;
-      this.radius = 0.9 * 0.5 * this.size;
-
-      this.graphics = new PIXI.Graphics();
-      this.luna.addChild(this.graphics);
+      this.count_figures = 1;
+      this.figures = [].concat(_toConsumableArray(Array(this.count_figures).keys())).map(function (i) {
+        var graphics = new PIXI.Graphics();
+        _this2.base_container.addChild(graphics);
+        return {
+          id: i,
+          graphics: graphics,
+          radius: 0.9 * 0.5 * _this2.size,
+          precession_coef: .0025 * _util2.default.rand_float(-3, 3),
+          nutation_coef: .025 * _util2.default.rand_float(1, 3)
+        };
+      });
 
       document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
       document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
@@ -1732,17 +1737,16 @@ var Luna = function (_BasicDrawer) {
   }, {
     key: "redraw",
     value: function redraw() {
-      this.update_angles();
-      this.draw_full_circle(this.graphics);
-    }
-  }, {
-    key: "update_angles",
-    value: function update_angles() {
+      var _this3 = this;
+
       this.tick++;
+      this.figures.forEach(function (figure) {
+        return _this3.draw_full_circle(figure);
+      });
     }
   }, {
-    key: "get_coords",
-    value: function get_coords(radius, angle, precession, nutation) {
+    key: "calc_sibgle_point",
+    value: function calc_sibgle_point(radius, angle, precession, nutation) {
       var x = radius * Math.cos(angle) * Math.sin(nutation);
       var y = radius * Math.sin(angle);
       var sp = Math.sin(precession);
@@ -1753,13 +1757,13 @@ var Luna = function (_BasicDrawer) {
     }
   }, {
     key: "draw_full_circle",
-    value: function draw_full_circle(graphics) {
-      graphics.clear();
+    value: function draw_full_circle(figure) {
+      figure.graphics.clear();
       for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
-        var coords = this.get_coords(this.radius, angle, this.precession_coef * this.tick, this.nutation_coef * this.tick);
-        this.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
-        this.graphics.drawRect(coords.x, coords.y, .5, .5);
-        this.graphics.endFill();
+        var coords = this.calc_sibgle_point(figure.radius, angle, figure.precession_coef * this.tick, figure.nutation_coef * this.tick);
+        figure.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
+        figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+        figure.graphics.endFill();
       }
     }
   }]);
