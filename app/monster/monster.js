@@ -9,6 +9,10 @@ import React from 'react';
 import mobiles from 'monster/config/mobiles';
 import scenes from 'monster/config/scenes';
 
+import { createStore } from 'redux';
+import monster_app from './reducers';
+import * as actions from './actions';
+
 class Game {
   constructor() {
     this.drawer = new MapDrawer();
@@ -44,6 +48,12 @@ class Game {
     this.drawer.init(this.width, this.height);
     this.interaction.init();
     this.change_scene(this.state.current_scene);
+
+    let store = createStore(monster_app);
+    const unsubscribe = store.subscribe(() =>
+      console.log('state changed to', store.getState())
+    );
+    store.dispatch(actions.change_money_amount('fishes', 3));
   }
 
   change_scene(scene_name) {
