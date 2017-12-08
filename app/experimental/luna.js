@@ -14,34 +14,30 @@ export default class Luna extends BasicDrawer {
   }
 
   init_graphics() {
-    this.luna = new PIXI.Container();
-    this.base_container.addChild(this.luna);
-    this.trajectory = new PIXI.Container();
-    this.base_container.addChild(this.trajectory);
-
-    this.precession_coef = .0025 * Util.rand_float(-3, 3);
-    this.nutation_coef = .025 * Util.rand_float(1, 3);
     this.tick = 0;
-    this.radius = 0.9 * 0.5 * this.size;
-
-    this.graphics = new PIXI.Graphics();
-    this.luna.addChild(this.graphics);
+    this.count_figures = 1;
+    this.figures = [...Array(this.count_figures).keys()].map(i => {
+      let graphics = new PIXI.Graphics();
+      this.base_container.addChild(graphics);
+      return {
+        id: i,
+        graphics: graphics,
+        radius: 0.9 * 0.5 * this.size,
+        precession_coef: .0025 * Util.rand_float(-3, 3),
+        nutation_coef: .025 * Util.rand_float(1, 3),
+      };
+    });
 
     document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
     document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
-
   }
 
   redraw() {
-    this.update_angles();
-    this.draw_full_circle(this.graphics);
-  }
-
-  update_angles() {
     this.tick++;
+    this.figures.forEach(figure => this.draw_full_circle(figure));
   }
 
-  get_coords(radius, angle, precession, nutation) {
+  calc_sibgle_point(radius, angle, precession, nutation) {
     let x = radius * Math.cos(angle) * Math.sin(nutation);
     let y = radius * Math.sin(angle);
     let sp = Math.sin(precession);
@@ -51,13 +47,18 @@ export default class Luna extends BasicDrawer {
     return {x: nx, y: ny};
   }
 
-  draw_full_circle(graphics) {
-    graphics.clear();
+  draw_full_circle(figure) {
+    figure.graphics.clear();
     for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
-      let coords = this.get_coords(this.radius, angle, this.precession_coef * this.tick, this.nutation_coef * this.tick);
-      this.graphics.beginFill(Color.to_pixi([255, 255, 255]));
-      this.graphics.drawRect(coords.x, coords.y, .5, .5);
-      this.graphics.endFill();
+      let coords = this.calc_sibgle_point(
+        figure.radius,
+        angle,
+        figure.precession_coef * this.tick,
+        figure.nutation_coef * this.tick
+      );
+      figure.graphics.beginFill(Color.to_pixi([255, 255, 255]));
+      figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+      figure.graphics.endFill();
     }
   }
 }
