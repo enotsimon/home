@@ -56,12 +56,14 @@ export default class BasicDrawer {
     document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false);
     
     this.ticks = 0; // here?
+    this.tick_time = 0;
     this.pixi.ticker.add((delta) => {
       this.ticks++;
       if (this.ticks % 10 == 0) {
         d3.select('#fps_counter').html(this.pixi.ticker.FPS | 0);
       }
       this.tick_delta = delta;
+      this.tick_time += delta;
       this.redraw();
     });
     //////////////////////////////////

@@ -9,12 +9,12 @@ export default class Luna extends BasicDrawer {
     let debug_additional = [
       {id: 'debug_info_precession', text: 'precession speed'},
       {id: 'debug_info_nutation', text: 'nutation speed'},
+      {id: 'additional', text: 'additional'},
     ];
     super('circle', debug_additional);
   }
 
   init_graphics() {
-    this.tick = 0;
     this.count_figures = 1;
     this.figures = [...Array(this.count_figures).keys()].map(i => {
       let graphics = new PIXI.Graphics();
@@ -23,17 +23,17 @@ export default class Luna extends BasicDrawer {
         id: i,
         graphics: graphics,
         radius: 0.9 * 0.5 * this.size,
+        //rotation_coef: .0025,
         precession_coef: .0025 * Util.rand_float(-3, 3),
-        nutation_coef: .025 * Util.rand_float(1, 3),
+        nutation_coef: .0025 * Util.rand_float(1, 3),
       };
     });
 
-    document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
-    document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
+    document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
+    document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
   }
 
   redraw() {
-    this.tick++;
     this.figures.forEach(figure => this.draw_full_circle(figure));
   }
 
@@ -49,15 +49,21 @@ export default class Luna extends BasicDrawer {
 
   draw_full_circle(figure) {
     figure.graphics.clear();
-    for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
+    let count_dots = 2 * 36;
+    let acceleration = 5 * Math.cos(.005 * this.tick_time);
+    document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
+    for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
       let coords = this.calc_sibgle_point(
         figure.radius,
-        angle,
-        figure.precession_coef * this.tick,
-        figure.nutation_coef * this.tick
+        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
+        // i dont understand why its really acceleration and where is the speed?
+        angle + acceleration,
+        figure.precession_coef * this.tick_time,
+        figure.nutation_coef * this.tick_time + 0.5 * acceleration
       );
       figure.graphics.beginFill(Color.to_pixi([255, 255, 255]));
-      figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+      //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+      figure.graphics.drawCircle(coords.x, coords.y, 1);
       figure.graphics.endFill();
     }
   }

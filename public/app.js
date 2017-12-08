@@ -1208,12 +1208,14 @@ var BasicDrawer = function () {
       document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false);
 
       this.ticks = 0; // here?
+      this.tick_time = 0;
       this.pixi.ticker.add(function (delta) {
         _this2.ticks++;
         if (_this2.ticks % 10 == 0) {
           d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
         }
         _this2.tick_delta = delta;
+        _this2.tick_time += delta;
         _this2.redraw();
       });
       //////////////////////////////////
@@ -1708,7 +1710,7 @@ var Luna = function (_BasicDrawer) {
   function Luna() {
     _classCallCheck(this, Luna);
 
-    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }];
+    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }, { id: 'additional', text: 'additional' }];
     return _possibleConstructorReturn(this, (Luna.__proto__ || Object.getPrototypeOf(Luna)).call(this, 'circle', debug_additional));
   }
 
@@ -1717,7 +1719,6 @@ var Luna = function (_BasicDrawer) {
     value: function init_graphics() {
       var _this2 = this;
 
-      this.tick = 0;
       this.count_figures = 1;
       this.figures = [].concat(_toConsumableArray(Array(this.count_figures).keys())).map(function (i) {
         var graphics = new PIXI.Graphics();
@@ -1726,20 +1727,20 @@ var Luna = function (_BasicDrawer) {
           id: i,
           graphics: graphics,
           radius: 0.9 * 0.5 * _this2.size,
+          //rotation_coef: .0025,
           precession_coef: .0025 * _util2.default.rand_float(-3, 3),
-          nutation_coef: .025 * _util2.default.rand_float(1, 3)
+          nutation_coef: .0025 * _util2.default.rand_float(1, 3)
         };
       });
 
-      document.getElementById('debug_info_precession').innerHTML = this.precession_coef;
-      document.getElementById('debug_info_nutation').innerHTML = this.nutation_coef;
+      document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
+      document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
     }
   }, {
     key: "redraw",
     value: function redraw() {
       var _this3 = this;
 
-      this.tick++;
       this.figures.forEach(function (figure) {
         return _this3.draw_full_circle(figure);
       });
@@ -1759,10 +1760,17 @@ var Luna = function (_BasicDrawer) {
     key: "draw_full_circle",
     value: function draw_full_circle(figure) {
       figure.graphics.clear();
-      for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / 360) {
-        var coords = this.calc_sibgle_point(figure.radius, angle, figure.precession_coef * this.tick, figure.nutation_coef * this.tick);
+      var count_dots = 2 * 36;
+      var acceleration = 5 * Math.cos(.005 * this.tick_time);
+      document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
+      for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
+        var coords = this.calc_sibgle_point(figure.radius,
+        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
+        // i dont understand why its really acceleration and where is the speed?
+        angle + acceleration, figure.precession_coef * this.tick_time, figure.nutation_coef * this.tick_time + 0.5 * acceleration);
         figure.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
-        figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+        //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+        figure.graphics.drawCircle(coords.x, coords.y, 1);
         figure.graphics.endFill();
       }
     }
