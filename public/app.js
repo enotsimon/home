@@ -1648,11 +1648,11 @@ var SamplesCollecton = function (_React$Component) {
               status: 'ready'
             }),
             _react2.default.createElement(_sample_preview2.default, {
-              name: 'luna',
+              name: 'orbits',
               description: "experiment with 3d polar functions",
-              sample_url: './luna.html',
-              img_path: './thumbnails/smooth_tableau.jpg',
-              status: 'draft'
+              sample_url: './orbits.html',
+              img_path: './thumbnails/orbits.jpg',
+              status: 'in_progress'
             })
           )
         )
@@ -1928,6 +1928,125 @@ exports.default = MovingArrows;
 
 
 var app = new MovingArrows();
+
+});
+
+require.register("experimental/orbits.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Orbits = function (_BasicDrawer) {
+  _inherits(Orbits, _BasicDrawer);
+
+  function Orbits() {
+    _classCallCheck(this, Orbits);
+
+    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }, { id: 'additional', text: 'additional' }];
+    return _possibleConstructorReturn(this, (Orbits.__proto__ || Object.getPrototypeOf(Orbits)).call(this, 'circle', debug_additional));
+  }
+
+  _createClass(Orbits, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      var _this2 = this;
+
+      this.count_figures = 1;
+      this.figures = [].concat(_toConsumableArray(Array(this.count_figures).keys())).map(function (i) {
+        var graphics = new PIXI.Graphics();
+        _this2.base_container.addChild(graphics);
+        return {
+          id: i,
+          graphics: graphics,
+          radius: 0.9 * 0.5 * _this2.size,
+          //rotation_coef: .0025,
+          precession_coef: .0025 * _util2.default.rand_float(-3, 3),
+          nutation_coef: .0025 * _util2.default.rand_float(1, 3)
+        };
+      });
+
+      document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
+      document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
+    }
+  }, {
+    key: "redraw",
+    value: function redraw() {
+      var _this3 = this;
+
+      this.figures.forEach(function (figure) {
+        return _this3.draw_full_circle(figure);
+      });
+    }
+  }, {
+    key: "calc_sibgle_point",
+    value: function calc_sibgle_point(radius, angle, precession, nutation) {
+      var x = radius * Math.cos(angle) * Math.sin(nutation);
+      var y = radius * Math.sin(angle);
+      var sp = Math.sin(precession);
+      var cp = Math.cos(precession);
+      var nx = x * cp - y * sp;
+      var ny = x * sp + y * cp;
+      return { x: nx, y: ny };
+    }
+  }, {
+    key: "draw_full_circle",
+    value: function draw_full_circle(figure) {
+      figure.graphics.clear();
+      var count_dots = 2 * 36;
+      var acceleration = 5 * Math.cos(.005 * this.tick_time);
+      document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
+      for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
+        var coords = this.calc_sibgle_point(figure.radius,
+        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
+        // i dont understand why its really acceleration and where is the speed?
+        angle + acceleration, figure.precession_coef * this.tick_time, figure.nutation_coef * this.tick_time + 0.5 * acceleration);
+        figure.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
+        //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
+        figure.graphics.drawCircle(coords.x, coords.y, 1);
+        figure.graphics.endFill();
+      }
+    }
+  }]);
+
+  return Orbits;
+}(_basic_drawer2.default);
+
+exports.default = Orbits;
+
+
+var app = new Orbits();
 
 });
 
