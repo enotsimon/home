@@ -1726,6 +1726,7 @@ var Planet = function (_BasicDrawer) {
       this.nutation = _util2.default.radians(30);
       this.points = this.sphere_map();
       this.map_regime = 'static';
+      this.map_transparency_alpha = 0.25;
 
       document.getElementById('debug_info_precession').innerHTML = this.precession;
       document.getElementById('debug_info_nutation').innerHTML = this.nutation;
@@ -1742,7 +1743,11 @@ var Planet = function (_BasicDrawer) {
       this.planet.clear();
       this.points.forEach(function (point) {
         var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
-        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]));
+        var alpha = 1;
+        if (coords.z < 0) {
+          alpha = _this2.map_transparency_alpha;
+        }
+        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]), alpha);
         _this2.planet.drawRect(coords.x, coords.y, .5, .5);
         _this2.planet.endFill();
       });

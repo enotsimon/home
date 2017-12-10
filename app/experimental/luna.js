@@ -24,6 +24,7 @@ export default class Planet extends BasicDrawer {
     this.nutation = Util.radians(30);
     this.points = this.sphere_map();
     this.map_regime = 'static';
+    this.map_transparency_alpha = 0.25;
 
     document.getElementById('debug_info_precession').innerHTML = this.precession;
     document.getElementById('debug_info_nutation').innerHTML = this.nutation;
@@ -44,7 +45,11 @@ export default class Planet extends BasicDrawer {
         this.precession,
         this.nutation
       );
-      this.planet.beginFill(Color.to_pixi([255, 255, 255]));
+      let alpha = 1;
+      if (coords.z < 0) {
+        alpha = this.map_transparency_alpha;
+      }
+      this.planet.beginFill(Color.to_pixi([255, 255, 255]), alpha);
       this.planet.drawRect(coords.x, coords.y, .5, .5);
       this.planet.endFill();
     });
