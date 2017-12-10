@@ -1674,8 +1674,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -1692,11 +1690,13 @@ var _pixi = require("pixi.js");
 
 var PIXI = _interopRequireWildcard(_pixi);
 
+var _planet = require("./planet");
+
+var _planet2 = _interopRequireDefault(_planet);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1704,102 +1704,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Planet = function (_BasicDrawer) {
-  _inherits(Planet, _BasicDrawer);
+var Luna = function (_Planet) {
+  _inherits(Luna, _Planet);
 
-  function Planet() {
-    _classCallCheck(this, Planet);
+  function Luna() {
+    _classCallCheck(this, Luna);
 
-    var debug_additional = [{ id: 'debug_info_precession', text: 'precession' }, { id: 'debug_info_nutation', text: 'nutation' }, { id: 'debug_info_rotation', text: 'rotation' }];
-    return _possibleConstructorReturn(this, (Planet.__proto__ || Object.getPrototypeOf(Planet)).call(this, 'circle', debug_additional));
+    return _possibleConstructorReturn(this, (Luna.__proto__ || Object.getPrototypeOf(Luna)).apply(this, arguments));
   }
 
-  _createClass(Planet, [{
-    key: "init_graphics",
-    value: function init_graphics() {
-      this.planet = new PIXI.Graphics();
-      this.base_container.addChild(this.planet);
+  return Luna;
+}(_planet2.default);
 
-      this.radius = 0.9 * 0.5 * this.size;
-      this.rotation = _util2.default.radians(30);
-      this.precession = _util2.default.radians(30);
-      this.nutation = _util2.default.radians(30);
-      this.points = this.sphere_map();
-      this.map_regime = 'static';
-      this.map_transparency_alpha = 0.25;
-
-      document.getElementById('debug_info_precession').innerHTML = this.precession;
-      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
-    }
-  }, {
-    key: "redraw",
-    value: function redraw() {
-      var _this2 = this;
-
-      if (this.map_regime == 'dynamic') {
-        this.points = this.sphere_map();
-      }
-      this.change_angles();
-      this.planet.clear();
-      this.points.forEach(function (point) {
-        var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
-        var alpha = 1;
-        if (coords.z < 0) {
-          alpha = _this2.map_transparency_alpha;
-        }
-        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]), alpha);
-        _this2.planet.drawRect(coords.x, coords.y, .5, .5);
-        _this2.planet.endFill();
-      });
-    }
-  }, {
-    key: "calc_single_point",
-    value: function calc_single_point(radius, phi, theta, rotation, precession, nutation) {
-      var x = radius * Math.cos(phi) * Math.sin(theta),
-          y = radius * Math.sin(phi) * Math.sin(theta),
-          z = radius * Math.cos(theta),
-          sin_r = Math.sin(rotation),
-          cos_r = Math.cos(rotation),
-          sin_p = Math.sin(precession),
-          cos_p = Math.cos(precession),
-          sin_n = Math.sin(nutation),
-          cos_n = Math.cos(nutation),
-          cos_n_sin_r = cos_n * sin_r,
-          cos_n_cos_r = cos_n * cos_r,
-          x2 = x * (cos_p * cos_r - sin_p * cos_n_sin_r) + y * (-cos_p * sin_r - sin_p * cos_n_cos_r) + z * (sin_p * sin_n),
-          y2 = x * (sin_p * cos_r + cos_p * cos_n_sin_r) + y * (-sin_p * sin_r + cos_p * cos_n_cos_r) + z * (-cos_p * sin_n),
-          z2 = x * (sin_n * sin_r) + y * (sin_n * cos_r) + z * cos_n;
-      return { x: x2, y: y2, z: z2 };
-    }
-  }, {
-    key: "change_angles",
-    value: function change_angles() {
-      this.rotation += 2 * Math.PI / 360;
-      //this.precession += 2 * Math.PI / 360;
-      //this.nutation += 0.5 * 2 * Math.PI / 360;
-      document.getElementById('debug_info_rotation').innerHTML = this.rotation;
-      document.getElementById('debug_info_precession').innerHTML = this.precession;
-      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
-    }
-  }, {
-    key: "sphere_map",
-    value: function sphere_map() {
-      return [].concat(_toConsumableArray(Array(500).keys())).map(function (i) {
-        return {
-          phi: _util2.default.rand_float(0, 2 * Math.PI),
-          theta: _util2.default.rand_float(0, 2 * Math.PI)
-        };
-      });
-    }
-  }]);
-
-  return Planet;
-}(_basic_drawer2.default);
-
-exports.default = Planet;
+exports.default = Luna;
 
 
-var app = new Planet();
+var app = new Luna();
 
 });
 
@@ -2064,6 +1984,139 @@ exports.default = Orbits;
 
 
 var app = new Orbits();
+
+});
+
+require.register("experimental/planet.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Planet = function (_BasicDrawer) {
+  _inherits(Planet, _BasicDrawer);
+
+  function Planet() {
+    _classCallCheck(this, Planet);
+
+    var debug_additional = [{ id: 'debug_info_precession', text: 'precession' }, { id: 'debug_info_nutation', text: 'nutation' }, { id: 'debug_info_rotation', text: 'rotation' }];
+    return _possibleConstructorReturn(this, (Planet.__proto__ || Object.getPrototypeOf(Planet)).call(this, 'circle', debug_additional));
+  }
+
+  _createClass(Planet, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      this.planet = new PIXI.Graphics();
+      this.base_container.addChild(this.planet);
+
+      this.radius = 0.9 * 0.5 * this.size;
+      this.rotation = _util2.default.radians(30);
+      this.precession = _util2.default.radians(30);
+      this.nutation = _util2.default.radians(30);
+      this.points = this.sphere_map();
+      this.map_regime = 'static';
+      this.map_transparency_alpha = 0.25;
+
+      document.getElementById('debug_info_precession').innerHTML = this.precession;
+      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
+    }
+  }, {
+    key: "redraw",
+    value: function redraw() {
+      var _this2 = this;
+
+      if (this.map_regime == 'dynamic') {
+        this.points = this.sphere_map();
+      }
+      this.change_angles();
+      this.planet.clear();
+      this.points.forEach(function (point) {
+        var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
+        var alpha = 1;
+        if (coords.z < 0) {
+          alpha = _this2.map_transparency_alpha;
+        }
+        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]), alpha);
+        _this2.planet.drawRect(coords.x, coords.y, .5, .5);
+        _this2.planet.endFill();
+      });
+    }
+  }, {
+    key: "calc_single_point",
+    value: function calc_single_point(radius, phi, theta, rotation, precession, nutation) {
+      var x = radius * Math.cos(phi) * Math.sin(theta),
+          y = radius * Math.sin(phi) * Math.sin(theta),
+          z = radius * Math.cos(theta),
+          sin_r = Math.sin(rotation),
+          cos_r = Math.cos(rotation),
+          sin_p = Math.sin(precession),
+          cos_p = Math.cos(precession),
+          sin_n = Math.sin(nutation),
+          cos_n = Math.cos(nutation),
+          cos_n_sin_r = cos_n * sin_r,
+          cos_n_cos_r = cos_n * cos_r,
+          x2 = x * (cos_p * cos_r - sin_p * cos_n_sin_r) + y * (-cos_p * sin_r - sin_p * cos_n_cos_r) + z * (sin_p * sin_n),
+          y2 = x * (sin_p * cos_r + cos_p * cos_n_sin_r) + y * (-sin_p * sin_r + cos_p * cos_n_cos_r) + z * (-cos_p * sin_n),
+          z2 = x * (sin_n * sin_r) + y * (sin_n * cos_r) + z * cos_n;
+      return { x: x2, y: y2, z: z2 };
+    }
+  }, {
+    key: "change_angles",
+    value: function change_angles() {
+      this.rotation += 2 * Math.PI / 360;
+      //this.precession += 2 * Math.PI / 360;
+      //this.nutation += 0.5 * 2 * Math.PI / 360;
+      document.getElementById('debug_info_rotation').innerHTML = this.rotation;
+      document.getElementById('debug_info_precession').innerHTML = this.precession;
+      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
+    }
+  }, {
+    key: "sphere_map",
+    value: function sphere_map() {
+      return [].concat(_toConsumableArray(Array(500).keys())).map(function (i) {
+        return {
+          phi: _util2.default.rand_float(0, 2 * Math.PI),
+          theta: _util2.default.rand_float(0, 2 * Math.PI)
+        };
+      });
+    }
+  }]);
+
+  return Planet;
+}(_basic_drawer2.default);
+
+exports.default = Planet;
 
 });
 
