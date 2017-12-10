@@ -6,12 +6,15 @@ import * as PIXI from "pixi.js";
 
 export default class Orbits extends BasicDrawer {
   constructor() {
-    let debug_additional = [
-      {id: 'debug_info_precession', text: 'precession speed'},
-      {id: 'debug_info_nutation', text: 'nutation speed'},
-      {id: 'additional', text: 'additional'},
+    super('circle');
+  }
+
+  update_debug_info() {
+    return [
+      {id: 'debug_info_precession', text: 'precession', value: this.figures ? this.figures[0].precession_coef : ''},
+      {id: 'debug_info_nutation', text: 'nutation', value: this.figures ? this.figures[0].nutation_coef : ''},
+      {id: 'debug_info_additional', text: 'angle this.acceleration', value: this.acceleration},
     ];
-    super('circle', debug_additional);
   }
 
   init_graphics() {
@@ -28,16 +31,13 @@ export default class Orbits extends BasicDrawer {
         nutation_coef: .0025 * Util.rand_float(1, 3),
       };
     });
-
-    document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
-    document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
   }
 
   redraw() {
     this.figures.forEach(figure => this.draw_full_circle(figure));
   }
 
-  calc_sibgle_point(radius, angle, precession, nutation) {
+  calc_single_point(radius, angle, precession, nutation) {
     let x = radius * Math.cos(angle) * Math.sin(nutation);
     let y = radius * Math.sin(angle);
     let sp = Math.sin(precession);
@@ -50,16 +50,15 @@ export default class Orbits extends BasicDrawer {
   draw_full_circle(figure) {
     figure.graphics.clear();
     let count_dots = 2 * 36;
-    let acceleration = 5 * Math.cos(.005 * this.tick_time);
-    document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
+    this.acceleration = 5 * Math.cos(.005 * this.tick_time);
     for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
-      let coords = this.calc_sibgle_point(
+      let coords = this.calc_single_point(
         figure.radius,
-        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
-        // i dont understand why its really acceleration and where is the speed?
-        angle + acceleration,
+        //angle + (figure.rotation_coef * this.tick_time) + this.acceleration,
+        // i dont understand why its really this.acceleration and where is the speed?
+        angle + this.acceleration,
         figure.precession_coef * this.tick_time,
-        figure.nutation_coef * this.tick_time + 0.5 * acceleration
+        figure.nutation_coef * this.tick_time + 0.5 * this.acceleration
       );
       figure.graphics.beginFill(Color.to_pixi([255, 255, 255]));
       //figure.graphics.drawRect(coords.x, coords.y, .5, .5);

@@ -10,8 +10,7 @@ import * as d3 from "d3";
  */
 export default class PlanetsFocus extends BasicDrawer {
   constructor() {
-    let debug_additional = [{id: 'debug_info_focus_on', text: 'now focus on'}];
-    super('circle', debug_additional);
+    super('circle');
   }
 
   init_graphics() {

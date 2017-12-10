@@ -8,12 +8,12 @@ import React from 'react';
 import * as PIXI from "pixi.js";
 
 export default class BasicDrawer {
-  constructor(regime, debug_additional = []) {
+  constructor(regime) {
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.tick_speed = 1;
-    this.react_app = React.createElement(App, {additional: debug_additional});
+    this.react_app = React.createElement(App, {additional: this.update_debug_info()});
     document.addEventListener('DOMContentLoaded', () => {
       ReactDOM.render(this.react_app, document.querySelector('#app'));
       this.init();
@@ -65,6 +65,7 @@ export default class BasicDrawer {
       this.tick_delta = delta;
       this.tick_time += delta;
       this.redraw();
+      this.update_debug_info().forEach(e => document.getElementById(e.id).innerHTML = e.value);
     });
     //////////////////////////////////
     this.init_graphics();
@@ -80,6 +81,10 @@ export default class BasicDrawer {
 
   redraw() {
     
+  }
+
+  update_debug_info() {
+    return [];
   }
 
 

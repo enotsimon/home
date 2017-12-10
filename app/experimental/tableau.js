@@ -9,8 +9,7 @@ import * as PIXI from "pixi.js";
  */
 export default class Tableau extends BasicDrawer {
   constructor() {
-    let debug_additional = [];
-    super('square', debug_additional);
+    super('square');
   }
 
   init_graphics() {

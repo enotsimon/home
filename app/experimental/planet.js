@@ -6,12 +6,15 @@ import * as PIXI from "pixi.js";
 
 export default class Planet extends BasicDrawer {
   constructor() {
-    let debug_additional = [
-      {id: 'debug_info_precession', text: 'precession'},
-      {id: 'debug_info_nutation', text: 'nutation'},
-      {id: 'debug_info_rotation', text: 'rotation'},
+    super('circle');
+  }
+
+  update_debug_info() {
+    return [
+      {id: 'debug_info_precession', text: 'precession', value: this.precession},
+      {id: 'debug_info_nutation', text: 'nutation', value: this.nutation},
+      {id: 'debug_info_rotation', text: 'rotation', value: this.rotation},
     ];
-    super('circle', debug_additional);
   }
 
   init_graphics() {
@@ -25,9 +28,6 @@ export default class Planet extends BasicDrawer {
     this.points = this.sphere_map();
     this.map_regime = 'static';
     this.map_transparency_alpha = 0.25;
-
-    document.getElementById('debug_info_precession').innerHTML = this.precession;
-    document.getElementById('debug_info_nutation').innerHTML = this.nutation;
   }
 
   redraw() {
@@ -73,9 +73,6 @@ export default class Planet extends BasicDrawer {
     this.rotation += 2 * Math.PI / 360;
     //this.precession += 2 * Math.PI / 360;
     //this.nutation += 0.5 * 2 * Math.PI / 360;
-    document.getElementById('debug_info_rotation').innerHTML = this.rotation;
-    document.getElementById('debug_info_precession').innerHTML = this.precession;
-    document.getElementById('debug_info_nutation').innerHTML = this.nutation;
   }
 
   sphere_map() {
