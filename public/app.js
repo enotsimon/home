@@ -1704,85 +1704,97 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Luna = function (_BasicDrawer) {
-  _inherits(Luna, _BasicDrawer);
+var Planet = function (_BasicDrawer) {
+  _inherits(Planet, _BasicDrawer);
 
-  function Luna() {
-    _classCallCheck(this, Luna);
+  function Planet() {
+    _classCallCheck(this, Planet);
 
-    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }, { id: 'additional', text: 'additional' }];
-    return _possibleConstructorReturn(this, (Luna.__proto__ || Object.getPrototypeOf(Luna)).call(this, 'circle', debug_additional));
+    var debug_additional = [{ id: 'debug_info_precession', text: 'precession' }, { id: 'debug_info_nutation', text: 'nutation' }, { id: 'debug_info_rotation', text: 'rotation' }];
+    return _possibleConstructorReturn(this, (Planet.__proto__ || Object.getPrototypeOf(Planet)).call(this, 'circle', debug_additional));
   }
 
-  _createClass(Luna, [{
+  _createClass(Planet, [{
     key: "init_graphics",
     value: function init_graphics() {
-      var _this2 = this;
+      this.planet = new PIXI.Graphics();
+      this.base_container.addChild(this.planet);
 
-      this.count_figures = 1;
-      this.figures = [].concat(_toConsumableArray(Array(this.count_figures).keys())).map(function (i) {
-        var graphics = new PIXI.Graphics();
-        _this2.base_container.addChild(graphics);
-        return {
-          id: i,
-          graphics: graphics,
-          radius: 0.9 * 0.5 * _this2.size,
-          //rotation_coef: .0025,
-          precession_coef: .0025 * _util2.default.rand_float(-3, 3),
-          nutation_coef: .0025 * _util2.default.rand_float(1, 3)
-        };
-      });
+      this.radius = 0.9 * 0.5 * this.size;
+      this.rotation = _util2.default.radians(30);
+      this.precession = _util2.default.radians(30);
+      this.nutation = _util2.default.radians(30);
+      this.points = this.sphere_map();
+      this.map_regime = 'static';
 
-      document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
-      document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
+      document.getElementById('debug_info_precession').innerHTML = this.precession;
+      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
     }
   }, {
     key: "redraw",
     value: function redraw() {
-      var _this3 = this;
+      var _this2 = this;
 
-      this.figures.forEach(function (figure) {
-        return _this3.draw_full_circle(figure);
+      if (this.map_regime == 'dynamic') {
+        this.points = this.sphere_map();
+      }
+      this.change_angles();
+      this.planet.clear();
+      this.points.forEach(function (point) {
+        var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
+        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]));
+        _this2.planet.drawRect(coords.x, coords.y, .5, .5);
+        _this2.planet.endFill();
       });
     }
   }, {
-    key: "calc_sibgle_point",
-    value: function calc_sibgle_point(radius, angle, precession, nutation) {
-      var x = radius * Math.cos(angle) * Math.sin(nutation);
-      var y = radius * Math.sin(angle);
-      var sp = Math.sin(precession);
-      var cp = Math.cos(precession);
-      var nx = x * cp - y * sp;
-      var ny = x * sp + y * cp;
-      return { x: nx, y: ny };
+    key: "calc_single_point",
+    value: function calc_single_point(radius, phi, theta, rotation, precession, nutation) {
+      var x = radius * Math.cos(phi) * Math.sin(theta),
+          y = radius * Math.sin(phi) * Math.sin(theta),
+          z = radius * Math.cos(theta),
+          sin_r = Math.sin(rotation),
+          cos_r = Math.cos(rotation),
+          sin_p = Math.sin(precession),
+          cos_p = Math.cos(precession),
+          sin_n = Math.sin(nutation),
+          cos_n = Math.cos(nutation),
+          cos_n_sin_r = cos_n * sin_r,
+          cos_n_cos_r = cos_n * cos_r,
+          x2 = x * (cos_p * cos_r - sin_p * cos_n_sin_r) + y * (-cos_p * sin_r - sin_p * cos_n_cos_r) + z * (sin_p * sin_n),
+          y2 = x * (sin_p * cos_r + cos_p * cos_n_sin_r) + y * (-sin_p * sin_r + cos_p * cos_n_cos_r) + z * (-cos_p * sin_n),
+          z2 = x * (sin_n * sin_r) + y * (sin_n * cos_r) + z * cos_n;
+      return { x: x2, y: y2, z: z2 };
     }
   }, {
-    key: "draw_full_circle",
-    value: function draw_full_circle(figure) {
-      figure.graphics.clear();
-      var count_dots = 2 * 36;
-      var acceleration = 5 * Math.cos(.005 * this.tick_time);
-      document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
-      for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
-        var coords = this.calc_sibgle_point(figure.radius,
-        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
-        // i dont understand why its really acceleration and where is the speed?
-        angle + acceleration, figure.precession_coef * this.tick_time, figure.nutation_coef * this.tick_time + 0.5 * acceleration);
-        figure.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
-        //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
-        figure.graphics.drawCircle(coords.x, coords.y, 1);
-        figure.graphics.endFill();
-      }
+    key: "change_angles",
+    value: function change_angles() {
+      this.rotation += 2 * Math.PI / 360;
+      //this.precession += 2 * Math.PI / 360;
+      //this.nutation += 0.5 * 2 * Math.PI / 360;
+      document.getElementById('debug_info_rotation').innerHTML = this.rotation;
+      document.getElementById('debug_info_precession').innerHTML = this.precession;
+      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
+    }
+  }, {
+    key: "sphere_map",
+    value: function sphere_map() {
+      return [].concat(_toConsumableArray(Array(500).keys())).map(function (i) {
+        return {
+          phi: _util2.default.rand_float(0, 2 * Math.PI),
+          theta: _util2.default.rand_float(0, 2 * Math.PI)
+        };
+      });
     }
   }]);
 
-  return Luna;
+  return Planet;
 }(_basic_drawer2.default);
 
-exports.default = Luna;
+exports.default = Planet;
 
 
-var app = new Luna();
+var app = new Planet();
 
 });
 

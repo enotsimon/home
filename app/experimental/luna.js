@@ -4,69 +4,83 @@ import Color from "common/color";
 import BasicDrawer from "experimental/basic_drawer";
 import * as PIXI from "pixi.js";
 
-export default class Luna extends BasicDrawer {
+export default class Planet extends BasicDrawer {
   constructor() {
     let debug_additional = [
-      {id: 'debug_info_precession', text: 'precession speed'},
-      {id: 'debug_info_nutation', text: 'nutation speed'},
-      {id: 'additional', text: 'additional'},
+      {id: 'debug_info_precession', text: 'precession'},
+      {id: 'debug_info_nutation', text: 'nutation'},
+      {id: 'debug_info_rotation', text: 'rotation'},
     ];
     super('circle', debug_additional);
   }
 
   init_graphics() {
-    this.count_figures = 1;
-    this.figures = [...Array(this.count_figures).keys()].map(i => {
-      let graphics = new PIXI.Graphics();
-      this.base_container.addChild(graphics);
-      return {
-        id: i,
-        graphics: graphics,
-        radius: 0.9 * 0.5 * this.size,
-        //rotation_coef: .0025,
-        precession_coef: .0025 * Util.rand_float(-3, 3),
-        nutation_coef: .0025 * Util.rand_float(1, 3),
-      };
-    });
+    this.planet = new PIXI.Graphics();
+    this.base_container.addChild(this.planet);
 
-    document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
-    document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
+    this.radius = 0.9 * 0.5 * this.size;
+    this.rotation = Util.radians(30);
+    this.precession = Util.radians(30);
+    this.nutation = Util.radians(30);
+    this.points = this.sphere_map();
+    this.map_regime = 'static';
+
+    document.getElementById('debug_info_precession').innerHTML = this.precession;
+    document.getElementById('debug_info_nutation').innerHTML = this.nutation;
   }
 
   redraw() {
-    this.figures.forEach(figure => this.draw_full_circle(figure));
-  }
-
-  calc_sibgle_point(radius, angle, precession, nutation) {
-    let x = radius * Math.cos(angle) * Math.sin(nutation);
-    let y = radius * Math.sin(angle);
-    let sp = Math.sin(precession);
-    let cp = Math.cos(precession);
-    let nx = x * cp - y * sp;
-    let ny = x * sp + y * cp;
-    return {x: nx, y: ny};
-  }
-
-  draw_full_circle(figure) {
-    figure.graphics.clear();
-    let count_dots = 2 * 36;
-    let acceleration = 5 * Math.cos(.005 * this.tick_time);
-    document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
-    for (let angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
-      let coords = this.calc_sibgle_point(
-        figure.radius,
-        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
-        // i dont understand why its really acceleration and where is the speed?
-        angle + acceleration,
-        figure.precession_coef * this.tick_time,
-        figure.nutation_coef * this.tick_time + 0.5 * acceleration
-      );
-      figure.graphics.beginFill(Color.to_pixi([255, 255, 255]));
-      //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
-      figure.graphics.drawCircle(coords.x, coords.y, 1);
-      figure.graphics.endFill();
+    if (this.map_regime == 'dynamic') {
+      this.points = this.sphere_map();
     }
+    this.change_angles();
+    this.planet.clear();
+    this.points.forEach(point => {
+      let coords = this.calc_single_point(
+        this.radius,
+        point.phi,
+        point.theta,
+        this.rotation,
+        this.precession,
+        this.nutation
+      );
+      this.planet.beginFill(Color.to_pixi([255, 255, 255]));
+      this.planet.drawRect(coords.x, coords.y, .5, .5);
+      this.planet.endFill();
+    });
+  }
+
+  calc_single_point(radius, phi, theta, rotation, precession, nutation) {
+    let x = radius * Math.cos(phi) * Math.sin(theta),
+        y = radius * Math.sin(phi) * Math.sin(theta),
+        z = radius * Math.cos(theta),
+        sin_r = Math.sin(rotation), cos_r = Math.cos(rotation),
+        sin_p = Math.sin(precession), cos_p = Math.cos(precession),
+        sin_n = Math.sin(nutation), cos_n = Math.cos(nutation),
+        cos_n_sin_r = cos_n * sin_r, cos_n_cos_r = cos_n * cos_r,
+        x2 = x * (cos_p * cos_r - sin_p * cos_n_sin_r) + y * (-cos_p * sin_r - sin_p * cos_n_cos_r) + z * (sin_p * sin_n),
+        y2 = x * (sin_p * cos_r + cos_p * cos_n_sin_r) + y * (-sin_p * sin_r + cos_p * cos_n_cos_r) + z * (-cos_p * sin_n),
+        z2 = x * (sin_n * sin_r) + y * (sin_n * cos_r) + z * cos_n;
+    return {x: x2, y: y2, z: z2};
+  }
+
+  change_angles() {
+    this.rotation += 2 * Math.PI / 360;
+    //this.precession += 2 * Math.PI / 360;
+    //this.nutation += 0.5 * 2 * Math.PI / 360;
+    document.getElementById('debug_info_rotation').innerHTML = this.rotation;
+    document.getElementById('debug_info_precession').innerHTML = this.precession;
+    document.getElementById('debug_info_nutation').innerHTML = this.nutation;
+  }
+
+  sphere_map() {
+    return [...Array(500).keys()].map(i => {
+      return {
+        phi: Util.rand_float(0, 2 * Math.PI),
+        theta: Util.rand_float(0, 2 * Math.PI),
+      };
+    });
   }
 }
 
-let app = new Luna();
+let app = new Planet();
