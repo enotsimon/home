@@ -1151,15 +1151,13 @@ var BasicDrawer = function () {
   function BasicDrawer(regime) {
     var _this = this;
 
-    var debug_additional = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
     _classCallCheck(this, BasicDrawer);
 
     this.real_size = 800;
     this.regime = regime;
     this.ticks = 0;
     this.tick_speed = 1;
-    this.react_app = _react2.default.createElement(_app2.default, { additional: debug_additional });
+    this.react_app = _react2.default.createElement(_app2.default, { additional: this.update_debug_info() });
     document.addEventListener('DOMContentLoaded', function () {
       _reactDom2.default.render(_this.react_app, document.querySelector('#app'));
       _this.init();
@@ -1217,6 +1215,9 @@ var BasicDrawer = function () {
         _this2.tick_delta = delta;
         _this2.tick_time += delta;
         _this2.redraw();
+        _this2.update_debug_info().forEach(function (e) {
+          return document.getElementById(e.id).innerHTML = e.value;
+        });
       });
       //////////////////////////////////
       this.init_graphics();
@@ -1232,6 +1233,11 @@ var BasicDrawer = function () {
   }, {
     key: "redraw",
     value: function redraw() {}
+  }, {
+    key: "update_debug_info",
+    value: function update_debug_info() {
+      return [];
+    }
   }, {
     key: "mouse_move_handler",
     value: function mouse_move_handler(event) {
@@ -1911,11 +1917,15 @@ var Orbits = function (_BasicDrawer) {
   function Orbits() {
     _classCallCheck(this, Orbits);
 
-    var debug_additional = [{ id: 'debug_info_precession', text: 'precession speed' }, { id: 'debug_info_nutation', text: 'nutation speed' }, { id: 'additional', text: 'additional' }];
-    return _possibleConstructorReturn(this, (Orbits.__proto__ || Object.getPrototypeOf(Orbits)).call(this, 'circle', debug_additional));
+    return _possibleConstructorReturn(this, (Orbits.__proto__ || Object.getPrototypeOf(Orbits)).call(this, 'circle'));
   }
 
   _createClass(Orbits, [{
+    key: "update_debug_info",
+    value: function update_debug_info() {
+      return [{ id: 'debug_info_precession', text: 'precession', value: this.figures ? this.figures[0].precession_coef : '' }, { id: 'debug_info_nutation', text: 'nutation', value: this.figures ? this.figures[0].nutation_coef : '' }, { id: 'debug_info_additional', text: 'angle this.acceleration', value: this.acceleration }];
+    }
+  }, {
     key: "init_graphics",
     value: function init_graphics() {
       var _this2 = this;
@@ -1933,9 +1943,6 @@ var Orbits = function (_BasicDrawer) {
           nutation_coef: .0025 * _util2.default.rand_float(1, 3)
         };
       });
-
-      document.getElementById('debug_info_precession').innerHTML = this.figures[0].precession_coef;
-      document.getElementById('debug_info_nutation').innerHTML = this.figures[0].nutation_coef;
     }
   }, {
     key: "redraw",
@@ -1947,8 +1954,8 @@ var Orbits = function (_BasicDrawer) {
       });
     }
   }, {
-    key: "calc_sibgle_point",
-    value: function calc_sibgle_point(radius, angle, precession, nutation) {
+    key: "calc_single_point",
+    value: function calc_single_point(radius, angle, precession, nutation) {
       var x = radius * Math.cos(angle) * Math.sin(nutation);
       var y = radius * Math.sin(angle);
       var sp = Math.sin(precession);
@@ -1962,13 +1969,12 @@ var Orbits = function (_BasicDrawer) {
     value: function draw_full_circle(figure) {
       figure.graphics.clear();
       var count_dots = 2 * 36;
-      var acceleration = 5 * Math.cos(.005 * this.tick_time);
-      document.getElementById('additional').innerHTML = 'angle acceleration is ' + acceleration;
+      this.acceleration = 5 * Math.cos(.005 * this.tick_time);
       for (var angle = 0; angle <= 2 * Math.PI; angle += 2 * Math.PI / count_dots) {
-        var coords = this.calc_sibgle_point(figure.radius,
-        //angle + (figure.rotation_coef * this.tick_time) + acceleration,
-        // i dont understand why its really acceleration and where is the speed?
-        angle + acceleration, figure.precession_coef * this.tick_time, figure.nutation_coef * this.tick_time + 0.5 * acceleration);
+        var coords = this.calc_single_point(figure.radius,
+        //angle + (figure.rotation_coef * this.tick_time) + this.acceleration,
+        // i dont understand why its really this.acceleration and where is the speed?
+        angle + this.acceleration, figure.precession_coef * this.tick_time, figure.nutation_coef * this.tick_time + 0.5 * this.acceleration);
         figure.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]));
         //figure.graphics.drawRect(coords.x, coords.y, .5, .5);
         figure.graphics.drawCircle(coords.x, coords.y, 1);
@@ -2030,11 +2036,15 @@ var Planet = function (_BasicDrawer) {
   function Planet() {
     _classCallCheck(this, Planet);
 
-    var debug_additional = [{ id: 'debug_info_precession', text: 'precession' }, { id: 'debug_info_nutation', text: 'nutation' }, { id: 'debug_info_rotation', text: 'rotation' }];
-    return _possibleConstructorReturn(this, (Planet.__proto__ || Object.getPrototypeOf(Planet)).call(this, 'circle', debug_additional));
+    return _possibleConstructorReturn(this, (Planet.__proto__ || Object.getPrototypeOf(Planet)).call(this, 'circle'));
   }
 
   _createClass(Planet, [{
+    key: "update_debug_info",
+    value: function update_debug_info() {
+      return [{ id: 'debug_info_precession', text: 'precession', value: this.precession }, { id: 'debug_info_nutation', text: 'nutation', value: this.nutation }, { id: 'debug_info_rotation', text: 'rotation', value: this.rotation }];
+    }
+  }, {
     key: "init_graphics",
     value: function init_graphics() {
       this.planet = new PIXI.Graphics();
@@ -2047,9 +2057,6 @@ var Planet = function (_BasicDrawer) {
       this.points = this.sphere_map();
       this.map_regime = 'static';
       this.map_transparency_alpha = 0.25;
-
-      document.getElementById('debug_info_precession').innerHTML = this.precession;
-      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
     }
   }, {
     key: "redraw",
@@ -2097,9 +2104,6 @@ var Planet = function (_BasicDrawer) {
       this.rotation += 2 * Math.PI / 360;
       //this.precession += 2 * Math.PI / 360;
       //this.nutation += 0.5 * 2 * Math.PI / 360;
-      document.getElementById('debug_info_rotation').innerHTML = this.rotation;
-      document.getElementById('debug_info_precession').innerHTML = this.precession;
-      document.getElementById('debug_info_nutation').innerHTML = this.nutation;
     }
   }, {
     key: "sphere_map",
@@ -2168,8 +2172,7 @@ var PlanetsFocus = function (_BasicDrawer) {
   function PlanetsFocus() {
     _classCallCheck(this, PlanetsFocus);
 
-    var debug_additional = [{ id: 'debug_info_focus_on', text: 'now focus on' }];
-    return _possibleConstructorReturn(this, (PlanetsFocus.__proto__ || Object.getPrototypeOf(PlanetsFocus)).call(this, 'circle', debug_additional));
+    return _possibleConstructorReturn(this, (PlanetsFocus.__proto__ || Object.getPrototypeOf(PlanetsFocus)).call(this, 'circle'));
   }
 
   _createClass(PlanetsFocus, [{
@@ -2370,8 +2373,7 @@ var Tableau = function (_BasicDrawer) {
   function Tableau() {
     _classCallCheck(this, Tableau);
 
-    var debug_additional = [];
-    return _possibleConstructorReturn(this, (Tableau.__proto__ || Object.getPrototypeOf(Tableau)).call(this, 'square', debug_additional));
+    return _possibleConstructorReturn(this, (Tableau.__proto__ || Object.getPrototypeOf(Tableau)).call(this, 'square'));
   }
 
   _createClass(Tableau, [{
