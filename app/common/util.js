@@ -128,6 +128,10 @@ export default class Util {
   static radians(degrees) { return degrees * Math.PI / 180; }
   static degrees(radians) { return radians * 180 / Math.PI; }
 
+  static angles_diff(a, b) {
+    let diff = Math.abs(a - b);
+    return Math.min(diff, 2 * Math.PI - diff);
+  }
 
   static move_by_vector(from, to, length) {
     // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
