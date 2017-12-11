@@ -28,6 +28,14 @@ export default class Planet extends BasicDrawer {
     this.points = this.sphere_map();
     this.map_regime = 'static';
     this.map_transparency_alpha = 0.25;
+    this.draw_contour = true;
+
+    if (this.draw_contour) {
+      let contour = new PIXI.Graphics();
+      contour.lineStyle(.5, Color.to_pixi([255, 255, 255]));
+      contour.drawCircle(0, 0, this.radius);
+      this.base_container.addChild(contour);
+    }
   }
 
   redraw() {
