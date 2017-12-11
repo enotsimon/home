@@ -1665,6 +1665,13 @@ var SamplesCollecton = function (_React$Component) {
               sample_url: './orbits.html',
               img_path: './thumbnails/orbits.jpg',
               status: 'in_progress'
+            }),
+            _react2.default.createElement(_sample_preview2.default, {
+              name: 'luna',
+              description: "its like moon -- planet with craters on surface",
+              sample_url: './luna.html',
+              img_path: './thumbnails/luna.jpg',
+              status: 'in_progress'
             })
           )
         )
