@@ -57,6 +57,14 @@ export default class SamplesCollecton extends React.Component {
               status: 'in_progress',
             })}
 
+            {React.createElement(SamplePreview, {
+              name: 'luna',
+              description: `its like moon -- planet with craters on surface`,
+              sample_url: './luna.html',
+              img_path: './thumbnails/luna.jpg',
+              status: 'in_progress',
+            })}
+
           </div>
         </div>
       </div>
