@@ -55,6 +55,9 @@ export default class Planet extends BasicDrawer {
       );
       let alpha = 1;
       if (coords.z < 0) {
+        if (this.map_transparency_alpha == 0) {
+          return;
+        }
         alpha = this.map_transparency_alpha;
       }
       this.planet.beginFill(Color.to_pixi([255, 255, 255]), alpha);
