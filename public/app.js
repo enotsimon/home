@@ -851,6 +851,12 @@ var Util = function () {
       return radians * 180 / Math.PI;
     }
   }, {
+    key: 'angles_diff',
+    value: function angles_diff(a, b) {
+      var diff = Math.abs(a - b);
+      return Math.min(diff, 2 * Math.PI - diff);
+    }
+  }, {
     key: 'move_by_vector',
     value: function move_by_vector(from, to, length) {
       // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
@@ -1680,6 +1686,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _util = require("common/util");
 
 var _util2 = _interopRequireDefault(_util);
@@ -1718,6 +1726,70 @@ var Luna = function (_Planet) {
 
     return _possibleConstructorReturn(this, (Luna.__proto__ || Object.getPrototypeOf(Luna)).apply(this, arguments));
   }
+
+  _createClass(Luna, [{
+    key: "sphere_map",
+    value: function sphere_map() {
+      var _this2 = this;
+
+      var map = [];
+      var count_craters = 25;
+      var i = 0;
+      var craters_data = [];
+
+      var _loop = function _loop() {
+        if (++i > 1000) {
+          throw "too many cycles";
+        }
+        // rotation has no meaning in this case
+        var precession = _util2.default.rand_float(0, 2 * Math.PI);
+        var nutation = _util2.default.rand_float(0, 2 * Math.PI);
+        var crater_diameter = _util2.default.rand_float(_util2.default.radians(1), _util2.default.radians(15));
+        var planet_radius = _this2.radius;
+        var crossing = craters_data.some(function (c) {
+          var distance = crater_diameter + c.crater_diameter + _util2.default.radians(2);
+          return _this2.sphere_angles_distance({ precession: precession, nutation: nutation }, c) < distance;
+        });
+        if (crossing) {
+          return "continue";
+        }
+        craters_data.push({ precession: precession, nutation: nutation, crater_diameter: crater_diameter });
+
+        var crater = _this2.crater(planet_radius, crater_diameter, precession, nutation);
+        map = map.concat(crater);
+        count_craters--;
+      };
+
+      while (count_craters) {
+        var _ret = _loop();
+
+        if (_ret === "continue") continue;
+      }
+      return map;
+    }
+  }, {
+    key: "crater",
+    value: function crater(planet_radius, crater_diameter, precession, nutation) {
+      var data = [];
+      for (var a = 0; a <= 2 * Math.PI; a += 2 * Math.PI / 360) {
+        var coords = this.calc_single_point(planet_radius, a, crater_diameter, 0, precession, nutation);
+        var theta = Math.atan2(Math.sqrt(coords.x * coords.x + coords.y * coords.y), coords.z);
+        var phi = Math.atan2(coords.y, coords.x);
+
+        data.push({ phi: phi, theta: theta });
+      }
+      return data;
+    }
+  }, {
+    key: "sphere_angles_distance",
+    value: function sphere_angles_distance(a, b) {
+      var c1 = this.calc_single_point(1, 0, 0, 0, a.precession, a.nutation);
+      var c2 = this.calc_single_point(1, 0, 0, 0, b.precession, b.nutation);
+      var scalar = c1.x * c2.x + c1.y * c2.y + c1.z * c2.z;
+      var module = Math.sqrt(c1.x * c1.x + c1.y * c1.y + c1.z * c1.z) * Math.sqrt(c2.x * c2.x + c2.y * c2.y + c2.z * c2.z);
+      return Math.acos(scalar / module);
+    }
+  }]);
 
   return Luna;
 }(_planet2.default);
@@ -2057,6 +2129,14 @@ var Planet = function (_BasicDrawer) {
       this.points = this.sphere_map();
       this.map_regime = 'static';
       this.map_transparency_alpha = 0.25;
+      this.draw_contour = true;
+
+      if (this.draw_contour) {
+        var contour = new PIXI.Graphics();
+        contour.lineStyle(.5, _color2.default.to_pixi([255, 255, 255]));
+        contour.drawCircle(0, 0, this.radius);
+        this.base_container.addChild(contour);
+      }
     }
   }, {
     key: "redraw",
@@ -2072,6 +2152,9 @@ var Planet = function (_BasicDrawer) {
         var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
         var alpha = 1;
         if (coords.z < 0) {
+          if (_this2.map_transparency_alpha == 0) {
+            return;
+          }
           alpha = _this2.map_transparency_alpha;
         }
         _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]), alpha);
