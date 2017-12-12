@@ -1660,6 +1660,13 @@ var SamplesCollecton = function (_React$Component) {
               status: 'ready'
             }),
             _react2.default.createElement(_sample_preview2.default, {
+              name: 'rule 30',
+              description: "cellular automaton evolution of rule 30 introduced by stephen wolfram in 1983",
+              sample_url: './rule_30.html',
+              img_path: './thumbnails/rule_30.jpg',
+              status: 'ready'
+            }),
+            _react2.default.createElement(_sample_preview2.default, {
               name: 'orbits',
               description: "experiment with 3d polar functions",
               sample_url: './orbits.html',
@@ -2385,6 +2392,121 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
 
 });
 
+require.register("experimental/rule_30.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _tableau = require("experimental/tableau");
+
+var _tableau2 = _interopRequireDefault(_tableau);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * https://en.wikipedia.org/wiki/Rule_30
+ */
+var Rule30 = function (_Tableau) {
+  _inherits(Rule30, _Tableau);
+
+  function Rule30() {
+    _classCallCheck(this, Rule30);
+
+    return _possibleConstructorReturn(this, (Rule30.__proto__ || Object.getPrototypeOf(Rule30)).apply(this, arguments));
+  }
+
+  _createClass(Rule30, [{
+    key: "init_element_state",
+    value: function init_element_state(element) {
+      //element.color = (element.y == this.y_size - 1) && (element.x == this.x_size / 2 | 0) ? 1 : 0;
+      element.color = 0;
+    }
+  }, {
+    key: "mutate_state",
+    value: function mutate_state() {
+      // throttle to lower speed
+      if (this.ticks % 3 == 1) {
+        _get(Rule30.prototype.__proto__ || Object.getPrototypeOf(Rule30.prototype), "mutate_state", this).call(this);
+      }
+    }
+
+    // this func suppose to change new_color prop, not color!
+
+  }, {
+    key: "mutate_element_state",
+    value: function mutate_element_state(element) {
+      var color = 0;
+      if (element.y == this.y_size - 1) {
+        var l = this.get_neighbour_color(element.x - 1, element.y);
+        var r = this.get_neighbour_color(element.x + 1, element.y);
+        var s = element.color;
+        color = this.element_state_rule(l, r, s);
+      } else {
+        // just copy lower cell color
+        color = this.data[element.y + 1][element.x].color;
+      }
+      element.new_color = color;
+    }
+
+    /**
+     *  this is the main BAD moment -- we got RANDOM color for cells out of border
+     *  thats NOT CORRECT and so this all is not pure rule 30 evolution, but
+     *  rule 30 with random initial state and random border conditions
+     */
+
+  }, {
+    key: "get_neighbour_color",
+    value: function get_neighbour_color(x, y) {
+      return this.data[y] && this.data[y][x] ? this.data[y][x].color : _util2.default.rand(0, 1);
+    }
+
+    // thats rule 30 itself
+
+  }, {
+    key: "element_state_rule",
+    value: function element_state_rule(l, r, s) {
+      // its a marasmus, but
+      switch ('' + l + r + s) {
+        case '111':
+        case '110':
+        case '101':
+          return 0;
+        case '100':
+        case '011':
+        case '010':
+        case '001':
+          return 1;
+        case '000':
+          return 0;
+        default:
+          throw { msg: "unknown pattern", pattern: [l, r, s] };
+      }
+    }
+  }]);
+
+  return Rule30;
+}(_tableau2.default);
+
+exports.default = Rule30;
+
+});
+
 require.register("experimental/samples_collection_init.js", function(exports, require, module) {
 'use strict';
 
@@ -2458,7 +2580,6 @@ var Tableau = function (_BasicDrawer) {
   _createClass(Tableau, [{
     key: "init_graphics",
     value: function init_graphics() {
-      this.tick = 0;
       this.color_change_per_tick = 8;
       this.x_size = 100;
       this.y_size = 100;
@@ -2482,18 +2603,17 @@ var Tableau = function (_BasicDrawer) {
         }
       }
       this.init_state();
-      this.update_circles();
+      this.update_cells();
     }
   }, {
     key: "redraw",
     value: function redraw() {
       this.mutate_state();
-      this.update_circles();
-      this.tick++;
+      this.update_cells();
     }
   }, {
-    key: "update_circles",
-    value: function update_circles() {
+    key: "update_cells",
+    value: function update_cells() {
       this.for_all_elements(function (element) {
         return element.graphics.alpha = element.color;
       });

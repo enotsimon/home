@@ -50,6 +50,14 @@ export default class SamplesCollecton extends React.Component {
             })}
 
             {React.createElement(SamplePreview, {
+              name: 'rule 30',
+              description: `cellular automaton evolution of rule 30 introduced by stephen wolfram in 1983`,
+              sample_url: './rule_30.html',
+              img_path: './thumbnails/rule_30.jpg',
+              status: 'ready',
+            })}
+
+            {React.createElement(SamplePreview, {
               name: 'orbits',
               description: `experiment with 3d polar functions`,
               sample_url: './orbits.html',
