@@ -13,7 +13,6 @@ export default class Tableau extends BasicDrawer {
   }
 
   init_graphics() {
-    this.tick = 0;
     this.color_change_per_tick = 8;
     this.x_size = 100;
     this.y_size = 100;
@@ -48,7 +47,6 @@ export default class Tableau extends BasicDrawer {
   redraw() {
     this.mutate_state();    
     this.update_cells();
-    this.tick++;
   }
 
   update_cells() {
