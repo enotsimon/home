@@ -81,5 +81,3 @@ export default class Tableau extends BasicDrawer {
     element.new_color = (element.color + (this.color_change_per_tick / 256)) % 1;
   }
 }
-
-let app = new Tableau();

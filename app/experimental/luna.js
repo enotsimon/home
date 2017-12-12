@@ -56,5 +56,3 @@ export default class Luna extends Planet {
     return Math.acos(scalar / module);
   }
 }
-
-let app = new Luna();

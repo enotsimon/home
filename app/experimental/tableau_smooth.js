@@ -25,5 +25,3 @@ export default class TableauSmooth extends Tableau {
     element.new_color = Math.min(1, element.new_color);
   }
 }
-
-let app = new TableauSmooth();
