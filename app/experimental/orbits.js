@@ -67,5 +67,3 @@ export default class Orbits extends BasicDrawer {
     }
   }
 }
-
-let app = new Orbits();

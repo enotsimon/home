@@ -87,5 +87,3 @@ export default class MovingArrows extends BasicDrawer {
     return  min * (1 - x) + max * x;
   }
 }
-
-let app = new MovingArrows();

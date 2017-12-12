@@ -120,5 +120,3 @@ class StellarBody {
     this.angle = angle ? angle : 2 * Math.PI * Math.random();
   }
 }
-
-let app = new PlanetsFocus();

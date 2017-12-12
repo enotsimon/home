@@ -1803,9 +1803,6 @@ var Luna = function (_Planet) {
 
 exports.default = Luna;
 
-
-var app = new Luna();
-
 });
 
 require.register("experimental/moving_arrows.js", function(exports, require, module) {
@@ -1948,9 +1945,6 @@ var MovingArrows = function (_BasicDrawer) {
 
 exports.default = MovingArrows;
 
-
-var app = new MovingArrows();
-
 });
 
 require.register("experimental/orbits.js", function(exports, require, module) {
@@ -2066,9 +2060,6 @@ var Orbits = function (_BasicDrawer) {
 }(_basic_drawer2.default);
 
 exports.default = Orbits;
-
-
-var app = new Orbits();
 
 });
 
@@ -2392,8 +2383,6 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
   this.angle = angle ? angle : 2 * Math.PI * Math.random();
 };
 
-var app = new PlanetsFocus();
-
 });
 
 require.register("experimental/samples_collection_init.js", function(exports, require, module) {
@@ -2559,9 +2548,6 @@ var Tableau = function (_BasicDrawer) {
 
 exports.default = Tableau;
 
-
-var app = new Tableau();
-
 });
 
 require.register("experimental/tableau_smooth.js", function(exports, require, module) {
@@ -2636,9 +2622,6 @@ var TableauSmooth = function (_Tableau) {
 }(_tableau2.default);
 
 exports.default = TableauSmooth;
-
-
-var app = new TableauSmooth();
 
 });
 
