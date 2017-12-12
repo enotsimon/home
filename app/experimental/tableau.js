@@ -42,16 +42,16 @@ export default class Tableau extends BasicDrawer {
       }
     }
     this.init_state();
-    this.update_circles();
+    this.update_cells();
   }
 
   redraw() {
     this.mutate_state();    
-    this.update_circles();
+    this.update_cells();
     this.tick++;
   }
 
-  update_circles() {
+  update_cells() {
     this.for_all_elements(element => element.graphics.alpha = element.color);
   }
 
