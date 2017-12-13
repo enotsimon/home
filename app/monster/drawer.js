@@ -1,7 +1,7 @@
 
 import Util from "common/util";
 import Color from "common/color";
-import {game} from "planets/game";
+import {game} from "./monster";
 
 export default class Drawer {
   
