@@ -1,7 +1,5 @@
 
 import Util from "common/util";
-import Interaction from "monster/interaction";
-import MapDrawer from "monster/drawer";
 import App from 'monster/components/app';
 import ReactDOM from 'react-dom';
 import React from 'react';
@@ -14,11 +12,6 @@ import root_reducer from './reducers';
 import * as actions from './actions';
 
 class Game {
-  constructor() {
-    this.drawer = new MapDrawer();
-    this.interaction = new Interaction();
-  }
-
   init_game() {
     this.config = {
       mobiles: mobiles,
@@ -26,13 +19,6 @@ class Game {
     };
     
     this.store = createStore(root_reducer);
-    this.drawer.init(this.width, this.height);
-    this.interaction.init();
-
-    /*const unsubscribe = this.store.subscribe(() =>
-      console.log('state changed to', this.store.getState())
-    );*/
-    //this.store.dispatch(actions.change_money_amount('fishes', 3));
 
     this.change_scene('mage_room');
   }
@@ -55,15 +41,11 @@ class Game {
     // it has changed! dont forget it!
     current_scene = game.config.scenes[this.store.getState().current_scene_name];
     this.store.dispatch(actions.rebuild_main_menu(current_scene));
-
-    //this.drawer.draw_scene(this.config.scenes[scene_name]);
-    //this.drawer.draw_main_menu(this.menues.main);
-    //this.interaction.init_actions_mode();
   }
 }
 
-let game = new Game();
-module.exports.game = game;
+const game = new Game();
+export default game;
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<App />, document.querySelector('#app'));
