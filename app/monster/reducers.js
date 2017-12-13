@@ -2,27 +2,59 @@ import { combineReducers } from 'redux';
 import * as actions from './actions';
 
 
+const error_messages = {
+  CHANGE_SCENE_UNKNOWN_SCENE: "cannot change scene to given cause it is not found in config",
+  CHANGE_SCENE_NOT_LINKED_SCENE: "cannot change scene to given cause it is not linked with current one",
+};
+
+
 let defaults = {
-  current_scene: "mage_room",
+  menues: {
+    main_menu: [],
+  },
+  current_scene_name: null,
   money: {
     fishes: 0,
     foxes: 0,
   },
   clothes: {
     body: "dirty_dress",
-  }
+  },
+  inventory: [],
+  flags: {},
+  user_notification: {
+    message: '',
+    level: 'info',
+    additional: null,
+  },
 };
 
 
-function current_scene(state = defaults.current_scene, action) {
+function current_scene_name(state = defaults.current_scene_name, action) {
   switch (action.type) {
     case actions.CHANGE_SCENE:
-      console.log('action', actions.CHANGE_SCENE, action, state);
+      console.log('action', action.type, action, state);
       return action.scene_name;
     default:
       return state;
   }
 }
+
+
+function main_menu(state = defaults.menues.main_menu, action) {
+  switch (action.type) {
+    case actions.REBUILD_MAIN_MENU:
+      console.log('action', action.type, action, state);
+      let menu = [
+        {id: 'go_to', text: 'go to ...', active: false, items: action.current_scene.links},
+        {id: 'speak_to', text: 'speak to ...', active: false, items: action.current_scene.mobiles},
+      ];
+      return menu;
+    default:
+      return state;
+  }
+}
+
 
 
 function money(state = defaults.money, action) {
@@ -43,7 +75,7 @@ function money(state = defaults.money, action) {
 
 
 /**
- *  @TODO what about sested actions -- like
+ *  @TODO what about nested actions -- like
  *  take off current clothes
  *  put it in inventory
  *  get given clothes from inventory
@@ -67,13 +99,37 @@ function clothes(state = defaults.clothes, action) {
 }
 
 
+/*
+function error_data(state = defaults.error_data, action) {
+  switch (action.type) {
+    case actions.ERROR_CHANGE_SCENE_UNKNOWN_SCENE:
+      return {msg: error_messages.CHANGE_SCENE_UNKNOWN_SCENE, additional: {target_scene: action.scene_name}};
+    case actions.ERROR_CHANGE_SCENE_NOT_LINKED_SCENE:
+      return {msg: error_messages.CHANGE_SCENE_NOT_LINKED_SCENE, additional: {target_scene: action.scene_name}};
+    default:
+      return state;
+  }
+}
+*/
 
-const monster_app = combineReducers({
-  current_scene,
+function user_notification(state = defaults.user_notification, action) {
+  switch (action.type) {
+    case actions.SHOW_NOTIFICATION:
+      return {level: action.level, message: action.message, additional: action.additional};
+    default:
+      return state;
+  }
+}
+
+
+
+const root_reducer = combineReducers({
+  main_menu: combineReducers({main_menu}),
+  current_scene_name,
   money,
   clothes,
 });
 
-export default monster_app;
+export default root_reducer;
 
 
