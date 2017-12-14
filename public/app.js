@@ -2137,7 +2137,7 @@ var Planet = function (_BasicDrawer) {
 
       if (this.draw_contour) {
         var contour = new PIXI.Graphics();
-        contour.lineStyle(.5, _color2.default.to_pixi([255, 255, 255]));
+        contour.lineStyle(1, _color2.default.to_pixi([255, 255, 255]));
         contour.drawCircle(0, 0, this.radius);
         this.base_container.addChild(contour);
       }
