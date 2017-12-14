@@ -68,7 +68,12 @@ export function change_global_flag(flag) {
 // UI
 /////////////////////////////////////////
 export const MAIN_MENU_CLICK = 'main_menu_click';
+export const MAIN_MENU_SUBELEMENT_CLICK = 'main_menu_subelement_click';
 
 export function main_menu_click(id) {
   return {type: MAIN_MENU_CLICK, id};
+}
+
+export function main_menu_subelement_click(id) {
+  return {type: MAIN_MENU_SUBELEMENT_CLICK, id};
 }

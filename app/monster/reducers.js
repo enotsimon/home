@@ -22,7 +22,9 @@ let defaults = {
 
   // UI react parts
   menues: {
-    main_menu: [],
+    main_menu: {
+      elements: [],
+    },
   },
   user_notification: {
     message: '',
@@ -41,22 +43,6 @@ function current_scene_name(state = defaults.current_scene_name, action) {
       return state;
   }
 }
-
-
-function main_menu(state = defaults.menues.main_menu, action) {
-  switch (action.type) {
-    case actions.REBUILD_MAIN_MENU:
-      console.log('action', action.type, action, state);
-      let menu = [
-        {id: 'go_to', text: 'go to ...', active: false, items: action.current_scene.links},
-        {id: 'speak_to', text: 'speak to ...', active: false, items: action.current_scene.mobiles},
-      ];
-      return menu;
-    default:
-      return state;
-  }
-}
-
 
 
 function money(state = defaults.money, action) {
@@ -101,6 +87,10 @@ function clothes(state = defaults.clothes, action) {
 }
 
 
+/////////////////////////////////////////
+// UI
+/////////////////////////////////////////
+
 /*
 function error_data(state = defaults.error_data, action) {
   switch (action.type) {
@@ -114,6 +104,38 @@ function error_data(state = defaults.error_data, action) {
 }
 */
 
+function main_menu(state = defaults.menues.main_menu, action) {
+  let state_copy;
+  switch (action.type) {
+    case actions.REBUILD_MAIN_MENU:
+      console.log('action', action.type, action, state);
+      let prepare_items = links => links.map(e => ({id: e, text: e}));
+      let menu = {
+        elements: [
+          {id: 'go_to', text: 'go to ...', active: false, items: prepare_items(action.current_scene.links)},
+          {id: 'speak_to', text: 'speak to ...', active: false, items: prepare_items(action.current_scene.mobiles)},
+        ],
+      };
+      return menu;
+    case actions.MAIN_MENU_CLICK:
+      console.log('action', action.type, action, state);
+      state_copy = {
+        ...state,
+        elements: state.elements.map(e => ({...e, active: action.id == e.id})),
+      }
+      return state_copy;
+    case actions.MAIN_MENU_SUBELEMENT_CLICK:
+      console.log('action', action.type, action, state);
+      state_copy = {
+        ...state,
+        elements: state.elements.map(e => ({...e, active: false})),
+      }
+      return state_copy;
+    default:
+      return state;
+  }
+}
+
 function user_notification(state = defaults.user_notification, action) {
   switch (action.type) {
     case actions.SHOW_NOTIFICATION:
@@ -126,7 +148,7 @@ function user_notification(state = defaults.user_notification, action) {
 
 
 const root_reducer = combineReducers({
-  main_menu: combineReducers({main_menu}),
+  menues: combineReducers({main_menu}),
   current_scene_name,
   money,
   clothes,

@@ -2,15 +2,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import MainMenuElement from 'monster/components/main_menu_element';
+import MainMenuSublement from 'monster/components/main_menu_subelement';
 
 class MainMenu extends React.Component {
-  on_element_click(e) {
-    //this.props.elements.forEach(element => element.active = false);
-    //e.active = true;
-    this.props.on_element_click(e.id);
-  }
 
   render() {
+    let active_elements = this.props.elements.filter(e => e.active);
+    if (active_elements.length > 1) {
+      throw({msg: "more than one menu element active", active: active_elements});
+    }
+    let subelements = active_elements[0] ? active_elements[0].items : [];
+    console.log("MainMenu.render", subelements);
+
     return (
       <div className="panel panel-success">
         <div className="panel-heading">
@@ -20,9 +23,18 @@ class MainMenu extends React.Component {
         </div>
         <div className="panel-body">
           <div className="col-md-6">
-            {this.props.elements.map((e, i) => (
-              <MainMenuElement key={i} {...e} on_click={() => this.on_element_click(e)} />
-            ))}
+            {this.props.elements.map((e, i) => {
+              // TODO do object spread after we got internet
+              e.on_click = () => this.props.on_element_click(e.id);
+              return <MainMenuElement key={i} {...e} />
+            })}
+          </div>
+          <div className="col-md-6">
+            {subelements.map((e, i) => {
+              // TODO do object spread after we got internet
+              e.on_click = () => this.props.on_subelement_click(e);
+              return <MainMenuSublement key={i} {...e} />
+            })}
           </div>
         </div>
       </div>
@@ -36,9 +48,11 @@ MainMenu.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       active: PropTypes.bool.isRequired,
+      items: PropTypes.array.isRequired, // array of what?
     }).isRequired
   ).isRequired,
   on_element_click: PropTypes.func.isRequired,
+  on_subelement_click: PropTypes.func.isRequired,
 };
 
 export default MainMenu;
