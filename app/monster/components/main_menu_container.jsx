@@ -4,28 +4,25 @@ import {main_menu_click} from 'monster/actions';
 
 
 const mapStateToProps = state => {
-  console.log('MainMenuContainermapStateToProps.', state);
   return {
-    elements: [
-      {id: 'go_to', text: 'go to ...', active: false},
-      {id: 'speak_to', text: 'speak to ...', active: false},
-    ],
+    elements: state.menues.main_menu.elements,
   };
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     on_element_click: id => {
-      console.log('dont believe it works!!! click on', id);
-      dispatch(main_menu_click(id))
+      console.log('on_element_click', id);
+      dispatch(main_menu_click(id));
+    },
+    on_subelement_click: id => {
+      console.log('on_subelement_click', id);
+      dispatch(main_menu_click(id));
     },
   };
 }
 
 
-const MainMenuContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MainMenu);
+const MainMenuContainer = connect(mapStateToProps, mapDispatchToProps)(MainMenu);
 
 export default MainMenuContainer;
