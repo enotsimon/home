@@ -27,7 +27,7 @@ export default class Planet extends BasicDrawer {
     this.precession = null;
     this.nutation = null;
     this.points = this.init_graphics_from_sphere_map(this.sphere_map());
-    this.map_transparency_alpha = 0;
+    this.map_transparency_alpha = 0.25;
     this.draw_contour = true;
 
     if (this.draw_contour) {
@@ -88,7 +88,7 @@ export default class Planet extends BasicDrawer {
     return sphere_map.map(e => {
       e.graphics = new PIXI.Graphics();
       e.graphics.beginFill(Color.to_pixi([255, 255, 255]), 1);
-      e.graphics.drawRect(0, 0, .5, .5);
+      e.graphics.drawRect(0, 0, .0025 * this.size, .0025 * this.size);
       e.graphics.endFill();
       this.planet.addChild(e.graphics);
       return e;
