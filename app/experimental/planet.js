@@ -11,9 +11,9 @@ export default class Planet extends BasicDrawer {
 
   update_debug_info() {
     return [
-      {id: 'debug_info_precession', text: 'precession', value: this.precession},
-      {id: 'debug_info_nutation', text: 'nutation', value: this.nutation},
-      {id: 'debug_info_rotation', text: 'rotation', value: this.rotation},
+      {id: 'debug_info_precession', text: 'precession', value: Util.degrees(this.precession) | 0},
+      {id: 'debug_info_nutation', text: 'nutation', value: Util.degrees(this.nutation) | 0},
+      {id: 'debug_info_rotation', text: 'rotation', value: Util.degrees(this.rotation) | 0},
     ];
   }
 
@@ -22,9 +22,9 @@ export default class Planet extends BasicDrawer {
     this.base_container.addChild(this.planet);
 
     this.radius = 0.9 * 0.5 * this.size;
-    this.rotation = Util.radians(30);
-    this.precession = Util.radians(30);
-    this.nutation = Util.radians(30);
+    this.rotation = null;
+    this.precession = null;
+    this.nutation = null;
     this.points = this.init_graphics_from_sphere_map(this.sphere_map());
     this.map_transparency_alpha = 0;
     this.draw_contour = true;
@@ -38,7 +38,7 @@ export default class Planet extends BasicDrawer {
   }
 
   redraw() {
-    this.change_angles();
+    this.change_angles(this.ticks);
     this.points.forEach(point => {
       let coords = this.calc_single_point(
         this.radius,
@@ -68,10 +68,10 @@ export default class Planet extends BasicDrawer {
     return {x: x2, y: y2, z: z2};
   }
 
-  change_angles() {
-    this.rotation += 2 * Math.PI / 360;
-    //this.precession += 2 * Math.PI / 360;
-    //this.nutation += 0.5 * 2 * Math.PI / 360;
+  change_angles(ticks) {
+    this.rotation = Util.radians(0) + ticks * (2 * Math.PI / 360);
+    this.precession = Util.radians(22.5) + Util.radians(22.5) * Math.sin(ticks / 360);
+    this.nutation = Util.radians(60) + 0 * ticks * (2 * Math.PI / 360);
   }
 
   sphere_map() {

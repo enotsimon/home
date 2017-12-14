@@ -2119,7 +2119,7 @@ var Planet = function (_BasicDrawer) {
   _createClass(Planet, [{
     key: "update_debug_info",
     value: function update_debug_info() {
-      return [{ id: 'debug_info_precession', text: 'precession', value: this.precession }, { id: 'debug_info_nutation', text: 'nutation', value: this.nutation }, { id: 'debug_info_rotation', text: 'rotation', value: this.rotation }];
+      return [{ id: 'debug_info_precession', text: 'precession', value: _util2.default.degrees(this.precession) | 0 }, { id: 'debug_info_nutation', text: 'nutation', value: _util2.default.degrees(this.nutation) | 0 }, { id: 'debug_info_rotation', text: 'rotation', value: _util2.default.degrees(this.rotation) | 0 }];
     }
   }, {
     key: "init_graphics",
@@ -2128,9 +2128,9 @@ var Planet = function (_BasicDrawer) {
       this.base_container.addChild(this.planet);
 
       this.radius = 0.9 * 0.5 * this.size;
-      this.rotation = _util2.default.radians(30);
-      this.precession = _util2.default.radians(30);
-      this.nutation = _util2.default.radians(30);
+      this.rotation = null;
+      this.precession = null;
+      this.nutation = null;
       this.points = this.init_graphics_from_sphere_map(this.sphere_map());
       this.map_transparency_alpha = 0;
       this.draw_contour = true;
@@ -2147,7 +2147,7 @@ var Planet = function (_BasicDrawer) {
     value: function redraw() {
       var _this2 = this;
 
-      this.change_angles();
+      this.change_angles(this.ticks);
       this.points.forEach(function (point) {
         var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
         point.graphics.alpha = coords.z < 0 ? _this2.map_transparency_alpha : 1;
@@ -2176,10 +2176,10 @@ var Planet = function (_BasicDrawer) {
     }
   }, {
     key: "change_angles",
-    value: function change_angles() {
-      this.rotation += 2 * Math.PI / 360;
-      //this.precession += 2 * Math.PI / 360;
-      //this.nutation += 0.5 * 2 * Math.PI / 360;
+    value: function change_angles(ticks) {
+      this.rotation = _util2.default.radians(0) + ticks * (2 * Math.PI / 360);
+      this.precession = _util2.default.radians(22.5) + _util2.default.radians(22.5) * Math.sin(ticks / 360);
+      this.nutation = _util2.default.radians(60) + 0 * ticks * (2 * Math.PI / 360);
     }
   }, {
     key: "sphere_map",
