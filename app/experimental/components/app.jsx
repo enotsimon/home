@@ -10,7 +10,7 @@ export default class App extends React.Component {
 
   // bad. but i dont care for now
   go_back() {
-    window.location.href = "./samples_collection,html";
+    window.location.href = "./samples_collection.html";
   }
 
   render() {

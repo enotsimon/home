@@ -1310,7 +1310,7 @@ var App = function (_React$Component) {
   _createClass(App, [{
     key: 'go_back',
     value: function go_back() {
-      window.location.href = "./samples_collection,html";
+      window.location.href = "./samples_collection.html";
     }
   }, {
     key: 'render',
