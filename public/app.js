@@ -1785,7 +1785,8 @@ var Luna = function (_Planet) {
     key: "crater",
     value: function crater(planet_radius, crater_diameter, precession, nutation) {
       var data = [];
-      for (var a = 0; a <= 2 * Math.PI; a += 2 * Math.PI / 360) {
+      var angle_step = 2 * Math.PI / (1500 * crater_diameter);
+      for (var a = 0; a <= 2 * Math.PI; a += angle_step) {
         var coords = this.calc_single_point(planet_radius, a, crater_diameter, 0, precession, nutation);
         var theta = Math.atan2(Math.sqrt(coords.x * coords.x + coords.y * coords.y), coords.z);
         var phi = Math.atan2(coords.y, coords.x);
@@ -2119,7 +2120,7 @@ var Planet = function (_BasicDrawer) {
   _createClass(Planet, [{
     key: "update_debug_info",
     value: function update_debug_info() {
-      return [{ id: 'debug_info_precession', text: 'precession', value: _util2.default.degrees(this.precession) | 0 }, { id: 'debug_info_nutation', text: 'nutation', value: _util2.default.degrees(this.nutation) | 0 }, { id: 'debug_info_rotation', text: 'rotation', value: _util2.default.degrees(this.rotation) | 0 }];
+      return [{ id: 'debug_info_precession', text: 'precession', value: _util2.default.degrees(this.precession) | 0 }, { id: 'debug_info_nutation', text: 'nutation', value: _util2.default.degrees(this.nutation) | 0 }, { id: 'debug_info_rotation', text: 'rotation', value: _util2.default.degrees(this.rotation) | 0 }, { id: 'debug_info_count_points', text: 'count points', value: this.points ? this.points.length : 0 }];
     }
   }, {
     key: "init_graphics",
