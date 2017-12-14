@@ -8,7 +8,7 @@ import Planet from './planet';
 export default class Luna extends Planet {
   sphere_map() {
     let map = [];
-    let count_craters = 25;
+    let count_craters = 50;
     let i = 0;
     let craters_data = [];
     while (count_craters) {

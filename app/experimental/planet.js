@@ -26,7 +26,7 @@ export default class Planet extends BasicDrawer {
     this.precession = Util.radians(30);
     this.nutation = Util.radians(30);
     this.points = this.init_graphics_from_sphere_map(this.sphere_map());
-    this.map_transparency_alpha = 0.25;
+    this.map_transparency_alpha = 0;
     this.draw_contour = true;
 
     if (this.draw_contour) {
@@ -48,16 +48,9 @@ export default class Planet extends BasicDrawer {
         this.precession,
         this.nutation
       );
-      let alpha = 1;
-      if (coords.z < 0) {
-        if (this.map_transparency_alpha == 0) {
-          return;
-        }
-        alpha = this.map_transparency_alpha;
-      }
+      point.graphics.alpha = coords.z < 0 ? this.map_transparency_alpha : 1;
       point.graphics.x = coords.x;
       point.graphics.y = coords.y;
-      point.graphics.alpha = alpha;
     });
   }
 

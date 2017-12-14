@@ -1747,7 +1747,7 @@ var Luna = function (_Planet) {
       var _this2 = this;
 
       var map = [];
-      var count_craters = 25;
+      var count_craters = 50;
       var i = 0;
       var craters_data = [];
 
@@ -2132,7 +2132,7 @@ var Planet = function (_BasicDrawer) {
       this.precession = _util2.default.radians(30);
       this.nutation = _util2.default.radians(30);
       this.points = this.init_graphics_from_sphere_map(this.sphere_map());
-      this.map_transparency_alpha = 0.25;
+      this.map_transparency_alpha = 0;
       this.draw_contour = true;
 
       if (this.draw_contour) {
@@ -2150,16 +2150,9 @@ var Planet = function (_BasicDrawer) {
       this.change_angles();
       this.points.forEach(function (point) {
         var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
-        var alpha = 1;
-        if (coords.z < 0) {
-          if (_this2.map_transparency_alpha == 0) {
-            return;
-          }
-          alpha = _this2.map_transparency_alpha;
-        }
+        point.graphics.alpha = coords.z < 0 ? _this2.map_transparency_alpha : 1;
         point.graphics.x = coords.x;
         point.graphics.y = coords.y;
-        point.graphics.alpha = alpha;
       });
     }
   }, {
