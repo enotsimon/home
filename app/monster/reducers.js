@@ -1,17 +1,14 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-
+/*
 const error_messages = {
   CHANGE_SCENE_UNKNOWN_SCENE: "cannot change scene to given cause it is not found in config",
   CHANGE_SCENE_NOT_LINKED_SCENE: "cannot change scene to given cause it is not linked with current one",
 };
-
+*/
 
 let defaults = {
-  menues: {
-    main_menu: [],
-  },
   current_scene_name: null,
   money: {
     fishes: 0,
@@ -22,6 +19,11 @@ let defaults = {
   },
   inventory: [],
   flags: {},
+
+  // UI react parts
+  menues: {
+    main_menu: [],
+  },
   user_notification: {
     message: '',
     level: 'info',
@@ -131,5 +133,3 @@ const root_reducer = combineReducers({
 });
 
 export default root_reducer;
-
-

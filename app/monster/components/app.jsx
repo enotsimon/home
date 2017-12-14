@@ -1,6 +1,7 @@
 
 import React from 'react';
 import MainMenu from 'monster/components/main_menu';
+import MainMenuContainer from 'monster/components/main_menu_container';
 import Scene from 'monster/components/scene';
 
 export default class App extends React.Component {
@@ -8,13 +9,9 @@ export default class App extends React.Component {
 
 
   render() {
-    // TEMPORARY FAKE DATA
-    let main_menu_data = {
-      elements: [
-        {id: 'go_to', text: 'go to ...', active: false},
-        {id: 'speak_to', text: 'speak to ...', active: false},
-      ],
-      on_element_click: (id) => console.log('dont believe it works! click on', id),
+    let default_data = {
+      elements: [],
+      on_element_click: () => console.log('no it aint work'),
     };
 
     return (
@@ -23,7 +20,7 @@ export default class App extends React.Component {
 
           <Scene/>
 
-          <MainMenu {...main_menu_data}/>
+          <MainMenuContainer {...default_data} />
 
         </div>
       </div>
