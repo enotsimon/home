@@ -1217,13 +1217,13 @@ var BasicDrawer = function () {
         _this2.ticks++;
         if (_this2.ticks % 10 == 0) {
           d3.select('#fps_counter').html(_this2.pixi.ticker.FPS | 0);
+          _this2.update_debug_info().forEach(function (e) {
+            return document.getElementById(e.id).innerHTML = e.value;
+          });
         }
         _this2.tick_delta = delta;
         _this2.tick_time += delta;
         _this2.redraw();
-        _this2.update_debug_info().forEach(function (e) {
-          return document.getElementById(e.id).innerHTML = e.value;
-        });
       });
       //////////////////////////////////
       this.init_graphics();
@@ -2120,7 +2120,7 @@ var Planet = function (_BasicDrawer) {
   _createClass(Planet, [{
     key: "update_debug_info",
     value: function update_debug_info() {
-      return [{ id: 'debug_info_precession', text: 'precession', value: _util2.default.degrees(this.precession) | 0 }, { id: 'debug_info_nutation', text: 'nutation', value: _util2.default.degrees(this.nutation) | 0 }, { id: 'debug_info_rotation', text: 'rotation', value: _util2.default.degrees(this.rotation) | 0 }, { id: 'debug_info_count_points', text: 'count points', value: this.points ? this.points.length : 0 }];
+      return [{ id: 'debug_info_precession', text: 'precession', value: Math.round(_util2.default.degrees(this.precession)) }, { id: 'debug_info_nutation', text: 'nutation', value: Math.round(_util2.default.degrees(this.nutation)) }, { id: 'debug_info_rotation', text: 'rotation', value: Math.round(_util2.default.degrees(this.rotation)) }, { id: 'debug_info_count_points', text: 'count points', value: this.points ? this.points.length : 0 }];
     }
   }, {
     key: "init_graphics",
