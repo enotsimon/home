@@ -38,7 +38,8 @@ export default class Luna extends Planet {
 
   crater(planet_radius, crater_diameter, precession, nutation) {
     let data = [];
-    for (let a = 0; a <= 2 * Math.PI; a += 2 * Math.PI / 360) {
+    let angle_step = 2 * Math.PI / (1500 * crater_diameter);
+    for (let a = 0; a <= 2 * Math.PI; a += angle_step) {
       let coords = this.calc_single_point(planet_radius, a, crater_diameter, 0, precession, nutation);
       let theta = Math.atan2(Math.sqrt(coords.x * coords.x + coords.y * coords.y), coords.z);
       let phi = Math.atan2(coords.y, coords.x);

@@ -14,6 +14,7 @@ export default class Planet extends BasicDrawer {
       {id: 'debug_info_precession', text: 'precession', value: Util.degrees(this.precession) | 0},
       {id: 'debug_info_nutation', text: 'nutation', value: Util.degrees(this.nutation) | 0},
       {id: 'debug_info_rotation', text: 'rotation', value: Util.degrees(this.rotation) | 0},
+      {id: 'debug_info_count_points', text: 'count points', value: this.points ? this.points.length: 0},
     ];
   }
 
