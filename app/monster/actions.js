@@ -62,3 +62,13 @@ export function inventory_remove_item(item) {
 export function change_global_flag(flag) {
   return {type: CHANGE_GLOBAL_FLAG, flag};
 }
+
+
+/////////////////////////////////////////
+// UI
+/////////////////////////////////////////
+export const MAIN_MENU_CLICK = 'main_menu_click';
+
+export function main_menu_click(id) {
+  return {type: MAIN_MENU_CLICK, id};
+}

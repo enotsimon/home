@@ -8,6 +8,7 @@ import mobiles from 'monster/config/mobiles';
 import scenes from 'monster/config/scenes';
 
 import { createStore } from 'redux';
+import { Provider } from 'react-redux'
 import root_reducer from './reducers';
 import * as actions from './actions';
 
@@ -45,9 +46,14 @@ class Game {
 }
 
 const game = new Game();
+game.init_game();
 export default game;
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<App />, document.querySelector('#app'));
-  game.init_game();
+  ReactDOM.render(
+    <Provider store={game.store}>
+      <App />
+    </Provider>,
+    document.querySelector('#app')
+  );
 });
