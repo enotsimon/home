@@ -24,16 +24,12 @@ class MainMenu extends React.Component {
         <div className="panel-body">
           <div className="col-md-6">
             {this.props.elements.map((e, i) => {
-              // TODO do object spread after we got internet
-              e.on_click = () => this.props.on_element_click(e.id);
-              return <MainMenuElement key={i} {...e} />
+              return <MainMenuElement key={i} on_click={() => this.props.on_element_click(e.id)} {...e} />
             })}
           </div>
           <div className="col-md-6">
             {subelements.map((e, i) => {
-              // TODO do object spread after we got internet
-              e.on_click = () => this.props.on_subelement_click(e);
-              return <MainMenuSublement key={i} {...e} />
+              return <MainMenuSublement key={i} on_click={() => this.props.on_subelement_click(e)} {...e} />
             })}
           </div>
         </div>
