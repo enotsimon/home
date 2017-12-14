@@ -2124,15 +2124,14 @@ var Planet = function (_BasicDrawer) {
   }, {
     key: "init_graphics",
     value: function init_graphics() {
-      this.planet = new PIXI.Graphics();
+      this.planet = new PIXI.Container();
       this.base_container.addChild(this.planet);
 
       this.radius = 0.9 * 0.5 * this.size;
       this.rotation = _util2.default.radians(30);
       this.precession = _util2.default.radians(30);
       this.nutation = _util2.default.radians(30);
-      this.points = this.sphere_map();
-      this.map_regime = 'static';
+      this.points = this.init_graphics_from_sphere_map(this.sphere_map());
       this.map_transparency_alpha = 0.25;
       this.draw_contour = true;
 
@@ -2148,11 +2147,7 @@ var Planet = function (_BasicDrawer) {
     value: function redraw() {
       var _this2 = this;
 
-      if (this.map_regime == 'dynamic') {
-        this.points = this.sphere_map();
-      }
       this.change_angles();
-      this.planet.clear();
       this.points.forEach(function (point) {
         var coords = _this2.calc_single_point(_this2.radius, point.phi, point.theta, _this2.rotation, _this2.precession, _this2.nutation);
         var alpha = 1;
@@ -2162,9 +2157,9 @@ var Planet = function (_BasicDrawer) {
           }
           alpha = _this2.map_transparency_alpha;
         }
-        _this2.planet.beginFill(_color2.default.to_pixi([255, 255, 255]), alpha);
-        _this2.planet.drawRect(coords.x, coords.y, .5, .5);
-        _this2.planet.endFill();
+        point.graphics.x = coords.x;
+        point.graphics.y = coords.y;
+        point.graphics.alpha = alpha;
       });
     }
   }, {
@@ -2201,6 +2196,20 @@ var Planet = function (_BasicDrawer) {
           phi: _util2.default.rand_float(0, 2 * Math.PI),
           theta: _util2.default.rand_float(0, 2 * Math.PI)
         };
+      });
+    }
+  }, {
+    key: "init_graphics_from_sphere_map",
+    value: function init_graphics_from_sphere_map(sphere_map) {
+      var _this3 = this;
+
+      return sphere_map.map(function (e) {
+        e.graphics = new PIXI.Graphics();
+        e.graphics.beginFill(_color2.default.to_pixi([255, 255, 255]), 1);
+        e.graphics.drawRect(0, 0, .5, .5);
+        e.graphics.endFill();
+        _this3.planet.addChild(e.graphics);
+        return e;
       });
     }
   }]);

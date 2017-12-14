@@ -18,15 +18,14 @@ export default class Planet extends BasicDrawer {
   }
 
   init_graphics() {
-    this.planet = new PIXI.Graphics();
+    this.planet = new PIXI.Container();
     this.base_container.addChild(this.planet);
 
     this.radius = 0.9 * 0.5 * this.size;
     this.rotation = Util.radians(30);
     this.precession = Util.radians(30);
     this.nutation = Util.radians(30);
-    this.points = this.sphere_map();
-    this.map_regime = 'static';
+    this.points = this.init_graphics_from_sphere_map(this.sphere_map());
     this.map_transparency_alpha = 0.25;
     this.draw_contour = true;
 
@@ -39,11 +38,7 @@ export default class Planet extends BasicDrawer {
   }
 
   redraw() {
-    if (this.map_regime == 'dynamic') {
-      this.points = this.sphere_map();
-    }
     this.change_angles();
-    this.planet.clear();
     this.points.forEach(point => {
       let coords = this.calc_single_point(
         this.radius,
@@ -60,9 +55,9 @@ export default class Planet extends BasicDrawer {
         }
         alpha = this.map_transparency_alpha;
       }
-      this.planet.beginFill(Color.to_pixi([255, 255, 255]), alpha);
-      this.planet.drawRect(coords.x, coords.y, .5, .5);
-      this.planet.endFill();
+      point.graphics.x = coords.x;
+      point.graphics.y = coords.y;
+      point.graphics.alpha = alpha;
     });
   }
 
@@ -92,6 +87,17 @@ export default class Planet extends BasicDrawer {
         phi: Util.rand_float(0, 2 * Math.PI),
         theta: Util.rand_float(0, 2 * Math.PI),
       };
+    });
+  }
+
+  init_graphics_from_sphere_map(sphere_map) {
+    return sphere_map.map(e => {
+      e.graphics = new PIXI.Graphics();
+      e.graphics.beginFill(Color.to_pixi([255, 255, 255]), 1);
+      e.graphics.drawRect(0, 0, .5, .5);
+      e.graphics.endFill();
+      this.planet.addChild(e.graphics);
+      return e;
     });
   }
 }
