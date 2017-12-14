@@ -12,7 +12,6 @@ class MainMenu extends React.Component {
       throw({msg: "more than one menu element active", active: active_elements});
     }
     let subelements = active_elements[0] ? active_elements[0].items : [];
-    console.log("MainMenu.render", subelements);
 
     return (
       <div className="panel panel-success">
