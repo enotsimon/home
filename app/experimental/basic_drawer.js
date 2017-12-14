@@ -61,11 +61,11 @@ export default class BasicDrawer {
       this.ticks++;
       if (this.ticks % 10 == 0) {
         d3.select('#fps_counter').html(this.pixi.ticker.FPS | 0);
+        this.update_debug_info().forEach(e => document.getElementById(e.id).innerHTML = e.value);
       }
       this.tick_delta = delta;
       this.tick_time += delta;
       this.redraw();
-      this.update_debug_info().forEach(e => document.getElementById(e.id).innerHTML = e.value);
     });
     //////////////////////////////////
     this.init_graphics();
