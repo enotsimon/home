@@ -17,6 +17,7 @@ class Game {
     this.config = {
       mobiles: mobiles,
       scenes: scenes,
+      text: require('./text/rus.js').default,
     };
     
     this.store = createStore(root_reducer);
