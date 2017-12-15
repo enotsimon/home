@@ -10,13 +10,15 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <div className="row">
-        <div className="col-md-8 col-md-offset-2">
+      <div id="main" style={{marginTop: '20px', marginBottom: '20px'}}>
+        <div className="row">
+          <div className="col-md-8 col-md-offset-2">
 
-          <Scene/>
+            <Scene/>
 
-          <MainMenuContainer />
+            <MainMenuContainer />
 
+          </div>
         </div>
       </div>
     );
