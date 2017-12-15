@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 class MainMenuSubelement extends React.Component {
   render() {
     return (
-      <button id={this.props.id} type="button" className="btn btn-block btn-default" onClick={this.props.on_click}>
+      <button id={this.props.id} type="button" className="btn btn-default btn-block" onClick={this.props.on_click}>
         {this.props.text}
       </button>
     );
