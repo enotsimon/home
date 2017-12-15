@@ -71,8 +71,8 @@ export default class Planet extends BasicDrawer {
 
   change_angles(ticks) {
     this.rotation = Util.radians(0) + ticks * (2 * Math.PI / 360);
-    this.precession = Util.radians(22.5) + Util.radians(22.5) * Math.sin(ticks / 360);
-    this.nutation = Util.radians(60) + 0 * ticks * (2 * Math.PI / 360);
+    this.precession = Util.radians(30) + Util.radians(15) * Math.sin(2 * ticks / 360);
+    this.nutation = Util.radians(90 - 30) + Util.radians(15) * Math.cos(2 * ticks / 360);
   }
 
   sphere_map() {
