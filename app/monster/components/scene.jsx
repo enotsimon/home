@@ -1,27 +1,28 @@
 
 import React from 'react';
+import PropTypes from 'prop-types';
 
-export default class Scene extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      name: "bla",
-      description: "some desc text",
-    };
-  }
-
+class Scene extends React.Component {
   render() {
     return (
       <div className="panel panel-success">
         <div className="panel-heading">
           <h4 className="panel-title">
-            scene: {this.state.name}
+            scene: {this.props.name}
           </h4>
         </div>
         <div className="panel-body">
-          {this.state.description}
+          {this.props.description}
         </div>
       </div>
     );
   }
 }
+
+Scene.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+};
+
+export default Scene;
