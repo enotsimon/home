@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import MainMenu from './main_menu';
-import {main_menu_click} from 'monster/actions';
+import {main_menu_click, main_menu_subelement_click} from 'monster/actions';
 
 
 const mapStateToProps = state => {
@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(main_menu_click(id));
     },
     on_subelement_click: id => {
-      dispatch(main_menu_click(id));
+      dispatch(main_menu_subelement_click(id));
     },
   };
 }
