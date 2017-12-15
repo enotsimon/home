@@ -1,4 +1,4 @@
-const hints = {
+const text = {
   races: {
     daemon: 'демон',
     beast: 'зверь',
@@ -105,4 +105,4 @@ const hints = {
   },
 };
 
-export default hints;
+export default text;
