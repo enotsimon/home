@@ -2179,8 +2179,8 @@ var Planet = function (_BasicDrawer) {
     key: "change_angles",
     value: function change_angles(ticks) {
       this.rotation = _util2.default.radians(0) + ticks * (2 * Math.PI / 360);
-      this.precession = _util2.default.radians(22.5) + _util2.default.radians(22.5) * Math.sin(ticks / 360);
-      this.nutation = _util2.default.radians(60) + 0 * ticks * (2 * Math.PI / 360);
+      this.precession = _util2.default.radians(30) + _util2.default.radians(15) * Math.sin(2 * ticks / 360);
+      this.nutation = _util2.default.radians(90 - 30) + _util2.default.radians(15) * Math.cos(2 * ticks / 360);
     }
   }, {
     key: "sphere_map",
