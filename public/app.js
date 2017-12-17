@@ -1667,6 +1667,13 @@ var SamplesCollecton = function (_React$Component) {
               status: 'ready'
             }),
             _react2.default.createElement(_sample_preview2.default, {
+              name: 'vichniac vote',
+              description: "the color of cell depends on number of black cell in its moore neighborhood and previous\n                self color -- it is black if total numbler black cells is greater than 4",
+              sample_url: './vichniac_vote.html',
+              img_path: './thumbnails/vichniac_vote.jpg',
+              status: 'ready'
+            }),
+            _react2.default.createElement(_sample_preview2.default, {
               name: 'orbits',
               description: "experiment with 3d polar functions",
               sample_url: './orbits.html',
@@ -2215,6 +2222,89 @@ exports.default = Planet;
 
 });
 
+require.register("experimental/planet_exp.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+var _planet = require("./planet");
+
+var _planet2 = _interopRequireDefault(_planet);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlanetExp = function (_Planet) {
+  _inherits(PlanetExp, _Planet);
+
+  function PlanetExp() {
+    _classCallCheck(this, PlanetExp);
+
+    return _possibleConstructorReturn(this, (PlanetExp.__proto__ || Object.getPrototypeOf(PlanetExp)).apply(this, arguments));
+  }
+
+  _createClass(PlanetExp, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      _get(PlanetExp.prototype.__proto__ || Object.getPrototypeOf(PlanetExp.prototype), "init_graphics", this).call(this);
+      this.map_transparency_alpha = 0;
+    }
+  }, {
+    key: "sphere_map",
+    value: function sphere_map() {
+      var map = [];
+      var step = 2.5 * 2 * Math.PI / 360;
+      var parallel_num = 0;
+      var count_parallels = 2 * Math.PI / step | 0;
+      for (var theta = 0; theta < 2 * Math.PI; theta += step) {
+        var count_points = 2 * Math.min(parallel_num, count_parallels - parallel_num) + 1;
+        var phi_step = 2 * Math.PI / count_points;
+        console.log('phi_step', parallel_num, count_points);
+        for (var phi = 0; phi < 2 * Math.PI; phi += phi_step) {
+          map.push({ phi: phi, theta: theta });
+        }
+        parallel_num++;
+      }
+      return map;
+    }
+  }]);
+
+  return PlanetExp;
+}(_planet2.default);
+
+exports.default = PlanetExp;
+
+});
+
 require.register("experimental/planets_focus.js", function(exports, require, module) {
 "use strict";
 
@@ -2577,15 +2667,17 @@ var Tableau = function (_BasicDrawer) {
   function Tableau() {
     _classCallCheck(this, Tableau);
 
-    return _possibleConstructorReturn(this, (Tableau.__proto__ || Object.getPrototypeOf(Tableau)).call(this, 'square'));
+    var _this = _possibleConstructorReturn(this, (Tableau.__proto__ || Object.getPrototypeOf(Tableau)).call(this, 'square'));
+
+    _this.x_size = 100;
+    _this.y_size = 100;
+    return _this;
   }
 
   _createClass(Tableau, [{
     key: "init_graphics",
     value: function init_graphics() {
       this.color_change_per_tick = 8;
-      this.x_size = 100;
-      this.y_size = 100;
       this.data = [];
       var square_size = Math.min(this.size / this.x_size, this.size / this.y_size);
       for (var y = 0; y < this.y_size; y++) {
@@ -3329,6 +3421,102 @@ var PointsInCicrle = function () {
 }();
 
 exports.default = PointsInCicrle;
+
+});
+
+require.register("experimental/vichniac_vote.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _tableau = require("experimental/tableau");
+
+var _tableau2 = _interopRequireDefault(_tableau);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * 
+ */
+var VichniacVote = function (_Tableau) {
+  _inherits(VichniacVote, _Tableau);
+
+  function VichniacVote() {
+    _classCallCheck(this, VichniacVote);
+
+    var _this = _possibleConstructorReturn(this, (VichniacVote.__proto__ || Object.getPrototypeOf(VichniacVote)).call(this));
+
+    _this.x_size = 200;
+    _this.y_size = 200;
+    return _this;
+  }
+
+  _createClass(VichniacVote, [{
+    key: "init_element_state",
+    value: function init_element_state(element) {
+      element.color = Math.random() > 0.5 ? 1 : 0;
+    }
+  }, {
+    key: "mutate_state",
+    value: function mutate_state() {
+      var step = 15;
+      // throttle to lower speed
+      if (this.ticks % step == 1) {
+        _get(VichniacVote.prototype.__proto__ || Object.getPrototypeOf(VichniacVote.prototype), "mutate_state", this).call(this);
+      }
+      if (this.ticks % (30 * step) == 1) {
+        this.init_state();
+      }
+    }
+
+    // this func suppose to change new_color prop, not color!
+
+  }, {
+    key: "mutate_element_state",
+    value: function mutate_element_state(element) {
+      var x = element.x,
+          y = element.y;
+      var e1 = this.get_element_color(x - 1, y - 1),
+          e2 = this.get_element_color(x + 0, y - 1),
+          e3 = this.get_element_color(x + 1, y - 1),
+          e4 = this.get_element_color(x - 1, y + 0),
+          e5 = this.get_element_color(x + 0, y + 0),
+          e6 = this.get_element_color(x + 1, y + 0),
+          e7 = this.get_element_color(x - 1, y + 1),
+          e8 = this.get_element_color(x + 0, y + 1),
+          e9 = this.get_element_color(x + 1, y + 1);
+      element.new_color = e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8 + e9 > 4 ? 1 : 0;
+    }
+
+    // 1!
+
+  }, {
+    key: "get_element_color",
+    value: function get_element_color(x, y) {
+      return this.data[y] && this.data[y][x] ? this.data[y][x].color : 1;
+    }
+  }]);
+
+  return VichniacVote;
+}(_tableau2.default);
+
+exports.default = VichniacVote;
 
 });
 

@@ -58,6 +58,15 @@ export default class SamplesCollecton extends React.Component {
             })}
 
             {React.createElement(SamplePreview, {
+              name: 'vichniac vote',
+              description: `the color of cell depends on number of black cell in its moore neighborhood and previous
+                self color -- it is black if total numbler black cells is greater than 4`,
+              sample_url: './vichniac_vote.html',
+              img_path: './thumbnails/vichniac_vote.jpg',
+              status: 'ready',
+            })}
+
+            {React.createElement(SamplePreview, {
               name: 'orbits',
               description: `experiment with 3d polar functions`,
               sample_url: './orbits.html',

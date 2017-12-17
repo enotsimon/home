@@ -10,12 +10,12 @@ import * as PIXI from "pixi.js";
 export default class Tableau extends BasicDrawer {
   constructor() {
     super('square');
+    this.x_size = 100;
+    this.y_size = 100;
   }
 
   init_graphics() {
     this.color_change_per_tick = 8;
-    this.x_size = 100;
-    this.y_size = 100;
     this.data = [];
     let square_size = Math.min(this.size / this.x_size, this.size / this.y_size);
     for (let y = 0; y < this.y_size; y++) {
