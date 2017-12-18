@@ -23,8 +23,8 @@ export default class Rule30 extends Tableau {
   mutate_element_state(element) {
     let color = 0;
     if (element.y == this.y_size - 1) {
-      let l = this.get_neighbour_color(element.x - 1, element.y);
-      let r = this.get_neighbour_color(element.x + 1, element.y);
+      let l = this.get_element_color(element.x - 1, element.y, this.out_of_border_func);
+      let r = this.get_element_color(element.x + 1, element.y, this.out_of_border_func);
       let s = element.color;
       color = this.element_state_rule(l, r, s);
     } else {
@@ -39,8 +39,8 @@ export default class Rule30 extends Tableau {
    *  thats NOT CORRECT and so this all is not pure rule 30 evolution, but
    *  rule 30 with random initial state and random border conditions
    */
-  get_neighbour_color(x, y) {
-    return this.data[y] && this.data[y][x] ? this.data[y][x].color : Util.rand(0, 1);
+  out_of_border_func() {
+    return Util.rand(0, 1);  
   }
 
   // thats rule 30 itself

@@ -2546,8 +2546,8 @@ var Rule30 = function (_Tableau) {
     value: function mutate_element_state(element) {
       var color = 0;
       if (element.y == this.y_size - 1) {
-        var l = this.get_neighbour_color(element.x - 1, element.y);
-        var r = this.get_neighbour_color(element.x + 1, element.y);
+        var l = this.get_element_color(element.x - 1, element.y, this.out_of_border_func);
+        var r = this.get_element_color(element.x + 1, element.y, this.out_of_border_func);
         var s = element.color;
         color = this.element_state_rule(l, r, s);
       } else {
@@ -2564,9 +2564,9 @@ var Rule30 = function (_Tableau) {
      */
 
   }, {
-    key: "get_neighbour_color",
-    value: function get_neighbour_color(x, y) {
-      return this.data[y] && this.data[y][x] ? this.data[y][x].color : _util2.default.rand(0, 1);
+    key: "out_of_border_func",
+    value: function out_of_border_func() {
+      return _util2.default.rand(0, 1);
     }
 
     // thats rule 30 itself
@@ -2755,6 +2755,11 @@ var Tableau = function (_BasicDrawer) {
     key: "mutate_element_state",
     value: function mutate_element_state(element) {
       element.new_color = (element.color + this.color_change_per_tick / 256) % 1;
+    }
+  }, {
+    key: "get_element_color",
+    value: function get_element_color(x, y, out_of_border_func) {
+      return this.data[y] && this.data[y][x] ? this.data[y][x].color : out_of_border_func(x, y);
     }
   }]);
 
@@ -3492,24 +3497,21 @@ var VichniacVote = function (_Tableau) {
     value: function mutate_element_state(element) {
       var x = element.x,
           y = element.y;
-      var e1 = this.get_element_color(x - 1, y - 1),
-          e2 = this.get_element_color(x + 0, y - 1),
-          e3 = this.get_element_color(x + 1, y - 1),
-          e4 = this.get_element_color(x - 1, y + 0),
-          e5 = this.get_element_color(x + 0, y + 0),
-          e6 = this.get_element_color(x + 1, y + 0),
-          e7 = this.get_element_color(x - 1, y + 1),
-          e8 = this.get_element_color(x + 0, y + 1),
-          e9 = this.get_element_color(x + 1, y + 1);
+      var e1 = this.get_element_color(x - 1, y - 1, this.out_of_border_func),
+          e2 = this.get_element_color(x + 0, y - 1, this.out_of_border_func),
+          e3 = this.get_element_color(x + 1, y - 1, this.out_of_border_func),
+          e4 = this.get_element_color(x - 1, y + 0, this.out_of_border_func),
+          e5 = this.get_element_color(x + 0, y + 0, this.out_of_border_func),
+          e6 = this.get_element_color(x + 1, y + 0, this.out_of_border_func),
+          e7 = this.get_element_color(x - 1, y + 1, this.out_of_border_func),
+          e8 = this.get_element_color(x + 0, y + 1, this.out_of_border_func),
+          e9 = this.get_element_color(x + 1, y + 1, this.out_of_border_func);
       element.new_color = e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8 + e9 > 4 ? 1 : 0;
     }
-
-    // 1!
-
   }, {
-    key: "get_element_color",
-    value: function get_element_color(x, y) {
-      return this.data[y] && this.data[y][x] ? this.data[y][x].color : 1;
+    key: "out_of_border_func",
+    value: function out_of_border_func() {
+      return 1;
     }
   }]);
 

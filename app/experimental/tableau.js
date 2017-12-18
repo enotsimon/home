@@ -78,4 +78,8 @@ export default class Tableau extends BasicDrawer {
   mutate_element_state(element) {
     element.new_color = (element.color + (this.color_change_per_tick / 256)) % 1;
   }
+
+  get_element_color(x, y, out_of_border_func) {
+    return this.data[y] && this.data[y][x] ? this.data[y][x].color : out_of_border_func(x, y);
+  }
 }
