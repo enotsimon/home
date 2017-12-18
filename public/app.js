@@ -1685,7 +1685,7 @@ var SamplesCollecton = function (_React$Component) {
               description: "its like moon -- planet with craters on surface",
               sample_url: './luna.html',
               img_path: './thumbnails/luna.jpg',
-              status: 'in_progress'
+              status: 'ready'
             })
           )
         )
@@ -1697,6 +1697,136 @@ var SamplesCollecton = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = SamplesCollecton;
+
+});
+
+require.register("experimental/exp_rule.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _tableau = require("experimental/tableau");
+
+var _tableau2 = _interopRequireDefault(_tableau);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * 
+ */
+var ExpRule = function (_Tableau) {
+  _inherits(ExpRule, _Tableau);
+
+  function ExpRule() {
+    _classCallCheck(this, ExpRule);
+
+    return _possibleConstructorReturn(this, (ExpRule.__proto__ || Object.getPrototypeOf(ExpRule)).apply(this, arguments));
+  }
+
+  _createClass(ExpRule, [{
+    key: "init_element_state",
+    value: function init_element_state(element) {
+      element.color = Math.random() < 0.001 ? 1 : 0;
+    }
+  }, {
+    key: "mutate_state",
+    value: function mutate_state() {
+      var step = 5;
+      // throttle to lower speed
+      if (this.ticks % step == 1) {
+        _get(ExpRule.prototype.__proto__ || Object.getPrototypeOf(ExpRule.prototype), "mutate_state", this).call(this);
+      }
+      /*if (this.ticks % (30 * step) == 1) {
+        this.init_state();
+      }*/
+    }
+
+    // this func suppose to change new_color prop, not color!
+
+  }, {
+    key: "mutate_element_state",
+    value: function mutate_element_state(element) {
+      var x = element.x,
+          y = element.y;
+      var e1 = this.get_element_color(x - 1, y - 1, this.out_of_border_func),
+          e2 = this.get_element_color(x + 0, y - 1, this.out_of_border_func),
+          e3 = this.get_element_color(x + 1, y - 1, this.out_of_border_func),
+          e4 = this.get_element_color(x - 1, y + 0, this.out_of_border_func),
+          e5 = this.get_element_color(x + 0, y + 0, this.out_of_border_func),
+          e6 = this.get_element_color(x + 1, y + 0, this.out_of_border_func),
+          e7 = this.get_element_color(x - 1, y + 1, this.out_of_border_func),
+          e8 = this.get_element_color(x + 0, y + 1, this.out_of_border_func),
+          e9 = this.get_element_color(x + 1, y + 1, this.out_of_border_func);
+      element.new_color = this.rule(e1, e2, e3, e4, e5, e6, e7, e8, e9);
+    }
+  }, {
+    key: "out_of_border_func",
+    value: function out_of_border_func() {
+      return 0;
+      return _util2.default.rand(0, 1);
+    }
+
+    //
+
+  }, {
+    key: "rule",
+    value: function rule(e1, e2, e3, e4, e5, e6, e7, e8, e9) {
+      if (e5 == 1) {
+        return 1;
+      }
+      var pattern = '' + e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8 + e9;
+      switch (pattern) {
+        case '010000000':
+        case '000100000':
+        case '000001000':
+        case '000000010':
+          return 1;
+        case '101000000':
+        case '100000100':
+        case '001000001':
+        case '000000101':
+          return 1;
+        case '111000000':
+        case '100100100':
+        case '001001001':
+        case '000000111':
+          return 1;
+          //case '010001000':
+          //case '010100000':
+          //case '000001010':
+          //case '000100010':
+          //return 1;
+          //case '100000000':
+          //case '000000001':
+          //case '001000000':
+          //case '000000100':
+          return 1;
+        default:
+          return 0;
+      }
+    }
+  }]);
+
+  return ExpRule;
+}(_tableau2.default);
+
+exports.default = ExpRule;
 
 });
 

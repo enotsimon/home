@@ -79,7 +79,7 @@ export default class SamplesCollecton extends React.Component {
               description: `its like moon -- planet with craters on surface`,
               sample_url: './luna.html',
               img_path: './thumbnails/luna.jpg',
-              status: 'in_progress',
+              status: 'ready',
             })}
 
           </div>
