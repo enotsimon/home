@@ -24,6 +24,7 @@ let defaults = {
   menues: {
     main_menu: {
       elements: [],
+      current_element: null,
     },
   },
   user_notification: {
@@ -112,23 +113,24 @@ function main_menu(state = defaults.menues.main_menu, action) {
       let prepare_items = links => links.map(e => ({id: e, text: e}));
       let menu = {
         elements: [
-          {id: 'go_to', text: 'go to ...', active: false, items: prepare_items(action.current_scene.links)},
-          {id: 'speak_to', text: 'speak to ...', active: false, items: prepare_items(action.current_scene.mobiles)},
+          {id: 'go_to', text: 'go to ...', items: prepare_items(action.current_scene.links)},
+          {id: 'speak_to', text: 'speak to ...', items: prepare_items(action.current_scene.mobiles)},
         ],
+        current_element: null,
       };
       return menu;
     case actions.MAIN_MENU_CLICK:
       console.log('action', action.type, action, state);
       state_copy = {
         ...state,
-        elements: state.elements.map(e => ({...e, active: action.id == e.id})),
+        current_element: action.id
       }
       return state_copy;
     case actions.MAIN_MENU_SUBELEMENT_CLICK:
       console.log('action', action.type, action, state);
       state_copy = {
         ...state,
-        elements: state.elements.map(e => ({...e, active: false})),
+        current_element: null
       }
       return state_copy;
     default:
