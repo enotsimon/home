@@ -43,7 +43,7 @@ MainMenu.propTypes = {
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
       active: PropTypes.bool.isRequired,
-      items: PropTypes.array.isRequired, // array of what?
+      items: PropTypes.array.isRequired, // structure checked in main_menu_subelement
     }).isRequired
   ).isRequired,
   on_element_click: PropTypes.func.isRequired,
