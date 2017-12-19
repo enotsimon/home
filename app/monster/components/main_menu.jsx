@@ -28,7 +28,7 @@ class MainMenu extends React.Component {
           </div>
           <div className="col-md-6">
             {subelements.map((e, i) => {
-              return <MainMenuSublement key={i} on_click={() => this.props.on_subelement_click(e)} {...e} />
+              return <MainMenuSublement key={i} on_click={() => this.props.on_subelement_click(e.id)} {...e} />
             })}
           </div>
         </div>
