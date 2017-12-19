@@ -22,33 +22,14 @@ class Game {
     
     this.store = createStore(root_reducer);
 
-    this.change_scene('mage_room');
-  }
-
-
-  change_scene(scene_name) {
-    let target_scene = game.config.scenes[scene_name];
-    let current_scene = game.config.scenes[this.store.getState().current_scene_name];
-    if (!target_scene) {
-      this.store.dispatch(actions.error_change_scene_unknown_scene(scene_name));
-      return false;
-    }
-    // current_scene can be null -- on game init
-    if (current_scene && current_scene.links.indexOf(target_scene.name) == -1) {
-      this.store.dispatch(actions.error_change_scene_not_linked_scene(scene_name));
-      return false;
-    }
-
-    this.store.dispatch(actions.change_scene(scene_name));
-    // it has changed! dont forget it!
-    current_scene = game.config.scenes[this.store.getState().current_scene_name];
-    this.store.dispatch(actions.rebuild_main_menu(current_scene));
+    actions.bound_change_scene('mage_room');
   }
 }
 
 const game = new Game();
-game.init_game();
 export default game;
+// do it after export!!!
+game.init_game();
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
