@@ -98,3 +98,15 @@ export function main_menu_click(id) {
 export function main_menu_subelement_click(id) {
   return {type: MAIN_MENU_SUBELEMENT_CLICK, id};
 }
+
+/////////////////////////////////
+// UI bound action creators
+/////////////////////////////////
+export function bound_main_menu_action(id_subelement) {
+  let state = game.store.getState();
+  if (state.menues.main_menu.current_element == 'go_to') {
+    bound_change_scene(id_subelement);
+  }
+  game.store.dispatch(main_menu_subelement_click(id_subelement));
+}
+
