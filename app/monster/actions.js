@@ -103,10 +103,10 @@ export function main_menu_subelement_click(id) {
 // UI bound action creators
 /////////////////////////////////
 export function bound_main_menu_action(id_subelement) {
-  let state = game.store.getState();
-  if (state.menues.main_menu.current_element == 'go_to') {
+  let current_element = game.store.getState().menues.main_menu.current_element;
+  game.store.dispatch(main_menu_subelement_click(id_subelement));
+  if (current_element == 'go_to') {
     bound_change_scene(id_subelement);
   }
-  game.store.dispatch(main_menu_subelement_click(id_subelement));
 }
 
