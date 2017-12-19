@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import MainMenu from './main_menu';
-import {main_menu_click, main_menu_subelement_click, bound_change_scene} from 'monster/actions';
+import {main_menu_click, bound_main_menu_action} from 'monster/actions';
 import game from 'monster/monster';
 
 
@@ -16,12 +16,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(main_menu_click(id));
     },
     on_subelement_click: id => {
-      // very bad place for that, just a test code
-      let state = game.store.getState(); // shit!
-      if (state.menues.main_menu.current_element == 'go_to') {
-        bound_change_scene(id);
-      }
-      dispatch(main_menu_subelement_click(id));
+      bound_main_menu_action(id);
     },
   };
 }

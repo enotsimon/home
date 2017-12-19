@@ -126,6 +126,7 @@ function main_menu(state = defaults.menues.main_menu, action) {
         current_element: action.id
       }
       return state_copy;
+    // really nothing interesting, just unset current_element
     case actions.MAIN_MENU_SUBELEMENT_CLICK:
       console.log('action', action.type, action, state);
       state_copy = {
