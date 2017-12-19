@@ -110,11 +110,11 @@ function main_menu(state = defaults.menues.main_menu, action) {
   switch (action.type) {
     case actions.REBUILD_MAIN_MENU:
       console.log('action', action.type, action, state);
-      let prepare_items = links => links.map(e => ({id: e, text: e}));
+      let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
       let menu = {
         elements: [
-          {id: 'go_to', text: 'go to ...', items: prepare_items(action.current_scene.links)},
-          {id: 'speak_to', text: 'speak to ...', items: prepare_items(action.current_scene.mobiles)},
+          {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
+          {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
         ],
         current_element: null,
       };
