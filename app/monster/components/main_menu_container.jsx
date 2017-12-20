@@ -5,16 +5,21 @@ import game from 'monster/monster';
 
 
 const mapStateToProps = state => {
+  let main_menu = state.menues.main_menu;
+  let current_element_obj = main_menu.elements.find(e => e.id == main_menu.current_element);
   return {
-    elements: state.menues.main_menu.elements.map(e => ({
+    elements: main_menu.elements.map(e => ({
       id: e.id,
       text: get_main_menu_control(e.id),
-      active: e.id == state.menues.main_menu.current_element,
-      items: e.items.map(item => ({
+      active: e.id == main_menu.current_element,
+      enabled: e.items.length > 0,
+    })),
+    subelements: current_element_obj
+      ? current_element_obj.items.map(item => ({
         id: item.id,
         text: get_item_text(item.type, item.id),
-      })),
-    })),
+      }))
+      : [],
   };
 }
 

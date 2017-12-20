@@ -11,7 +11,13 @@ class MainMenuElement extends React.Component {
 
   render() {
     return (
-      <button id={this.props.id} type="button" className={this.btn_class()} onClick={this.props.on_click}>
+      <button
+        id={this.props.id}
+        type="button"
+        className={this.btn_class()}
+        onClick={this.props.on_click}
+        disabled={this.props.enabled ? '' : 'disabled'}
+      >
         <TextEntry>
           {this.props.text}
         </TextEntry>
