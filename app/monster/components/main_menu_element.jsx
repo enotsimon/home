@@ -1,6 +1,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import TextEntry from './text_entry';
 
 class MainMenuElement extends React.Component {
   btn_class() {
@@ -11,7 +12,9 @@ class MainMenuElement extends React.Component {
   render() {
     return (
       <button id={this.props.id} type="button" className={this.btn_class()} onClick={this.props.on_click}>
-        {this.props.text}
+        <TextEntry>
+          {this.props.text}
+        </TextEntry>
       </button>
     );
   }
