@@ -28,7 +28,7 @@ class Scene extends React.Component {
 Scene.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  description: PropTypes.any.isRequired,
 };
 
 export default Scene;
