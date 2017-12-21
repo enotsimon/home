@@ -66,21 +66,21 @@ export function change_global_flag(flag) {
 /////////////////////////////////
 export function bound_change_scene(scene_name) {
   let target_scene = game.config.scenes[scene_name];
-    let current_scene = game.config.scenes[game.store.getState().current_scene_name];
-    if (!target_scene) {
-      game.store.dispatch(error_change_scene_unknown_scene(scene_name));
-      return false;
-    }
-    // current_scene can be null -- on game init
-    if (current_scene && current_scene.links.indexOf(target_scene.name) == -1) {
-      game.store.dispatch(error_change_scene_not_linked_scene(scene_name));
-      return false;
-    }
+  let current_scene = game.config.scenes[game.store.getState().current_scene_name];
+  if (!target_scene) {
+    game.store.dispatch(error_change_scene_unknown_scene(scene_name));
+    return false;
+  }
+  // current_scene can be null -- on game init
+  if (current_scene && current_scene.links.indexOf(target_scene.name) == -1) {
+    game.store.dispatch(error_change_scene_not_linked_scene(scene_name));
+    return false;
+  }
 
-    game.store.dispatch(change_scene(scene_name));
-    // it has changed! dont forget it!
-    current_scene = game.config.scenes[game.store.getState().current_scene_name];
-    game.store.dispatch(rebuild_main_menu(current_scene));
+  game.store.dispatch(change_scene(scene_name));
+  // it has changed! dont forget it!
+  current_scene = game.config.scenes[game.store.getState().current_scene_name];
+  game.store.dispatch(rebuild_main_menu(current_scene));
 }
 
 
