@@ -41,7 +41,6 @@ const text = {
   scenes: {
     mage_room: {
       name: "комната мага",
-      // заменить
       description: [
         "рабочий кабинет {мага|mobiles|mage}. за огромным {столом|furniture|table} сидит сам хозяин -- огромный, лохматый и очень суровый.",
         "ратни редко видела что бы он вставал из-за стола, и еще реже что бы он покидал свою комнату.",
@@ -64,7 +63,23 @@ const text = {
         'здесь есть {колодец|furniture|mage_home_cellar_well} и оборудована {кухня|furniture|mage_home_cellar_kitchen}. вся она завалена {бутылками|furniture|mage_home_cellar_bottles} из-под {масла колючки|info|thorny_oil} здесь ратни жила все последние годы, здесь стоит ее {тесная кроватка|furniture|rathni_bed} и {сундук|furniture|rathni_chest} с ее немногочисленными пожитками',
         'единственный выход отсюда -- наверх по лестнице в {холл|scenes|mage_home_hall}',
       ],
-    }
+    },
+
+    mage_home_vallo_room: {
+      name: 'дом мага. комната валло',
+      description: [
+        'комната валло вся завалена {книжками|furniture|mage_home_vallo_room_books}, они лежат прямо на полу. вместо кровати в углу навалена огромная {куча тряпья|furniture|mage_home_vallo_room_nest}, видимо что-то вроде птичьего гнезда (валло ведь птица)',
+        'винтовая лестница ведет наверх, на {чердак|scenes|mage_home_loft} и вниз, в {комнату мага|scenes|mage_room}',
+      ],
+    },
+
+    mage_home_loft: {
+      name: 'дом мага. комната с порталом',
+      description: [
+        'комната выглядит заброшенной. здесь темно и сыро. вся комната освещается одним лишь кристаллом вставленным в раму {портала|furniture|mage_home_loft_portal}, расположенного на полу посередине комнаты. вдоль стен в ряд стоят {большой шкаф с книгами|furniture|mage_home_loft_book_shelf}, далее {стеллаж с разными бутылками|furniture|mage_home_loft_bottles_rack} и рядом {большая плетеная карзина|furniture|mage_home_loft_big_basket}, кроме того в дальнем совсем темном углу навалена {куча разного хлама|furniture|mage_home_loft_trash_pile}',
+        'винтовая лестница ведет вниз, в {комнату валло|scenes|mage_home_vallo_room}',
+      ],
+    },
   },
 
 
