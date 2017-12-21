@@ -142,6 +142,7 @@ function main_menu(state = defaults.menues.main_menu, action) {
 function user_notification(state = defaults.user_notification, action) {
   switch (action.type) {
     case actions.SHOW_NOTIFICATION:
+      console.log('action', action.type, action, state);
       return {level: action.level, message: action.message, additional: action.additional};
     default:
       return state;
@@ -155,6 +156,7 @@ const root_reducer = combineReducers({
   current_scene_name,
   money,
   clothes,
+  user_notification,
 });
 
 export default root_reducer;
