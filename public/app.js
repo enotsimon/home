@@ -148,6 +148,323 @@ var __makeRelativeRequire = function(require, mappings, pref) {
     return require(name);
   }
 };
+require.register("chaos/agent.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Agent = function () {
+  function Agent(x, y) {
+    _classCallCheck(this, Agent);
+
+    this.x = x;
+    this.y = y;
+    this.stat = {};
+  }
+
+  _createClass(Agent, [{
+    key: "add_symbol_class",
+    value: function add_symbol_class(prop, symbols) {
+      var _this = this;
+
+      var init_advance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+
+      this[prop] = [];
+      this.stat[prop] = { counters: {}, valuables: [], exchange_flag: false };
+      symbols.forEach(function (symbol) {
+        return _this.push_symbol(prop, symbol);
+      });
+      this.calc_valuables(prop);
+      while (init_advance-- > 0) {
+        this.advance_array(this[prop]);
+      }
+    }
+  }, {
+    key: "advance_symbol_classes",
+    value: function advance_symbol_classes() {
+      var _this2 = this;
+
+      this.for_all_symbol_classes(function (symbols, prop) {
+        return _this2.advance_array(symbols);
+      });
+    }
+  }, {
+    key: "are_you_gonna_exchange",
+    value: function are_you_gonna_exchange(prop) {
+      return !this.is_valuable_symbol(this.get_current_symbol(prop), prop);
+    }
+  }, {
+    key: "is_valuable_symbol",
+    value: function is_valuable_symbol(symbol, prop) {
+      return this.stat[prop].valuables.indexOf(symbol) !== -1;
+    }
+  }, {
+    key: "get_current_symbol",
+    value: function get_current_symbol(prop) {
+      return _util2.default.last(this[prop]);
+    }
+
+    //
+    // private
+    //
+
+  }, {
+    key: "for_all_symbol_classes",
+    value: function for_all_symbol_classes(func) {
+      // nasty hack
+      for (var key in this) {
+        if (this[key] instanceof Array) {
+          func(this[key], key);
+        }
+      }
+    }
+  }, {
+    key: "advance_array",
+    value: function advance_array(symbol_class) {
+      var first = symbol_class.shift();
+      symbol_class.push(first);
+    }
+  }, {
+    key: "do_something_with_symbol",
+    value: function do_something_with_symbol(prop, symbol, fun) {
+      if (!this[prop] instanceof Array) {
+        throw { msg: "bad symbol class", prop: prop };
+      }
+      // omg!
+      var length_was = this[prop].length;
+      var ret = this[prop][fun](symbol);
+      var diff = this[prop].length - length_was;
+      this.stat[prop].counters[symbol] = this.stat[prop].counters[symbol] + diff || 1;
+      if (this.stat[prop].counters[symbol] < 0) {
+        throw { msg: "something wrong with stat", prop: prop, stat: this.stat[prop] };
+      }
+      return ret;
+    }
+  }, {
+    key: "push_symbol",
+    value: function push_symbol(prop, symbol) {
+      this.do_something_with_symbol(prop, symbol, 'push');
+    }
+  }, {
+    key: "pop_symbol",
+    value: function pop_symbol(prop, symbol) {
+      this.do_something_with_symbol(prop, symbol, 'pop');
+    }
+  }, {
+    key: "calc_valuables",
+    value: function calc_valuables(prop) {
+      var stat = this.stat[prop].counters;
+      var max_count = 0;
+      // first try to value all symbols that has best stat and all that 1 point worse
+      var valuables = Object.keys(stat).filter(function (symbol) {
+        return stat[symbol] > Math.max(max_count - 1, 1);
+      });
+      // then throw away all that 1 point worse
+      if (valuables.length == stat.length) {
+        console.log('valuables flush 1');
+        valuables = Object.keys(stat).filter(function (symbol) {
+          return stat[symbol] > Math.max(max_count, 1);
+        });
+      }
+      // then throw away all
+      if (valuables.length == stat.length) {
+        console.log('valuables flush 2');
+        valuables = [];
+      }
+      this.stat[prop].valuables = valuables;
+    }
+  }]);
+
+  return Agent;
+}();
+
+exports.default = Agent;
+
+});
+
+require.register("chaos/chaos.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _util = require('common/util');
+
+var _util2 = _interopRequireDefault(_util);
+
+var _agent = require('chaos/agent');
+
+var _agent2 = _interopRequireDefault(_agent);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Chaos = function () {
+  function Chaos() {
+    _classCallCheck(this, Chaos);
+
+    // constants
+    this.x_size = 20;
+    this.y_size = 20;
+    //this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
+    this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
+    this.symbol_min_weight = 8;
+    this.symbol_max_weight = 16;
+    this.symbol_classes_min_length = 15;
+    this.symbol_classes_max_length = 20;
+    this.symbol_classes_count = 2;
+
+    this.init();
+  }
+
+  _createClass(Chaos, [{
+    key: 'init',
+    value: function init() {
+      var _this = this;
+
+      var symbols_arr = [];
+      this.symbols.forEach(function (symbol) {
+        var symbol_weight = _util2.default.rand(_this.symbol_min_weight, _this.symbol_max_weight);
+        symbols_arr = symbols_arr.concat(new Array(symbol_weight).fill(symbol));
+      });
+
+      this.symbol_classes = Array.from(Array(this.symbol_classes_count), function (e) {
+        var length = _util2.default.rand(_this.symbol_classes_min_length, _this.symbol_classes_max_length);
+        // should symbol classes contain only uniq elements or not?
+        return Array.from(Array(length), function (ee) {
+          return _util2.default.rand_element(_this.symbols);
+        });
+      });
+
+      this.data = Array.from(Array(this.y_size).keys(), function (y) {
+        return Array.from(Array(_this.x_size).keys(), function (x) {
+          return _this.init_agent(x, y);
+        });
+      });
+      this.tick = 0;
+    }
+  }, {
+    key: 'run',
+    value: function run(count) {
+      if (count < 0) {
+        return;
+      }
+      this.tick++;
+      console.log('this.tick', this.tick);
+      this.advance_symbol_classes();
+      this.exchange_symbols();
+      //this.run(count--);
+    }
+
+    //
+    // private
+    //
+
+  }, {
+    key: 'init_agent',
+    value: function init_agent(x, y) {
+      var agent = new _agent2.default(x, y);
+      this.symbol_classes.forEach(function (symbol_class, i) {
+        agent.add_symbol_class('sc' + i, symbol_class, _util2.default.rand(0, symbol_class.length));
+      });
+      return agent;
+    }
+  }, {
+    key: 'for_all_agents',
+    value: function for_all_agents(func) {
+      this.data.forEach(function (line) {
+        line.forEach(function (agent) {
+          func(agent);
+        });
+      });
+    }
+  }, {
+    key: 'advance_symbol_classes',
+    value: function advance_symbol_classes() {
+      this.for_all_agents(function (agent) {
+        return agent.advance_symbol_classes();
+      });
+    }
+  }, {
+    key: 'get_neighbors',
+    value: function get_neighbors(agent) {
+      var _this2 = this;
+
+      // von neimann
+      var base = [[agent.x - 1, agent.y], [agent.x + 1, agent.y], [agent.x, agent.y - 1], [agent.x, agent.y + 1]];
+      var ret = [];
+      base.forEach(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2),
+            x = _ref2[0],
+            y = _ref2[1];
+
+        if (_this2.data[y] && _this2.data[y][x]) {
+          ret.push(_this2.data[y][x]);
+        }
+      });
+      return ret;
+    }
+
+    //
+    // hellish omg part
+    //
+
+  }, {
+    key: 'exchange_symbols',
+    value: function exchange_symbols() {
+      var _this3 = this;
+
+      this.for_all_agents(function (agent) {
+        agent.for_all_symbol_classes(function (symbols, prop) {
+          var neighbors = _this3.get_neighbors(agent);
+          var valuable_neighbors = neighbors.filter(function (a) {
+            return agent.is_valuable_symbol(a.get_current_symbol(prop), prop);
+          });
+          if (valuable_neighbors.length) {
+            console.log('valuable_neighbors OK', valuable_neighbors.length);
+          }
+          var ready_neighbors = valuable_neighbors.filter(function (a) {
+            return a.are_you_gonna_exchange(prop);
+          });
+          if (ready_neighbors.length) {
+            console.log('ready_neighbors OK', prop, agent.x, agent.y);
+          } else {
+            console.log('ready_neighbors EMPTY', prop, agent.x, agent.y);
+          }
+        });
+      });
+    }
+  }]);
+
+  return Chaos;
+}();
+
+exports.default = Chaos;
+
+
+var chaos = new Chaos();
+chaos.run(20);
+
+});
+
 require.register("common/a_star.js", function(exports, require, module) {
 'use strict';
 
@@ -2432,6 +2749,96 @@ var PlanetExp = function (_Planet) {
 }(_planet2.default);
 
 exports.default = PlanetExp;
+
+});
+
+require.register("experimental/planet_exp_2.js", function(exports, require, module) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _util = require("common/util");
+
+var _util2 = _interopRequireDefault(_util);
+
+var _color = require("common/color");
+
+var _color2 = _interopRequireDefault(_color);
+
+var _basic_drawer = require("experimental/basic_drawer");
+
+var _basic_drawer2 = _interopRequireDefault(_basic_drawer);
+
+var _pixi = require("pixi.js");
+
+var PIXI = _interopRequireWildcard(_pixi);
+
+var _planet = require("./planet");
+
+var _planet2 = _interopRequireDefault(_planet);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PlanetExp2 = function (_Planet) {
+  _inherits(PlanetExp2, _Planet);
+
+  function PlanetExp2() {
+    _classCallCheck(this, PlanetExp2);
+
+    return _possibleConstructorReturn(this, (PlanetExp2.__proto__ || Object.getPrototypeOf(PlanetExp2)).apply(this, arguments));
+  }
+
+  _createClass(PlanetExp2, [{
+    key: "init_graphics",
+    value: function init_graphics() {
+      _get(PlanetExp2.prototype.__proto__ || Object.getPrototypeOf(PlanetExp2.prototype), "init_graphics", this).call(this);
+      this.map_transparency_alpha = 0;
+    }
+  }, {
+    key: "sphere_map",
+    value: function sphere_map() {
+      var map = [];
+      var step = 2 * Math.PI / 36;
+      var amplitude = _util2.default.rand_float(0.1 * step, 0.5 * step);
+      var count_waves = _util2.default.rand(2, 10);
+      for (var altitude = 1 * step; altitude < 2 * Math.PI / 2 - step; altitude += step) {
+        count_waves = altitude / step | 0;
+        map = map.concat(this.sin_ring(amplitude, altitude, count_waves));
+      }
+      return map;
+    }
+  }, {
+    key: "sin_ring",
+    value: function sin_ring(amplitude, altitude, count_waves) {
+      var map = [];
+      var steps = 1000;
+      for (var t = 0; t < 2 * Math.PI; t += 2 * Math.PI / steps) {
+        var theta = altitude + amplitude * Math.sin(count_waves * t);
+        var phi = t;
+        map.push({ phi: phi, theta: theta });
+      }
+      return map;
+    }
+  }]);
+
+  return PlanetExp2;
+}(_planet2.default);
+
+exports.default = PlanetExp2;
 
 });
 
