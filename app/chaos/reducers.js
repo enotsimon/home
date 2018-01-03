@@ -10,6 +10,8 @@ function phase(state = defaults.phase, action) {
   switch (action.type) {
     case actions.ADVANCE_SYMBOLS_COMPLETE:
       return 'exchange';
+    case actions.EXCHANGE_SYMBOLS_COMPLETE:
+      return 'wait';
     default:
       return state;
   }

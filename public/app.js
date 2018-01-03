@@ -161,11 +161,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.tick = tick;
 exports.advance_symbols_complete = advance_symbols_complete;
+exports.exchange_symbols_complete = exchange_symbols_complete;
 /*
  * action types
  */
 var TICK = exports.TICK = 'tick';
 var ADVANCE_SYMBOLS_COMPLETE = exports.ADVANCE_SYMBOLS_COMPLETE = 'advance_symbols_complete';
+var EXCHANGE_SYMBOLS_COMPLETE = exports.EXCHANGE_SYMBOLS_COMPLETE = 'exchange_symbols_complete';
 
 /*
  * other constants
@@ -180,6 +182,10 @@ function tick() {
 
 function advance_symbols_complete() {
   return { type: ADVANCE_SYMBOLS_COMPLETE };
+}
+
+function exchange_symbols_complete() {
+  return { type: EXCHANGE_SYMBOLS_COMPLETE };
 }
 });
 
@@ -515,6 +521,7 @@ var Chaos = function () {
           }
         });
       });
+      this.store.dispatch(actions.exchange_symbols_complete());
     }
   }]);
 
@@ -740,6 +747,8 @@ function phase() {
   switch (action.type) {
     case actions.ADVANCE_SYMBOLS_COMPLETE:
       return 'exchange';
+    case actions.EXCHANGE_SYMBOLS_COMPLETE:
+      return 'wait';
     default:
       return state;
   }
