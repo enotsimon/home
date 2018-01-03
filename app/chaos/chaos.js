@@ -114,6 +114,7 @@ class Chaos {
         }
       });
     });
+    this.store.dispatch(actions.exchange_symbols_complete());
   }
 }
 
