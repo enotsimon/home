@@ -43,19 +43,18 @@ class Chaos {
         return this.init_agent(x, y);
       });
     });
-    this.tick = 0;
     this.store = createStore(root_reducer);
+    this.tick_delay = 2000;
   }
 
   run(count) {
     if (count < 0) {
       return;
     }
-    this.tick++;
     this.advance_symbol_classes();
     this.exchange_symbols();
-    //this.run(count--);
-    console.log('this.tick', this.tick);
+    this.store.dispatch(actions.tick());
+    setTimeout(() => this.run(--count), this.tick_delay);
   }
 
   //
@@ -81,6 +80,7 @@ class Chaos {
 
   advance_symbol_classes() {
     this.for_all_agents(agent => agent.advance_symbol_classes());
+    this.store.dispatch(actions.advance_symbols_complete());
   }
 
   get_neighbors(agent) {
@@ -120,7 +120,7 @@ class Chaos {
 
 const chaos = new Chaos();
 export default chaos;
-chaos.run(3);
+chaos.run(5);
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(

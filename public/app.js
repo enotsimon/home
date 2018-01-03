@@ -159,10 +159,12 @@ require.register("chaos/actions.js", function(exports, require, module) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.tick = tick;
 exports.advance_symbols_complete = advance_symbols_complete;
 /*
  * action types
  */
+var TICK = exports.TICK = 'tick';
 var ADVANCE_SYMBOLS_COMPLETE = exports.ADVANCE_SYMBOLS_COMPLETE = 'advance_symbols_complete';
 
 /*
@@ -172,6 +174,10 @@ var ADVANCE_SYMBOLS_COMPLETE = exports.ADVANCE_SYMBOLS_COMPLETE = 'advance_symbo
 /*
  * action creators
  */
+function tick() {
+  return { type: TICK };
+}
+
 function advance_symbols_complete() {
   return { type: ADVANCE_SYMBOLS_COMPLETE };
 }
@@ -412,20 +418,23 @@ var Chaos = function () {
           return _this.init_agent(x, y);
         });
       });
-      this.tick = 0;
       this.store = (0, _redux.createStore)(_reducers2.default);
+      this.tick_delay = 2000;
     }
   }, {
     key: 'run',
     value: function run(count) {
+      var _this2 = this;
+
       if (count < 0) {
         return;
       }
-      this.tick++;
       this.advance_symbol_classes();
       this.exchange_symbols();
-      //this.run(count--);
-      console.log('this.tick', this.tick);
+      this.store.dispatch(actions.tick());
+      setTimeout(function () {
+        return _this2.run(--count);
+      }, this.tick_delay);
     }
 
     //
@@ -456,11 +465,12 @@ var Chaos = function () {
       this.for_all_agents(function (agent) {
         return agent.advance_symbol_classes();
       });
+      this.store.dispatch(actions.advance_symbols_complete());
     }
   }, {
     key: 'get_neighbors',
     value: function get_neighbors(agent) {
-      var _this2 = this;
+      var _this3 = this;
 
       // von neimann
       var base = [[agent.x - 1, agent.y], [agent.x + 1, agent.y], [agent.x, agent.y - 1], [agent.x, agent.y + 1]];
@@ -470,8 +480,8 @@ var Chaos = function () {
             x = _ref2[0],
             y = _ref2[1];
 
-        if (_this2.data[y] && _this2.data[y][x]) {
-          ret.push(_this2.data[y][x]);
+        if (_this3.data[y] && _this3.data[y][x]) {
+          ret.push(_this3.data[y][x]);
         }
       });
       return ret;
@@ -484,11 +494,11 @@ var Chaos = function () {
   }, {
     key: 'exchange_symbols',
     value: function exchange_symbols() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.for_all_agents(function (agent) {
         agent.for_all_symbol_classes(function (symbols, prop) {
-          var neighbors = _this3.get_neighbors(agent);
+          var neighbors = _this4.get_neighbors(agent);
           var valuable_neighbors = neighbors.filter(function (a) {
             return agent.is_valuable_symbol(a.get_current_symbol(prop), prop);
           });
@@ -514,7 +524,7 @@ var Chaos = function () {
 var chaos = new Chaos();
 exports.default = chaos;
 
-chaos.run(3);
+chaos.run(5);
 
 document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(
@@ -719,7 +729,8 @@ var actions = _interopRequireWildcard(_actions);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 var defaults = {
-  phase: null
+  phase: null,
+  tick: 0
 };
 
 function phase() {
@@ -734,8 +745,21 @@ function phase() {
   }
 }
 
+function tick() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaults.tick;
+  var action = arguments[1];
+
+  switch (action.type) {
+    case actions.TICK:
+      return state + 1;
+    default:
+      return state;
+  }
+}
+
 var root_reducer = (0, _redux.combineReducers)({
-  phase: phase
+  phase: phase,
+  tick: tick
 });
 
 exports.default = root_reducer;
