@@ -115,7 +115,12 @@
 })();
 
 (function() {
-var global = typeof window === 'undefined' ? this : window;
+var global = typeof window === 'undefined' ? this : window;require.register("child_process", function(exports, require, module) {
+  module.exports = {};
+});
+require.register("fs", function(exports, require, module) {
+  module.exports = {};
+});
 var process;
 var __makeRelativeRequire = function(require, mappings, pref) {
   var none = {};
@@ -148,7 +153,31 @@ var __makeRelativeRequire = function(require, mappings, pref) {
     return require(name);
   }
 };
-require.register("chaos/agent.js", function(exports, require, module) {
+require.register("chaos/actions.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.advance_symbols_complete = advance_symbols_complete;
+/*
+ * action types
+ */
+var ADVANCE_SYMBOLS_COMPLETE = exports.ADVANCE_SYMBOLS_COMPLETE = 'advance_symbols_complete';
+
+/*
+ * other constants
+ */
+
+/*
+ * action creators
+ */
+function advance_symbols_complete() {
+  return { type: ADVANCE_SYMBOLS_COMPLETE };
+}
+});
+
+;require.register("chaos/agent.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -291,10 +320,9 @@ var Agent = function () {
 }();
 
 exports.default = Agent;
-
 });
 
-require.register("chaos/chaos.js", function(exports, require, module) {
+;require.register("chaos/chaos.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -305,6 +333,18 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _redux = require('redux');
+
+var _reactRedux = require('react-redux');
+
 var _util = require('common/util');
 
 var _util2 = _interopRequireDefault(_util);
@@ -312,6 +352,20 @@ var _util2 = _interopRequireDefault(_util);
 var _agent = require('chaos/agent');
 
 var _agent2 = _interopRequireDefault(_agent);
+
+var _app = require('./components/app');
+
+var _app2 = _interopRequireDefault(_app);
+
+var _reducers = require('./reducers');
+
+var _reducers2 = _interopRequireDefault(_reducers);
+
+var _actions = require('./actions');
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -324,7 +378,6 @@ var Chaos = function () {
     // constants
     this.x_size = 20;
     this.y_size = 20;
-    //this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
     this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
     this.symbol_min_weight = 8;
     this.symbol_max_weight = 16;
@@ -360,6 +413,7 @@ var Chaos = function () {
         });
       });
       this.tick = 0;
+      this.store = (0, _redux.createStore)(_reducers2.default);
     }
   }, {
     key: 'run',
@@ -368,10 +422,10 @@ var Chaos = function () {
         return;
       }
       this.tick++;
-      console.log('this.tick', this.tick);
       this.advance_symbol_classes();
       this.exchange_symbols();
       //this.run(count--);
+      console.log('this.tick', this.tick);
     }
 
     //
@@ -457,12 +511,234 @@ var Chaos = function () {
   return Chaos;
 }();
 
-exports.default = Chaos;
-
-
 var chaos = new Chaos();
-chaos.run(20);
+exports.default = chaos;
 
+chaos.run(3);
+
+document.addEventListener('DOMContentLoaded', function () {
+  _reactDom2.default.render(_react2.default.createElement(
+    _reactRedux.Provider,
+    { store: chaos.store },
+    _react2.default.createElement(_app2.default, null)
+  ), document.querySelector('#app'));
+});
+});
+
+require.register("chaos/components/app.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _grid_container = require('./grid_container');
+
+var _grid_container2 = _interopRequireDefault(_grid_container);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var App = function (_React$Component) {
+  _inherits(App, _React$Component);
+
+  function App() {
+    _classCallCheck(this, App);
+
+    return _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).apply(this, arguments));
+  }
+
+  _createClass(App, [{
+    key: 'render',
+    value: function render() {
+      return _react2.default.createElement(
+        'div',
+        { className: 'panel-group' },
+        _react2.default.createElement(
+          'div',
+          { className: 'panel panel-success' },
+          _react2.default.createElement(
+            'div',
+            { className: 'panel-body' },
+            _react2.default.createElement(
+              'div',
+              { className: '', id: 'view_container' },
+              _react2.default.createElement(_grid_container2.default, null)
+            )
+          )
+        )
+      );
+    }
+  }]);
+
+  return App;
+}(_react2.default.Component);
+
+exports.default = App;
+});
+
+;require.register("chaos/components/grid.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Grid = function (_React$Component) {
+  _inherits(Grid, _React$Component);
+
+  function Grid() {
+    _classCallCheck(this, Grid);
+
+    return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).apply(this, arguments));
+  }
+
+  _createClass(Grid, [{
+    key: 'render',
+    value: function render() {
+      var size = '30px';
+
+      return _react2.default.createElement(
+        'table',
+        null,
+        _react2.default.createElement(
+          'tbody',
+          null,
+          this.props.data.map(function (line, i) {
+            return _react2.default.createElement(
+              'tr',
+              { key: 'y' + i },
+              line.map(function (element, j) {
+                return _react2.default.createElement(
+                  'td',
+                  { key: 'x' + j, style: { borderCollapse: 'collapse', border: '1px solid black', width: size, height: size, textAlign: 'center' } },
+                  _react2.default.createElement(
+                    'span',
+                    { style: { fontSize: '20px' } },
+                    element.symbol
+                  )
+                );
+              })
+            );
+          })
+        )
+      );
+    }
+  }]);
+
+  return Grid;
+}(_react2.default.Component);
+
+exports.default = Grid;
+});
+
+;require.register("chaos/components/grid_container.jsx", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _reactRedux = require('react-redux');
+
+var _grid = require('./grid');
+
+var _grid2 = _interopRequireDefault(_grid);
+
+var _actions = require('chaos/actions');
+
+var _chaos = require('chaos/chaos');
+
+var _chaos2 = _interopRequireDefault(_chaos);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mapStateToProps = function mapStateToProps(state) {
+  console.log('mapStateToProps.', state);
+  return {
+    data: _chaos2.default.data.map(function (line) {
+      return line.map(function (agent) {
+        return { symbol: agent.get_current_symbol('sc1') }; // TEMP! sc1
+      });
+    })
+  };
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return {
+    on_element_click: function on_element_click(id) {
+      console.log('dont believe it works!!! click on', id);
+      //dispatch(main_menu_click(id));
+    }
+  };
+};
+
+var GridContainer = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_grid2.default);
+
+exports.default = GridContainer;
+});
+
+require.register("chaos/reducers.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _redux = require('redux');
+
+var _actions = require('./actions');
+
+var actions = _interopRequireWildcard(_actions);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var defaults = {
+  phase: null
+};
+
+function phase() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaults.phase;
+  var action = arguments[1];
+
+  switch (action.type) {
+    case actions.ADVANCE_SYMBOLS_COMPLETE:
+      return 'exchange';
+    default:
+      return state;
+  }
+}
+
+var root_reducer = (0, _redux.combineReducers)({
+  phase: phase
+});
+
+exports.default = root_reducer;
 });
 
 require.register("common/a_star.js", function(exports, require, module) {
@@ -613,10 +889,9 @@ var AStar = function () {
 }();
 
 exports.default = AStar;
-
 });
 
-require.register("common/color.js", function(exports, require, module) {
+;require.register("common/color.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -744,10 +1019,9 @@ var Color = function () {
 }();
 
 exports.default = Color;
-
 });
 
-require.register("common/components/active_checkbox.jsx", function(exports, require, module) {
+;require.register("common/components/active_checkbox.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -808,10 +1082,9 @@ var ActiveCheckbox = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = ActiveCheckbox;
-
 });
 
-require.register("common/components/collapsible_panel.jsx", function(exports, require, module) {
+;require.register("common/components/collapsible_panel.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -884,10 +1157,9 @@ var CollapsiblePanel = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = CollapsiblePanel;
-
 });
 
-require.register("common/components/input_spinner.jsx", function(exports, require, module) {
+;require.register("common/components/input_spinner.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -984,10 +1256,9 @@ var InputSpinner = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = InputSpinner;
-
 });
 
-require.register("common/util.js", function(exports, require, module) {
+;require.register("common/util.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1227,10 +1498,9 @@ var Util = function () {
 }();
 
 exports.default = Util;
-
 });
 
-require.register("common/voronoi_diagram.js", function(exports, require, module) {
+;require.register("common/voronoi_diagram.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1424,10 +1694,9 @@ var VoronoiDiagram = function () {
 }();
 
 exports.default = VoronoiDiagram;
-
 });
 
-require.register("experimental/basic_drawer.js", function(exports, require, module) {
+;require.register("experimental/basic_drawer.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1581,10 +1850,9 @@ var BasicDrawer = function () {
 }();
 
 exports.default = BasicDrawer;
-
 });
 
-require.register("experimental/components/app.jsx", function(exports, require, module) {
+;require.register("experimental/components/app.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1715,10 +1983,9 @@ var App = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = App;
-
 });
 
-require.register("experimental/components/debug_info.jsx", function(exports, require, module) {
+;require.register("experimental/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1794,10 +2061,9 @@ var DebugInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DebugInfo;
-
 });
 
-require.register("experimental/components/sample_preview.jsx", function(exports, require, module) {
+;require.register("experimental/components/sample_preview.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1890,10 +2156,9 @@ var SamplePreview = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = SamplePreview;
-
 });
 
-require.register("experimental/components/samples_collection.jsx", function(exports, require, module) {
+;require.register("experimental/components/samples_collection.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2014,10 +2279,9 @@ var SamplesCollecton = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = SamplesCollecton;
-
 });
 
-require.register("experimental/exp_rule.js", function(exports, require, module) {
+;require.register("experimental/exp_rule.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2144,10 +2408,9 @@ var ExpRule = function (_Tableau) {
 }(_tableau2.default);
 
 exports.default = ExpRule;
-
 });
 
-require.register("experimental/luna.js", function(exports, require, module) {
+;require.register("experimental/luna.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2264,10 +2527,9 @@ var Luna = function (_Planet) {
 }(_planet2.default);
 
 exports.default = Luna;
-
 });
 
-require.register("experimental/moving_arrows.js", function(exports, require, module) {
+;require.register("experimental/moving_arrows.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2406,10 +2668,9 @@ var MovingArrows = function (_BasicDrawer) {
 }(_basic_drawer2.default);
 
 exports.default = MovingArrows;
-
 });
 
-require.register("experimental/orbits.js", function(exports, require, module) {
+;require.register("experimental/orbits.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2522,10 +2783,9 @@ var Orbits = function (_BasicDrawer) {
 }(_basic_drawer2.default);
 
 exports.default = Orbits;
-
 });
 
-require.register("experimental/planet.js", function(exports, require, module) {
+;require.register("experimental/planet.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2666,10 +2926,9 @@ var Planet = function (_BasicDrawer) {
 }(_basic_drawer2.default);
 
 exports.default = Planet;
-
 });
 
-require.register("experimental/planet_exp.js", function(exports, require, module) {
+;require.register("experimental/planet_exp.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2749,10 +3008,9 @@ var PlanetExp = function (_Planet) {
 }(_planet2.default);
 
 exports.default = PlanetExp;
-
 });
 
-require.register("experimental/planet_exp_2.js", function(exports, require, module) {
+;require.register("experimental/planet_exp_2.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2839,10 +3097,9 @@ var PlanetExp2 = function (_Planet) {
 }(_planet2.default);
 
 exports.default = PlanetExp2;
-
 });
 
-require.register("experimental/planets_focus.js", function(exports, require, module) {
+;require.register("experimental/planets_focus.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3019,10 +3276,9 @@ var StellarBody = function StellarBody(name, parent, orbital_radius, radius, orb
   this.orbital_angle = orbital_angle ? orbital_angle : 2 * Math.PI * Math.random();
   this.angle = angle ? angle : 2 * Math.PI * Math.random();
 };
-
 });
 
-require.register("experimental/rule_30.js", function(exports, require, module) {
+;require.register("experimental/rule_30.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3134,10 +3390,9 @@ var Rule30 = function (_Tableau) {
 }(_tableau2.default);
 
 exports.default = Rule30;
-
 });
 
-require.register("experimental/samples_collection_init.js", function(exports, require, module) {
+;require.register("experimental/samples_collection_init.js", function(exports, require, module) {
 'use strict';
 
 var _reactDom = require('react-dom');
@@ -3157,7 +3412,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_samples_collection2.default, null), document.querySelector('#main'));
 });
-
 });
 
 require.register("experimental/tableau.js", function(exports, require, module) {
@@ -3304,10 +3558,9 @@ var Tableau = function (_BasicDrawer) {
 }(_basic_drawer2.default);
 
 exports.default = Tableau;
-
 });
 
-require.register("experimental/tableau_smooth.js", function(exports, require, module) {
+;require.register("experimental/tableau_smooth.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3379,10 +3632,9 @@ var TableauSmooth = function (_Tableau) {
 }(_tableau2.default);
 
 exports.default = TableauSmooth;
-
 });
 
-require.register("experimental/texture_generators/blur_generator.js", function(exports, require, module) {
+;require.register("experimental/texture_generators/blur_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3481,10 +3733,9 @@ var BlurGenerator = function () {
 }();
 
 exports.default = BlurGenerator;
-
 });
 
-require.register("experimental/texture_generators/density_map.js", function(exports, require, module) {
+;require.register("experimental/texture_generators/density_map.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3662,10 +3913,9 @@ var DensityMap = function () {
 }();
 
 exports.default = DensityMap;
-
 });
 
-require.register("experimental/texture_generators/links.js", function(exports, require, module) {
+;require.register("experimental/texture_generators/links.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3834,10 +4084,9 @@ var Links = function () {
 }();
 
 exports.default = Links;
-
 });
 
-require.register("experimental/texture_generators/points_in_circle.js", function(exports, require, module) {
+;require.register("experimental/texture_generators/points_in_circle.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -3963,10 +4212,9 @@ var PointsInCicrle = function () {
 }();
 
 exports.default = PointsInCicrle;
-
 });
 
-require.register("experimental/vichniac_vote.js", function(exports, require, module) {
+;require.register("experimental/vichniac_vote.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4056,10 +4304,9 @@ var VichniacVote = function (_Tableau) {
 }(_tableau2.default);
 
 exports.default = VichniacVote;
-
 });
 
-require.register("geo/balls_generator.js", function(exports, require, module) {
+;require.register("geo/balls_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4124,10 +4371,9 @@ var BallsGenerator = function () {
 }();
 
 exports.default = BallsGenerator;
-
 });
 
-require.register("geo/components/app.jsx", function(exports, require, module) {
+;require.register("geo/components/app.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4259,10 +4505,9 @@ var App = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = App;
-
 });
 
-require.register("geo/components/debug_info.jsx", function(exports, require, module) {
+;require.register("geo/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4338,10 +4583,9 @@ var DebugInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DebugInfo;
-
 });
 
-require.register("geo/components/drawing_settings_form.jsx", function(exports, require, module) {
+;require.register("geo/components/drawing_settings_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4427,10 +4671,9 @@ var DrawingSettingsForm = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DrawingSettingsForm;
-
 });
 
-require.register("geo/components/generate_world_form.jsx", function(exports, require, module) {
+;require.register("geo/components/generate_world_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4522,10 +4765,9 @@ var GenerateWorldForm = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = GenerateWorldForm;
-
 });
 
-require.register("geo/components/legend.jsx", function(exports, require, module) {
+;require.register("geo/components/legend.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4574,10 +4816,9 @@ var Legend = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Legend;
-
 });
 
-require.register("geo/components/roads_form.jsx", function(exports, require, module) {
+;require.register("geo/components/roads_form.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -4636,10 +4877,9 @@ var RoadsForm = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = RoadsForm;
-
 });
 
-require.register("geo/game.js", function(exports, require, module) {
+;require.register("geo/game.js", function(exports, require, module) {
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -4758,7 +4998,6 @@ document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_map();
 });
-
 });
 
 require.register("geo/geo.js", function(exports, require, module) {
@@ -5026,10 +5265,9 @@ var Geo = function () {
 }();
 
 exports.default = Geo;
-
 });
 
-require.register("geo/interaction.js", function(exports, require, module) {
+;require.register("geo/interaction.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5207,10 +5445,9 @@ var Interaction = function () {
 }();
 
 exports.default = Interaction;
-
 });
 
-require.register("geo/map_drawer.js", function(exports, require, module) {
+;require.register("geo/map_drawer.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5679,10 +5916,9 @@ var MapDrawer = function () {
 }();
 
 exports.default = MapDrawer;
-
 });
 
-require.register("geo/regions_gatherer.js", function(exports, require, module) {
+;require.register("geo/regions_gatherer.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5866,10 +6102,9 @@ var RegionsGatherer = function () {
 }();
 
 exports.default = RegionsGatherer;
-
 });
 
-require.register("geo/rivers_and_lakes_generator.js", function(exports, require, module) {
+;require.register("geo/rivers_and_lakes_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5994,10 +6229,9 @@ var RiversAndLakesGenerator = function () {
 }();
 
 exports.default = RiversAndLakesGenerator;
-
 });
 
-require.register("geo/rrt_diagram.js", function(exports, require, module) {
+;require.register("geo/rrt_diagram.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6304,10 +6538,9 @@ var RRTDiagram = function () {
 }();
 
 exports.default = RRTDiagram;
-
 });
 
-require.register("geo/texture_generator.js", function(exports, require, module) {
+;require.register("geo/texture_generator.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6358,10 +6591,9 @@ var TextureGenerator = function () {
 }();
 
 exports.default = TextureGenerator;
-
 });
 
-require.register("planets/components/app.jsx", function(exports, require, module) {
+;require.register("planets/components/app.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6469,10 +6701,9 @@ var App = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = App;
-
 });
 
-require.register("planets/components/debug_info.jsx", function(exports, require, module) {
+;require.register("planets/components/debug_info.jsx", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6548,10 +6779,9 @@ var DebugInfo = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = DebugInfo;
-
 });
 
-require.register("planets/components/generate_world_form.jsx", function(exports, require, module) {
+;require.register("planets/components/generate_world_form.jsx", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6628,10 +6858,9 @@ var GenerateWorldForm = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = GenerateWorldForm;
-
 });
 
-require.register("planets/game.js", function(exports, require, module) {
+;require.register("planets/game.js", function(exports, require, module) {
 "use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -6714,7 +6943,6 @@ document.addEventListener('DOMContentLoaded', function () {
   _reactDom2.default.render(_react2.default.createElement(_app2.default, null), document.querySelector('#app'));
   game.generate_world();
 });
-
 });
 
 require.register("planets/interaction.js", function(exports, require, module) {
@@ -6834,10 +7062,9 @@ var Interaction = function () {
 }();
 
 exports.default = Interaction;
-
 });
 
-require.register("planets/map_drawer.js", function(exports, require, module) {
+;require.register("planets/map_drawer.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6970,10 +7197,9 @@ var MapDrawer = function () {
 }();
 
 exports.default = MapDrawer;
-
 });
 
-require.register("planets/star_system.js", function(exports, require, module) {
+;require.register("planets/star_system.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7053,10 +7279,9 @@ var StarSystem = function () {
 }();
 
 exports.default = StarSystem;
-
 });
 
-require.register("planets/stellar_body.js", function(exports, require, module) {
+;require.register("planets/stellar_body.js", function(exports, require, module) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -7088,14 +7313,17 @@ var StellarBody = function StellarBody() {
 };
 
 exports.default = StellarBody;
-
 });
 
-require.alias("buffer/index.js", "buffer");
+;require.alias("buffer/index.js", "buffer");
+require.alias("events/events.js", "events");
+require.alias("stream-http/index.js", "http");
+require.alias("https-browserify/index.js", "https");
 require.alias("path-browserify/index.js", "path");
 require.alias("process/browser.js", "process");
 require.alias("punycode/punycode.js", "punycode");
 require.alias("querystring-es3/index.js", "querystring");
+require.alias("stream-browserify/index.js", "stream");
 require.alias("url/url.js", "url");process = require('process');require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');

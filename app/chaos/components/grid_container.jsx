@@ -1,16 +1,19 @@
-import { connect } from 'react-redux';
-import Grid from './grid';
-import * as actions from './../actions';
 
-import chaos from 'chaos';
+import {connect} from 'react-redux';
+import Grid from './grid';
+import {advance_symbols_complete} from 'chaos/actions';
+
+import chaos from 'chaos/chaos';
 
 
 const mapStateToProps = state => {
   console.log('mapStateToProps.', state);
   return {
-    data: [
-      [],
-    ],
+    data: chaos.data.map(line => {
+      return line.map(agent => {
+        return {symbol: agent.get_current_symbol('sc1')}; // TEMP! sc1
+      })
+    })
   };
 }
 
@@ -22,7 +25,6 @@ const mapDispatchToProps = dispatch => {
     },
   };
 }
-
 
 const GridContainer = connect(
   mapStateToProps,
