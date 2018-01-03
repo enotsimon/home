@@ -6,6 +6,7 @@ import React from 'react';
 
 import mobiles from 'monster/config/mobiles';
 import scenes from 'monster/config/scenes';
+import dialogs from 'monster/config/dialogs';
 
 import { createStore } from 'redux';
 import { Provider } from 'react-redux'
@@ -15,8 +16,9 @@ import * as actions from './actions';
 class Game {
   init_game() {
     this.config = {
-      mobiles: mobiles,
-      scenes: scenes,
+      mobiles,
+      scenes,
+      dialogs,
       text: require('./text/rus.js').default,
     };
     
