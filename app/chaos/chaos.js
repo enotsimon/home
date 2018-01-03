@@ -1,7 +1,16 @@
+import ReactDOM from 'react-dom';
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux'
+
 import Util from "common/util";
 import Agent from 'chaos/agent';
 
-export default class Chaos {
+import App from './components/app';
+import root_reducer from './reducers';
+import * as actions from './actions';
+
+class Chaos {
   constructor() {
     // constants
     this.x_size = 20;
@@ -36,6 +45,7 @@ export default class Chaos {
       });
     });
     this.tick = 0;
+    this.store = createStore(root_reducer);
   }
 
   run(count) {
@@ -56,7 +66,7 @@ export default class Chaos {
   init_agent(x, y) {
     let agent = new Agent(x, y);
     this.symbol_classes.forEach((symbol_class, i) => {
-    	agent.add_symbol_class('sc' + i, symbol_class, Util.rand(0, symbol_class.length));
+      agent.add_symbol_class('sc' + i, symbol_class, Util.rand(0, symbol_class.length));
     });
     return agent;
   }
@@ -75,15 +85,15 @@ export default class Chaos {
   }
 
   get_neighbors(agent) {
-  	// von neimann
-  	let base = [[agent.x - 1, agent.y], [agent.x + 1, agent.y], [agent.x, agent.y - 1], [agent.x, agent.y + 1]];
-  	let ret = [];
-  	base.forEach(([x, y]) => {
-  		if (this.data[y] && this.data[y][x]) {
-  			ret.push(this.data[y][x]);
-  		}
-  	});
-  	return ret;
+    // von neimann
+    let base = [[agent.x - 1, agent.y], [agent.x + 1, agent.y], [agent.x, agent.y - 1], [agent.x, agent.y + 1]];
+    let ret = [];
+    base.forEach(([x, y]) => {
+      if (this.data[y] && this.data[y][x]) {
+        ret.push(this.data[y][x]);
+      }
+    });
+    return ret;
   }
 
   //
@@ -91,23 +101,33 @@ export default class Chaos {
   //
   exchange_symbols() {
     this.for_all_agents(agent => {
-    	agent.for_all_symbol_classes((symbols, prop) => {
-	      let neighbors = this.get_neighbors(agent);
-	      let valuable_neighbors = neighbors.filter(a => agent.is_valuable_symbol(a.get_current_symbol(prop), prop));
-	      if (valuable_neighbors.length) {
-	      	console.log('valuable_neighbors OK', valuable_neighbors.length);
-	      }
-	      let ready_neighbors = valuable_neighbors.filter(a => a.are_you_gonna_exchange(prop));
-	      if (ready_neighbors.length) {
-	      	console.log('ready_neighbors OK', prop, agent.x, agent.y);
-	      } else {
-	      	console.log('ready_neighbors EMPTY', prop, agent.x, agent.y);
-	      }
-    	});
+      agent.for_all_symbol_classes((symbols, prop) => {
+        let neighbors = this.get_neighbors(agent);
+        let valuable_neighbors = neighbors.filter(a => agent.is_valuable_symbol(a.get_current_symbol(prop), prop));
+        if (valuable_neighbors.length) {
+          console.log('valuable_neighbors OK', valuable_neighbors.length);
+        }
+        let ready_neighbors = valuable_neighbors.filter(a => a.are_you_gonna_exchange(prop));
+        if (ready_neighbors.length) {
+          console.log('ready_neighbors OK', prop, agent.x, agent.y);
+        } else {
+          console.log('ready_neighbors EMPTY', prop, agent.x, agent.y);
+        }
+      });
     });
   }
 }
 
 
-let chaos = new Chaos();
+const chaos = new Chaos();
+export default chaos;
 chaos.run(20);
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Provider store={chaos.store}>
+      <App />
+    </Provider>,
+    document.querySelector('#app')
+  );
+});
