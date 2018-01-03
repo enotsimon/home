@@ -1,6 +1,6 @@
 
 import React from 'react';
-import GridContainer from 'grid_container';
+import GridContainer from './grid_container';
 
 export default class App extends React.Component {
   render() {

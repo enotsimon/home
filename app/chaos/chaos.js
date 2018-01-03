@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { createStore } from 'redux';
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux';
 
 import Util from "common/util";
 import Agent from 'chaos/agent';
@@ -15,7 +15,6 @@ class Chaos {
     // constants
     this.x_size = 20;
     this.y_size = 20;
-    //this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✼', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
     this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'];
     this.symbol_min_weight = 8;
     this.symbol_max_weight = 16;
@@ -53,10 +52,10 @@ class Chaos {
       return;
     }
     this.tick++;
-    console.log('this.tick', this.tick);
     this.advance_symbol_classes();
     this.exchange_symbols();
     //this.run(count--);
+    console.log('this.tick', this.tick);
   }
 
   //
@@ -121,7 +120,7 @@ class Chaos {
 
 const chaos = new Chaos();
 export default chaos;
-chaos.run(20);
+chaos.run(3);
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
