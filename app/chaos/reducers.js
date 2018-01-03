@@ -3,6 +3,7 @@ import * as actions from './actions';
 
 let defaults = {
   phase: null,
+  tick: 0,
 };
 
 function phase(state = defaults.phase, action) {
@@ -14,8 +15,18 @@ function phase(state = defaults.phase, action) {
   }
 }
 
+function tick(state = defaults.tick, action) {
+  switch (action.type) {
+    case actions.TICK:
+      return state + 1;
+    default:
+      return state;
+  }
+}
+
 const root_reducer = combineReducers({
   phase,
+  tick,
 });
 
 export default root_reducer;
