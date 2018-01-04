@@ -60,6 +60,7 @@ export default class Agent {
     if (this.stat[prop].counters[symbol] < 0) {
       throw({msg: "something wrong with stat", prop, stat: this.stat[prop]});
     }
+    this.calc_valuables(prop);
     return ret;
   }
 
