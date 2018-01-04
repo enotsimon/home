@@ -101,17 +101,19 @@ class Chaos {
   exchange_symbols() {
     this.for_all_agents(agent => {
       agent.for_all_symbol_classes((symbols, prop) => {
+        // valuable symbol on top, we aint gonna give it away
+        if (!agent.are_you_gonna_exchange(prop)) {
+          return;
+        }
         let neighbors = this.get_neighbors(agent);
-        let valuable_neighbors = neighbors.filter(a => agent.is_valuable_symbol(a.get_current_symbol(prop), prop));
-        if (valuable_neighbors.length) {
-          console.log('valuable_neighbors OK', valuable_neighbors.length);
-        }
+        // for now we gonna exchange trash on trash -- maybe it will lead us to something valuable...
+        //let valuable_neighbors = neighbors.filter(a => agent.is_valuable_symbol(a.get_current_symbol(prop), prop));
+        let valuable_neighbors = neighbors;
         let ready_neighbors = valuable_neighbors.filter(a => a.are_you_gonna_exchange(prop));
-        if (ready_neighbors.length) {
-          console.log('ready_neighbors OK', prop, agent.x, agent.y);
-        } else {
-          console.log('ready_neighbors EMPTY', prop, agent.x, agent.y);
+        if (!ready_neighbors.length) {
+          return;
         }
+        // TODO
       });
     });
     this.store.dispatch(actions.exchange_symbols_complete());
