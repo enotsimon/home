@@ -51,6 +51,7 @@ class Chaos {
     if (count < 0) {
       return;
     }
+    this.flush_exchange_flags();
     this.advance_symbol_classes();
     this.exchange_symbols();
     this.store.dispatch(actions.tick());
@@ -95,6 +96,14 @@ class Chaos {
     return ret;
   }
 
+  flush_exchange_flags() {
+    this.for_all_agents(agent => {
+      agent.for_all_symbol_classes((symbols, prop) => {
+        agent.set_exchange_flag(prop, false);
+      });
+    });
+  }
+
   //
   // hellish omg part
   //
@@ -105,15 +114,29 @@ class Chaos {
         if (!agent.are_you_gonna_exchange(prop)) {
           return;
         }
-        let neighbors = this.get_neighbors(agent);
-        // for now we gonna exchange trash on trash -- maybe it will lead us to something valuable...
-        //let valuable_neighbors = neighbors.filter(a => agent.is_valuable_symbol(a.get_current_symbol(prop), prop));
-        let valuable_neighbors = neighbors;
-        let ready_neighbors = valuable_neighbors.filter(a => a.are_you_gonna_exchange(prop));
-        if (!ready_neighbors.length) {
+        // all our neighbors our potential exchange partners
+        let partners = this.get_neighbors(agent);
+        // its quite stupid to exchange symbol to just the same symbol
+        partners = partners.filter(p => p.get_current_symbol(prop) !== agent.get_current_symbol(prop));
+        // when we gonna know that they are willing to exchange something
+        partners = partners.filter(p => p.are_you_gonna_exchange(prop));
+        if (!partners.length) {
           return;
         }
-        // TODO
+        // first of all we gonna exchange some trash on some sweety
+        // but if we failed, let us exchange our trash on even some other trash
+        let first_class_partners = partners.filter(p => agent.is_valuable_symbol(p.get_current_symbol(prop), prop));
+        if (first_class_partners.length) {
+          partners = first_class_partners;
+        }
+        // finally we are to choose one partner from all possible
+        let partner = Util.rand_element(partners);
+        // and finally -- technical details
+        let our = agent.get_current_symbol(prop);
+        let their = partner.get_current_symbol(prop);
+        agent.exchange_symbol(prop, their);
+        partner.exchange_symbol(prop, our);
+        //console.log('exchange done', prop, our, 'to', their, agent, partner);
       });
     });
     this.store.dispatch(actions.exchange_symbols_complete());

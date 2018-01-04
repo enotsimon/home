@@ -20,7 +20,7 @@ export default class Agent {
   }
 
   are_you_gonna_exchange(prop) {
-    return !this.is_valuable_symbol(this.get_current_symbol(prop), prop);
+    return !this.get_exchange_flag(prop) && !this.is_valuable_symbol(this.get_current_symbol(prop), prop);
   }
 
   is_valuable_symbol(symbol, prop) {
@@ -29,6 +29,17 @@ export default class Agent {
 
   get_current_symbol(prop) {
     return Util.last(this[prop]);
+  }
+
+  exchange_symbol(prop, new_symbol) {
+    let length_was = this[prop].length;
+    this.pop_symbol(prop);
+    this.push_symbol(prop, new_symbol);
+    this.calc_valuables(prop);
+    this.set_exchange_flag(prop);
+    if (this[prop].length !== length_was) {
+      throw({msg: 'exchange_symbol error langth changed', was: length_was, is: this[prop].length});
+    }
   }
 
   //
@@ -42,10 +53,26 @@ export default class Agent {
       }
     }
   }
+  
+  push_symbol(prop, symbol) {
+    return this.do_something_with_symbol(prop, symbol, 'push');
+  }
+
+  pop_symbol(prop) {
+    return this.do_something_with_symbol(prop, null, 'pop');
+  }
 
   advance_array(symbol_class) {
     let first = symbol_class.shift();
     symbol_class.push(first);
+  }
+
+  get_exchange_flag(prop) {
+    return this.stat[prop].exchange_flag;
+  }
+
+  set_exchange_flag(prop, value = true) {
+    this.stat[prop].exchange_flag = value;
   }
 
   do_something_with_symbol(prop, symbol, fun) {
@@ -60,16 +87,7 @@ export default class Agent {
     if (this.stat[prop].counters[symbol] < 0) {
       throw({msg: "something wrong with stat", prop, stat: this.stat[prop]});
     }
-    this.calc_valuables(prop);
     return ret;
-  }
-
-  push_symbol(prop, symbol) {
-    this.do_something_with_symbol(prop, symbol, 'push');
-  }
-
-  pop_symbol(prop, symbol) {
-    this.do_something_with_symbol(prop, symbol, 'pop');
   }
 
   calc_valuables(prop) {
