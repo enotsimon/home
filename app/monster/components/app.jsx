@@ -3,6 +3,7 @@ import React from 'react';
 import MainMenu from 'monster/components/main_menu';
 import MainMenuContainer from 'monster/components/main_menu_container';
 import SceneContainer from 'monster/components/scene_container';
+import DialogContainer from 'monster/components/dialog_container';
 
 export default class App extends React.Component {
   render() {
@@ -12,6 +13,8 @@ export default class App extends React.Component {
           <div className="col-md-8 col-md-offset-2">
 
             <SceneContainer />
+
+            <DialogContainer />
 
             <MainMenuContainer />
 
