@@ -29,15 +29,18 @@ export function dialog_activate_node(id_node) {
 ///////////////////////
 // privates
 ///////////////////////
-
-function dialog_activate_npc_node(node) {
-  // find sutable npc sentence
-  let sentences = node.sentences.map(id_sentence => {
+function get_sentences_from_node(node) {
+  return node.sentences.map(id_sentence => {
     if (!game.config.dialogs.sentences[id_sentence]) {
-      throw({msg: 'sentence not found in config', id_sentence});
+      throw({msg: 'sentence not found in config', id_sentence, node});
     }
     return game.config.dialogs.sentences[id_sentence];
   });
+}
+
+function dialog_activate_npc_node(node) {
+  // find sutable npc sentence
+  let sentences = get_sentences_from_node(node);
   filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
   if (filtered_sentences.length === 0) {
     // i dunno, maybe its ok if no sentences in node, but for now throw exception
@@ -47,13 +50,16 @@ function dialog_activate_npc_node(node) {
   }
   let sentence = filtered_sentences[0];
 
-  // show (trigger 'show') of this sentence some way
-  //game.store.dispatch(actions.dialog_activate_npc_sentence(sentence));
+  game.store.dispatch(actions.dialog_activate_npc_sentence(sentence));
 
-  apply_aftermath(sentence);
+  apply_consequences(sentence);
 
-  // prepare and show possible player's sentences
-  // TODO
+  let player_sentences = prepare_player_sentences(sentence);
+  // TODO add some sort of consequences highlight
+
+  // we do it separately from dialog_activate_npc_sentence for now, but maybe should join together with
+  // some pause and using redux-thunk
+  game.store.dispatch(actions.dialog_activate_player_sentences(player_sentences));
 }
 
 
@@ -80,26 +86,82 @@ function check_precondition(precondition) {
 }
 
 function check_precondition_of_flag_type(precondition) {
-  if (!precondition.name || typeof s !== 'string') {
+  if (!precondition.name || typeof precondition.name !== 'string') {
     throw({msg: "precondition of flag type should has 'name' property and it should be string", precondition});
   }
   if (!precondition.value) {
     throw({msg: "precondition of flag type should has 'value' property", precondition});
   }
   let state = game.store.getState();
+  console.log('check_precondition_of_flag_type', precondition.name, precondition.value); // DEBUG
   return state.flags[precondition.name] == precondition.value;
 }
 
 
 
 ///////////////////////////
-// aftermath
+// consequences
 ///////////////////////////
-function apply_aftermath(sentence) {
-  if (!sentence.aftermath) {
+function apply_consequences(sentence) {
+  if (!sentence.consequences) {
     return true;
   }
-  sentence.aftermath.forEach(e => {
-    // TODO
-  });
+  sentence.consequences.forEach(consequence => apply_consequence(consequence));
+}
+
+// TODO same as check_precondition()
+function apply_consequence(consequence) {
+  if (!consequence.type) {
+    throw({msg: 'consequence has no type', consequence});
+  }
+  switch (consequence.type) {
+    case 'flag':
+      return apply_consequence_of_flag_type(consequence);
+    default:
+      throw({msg: 'unknown consequence type', consequence});
+  }
+}
+
+// TODO same as check_precondition_of_flag_type()
+function apply_consequence_of_flag_type(consequence) {
+  if (!consequence.name || typeof consequence.name !== 'string') {
+    throw({msg: "consequence of flag type should has 'name' property and it should be string", consequence});
+  }
+  if (!consequence.value) {
+    throw({msg: "consequence of flag type should has 'value' property", consequence});
+  }
+  game.store.dispatch(actions.change_global_flag(consequence.name, consequence.value));
+}
+
+
+
+////////////////////////////
+// consecution
+////////////////////////////
+
+// handle player's node
+function  prepare_player_sentences(npc_sentence) {
+  if (!npc_sentence.consecution) {
+    throw({msg: 'npc sentence should have consecution pop', npc_sentence});
+  }
+  let player_node = game.config.dialogs.nodes[sentence.consecution];
+  if (!player_node) {
+    throw({msg: "player's node not found by npc_sentence consecution ", npc_sentence});
+  }
+  if (!player_node) {
+    throw({msg: "player's node not found by npc_sentence consecution ", npc_sentence});
+  }
+  // maybe we should 
+  if (player_node.type !== 'player') {
+    throw({msg: "player's node type is incorrent (should be 'player')", player_node});
+  }
+  // copy-paste of dialog_activate_npc_node()
+  let sentences = get_sentences_from_node(player_node);
+  // TODO add admin mode with possibility to see or even to choose improper sentences
+  filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
+  if (filtered_sentences.length === 0) {
+    // i dunno, maybe its ok if no sentences in node, but for now throw exception
+    throw({msg: 'no sutable sentences in dialog node', node});
+  }
+  return filtered_sentences;
 }
