@@ -15,7 +15,7 @@
  *  sentence is an object that consits of
  *    preconditions -- array of callbacks that run to check if this sentence is availible
  *    consequences -- array of callbacks that run after this sentence 'activation'
- *    consecution -- node id -- it is a dialog continuation, like an opponent's answer to this sentence
+ *    continuation -- node id -- it is a dialog continuation, like an opponent's answer to this sentence
  *    phrases -- id of text entry with certain text of this sentence
  */
 
@@ -71,47 +71,47 @@ const dialogs = {
       consequences: [
         {type: 'flag', name: 'tricky_bell_init', value: true},
       ],
-      consecution: 'on_tricky_bell_init',
+      continuation: 'on_tricky_bell_init',
     },
 
     tricky_bell_1: {
       phrases: 'tricky_bell_1',
-      consecution: 'on_tricky_bell_1',
+      continuation: 'on_tricky_bell_1',
     },
 
     tricky_bell_2: {
       phrases: 'tricky_bell_2',
-      consecution: null,
+      continuation: null,
     },
 
     on_tricky_bell_init_1: {
       phrases: 'on_tricky_bell_init_1',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
 
     on_tricky_bell_init_2: {
       phrases: 'on_tricky_bell_init_2',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
 
     on_tricky_bell_init_3: {
       phrases: 'on_tricky_bell_init_3',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
 
     on_tricky_bell_1_1: {
       phrases: 'on_tricky_bell_1_1',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
 
     on_tricky_bell_1_2: {
       phrases: 'on_tricky_bell_1_2',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
 
     on_tricky_bell_1_3: {
       phrases: 'on_tricky_bell_1_3',
-      consecution: 'tricky_bell_2',
+      continuation: 'tricky_bell_2',
     },
   },
 
