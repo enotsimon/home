@@ -11,6 +11,7 @@ export const CHANGE_GLOBAL_FLAG = 'change_global_flag';
 export const DIALOG_START = 'dialog_start';
 export const DIALOG_FINISH = 'dialog_finish';
 export const DIALOG_ACTIVATE_NPC_SENTENCE = 'dialog_activate_npc_sentence';
+export const DIALOG_ACTIVATE_PLAYER_SENTENCES = 'dialog_activate_player_sentences';
 
 export const ERROR_CHANGE_SCENE_UNKNOWN_SCENE = 'error_change_scene_unknown_scene';
 export const ERROR_CHANGE_SCENE_NOT_LINKED_SCENE = 'error_change_scene_not_linked_scene';
@@ -62,10 +63,11 @@ export function inventory_remove_item(item) {
   return {type: INVENTORY_REMOVE_ITEM, item};
 }
 
-export function change_global_flag(flag) {
-  return {type: CHANGE_GLOBAL_FLAG, flag};
+export function change_global_flag(name, value) {
+  return {type: CHANGE_GLOBAL_FLAG, name, value};
 }
 
+// dialogs //////////////////////
 export function dialog_start() {
   return {type: DIALOG_START};
 }
@@ -74,9 +76,12 @@ export function dialog_finish() {
   return {type: DIALOG_FINISH};
 }
 
-// ???
 export function dialog_activate_npc_sentence(sentence) {
   return {type: DIALOG_ACTIVATE_NPC_SENTENCE, sentence};
+}
+
+export function dialog_activate_player_sentences(sentences) {
+  return {type: DIALOG_ACTIVATE_PLAYER_SENTENCES, sentences};
 }
 
 /////////////////////////////////
@@ -101,37 +106,6 @@ export function bound_change_scene(scene_name) {
   game.store.dispatch(rebuild_main_menu(current_scene));
 }
 
-/*
-export function bound_dialog_start(id_mobile) {
-  if (!game.config.dialogs.mobiles[id_mobile]) {
-    game.store.dispatch(error_dialog_start_unknown_dialog_owner(id_mobile));
-    return false;
-  }
-  game.store.dispatch(dialog_start());
-  let id_node = game.config.dialogs.mobiles[id_mobile].root_node;
-  bound_dialog_activate_node(id_node);
-}
-*/
-
-/*
-export function bound_dialog_activate_node(id_node) {
-  // end of the dialog
-  if (id_node === null) {
-    game.store.dispatch(dialog_finish());
-  }
-  let node = game.config.dialogs.nodes[id_node];
-  if (node.type = 'npc') {
-    game.store.dispatch(dialog_activate_npc_sentence(node));
-  } else if (node.type = 'player') {
-    game.store.dispatch(dialog_activate_player_node(node));
-    // ???
-    bound_dialog_activate_node(id_node)
-  } else {
-    // ???
-    throw({msg: 'unknown dialog node type', id_node, type: node.type});
-  }
-}
-*/
 
 
 /////////////////////////////////////////

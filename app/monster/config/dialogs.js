@@ -14,7 +14,7 @@
  *
  *  sentence is an object that consits of
  *    preconditions -- array of callbacks that run to check if this sentence is availible
- *    aftermath -- array of callbacks that run after this sentence 'activation'
+ *    consequences -- array of callbacks that run after this sentence 'activation'
  *    consecution -- node id -- it is a dialog continuation, like an opponent's answer to this sentence
  *    phrases -- id of text entry with certain text of this sentence
  */
@@ -68,7 +68,7 @@ const dialogs = {
       preconditions: [
         {type: 'flag', name: 'tricky_bell_init', value: false},
       ],
-      aftermath: [
+      consequences: [
         {type: 'flag', name: 'tricky_bell_init', value: true},
       ],
       consecution: 'on_tricky_bell_init',

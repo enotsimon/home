@@ -53,6 +53,18 @@ function game_phase(state = defaults.game_phase, action) {
   }
 }
 
+function flags(state = defaults.flags, action) {
+  switch (action.type) {
+    case actions.CHANGE_GLOBAL_FLAG:
+      let new_state = {...state};
+      new_state[action.name] = value;
+      console.log('set global flag', name, 'to', value);
+      return new_state;
+    default:
+      return state;
+  }
+}
+
 function current_scene_name(state = defaults.current_scene_name, action) {
   switch (action.type) {
     case actions.CHANGE_SCENE:
@@ -193,6 +205,7 @@ const root_reducer = combineReducers({
   }),
   game_phase,
   current_scene_name,
+  flags,
   money,
   clothes,
   user_notification,
