@@ -136,22 +136,19 @@ function apply_consequence_of_flag_type(consequence) {
 
 
 ////////////////////////////
-// consecution
+// continuation
 ////////////////////////////
 
 // handle player's node
 function  prepare_player_sentences(npc_sentence) {
-  if (!npc_sentence.consecution) {
-    throw({msg: 'npc sentence should have consecution pop', npc_sentence});
+  if (!npc_sentence.continuation) {
+    throw({msg: 'npc sentence should have continuation prop', npc_sentence});
   }
-  let player_node = game.config.dialogs.nodes[sentence.consecution];
+  let player_node = game.config.dialogs.nodes[sentence.continuation];
   if (!player_node) {
-    throw({msg: "player's node not found by npc_sentence consecution ", npc_sentence});
+    throw({msg: "player's node not found by npc_sentence continuation", npc_sentence});
   }
-  if (!player_node) {
-    throw({msg: "player's node not found by npc_sentence consecution ", npc_sentence});
-  }
-  // maybe we should 
+  // maybe we should remove type prop completely?
   if (player_node.type !== 'player') {
     throw({msg: "player's node type is incorrent (should be 'player')", player_node});
   }
