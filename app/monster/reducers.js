@@ -179,8 +179,12 @@ function dialogs(state = defaults.menues.dialogs, action) {
     case actions.DIALOG_FINISH:
       return new_state;
     case actions.DIALOG_ACTIVATE_NPC_SENTENCE:
-      // TODO
+      new_state.npc_sentence = action.sentence;
       return new_state;
+    case actions.DIALOG_ACTIVATE_PLAYER_SENTENCES:
+      new_state.player_sentences = action.sentences;
+      return new_state;
+    // TODO add player_prev_sentence
     default:
       return state;
   }
