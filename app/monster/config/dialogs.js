@@ -66,10 +66,10 @@ const dialogs = {
     tricky_bell_init: {
       phrases: 'tricky_bell_init',
       preconditions: [
-        {flag: 'tricky_bell_init', value: false},
+        {type: 'flag', name: 'tricky_bell_init', value: false},
       ],
       aftermath: [
-        {flag: 'tricky_bell_init', value: true},
+        {type: 'flag', name: 'tricky_bell_init', value: true},
       ],
       consecution: 'on_tricky_bell_init',
     },

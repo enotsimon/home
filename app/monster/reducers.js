@@ -9,6 +9,7 @@ const error_messages = {
 */
 
 let defaults = {
+  game_phase: 'idle', // idle, dialog, alchemy, travel_map, interaction (with container), inventory?
   current_scene_name: null,
   money: {
     fishes: 0,
@@ -26,6 +27,11 @@ let defaults = {
       elements: [],
       current_element: null,
     },
+    dialogs: {
+      player_prev_sentence: null,
+      npc_sentence: null,
+      player_sentences: [],
+    },
   },
   user_notification: {
     message: '',
@@ -34,6 +40,18 @@ let defaults = {
   },
 };
 
+function game_phase(state = defaults.game_phase, action) {
+  switch (action.type) {
+    case actions.CHANGE_SCENE:
+      return 'idle';
+    case action.DIALOG_START:
+      return 'dialog';
+    case actions.DIALOG_FINISH:
+      return 'idle';
+    default:
+      return state;
+  }
+}
 
 function current_scene_name(state = defaults.current_scene_name, action) {
   switch (action.type) {
@@ -139,6 +157,23 @@ function main_menu(state = defaults.menues.main_menu, action) {
   }
 }
 
+function dialogs(state = defaults.menues.dialogs, action) {
+  let new_state = {
+    player_prev_sentence: null,
+    npc_sentence: null,
+    player_sentences: [],
+  };
+  switch (action.type) {
+    case actions.DIALOG_FINISH:
+      return new_state;
+    case actions.DIALOG_ACTIVATE_NPC_SENTENCE:
+      // TODO
+      return new_state;
+    default:
+      return state;
+  }
+}
+
 function user_notification(state = defaults.user_notification, action) {
   switch (action.type) {
     case actions.SHOW_NOTIFICATION:
@@ -152,7 +187,11 @@ function user_notification(state = defaults.user_notification, action) {
 
 
 const root_reducer = combineReducers({
-  menues: combineReducers({main_menu}),
+  menues: combineReducers({
+    main_menu,
+    dialogs,
+  }),
+  game_phase,
   current_scene_name,
   money,
   clothes,
