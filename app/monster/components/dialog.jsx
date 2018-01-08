@@ -20,9 +20,19 @@ class Dialog extends React.Component {
 
           {/* TODO add player name so we can understand who's speaking */}
           {this.props.player_sentences.map(sentence => {
-            // TODO its not a text but a button!!!
             return (
-              <p key={sentence.id}><TextEntry>{sentence.phrases}</TextEntry></p>
+              <button
+                key={sentence.id}
+                type="button"
+                className='btn btn-default btn-block'
+                onClick={() => this.props.on_player_sentence_click(sentence.id)}
+              >
+                <div className='text-left'>
+                  <TextEntry>
+                    {sentence.phrases}
+                  </TextEntry>
+                </div>
+              </button>
             );
           })}
         </div>
@@ -43,7 +53,8 @@ Dialog.propTypes = {
   player_sentences: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     phrases: PropTypes.any.isRequired,
-  })).isRequired
+  })).isRequired,
+  on_player_sentence_click: PropTypes.func.isRequired,
 };
 
 export default Dialog;

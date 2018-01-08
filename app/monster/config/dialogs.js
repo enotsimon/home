@@ -32,10 +32,17 @@ const dialogs = {
     tricky_bell_root: {
       type: 'npc',
       owner: 'tricky_bell', // ???
-      // or propositions
       sentences: [
         'tricky_bell_init',
         'tricky_bell_1',
+      ],
+    },
+
+    tricky_bell_2: {
+      type: 'npc',
+      owner: 'tricky_bell', // ???
+      sentences: [
+        'tricky_bell_2',
       ],
     },
 
@@ -55,6 +62,13 @@ const dialogs = {
         'on_tricky_bell_1_1',
         'on_tricky_bell_1_2',
         'on_tricky_bell_1_3',
+      ],
+    },
+
+    on_tricky_bell_2: {
+      type: 'player',
+      sentences: [
+        'on_tricky_bell_2',
       ],
     },
 
@@ -81,7 +95,7 @@ const dialogs = {
 
     tricky_bell_2: {
       phrases: 'tricky_bell_2',
-      continuation: null,
+      continuation: 'on_tricky_bell_2',
     },
 
     on_tricky_bell_init_1: {
@@ -113,6 +127,11 @@ const dialogs = {
       phrases: 'on_tricky_bell_1_3',
       continuation: 'tricky_bell_2',
     },
+
+    on_tricky_bell_2: {
+      phrases: 'on_tricky_bell_2',
+      continuation: null,
+    }
   },
 
 };
