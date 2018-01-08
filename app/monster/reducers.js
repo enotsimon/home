@@ -152,6 +152,7 @@ function dialogs(state = defaults.menues.dialogs, action) {
       return defaults.menues.dialogs;
     case actions.DIALOG_ACTIVATE_NPC_SENTENCE:
       new_state.npc_sentence = action.sentence;
+      new_state.player_sentences = []; // flush player's answers
       return new_state;
     case actions.DIALOG_ACTIVATE_PLAYER_SENTENCES:
       new_state.player_sentences = action.sentences;

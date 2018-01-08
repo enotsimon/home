@@ -14,6 +14,9 @@ export function dialog_start(id_mobile) {
 // 'activate' meant dispatch some sort of 'show dialog sentence' action
 // ???
 export function dialog_activate_node(id_node) {
+  if (!game.config.dialogs.nodes[id_node]) {
+    throw({msg: 'dialog node not found in dialogs config', id_node});
+  }
   let node = game.config.dialogs.nodes[id_node];
   if (node.type = 'npc') {
     dialog_activate_npc_node(node);
@@ -23,6 +26,20 @@ export function dialog_activate_node(id_node) {
     //bound_dialog_activate_node(id_node)
   } else {
     throw({msg: 'unknown dialog node type', id_node, type: node.type});
+  }
+}
+
+export function dialog_handle_chosen_player_sentence(id_sentence) {
+  if (!game.config.dialogs.sentences[id_sentence]) {
+    throw({msg: 'current dialog sentence not found in dialogs config', id_sentence});
+  }
+  let sentence = game.config.dialogs.sentences[id_sentence];
+  apply_consequences(sentence);
+  // sentence.continuation = null is okay and means dialog is finished
+  if (sentence.continuation === null) {
+    game.store.dispatch(actions.dialog_finish());
+  } else {
+    dialog_activate_node(sentence.continuation);
   }
 }
 
