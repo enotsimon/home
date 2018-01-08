@@ -1,6 +1,6 @@
 
 import game from './monster';
-import * as dialogs from './dialogs';
+import {initialize_dialog} from './dialogs';
 
 export const CHANGE_SCENE = 'change_scene';
 export const REBUILD_MAIN_MENU = 'rebuild_main_menu';
@@ -132,7 +132,7 @@ export function bound_main_menu_action(id_subelement) {
   if (current_element == 'go_to') {
     bound_change_scene(id_subelement);
   } else if (current_element == 'speak_to') {
-    dialogs.dialog_start(id_subelement);
+    initialize_dialog(id_subelement);
   }
 }
 
