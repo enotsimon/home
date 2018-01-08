@@ -13,16 +13,16 @@ class Dialog extends React.Component {
         </div>
         <div className="panel-body">
           {/* TODO add player name so we can understand who's speaking */}
-          <TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry>
+          <p><TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry></p>
 
           {/* TODO add npc name so we can understand who's speaking */}
-          <TextEntry>{this.props.npc_sentence.phrases}</TextEntry>
+          <p><TextEntry>{this.props.npc_sentence.phrases}</TextEntry></p>
 
           {/* TODO add player name so we can understand who's speaking */}
           {this.props.player_sentences.map(sentence => {
             // TODO its not a text but a button!!!
             return (
-              <TextEntry key={sentence.id}>{sentence.phrases}</TextEntry>
+              <p key={sentence.id}><TextEntry>{sentence.phrases}</TextEntry></p>
             );
           })}
         </div>

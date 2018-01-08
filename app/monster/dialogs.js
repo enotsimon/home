@@ -34,20 +34,20 @@ function get_sentences_from_node(node) {
     if (!game.config.dialogs.sentences[id_sentence]) {
       throw({msg: 'sentence not found in config', id_sentence, node});
     }
-    return game.config.dialogs.sentences[id_sentence];
+    // id prop is hellish hack! it is used in dialog.jsx, be careful!
+    return {...game.config.dialogs.sentences[id_sentence], id: id_sentence};
   });
 }
 
 function dialog_activate_npc_node(node) {
   // find sutable npc sentence
   let sentences = get_sentences_from_node(node);
-  filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
+  let filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
   if (filtered_sentences.length === 0) {
     // i dunno, maybe its ok if no sentences in node, but for now throw exception
     throw({msg: 'no sutable sentences in dialog node', node});
-  } else if (filtered_sentences.length > 1) {
-    console.log('more than one filtered sentences', filtered_sentences, 'node', node);
   }
+  // its okay if there's more than one sutable sentences, we suppose that first one is 'most sutable'
   let sentence = filtered_sentences[0];
 
   game.store.dispatch(actions.dialog_activate_npc_sentence(sentence));
@@ -89,11 +89,15 @@ function check_precondition_of_flag_type(precondition) {
   if (!precondition.name || typeof precondition.name !== 'string') {
     throw({msg: "precondition of flag type should has 'name' property and it should be string", precondition});
   }
-  if (!precondition.value) {
+  if (!precondition.hasOwnProperty('value')) {
     throw({msg: "precondition of flag type should has 'value' property", precondition});
   }
   let state = game.store.getState();
-  console.log('check_precondition_of_flag_type', precondition.name, precondition.value); // DEBUG
+  // if flag is absent in global state we init it with initial false value
+  if (state.flags[precondition.name] === undefined) {
+    game.store.dispatch(actions.change_global_flag(precondition.name, false));
+    state = game.store.getState();
+  }
   return state.flags[precondition.name] == precondition.value;
 }
 
@@ -127,7 +131,7 @@ function apply_consequence_of_flag_type(consequence) {
   if (!consequence.name || typeof consequence.name !== 'string') {
     throw({msg: "consequence of flag type should has 'name' property and it should be string", consequence});
   }
-  if (!consequence.value) {
+  if (!consequence.hasOwnProperty('value')) {
     throw({msg: "consequence of flag type should has 'value' property", consequence});
   }
   game.store.dispatch(actions.change_global_flag(consequence.name, consequence.value));
@@ -144,7 +148,7 @@ function  prepare_player_sentences(npc_sentence) {
   if (!npc_sentence.continuation) {
     throw({msg: 'npc sentence should have continuation prop', npc_sentence});
   }
-  let player_node = game.config.dialogs.nodes[sentence.continuation];
+  let player_node = game.config.dialogs.nodes[npc_sentence.continuation];
   if (!player_node) {
     throw({msg: "player's node not found by npc_sentence continuation", npc_sentence});
   }
@@ -155,7 +159,7 @@ function  prepare_player_sentences(npc_sentence) {
   // copy-paste of dialog_activate_npc_node()
   let sentences = get_sentences_from_node(player_node);
   // TODO add admin mode with possibility to see or even to choose improper sentences
-  filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
+  let filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
   if (filtered_sentences.length === 0) {
     // i dunno, maybe its ok if no sentences in node, but for now throw exception
     throw({msg: 'no sutable sentences in dialog node', node});
