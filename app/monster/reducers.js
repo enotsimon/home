@@ -1,13 +1,6 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-/*
-const error_messages = {
-  CHANGE_SCENE_UNKNOWN_SCENE: "cannot change scene to given cause it is not found in config",
-  CHANGE_SCENE_NOT_LINKED_SCENE: "cannot change scene to given cause it is not linked with current one",
-};
-*/
-
 let defaults = {
   game_phase: 'idle', // idle, dialog, alchemy, travel_map, interaction (with container), inventory?
   current_scene_name: null,
@@ -58,7 +51,6 @@ function flags(state = defaults.flags, action) {
     case actions.CHANGE_GLOBAL_FLAG:
       let new_state = {...state};
       new_state[action.name] = action.value;
-      console.log('set global flag', action.name, 'to', action.value);
       return new_state;
     default:
       return state;
@@ -68,7 +60,6 @@ function flags(state = defaults.flags, action) {
 function current_scene_name(state = defaults.current_scene_name, action) {
   switch (action.type) {
     case actions.CHANGE_SCENE:
-      console.log('action', action.type, action, state);
       return action.scene_name;
     default:
       return state;
@@ -122,24 +113,10 @@ function clothes(state = defaults.clothes, action) {
 // UI
 /////////////////////////////////////////
 
-/*
-function error_data(state = defaults.error_data, action) {
-  switch (action.type) {
-    case actions.ERROR_CHANGE_SCENE_UNKNOWN_SCENE:
-      return {msg: error_messages.CHANGE_SCENE_UNKNOWN_SCENE, additional: {target_scene: action.scene_name}};
-    case actions.ERROR_CHANGE_SCENE_NOT_LINKED_SCENE:
-      return {msg: error_messages.CHANGE_SCENE_NOT_LINKED_SCENE, additional: {target_scene: action.scene_name}};
-    default:
-      return state;
-  }
-}
-*/
-
 function main_menu(state = defaults.menues.main_menu, action) {
   let state_copy;
   switch (action.type) {
     case actions.REBUILD_MAIN_MENU:
-      console.log('action', action.type, action, state);
       let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
       let menu = {
         elements: [
@@ -150,7 +127,6 @@ function main_menu(state = defaults.menues.main_menu, action) {
       };
       return menu;
     case actions.MAIN_MENU_CLICK:
-      console.log('action', action.type, action, state);
       state_copy = {
         ...state,
         current_element: action.id
@@ -158,7 +134,6 @@ function main_menu(state = defaults.menues.main_menu, action) {
       return state_copy;
     // really nothing interesting, just unset current_element
     case actions.MAIN_MENU_SUBELEMENT_CLICK:
-      console.log('action', action.type, action, state);
       state_copy = {
         ...state,
         current_element: null
