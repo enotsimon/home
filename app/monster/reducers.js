@@ -57,8 +57,8 @@ function flags(state = defaults.flags, action) {
   switch (action.type) {
     case actions.CHANGE_GLOBAL_FLAG:
       let new_state = {...state};
-      new_state[action.name] = value;
-      console.log('set global flag', name, 'to', value);
+      new_state[action.name] = action.value;
+      console.log('set global flag', action.name, 'to', action.value);
       return new_state;
     default:
       return state;
@@ -170,14 +170,11 @@ function main_menu(state = defaults.menues.main_menu, action) {
 }
 
 function dialogs(state = defaults.menues.dialogs, action) {
-  let new_state = {
-    player_prev_sentence: null,
-    npc_sentence: null,
-    player_sentences: [],
-  };
+  let new_state = {...state};
   switch (action.type) {
     case actions.DIALOG_FINISH:
-      return new_state;
+      // flush dialogs state
+      return defaults.menues.dialogs;
     case actions.DIALOG_ACTIVATE_NPC_SENTENCE:
       new_state.npc_sentence = action.sentence;
       return new_state;
