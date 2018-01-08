@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextEntry from './text_entry';
+import StButton from './st_button';
 
 class MainMenuElement extends React.Component {
   btn_class() {
@@ -11,17 +12,11 @@ class MainMenuElement extends React.Component {
 
   render() {
     return (
-      <button
-        id={this.props.id}
-        type="button"
-        className={this.btn_class()}
-        onClick={this.props.on_click}
-        disabled={this.props.enabled ? '' : 'disabled'}
-      >
+      <StButton on_click={this.props.on_click} enabled={this.props.enabled} active={this.props.active}>
         <TextEntry>
           {this.props.text}
         </TextEntry>
-      </button>
+      </StButton>
     );
   }
 }
@@ -31,6 +26,7 @@ MainMenuElement.propTypes = {
   text: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   active: PropTypes.bool.isRequired,
+  enabled: PropTypes.bool.isRequired,
 };
 
 export default MainMenuElement;

@@ -2,15 +2,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextEntry from './text_entry';
+import StButton from './st_button';
 
 class MainMenuSubelement extends React.Component {
   render() {
     return (
-      <button id={this.props.id} type="button" className="btn btn-default btn-block" onClick={this.props.on_click}>
+      <StButton on_click={this.props.on_click}>
         <TextEntry>
           {this.props.text}
         </TextEntry>
-      </button>
+      </StButton>
     );
   }
 }
