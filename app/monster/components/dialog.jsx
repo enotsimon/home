@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextEntry from './text_entry';
+import StButton from './st_button';
 
 class Dialog extends React.Component {
   render() {
@@ -21,18 +22,11 @@ class Dialog extends React.Component {
           {/* TODO add player name so we can understand who's speaking */}
           {this.props.player_sentences.map(sentence => {
             return (
-              <button
-                key={sentence.id}
-                type="button"
-                className='btn btn-default btn-block'
-                onClick={() => this.props.on_player_sentence_click(sentence.id)}
-              >
-                <div className='text-left'>
-                  <TextEntry>
-                    {sentence.phrases}
-                  </TextEntry>
-                </div>
-              </button>
+              <StButton key={sentence.id} on_click={() => this.props.on_player_sentence_click(sentence.id)}>
+                <TextEntry>
+                  {sentence.phrases}
+                </TextEntry>
+              </StButton>
             );
           })}
         </div>
