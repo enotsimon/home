@@ -2,31 +2,13 @@
 import game from './monster';
 import * as actions from './actions';
 
-export function dialog_start(id_mobile) {
+export function initialize_dialog(id_mobile) {
   if (!game.config.dialogs.mobiles[id_mobile]) {
     throw({msg: 'unknown dialog owner', id_mobile});
   }
   game.store.dispatch(actions.dialog_start());
   let id_node = game.config.dialogs.mobiles[id_mobile].root_node;
-  dialog_activate_node(id_node);
-}
-
-// 'activate' meant dispatch some sort of 'show dialog sentence' action
-// ???
-export function dialog_activate_node(id_node) {
-  if (!game.config.dialogs.nodes[id_node]) {
-    throw({msg: 'dialog node not found in dialogs config', id_node});
-  }
-  let node = game.config.dialogs.nodes[id_node];
-  if (node.type = 'npc') {
-    dialog_activate_npc_node(node);
-  } else if (node.type = 'player') {
-    dialog_activate_player_node(node);
-    // ???
-    //bound_dialog_activate_node(id_node)
-  } else {
-    throw({msg: 'unknown dialog node type', id_node, type: node.type});
-  }
+  dialog_activate_npc_node(id_node);
 }
 
 export function dialog_handle_chosen_player_sentence(id_sentence) {
@@ -39,7 +21,7 @@ export function dialog_handle_chosen_player_sentence(id_sentence) {
   if (sentence.continuation === null) {
     game.store.dispatch(actions.dialog_finish());
   } else {
-    dialog_activate_node(sentence.continuation);
+    dialog_activate_npc_node(sentence.continuation);
   }
 }
 
@@ -56,7 +38,11 @@ function get_sentences_from_node(node) {
   });
 }
 
-function dialog_activate_npc_node(node) {
+function dialog_activate_npc_node(id_node) {
+  if (!game.config.dialogs.nodes[id_node]) {
+    throw({msg: 'dialog node not found in dialogs config', id_node});
+  }
+  let node = game.config.dialogs.nodes[id_node];
   // find sutable npc sentence
   let sentences = get_sentences_from_node(node);
   let filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
