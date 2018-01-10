@@ -1,0 +1,30 @@
+
+.default-text {
+  color: black;
+  font-weight: normal;
+}
+
+.mobiles-text {
+  color: #d76e00; /* kinda orange */
+  font-weight: bold;
+}
+
+.scenes-text {
+  color: green;
+  font-weight: bold;
+}
+
+.furniture-text {
+  color: blue;
+  font-weight: bold;
+}
+
+.items-text {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+.info-text {
+  color: #b60aff; /* kinda purple */
+  font-weight: bold;
+}
