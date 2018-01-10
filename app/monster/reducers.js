@@ -38,7 +38,7 @@ function game_phase(state = defaults.game_phase, action) {
   switch (action.type) {
     case actions.CHANGE_SCENE:
       return 'idle';
-    case action.DIALOG_START:
+    case actions.DIALOG_START:
       return 'dialog';
     case actions.DIALOG_FINISH:
       return 'idle';
