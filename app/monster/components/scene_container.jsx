@@ -24,12 +24,6 @@ const mapStateToProps = state => {
   };
 }
 
-const mapDispatchToProps = dispatch => {
-  return {
-  };
-}
-
-
-const SceneContainer = connect(mapStateToProps, mapDispatchToProps)(Scene);
+const SceneContainer = connect(mapStateToProps)(Scene);
 
 export default SceneContainer;
