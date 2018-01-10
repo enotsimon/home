@@ -3,29 +3,24 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 class TextEntry extends React.Component {
-  color_by_type(type) {
+  class_by_type(type) {
     switch (type) {
       case undefined:
-        return 'black';
+        return 'default-text';
       case 'mobiles':
-        return '#d76e00'; // kinda orange
+        return 'mobiles-text';
       case 'scenes':
-        return 'green';
+        return 'scenes-text';
       case 'furniture':
-        return 'blue';
+        return 'furniture-text';
       case 'items':
-        return 'darkgreen'; // 
+        return 'items-text';
       case 'info':
-        return '#b60aff' // kinda purple
+        return 'info-text';
       default:
         throw({msg: "unknown type", type});
     }
   }
-
-  font_weight_by_type(type) {
-    return type == undefined ? 'normal' : 'bold';
-  }
-
 
   parse_text_part(part) {
     let text, type, target;
@@ -41,8 +36,7 @@ class TextEntry extends React.Component {
 
   render() {
     let text_block = (e, i) => this.parse_paragraph(e).map((part, j) => (
-      // @TOSO move styles to CSS
-      <span key={''+i+'-'+j} style={{color: this.color_by_type(part.type), fontWeight: this.font_weight_by_type(part.type)}}>{part.text}</span>
+      <span key={''+i+'-'+j} className={this.class_by_type(part.type)}>{part.text}</span>
     ));
 
     if (this.props.children instanceof Array) {
