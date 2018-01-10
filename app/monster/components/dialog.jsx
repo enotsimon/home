@@ -4,6 +4,10 @@ import TextEntry from './text_entry';
 import StButton from './st_button';
 
 class Dialog extends React.Component {
+  mobile_name(name) {
+    return name ? (<span><TextEntry>{name}</TextEntry>:&nbsp;</span>) : '';
+  }
+
   render() {
     return (
       <div className="panel panel-success">
@@ -16,8 +20,10 @@ class Dialog extends React.Component {
           {/* TODO add player name so we can understand who's speaking */}
           <p><TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry></p>
 
-          {/* TODO add npc name so we can understand who's speaking */}
-          <p><TextEntry>{this.props.npc_sentence.phrases}</TextEntry></p>
+          <p>
+            {this.mobile_name(this.props.npc_name)}
+            <TextEntry>{this.props.npc_sentence.phrases}</TextEntry>
+          </p>
 
           {/* TODO add player name so we can understand who's speaking */}
           {this.props.player_sentences.map(sentence => {
@@ -40,6 +46,7 @@ Dialog.propTypes = {
     id: PropTypes.string.isRequired,
     phrases: PropTypes.any.isRequired,
   }).isRequired,
+  npc_name: PropTypes.any.isRequired,
   npc_sentence: PropTypes.shape({
     id: PropTypes.string.isRequired,
     phrases: PropTypes.any.isRequired,

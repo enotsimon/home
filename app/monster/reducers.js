@@ -21,6 +21,7 @@ let defaults = {
       current_element: null,
     },
     dialogs: {
+      id_mobile: null,
       player_prev_sentence: null,
       npc_sentence: null,
       player_sentences: [],
@@ -147,6 +148,9 @@ function main_menu(state = defaults.menues.main_menu, action) {
 function dialogs(state = defaults.menues.dialogs, action) {
   let new_state = {...state};
   switch (action.type) {
+    case actions.DIALOG_START:
+      new_state.id_mobile = action.id_mobile;
+      return new_state;
     case actions.DIALOG_FINISH:
       // flush dialogs state
       return defaults.menues.dialogs;

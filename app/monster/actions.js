@@ -69,8 +69,8 @@ export function change_global_flag(name, value) {
 }
 
 // dialogs //////////////////////
-export function dialog_start() {
-  return {type: DIALOG_START};
+export function dialog_start(id_mobile) {
+  return {type: DIALOG_START, id_mobile};
 }
 
 export function dialog_finish() {
