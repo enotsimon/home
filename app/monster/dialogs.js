@@ -6,7 +6,7 @@ export function initialize_dialog(id_mobile) {
   if (!game.config.dialogs.mobiles[id_mobile]) {
     throw({msg: 'unknown dialog owner', id_mobile});
   }
-  game.store.dispatch(actions.dialog_start());
+  game.store.dispatch(actions.dialog_start(id_mobile));
   let id_node = game.config.dialogs.mobiles[id_mobile].root_node;
   dialog_activate_npc_node(id_node);
 }
