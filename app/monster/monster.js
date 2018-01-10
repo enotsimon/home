@@ -33,10 +33,17 @@ export default game;
 // do it after export!!!
 game.init_game();
 
+// i hate this code
+let show_hide_block_phases_spec = {
+  show_scene_phases: ["idle", "dialog"],
+  show_dialog_phases: ["dialog"],
+  show_main_menu_phases: ["idle"],
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(
     <Provider store={game.store}>
-      <App />
+      <App {...show_hide_block_phases_spec} />
     </Provider>,
     document.querySelector('#app')
   );
