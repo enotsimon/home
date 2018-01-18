@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-import * as container_utils from './container_utils';
+import * as container_util from './container_util';
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -71,11 +71,11 @@ function flags(state = defaults.flags, action) {
 function containers(state = defaults.containers, action) {
   switch (action.type) {
     case actions.CONTAINER_INIT:
-      return container_utils.reduce_init_container(state, action.id_container);
+      return container_util.reduce_init_container(state, action.id_container);
     case actions.CONTAINER_ADD_ITEM:
-      return container_utils.reduce_add_item(state, action.container, action.item);
+      return container_util.reduce_add_item(state, action.container, action.item);
     case actions.CONTAINER_REMOVE_ITEM:
-      return container_utils.reduce_remove_item(state, action.container, action.item);
+      return container_util.reduce_remove_item(state, action.container, action.item);
     default:
       return state;
   }
