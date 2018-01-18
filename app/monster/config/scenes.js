@@ -3,14 +3,14 @@ const scenes = {
   mage_room: {
     name: 'mage_room',
     mobiles: ["mage"],
-    furniture: ["chair"],
+    furniture: ["mage_room_chair"],
     links: ["mage_home_hall", "mage_home_vallo_room"],
   },
 
   mage_home_hall: {
     name: 'mage_home_hall',
     mobiles: ["tricky_bell"],
-    furniture: ["mage_home_door", "mage_home_cellar_door", "mage_home_shelf"],
+    furniture: ["mage_home_hall_door", "mage_home_hall_cellar_door", "mage_home_hall_shelf"],
     links: ['mage_room', 'mage_home_cellar'], // mage_home_outdoor
   },
 
