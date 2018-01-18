@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import MainMenuContainer from './main_menu_container';
 import SceneContainer from './scene_container';
 import DialogContainer from './dialog_container';
+import InspectFurnitureContainer from './inspect_furniture_container';
 import ShowHideBlock from './show_hide_block';
 
 class App extends React.Component {
@@ -20,6 +21,10 @@ class App extends React.Component {
 
             <ShowHideBlock show_on_phases={this.props.show_dialog_phases}>
               <DialogContainer />
+            </ShowHideBlock>
+
+            <ShowHideBlock show_on_phases={this.props.show_furniture_phases}>
+              <InspectFurnitureContainer />
             </ShowHideBlock>
 
             <ShowHideBlock show_on_phases={this.props.show_main_menu_phases}>
@@ -38,6 +43,7 @@ App.propTypes = {
   show_scene_phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   show_dialog_phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   show_main_menu_phases: PropTypes.arrayOf(PropTypes.string).isRequired,
+  show_furniture_phases: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default App;

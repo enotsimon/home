@@ -13,6 +13,8 @@ export const DIALOG_START = 'dialog_start';
 export const DIALOG_FINISH = 'dialog_finish';
 export const DIALOG_ACTIVATE_NPC_SENTENCE = 'dialog_activate_npc_sentence';
 export const DIALOG_ACTIVATE_PLAYER_SENTENCES = 'dialog_activate_player_sentences';
+export const INSPECT_BEGIN = 'inspect_begin';
+export const INSPECT_END = 'inspect_end';
 
 export const ERROR_CHANGE_SCENE_UNKNOWN_SCENE = 'error_change_scene_unknown_scene';
 export const ERROR_CHANGE_SCENE_NOT_LINKED_SCENE = 'error_change_scene_not_linked_scene';
@@ -85,6 +87,16 @@ export function dialog_activate_player_sentences(sentences) {
   return {type: DIALOG_ACTIVATE_PLAYER_SENTENCES, sentences};
 }
 
+//////////////////////////////////////////
+export function inspect_begin(id_furniture) {
+  return {type: INSPECT_BEGIN, id_furniture};
+}
+
+export function inspect_end() {
+  return {type: INSPECT_END};
+}
+
+
 /////////////////////////////////
 // bound action creators
 /////////////////////////////////
@@ -101,6 +113,7 @@ export function bound_change_scene(scene_name) {
     return false;
   }
 
+  game.store.dispatch(inspect_end()); // ???
   game.store.dispatch(change_scene(scene_name));
   // it has changed! dont forget it!
   current_scene = game.config.scenes[game.store.getState().current_scene_name];
@@ -129,10 +142,15 @@ export function main_menu_subelement_click(id) {
 export function bound_main_menu_action(id_subelement) {
   let current_element = game.store.getState().menues.main_menu.current_element;
   game.store.dispatch(main_menu_subelement_click(id_subelement));
-  if (current_element == 'go_to') {
-    bound_change_scene(id_subelement);
-  } else if (current_element == 'speak_to') {
-    initialize_dialog(id_subelement);
+  switch (current_element) {
+    case 'go_to':
+      return bound_change_scene(id_subelement);
+    case 'speak_to':
+      return initialize_dialog(id_subelement);
+    case 'inspect':
+      game.store.dispatch(inspect_begin(id_subelement));
+    default:
+      return null;
   }
 }
 

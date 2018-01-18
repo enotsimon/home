@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import * as actions from './actions';
 
 let defaults = {
-  game_phase: 'idle', // idle, dialog, alchemy, travel_map, interaction (with container), inventory?
+  game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
   current_scene_name: null,
   money: {
     fishes: 0,
@@ -12,6 +12,9 @@ let defaults = {
     body: "dirty_dress",
   },
   inventory: [],
+  inspect: {
+    id_furniture: null,
+  },
   flags: {},
 
   // UI react parts
@@ -42,6 +45,10 @@ function game_phase(state = defaults.game_phase, action) {
       return 'dialog';
     case actions.DIALOG_FINISH:
       return 'idle';
+    case actions.INSPECT_BEGIN:
+      return 'inspect';
+    case actions.INSPECT_END: // ???
+      return 'idle';
     default:
       return state;
   }
@@ -67,6 +74,16 @@ function current_scene_name(state = defaults.current_scene_name, action) {
   }
 }
 
+function inspect(state = defaults.inspect, action) {
+  switch (action.type) {
+    case actions.INSPECT_BEGIN:
+      return {...state, id_furniture: action.id_furniture};
+    case actions.INSPECT_END: // ???
+      return {...state, id_furniture: null};
+    default:
+      return state;
+  }
+}
 
 function money(state = defaults.money, action) {
   switch (action.type) {
@@ -123,6 +140,7 @@ function main_menu(state = defaults.menues.main_menu, action) {
         elements: [
           {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
           {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
+          {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
         ],
         current_element: null,
       };
@@ -187,6 +205,7 @@ const root_reducer = combineReducers({
   game_phase,
   current_scene_name,
   flags,
+  inspect,
   money,
   clothes,
   user_notification,

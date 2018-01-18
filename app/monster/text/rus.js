@@ -100,10 +100,22 @@ const text = {
   // furniture
   //////////////////////////////////////////////////////
   furniture: {
-    chair: "кресло",
-    mage_home_door: "входная дверь",
-    mage_home_cellar_door: "дверь в подвал",
-    mage_home_shelf: "шкаф",
+    mage_room_chair: {
+      name: "кресло",
+      description: "TEMP кресло {мага|mobiles|mage} тестовое описание",
+    },
+    mage_home_hall_door: {
+      name: "входная дверь",
+      description: "TEMP крепкая массивная дверь в дом {мага|mobiles|mage}. такая выдержит любой натиск",
+    },
+    mage_home_hall_cellar_door: {
+      name: "дверь в подвал",
+      description: "дверь ведущая вниз, в подвал, где живет ратни",
+    },
+    mage_home_hall_shelf: {
+      name: "шкаф",
+      description: "TEMP шкаф шкаф",
+    },
   },
 
 
@@ -138,6 +150,7 @@ const text = {
       controls: {
         go_to: "идти в ...", 
         speak_to: "говорить с ...",
+        inspect: "осмотреть ...", // ???
         interact: "взаимодействовать с ...",
         use_on_something: "применить ... к чему-то ...",
         use_on_somebody: "применить ... к кому-то ...",

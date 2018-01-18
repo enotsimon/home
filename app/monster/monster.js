@@ -35,9 +35,10 @@ game.init_game();
 
 // i hate this code
 let show_hide_block_phases_spec = {
-  show_scene_phases: ["idle", "dialog"],
+  show_scene_phases: ["idle", "dialog", "inspect"],
   show_dialog_phases: ["dialog"],
-  show_main_menu_phases: ["idle"],
+  show_main_menu_phases: ["idle", "inspect"],
+  show_furniture_phases: ["inspect"],
 };
 
 document.addEventListener('DOMContentLoaded', () => {
