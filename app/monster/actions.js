@@ -1,6 +1,6 @@
 
 import game from './monster';
-import {initialize_dialog} from './dialogs';
+import * as dialog_util from './dialog_util';
 
 export const CHANGE_SCENE = 'change_scene';
 export const REBUILD_MAIN_MENU = 'rebuild_main_menu';
@@ -163,7 +163,7 @@ export function bound_main_menu_action(id_subelement) {
     case 'go_to':
       return bound_change_scene(id_subelement);
     case 'speak_to':
-      return initialize_dialog(id_subelement);
+      return dialog_util.start_dialog(id_subelement);
     case 'inspect':
       game.store.dispatch(inspect_begin(id_subelement));
     default:

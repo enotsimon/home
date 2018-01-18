@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import Dialog from 'monster/components/dialog';
 import game from 'monster/monster';
-import {dialog_handle_chosen_player_sentence} from 'monster/dialogs';
+import * as dialog_util from 'monster/dialog_util';
 
 function sentence_to_props(sentence) {
   if (!game.config.text.dialogs[sentence.phrases]) {
@@ -37,7 +37,7 @@ const mapStateToProps = state => {
     player_prev_sentence,
     npc_sentence,
     player_sentences,
-    on_player_sentence_click: dialog_handle_chosen_player_sentence,
+    on_player_sentence_click: dialog_util.handle_player_sentence,
   };
 }
 

@@ -2,7 +2,7 @@
 import game from './monster';
 import * as actions from './actions';
 
-export function initialize_dialog(id_mobile) {
+export function start_dialog(id_mobile) {
   if (!game.config.dialogs.mobiles[id_mobile]) {
     throw({msg: 'unknown dialog owner', id_mobile});
   }
@@ -11,7 +11,7 @@ export function initialize_dialog(id_mobile) {
   dialog_activate_npc_node(id_node);
 }
 
-export function dialog_handle_chosen_player_sentence(id_sentence) {
+export function handle_player_sentence(id_sentence) {
   if (!game.config.dialogs.sentences[id_sentence]) {
     throw({msg: 'current dialog sentence not found in dialogs config', id_sentence});
   }
