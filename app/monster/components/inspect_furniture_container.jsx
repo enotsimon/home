@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import InspectFurniture from 'monster/components/inspect_furniture';
 import game from 'monster/monster';
-import {dialog_handle_chosen_player_sentence} from 'monster/dialogs';
 
 const state_to_props = state => {
   let text = game.config.text.furniture[state.inspect.id_furniture];
