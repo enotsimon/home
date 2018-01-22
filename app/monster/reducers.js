@@ -235,6 +235,7 @@ const root_reducer = combineReducers({
   }),
   game_phase,
   current_scene_name,
+  containers,
   items,
   flags,
   inspect,
