@@ -3,18 +3,17 @@ import game from './monster';
 import * as actions from './actions';
 
 export function dispatch_init(id) {
-  let containers = game.store.getState();
+  let containers = game.store.getState().containers;
   if (containers.id) {
     // throw?
     throw({msg: 'cannot init container, given id already exists', id});
   }
-  //return new Container(id);
   game.store.dispatch(container_init(id));
 }
 
 // item or id_item???
 export function dispatch_add_item(id_container, id_item) {
-  let containers = game.store.getState();
+  let containers = game.store.getState().containers;
   let container = containers[id_container];
   if (!container) {
     // throw?
@@ -31,7 +30,7 @@ export function dispatch_add_item(id_container, id_item) {
 
 // item or id_item???
 export function dispatch_remove_item(id_container, id_item) {
-  let containers = game.store.getState();
+  let containers = game.store.getState().containers;
   let container = containers[id_container];
   if (!container) {
     // throw?
