@@ -18,6 +18,9 @@ export const INSPECT_END = 'inspect_end';
 export const CONTAINER_INIT = 'container_init';
 export const CONTAINER_ADD_ITEM = 'container_add_item';
 export const CONTAINER_REMOVE_ITEM = 'container_remove_item';
+export const ITEM_CREATE = 'item_create';
+export const ITEM_DELETE = 'item_delete';
+export const ITEM_CHANGE_CONTAINER = 'item_change_container';
 
 export const ERROR_CHANGE_SCENE_UNKNOWN_SCENE = 'error_change_scene_unknown_scene';
 export const ERROR_CHANGE_SCENE_NOT_LINKED_SCENE = 'error_change_scene_not_linked_scene';
@@ -112,6 +115,18 @@ export function container_remove_item(id_container, id_item) {
   return {type: CONTAINER_REMOVE_ITEM, id_container, id_item};
 }
 
+// items //////////////////////////////
+export function item_create(id_item, item_type, id_container) {
+  return {type: ITEM_CREATE, id_item, item_type, id_container};
+}
+
+export function item_delete(id_item) {
+  return {type: ITEM_DELETE, id_item};
+}
+
+export function item_change_container(id_item, id_container) {
+  return {type: ITEM_CHANGE_CONTAINER, id_item, id_container};
+}
 ///////////////////////////////////////
 
 /////////////////////////////////

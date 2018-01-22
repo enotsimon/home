@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import * as actions from './actions';
 
 import * as container_util from './container_util';
+import * as item_util from './item_util';
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -19,6 +20,7 @@ let defaults = {
   },
   flags: {},
   containers: {},
+  items: {},
 
   // UI react parts
   menues: {
@@ -76,6 +78,19 @@ function containers(state = defaults.containers, action) {
       return container_util.reduce_add_item(state, action.container, action.item);
     case actions.CONTAINER_REMOVE_ITEM:
       return container_util.reduce_remove_item(state, action.container, action.item);
+    default:
+      return state;
+  }
+}
+
+function items(state = defaults.items, action) {
+  switch (action.type) {
+    case actions.ITEM_CREATE:
+      return item_util.reduce_item_create(state, action.id_item, action.item_type, action.id_container);
+    case actions.ITEM_DELETE:
+      return item_util.reduce_item_delete(state, action.id_item);
+    case actions.ITEM_CHANGE_CONTAINER:
+      return item_util.reduce_item_change_container(state, action.id_item, action.id_container);
     default:
       return state;
   }
@@ -220,6 +235,7 @@ const root_reducer = combineReducers({
   }),
   game_phase,
   current_scene_name,
+  items,
   flags,
   inspect,
   money,
