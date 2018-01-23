@@ -17,7 +17,14 @@ const scenes = {
   mage_home_cellar: {
     name: 'mage_home_cellar',
     mobiles: [],
-    furniture: ["chest"],
+    furniture: [
+      "mage_home_cellar_blue_seaweeds",
+      "mage_home_cellar_mushrooms",
+      "mage_home_cellar_well",
+      "mage_home_cellar_kitchen",
+      "mage_home_cellar_bed",
+      "mage_home_cellar_chest",
+    ],
     links: ['mage_home_hall'],
   },
 
