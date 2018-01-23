@@ -60,7 +60,7 @@ const text = {
       name: 'дом мага. подвал',
       description: [
         'подвал в доме мага. здесь очень темно, весь он освещается тусклым светом {синих водорослей|furniture|mage_home_cellar_blue_seaweeds} которые растут сами собой на каком-то подозрительном хламе. кажется из него так же торчат {грибы|furniture|mage_home_cellar_mushrooms} или что-то похожее',
-        'здесь есть {колодец|furniture|mage_home_cellar_well} и оборудована {кухня|furniture|mage_home_cellar_kitchen}. вся она завалена {бутылками|furniture|mage_home_cellar_bottles} из-под {масла колючки|info|thorny_oil} здесь ратни жила все последние годы, здесь стоит ее {тесная кроватка|furniture|rathni_bed} и {сундук|furniture|rathni_chest} с ее немногочисленными пожитками',
+        'здесь есть {колодец|furniture|mage_home_cellar_well} и оборудована {кухня|furniture|mage_home_cellar_kitchen}. вся она завалена {бутылками|info|bottle} из-под {масла колючки|info|thorny_oil} здесь ратни жила все последние годы, здесь стоит ее {тесная кроватка|furniture|mage_home_cellar_bed} и {сундук|furniture|mage_home_cellar_chest} с ее немногочисленными пожитками',
         'единственный выход отсюда -- наверх по лестнице в {холл|scenes|mage_home_hall}',
       ],
     },
