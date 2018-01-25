@@ -1,7 +1,8 @@
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import MainMenu from './main_menu';
-import {main_menu_click, bound_main_menu_action} from 'monster/actions';
+import {main_menu_click, main_menu_subelement_click, inspect_begin, bound_change_scene} from 'monster/actions';
 import game from 'monster/monster';
+import * as dialog_util from '../dialog_util'
 
 
 const mapStateToProps = state => {
@@ -28,8 +29,19 @@ const mapDispatchToProps = dispatch => {
     on_element_click: id => {
       dispatch(main_menu_click(id));
     },
-    on_subelement_click: id => {
-      bound_main_menu_action(id);
+    on_subelement_click: id_subelement => {
+      let current_element = game.store.getState().menues.main_menu.current_element;
+      dispatch(main_menu_subelement_click(id_subelement));
+      switch (current_element) {
+        case 'go_to':
+          return bound_change_scene(id_subelement);
+        case 'speak_to':
+          return dialog_util.start_dialog(id_subelement);
+        case 'inspect':
+          return dispatch(inspect_begin(id_subelement));
+        default:
+          throw({msg: 'unknown main menu entry', entry: current_element});
+      }
     },
   };
 }
