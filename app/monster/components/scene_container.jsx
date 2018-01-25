@@ -3,27 +3,24 @@ import Scene from 'monster/components/scene';
 import game from 'monster/monster';
 
 
-const mapStateToProps = state => {
-  // TODO move it all from here
-  let description = '';
+const state_to_props = state => {
+  let description = ''
+  let name = ''
   if (state.current_scene_name) {
-    if (!game.config.text.scenes[state.current_scene_name]) {
-      description = 'error -- no scene found in game.config.text.scenes by key ' + state.current_scene_name;
-    }
-    if (!game.config.text.scenes[state.current_scene_name].description) {
-      description = 'error -- no scene description in game.config.text.scenes by key ' + state.current_scene_name;
+    let stage_text = game.config.text.scenes[state.current_scene_name]
+    if (!stage_text) {
+      throw({msg: 'no scene found in game.config.text.scenes by key', current_scene_name: state.current_scene_name});
     }
     description = game.config.text.scenes[state.current_scene_name].description;
-  } else {
-    description = 'error -- state.current_scene_name';
+    name = game.config.text.scenes[state.current_scene_name].name;
   }
   return {
     id: state.current_scene_name,
-    name: state.current_scene_name,
-    description: description,
+    name,
+    description,
   };
 }
 
-const SceneContainer = connect(mapStateToProps)(Scene);
+const SceneContainer = connect(state_to_props)(Scene);
 
 export default SceneContainer;
