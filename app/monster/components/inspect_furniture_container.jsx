@@ -3,13 +3,14 @@ import InspectFurniture from 'monster/components/inspect_furniture';
 import game from 'monster/monster';
 
 const state_to_props = state => {
-  let text = game.config.text.furniture[state.inspect.id_furniture];
+  let id_furniture = state.menues.inspect_furniture.id_furniture
+  let text = game.config.text.furniture[id_furniture];
   if (!text) {
-    throw({msg: "furniture text not found in config", id_furniture: state.inspect.id_furniture});
+    throw({msg: "furniture text not found in config", id_furniture});
   }
-  let container = state.containers[state.inspect.id_furniture];
+  let container = state.containers[id_furniture];
   if (!container) {
-    throw({msg: "container not found by id", id_furniture: state.inspect.id_furniture});
+    throw({msg: "container not found by id", id_furniture});
   }
   return {
     furniture_name: text.name,
