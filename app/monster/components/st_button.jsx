@@ -1,34 +1,33 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const btn_class = (active) => {
-  let btn_type = !active ? 'btn-default' : 'btn-success';
-  return `btn ${btn_type} btn-block`;
-}
+const StButton = (props) => {
+  let {active: active = false, enabled: enabled = true, block: block = true} = props
+  let btn_type = !active ? 'btn-default' : 'btn-success'
+  let btn_block = block ? 'btn-block' : ''
+  let btn_class = `btn ${btn_type} ${btn_block}`
 
-const StButton = ({on_click: on_click, active: active = false, enabled: enabled = true, children: children}) => {
   return (
     <button
       type="button"
-      className={btn_class(active)}
-      onClick={on_click}
+      className={btn_class}
+      onClick={props.on_click}
       // by default button is enabled
       disabled={enabled === false ? 'disabled' : ''}
     >
       <div className='text-left'>
-        {children}
+        {props.children}
       </div>
     </button>
   );
 }
 
 StButton.propTypes = {
-  //id: PropTypes.string.isRequired,
   on_click: PropTypes.func.isRequired,
   // active only means it is highlighted with green color
   active: PropTypes.bool,
   enabled: PropTypes.bool,
+  block: PropTypes.bool,
 };
 
 export default StButton;

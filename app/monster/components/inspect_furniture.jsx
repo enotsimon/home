@@ -3,6 +3,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import TextEntry from './text_entry'
 import {SimplePanelSuccess} from 'common/components/panel'
+import StButton from './st_button'
+
+const on_item_click = (id_item) => {
+  console.log('on_item_click', id_item);
+}
 
 const InspectFurniture = (props) => {
   return (
@@ -14,7 +19,11 @@ const InspectFurniture = (props) => {
       <div className="spacer"></div>
 
       <SimplePanelSuccess title={props.items_list_text}>
-        {props.items_list.map(item => <TextEntry key={item}>{item}</TextEntry>)}
+        {props.items_list.map(id_item =>
+          <StButton key={id_item} on_click={on_item_click} block={false}>
+            {id_item}
+          </StButton>
+        )}
       </SimplePanelSuccess>
     </SimplePanelSuccess>
   );
