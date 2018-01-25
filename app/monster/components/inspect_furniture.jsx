@@ -2,21 +2,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import TextEntry from './text_entry'
-import Panel from 'common/components/panel'
+import {PanelSuccess, PanelTitle, PanelBody} from 'common/components/panel'
 
 const InspectFurniture = (props) => {
   return (
-    <Panel header={props.furniture_name}>
-      <TextEntry>
-        {props.description}
-      </TextEntry>
+    <PanelSuccess>
+      <PanelTitle>{props.furniture_name}</PanelTitle>
+      <PanelBody>
+        <TextEntry>
+          {props.description}
+        </TextEntry>
 
-      <div className="spacer"></div>
+        <div className="spacer"></div>
 
-      <Panel header={props.items_list_text}>
-        {props.items_list.map(item => <TextEntry key={item}>{item}</TextEntry>)}
-      </Panel>
-    </Panel>
+        <PanelSuccess>
+          <PanelTitle><TextEntry>{props.items_list_text}</TextEntry></PanelTitle>
+          <PanelBody>
+            {props.items_list.map(item => <TextEntry key={item}>{item}</TextEntry>)}
+          </PanelBody>
+        </PanelSuccess>
+      </PanelBody>
+    </PanelSuccess>
   );
 }
 
