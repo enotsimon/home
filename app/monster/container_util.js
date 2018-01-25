@@ -8,7 +8,7 @@ export function dispatch_init(id) {
     // throw?
     throw({msg: 'cannot init container, given id already exists', id});
   }
-  game.store.dispatch(container_init(id));
+  game.store.dispatch(actions.container_init(id));
 }
 
 // item or id_item???
@@ -49,21 +49,23 @@ export function dispatch_remove_item(id_container, id_item) {
 // those funcs are reducers! so clone objects!
 //
 export function reduce_init_container(state, id_container) {
-  return {...state, contaner: new Container(id_container)};
+  let new_state = {...state};
+  new_state[id_container] = new Container(id_container)
+  return new_state;
 }
 
 export function reduce_add_item(state, id_container, id_item) {
-  new_state = {...state};
+  let new_state = {...state};
   let container = {...new_state[id_container]};
-  container.push(id_item);
+  container.items.push(id_item);
   new_state[container.id] = container;
   return new_state;
 }
 
 export function reduce_remove_item(state, id_container, id_item) {
-  new_state = {...state};
+  let new_state = {...state};
   let container = {...new_state[id_container]};
-  Util.remove_element(id_item, container);
+  Util.remove_element(id_item, container.items);
   new_state[container.id] = container;
   return new_state;
 }

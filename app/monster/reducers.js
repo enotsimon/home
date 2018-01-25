@@ -75,9 +75,9 @@ function containers(state = defaults.containers, action) {
     case actions.CONTAINER_INIT:
       return container_util.reduce_init_container(state, action.id_container);
     case actions.CONTAINER_ADD_ITEM:
-      return container_util.reduce_add_item(state, action.container, action.item);
+      return container_util.reduce_add_item(state, action.id_container, action.id_item);
     case actions.CONTAINER_REMOVE_ITEM:
-      return container_util.reduce_remove_item(state, action.container, action.item);
+      return container_util.reduce_remove_item(state, action.id_container, action.id_item);
     default:
       return state;
   }
