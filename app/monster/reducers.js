@@ -15,9 +15,6 @@ let defaults = {
     body: "dirty_dress",
   },
   inventory: [],
-  inspect: {
-    id_furniture: null,
-  },
   flags: {},
   containers: {},
   items: {},
@@ -33,6 +30,9 @@ let defaults = {
       player_prev_sentence: null,
       npc_sentence: null,
       player_sentences: [],
+    },
+    inspect_furniture: {
+      id_furniture: null,
     },
   },
   user_notification: {
@@ -105,7 +105,7 @@ function current_scene_name(state = defaults.current_scene_name, action) {
   }
 }
 
-function inspect(state = defaults.inspect, action) {
+function inspect_furniture(state = defaults.menues.inspect_furniture, action) {
   switch (action.type) {
     case actions.INSPECT_BEGIN:
       return {...state, id_furniture: action.id_furniture};
@@ -232,13 +232,13 @@ const root_reducer = combineReducers({
   menues: combineReducers({
     main_menu,
     dialogs,
+    inspect_furniture,
   }),
   game_phase,
   current_scene_name,
   containers,
   items,
   flags,
-  inspect,
   money,
   clothes,
   user_notification,
