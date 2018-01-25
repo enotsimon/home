@@ -1,6 +1,5 @@
 
 import game from './monster';
-import * as dialog_util from './dialog_util';
 
 export const CHANGE_SCENE = 'change_scene';
 export const REBUILD_MAIN_MENU = 'rebuild_main_menu';
@@ -167,22 +166,3 @@ export function main_menu_click(id) {
 export function main_menu_subelement_click(id) {
   return {type: MAIN_MENU_SUBELEMENT_CLICK, id};
 }
-
-/////////////////////////////////
-// UI bound action creators
-/////////////////////////////////
-export function bound_main_menu_action(id_subelement) {
-  let current_element = game.store.getState().menues.main_menu.current_element;
-  game.store.dispatch(main_menu_subelement_click(id_subelement));
-  switch (current_element) {
-    case 'go_to':
-      return bound_change_scene(id_subelement);
-    case 'speak_to':
-      return dialog_util.start_dialog(id_subelement);
-    case 'inspect':
-      game.store.dispatch(inspect_begin(id_subelement));
-    default:
-      return null;
-  }
-}
-
