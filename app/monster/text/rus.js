@@ -131,7 +131,8 @@ const text = {
   // items
   //////////////////////////////////////////////////////
   items: {
-    empty_bottle: "пустая бутылка",
+    bottle: "пустая бутылка",
+    fearful_beasts_book: 'книга "ужасные твари темных глубин"',
   },
 
 
@@ -167,6 +168,9 @@ const text = {
         view_inventory: "открыть инвентарь",
         inspect: "осмотреть ...",
       },
+    },
+    inspect_furniture: {
+      items_list: 'предметы',
     },
   },
 };

@@ -28,3 +28,7 @@
   color: #b60aff; /* kinda purple */
   font-weight: bold;
 }
+
+.spacer {
+  margin: 25px;
+}

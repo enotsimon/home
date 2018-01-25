@@ -10,7 +10,7 @@ import * as container_util from './container_util';
 //
 export function item_create(type, id_container) {
   let id_item = type + '-' + uuidv1();
-  game.store.dispatch(actions.item_create(type, id_container));
+  game.store.dispatch(actions.item_create(id_item, type, id_container));
   container_util.dispatch_add_item(id_container, id_item);
 }
 
