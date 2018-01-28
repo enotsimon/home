@@ -3,6 +3,7 @@ const furniture = {
   mage_room_table: {
     items: [
       {type: "bottle"},
+      {type: "blank_scroll"},
     ],
   },
   mage_room_shelf: {
