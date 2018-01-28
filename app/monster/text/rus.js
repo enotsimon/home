@@ -172,6 +172,8 @@ const text = {
     },
     inspect_furniture: {
       items_list: 'предметы',
+      pick_up_text: 'забрать',
+      inspect_text: 'осмотреть',
     },
   },
 };

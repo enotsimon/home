@@ -158,6 +158,7 @@ export function bound_change_scene(scene_name) {
 /////////////////////////////////////////
 export const MAIN_MENU_CLICK = 'main_menu_click';
 export const MAIN_MENU_SUBELEMENT_CLICK = 'main_menu_subelement_click';
+export const INSPECT_FURNITURE_ITEM_CLICK = 'inspect_furniture_item_click';
 
 export function main_menu_click(id) {
   return {type: MAIN_MENU_CLICK, id};
@@ -165,4 +166,8 @@ export function main_menu_click(id) {
 
 export function main_menu_subelement_click(id) {
   return {type: MAIN_MENU_SUBELEMENT_CLICK, id};
+}
+
+export function inspect_furniture_item_click(id_item) {
+  return {type: INSPECT_FURNITURE_ITEM_CLICK, id_item};
 }
