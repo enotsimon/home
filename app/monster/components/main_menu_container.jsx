@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import MainMenu from './main_menu';
 import {main_menu_click, main_menu_subelement_click, inspect_begin, bound_change_scene} from 'monster/actions';
 import game from 'monster/monster';
-import * as dialog_util from '../dialog_util'
+import {start_dialog} from 'monster/lib/dialogs'
 
 
 const mapStateToProps = state => {
@@ -36,7 +36,7 @@ const mapDispatchToProps = dispatch => {
         case 'go_to':
           return bound_change_scene(id_subelement);
         case 'speak_to':
-          return dialog_util.start_dialog(id_subelement);
+          return start_dialog(id_subelement);
         case 'inspect':
           return dispatch(inspect_begin(id_subelement));
         default:

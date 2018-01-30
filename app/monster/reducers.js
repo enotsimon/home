@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-import * as container_util from './container_util';
-import * as item_util from './item_util';
+import * as container_funcs from './lib/containers';
+import * as item_funcs from './lib/items'
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -74,11 +74,11 @@ function flags(state = defaults.flags, action) {
 function containers(state = defaults.containers, action) {
   switch (action.type) {
     case actions.CONTAINER_INIT:
-      return container_util.reduce_init_container(state, action.id_container);
+      return container_funcs.reduce_init_container(state, action.id_container);
     case actions.CONTAINER_ADD_ITEM:
-      return container_util.reduce_add_item(state, action.id_container, action.id_item);
+      return container_funcs.reduce_add_item(state, action.id_container, action.id_item);
     case actions.CONTAINER_REMOVE_ITEM:
-      return container_util.reduce_remove_item(state, action.id_container, action.id_item);
+      return container_funcs.reduce_remove_item(state, action.id_container, action.id_item);
     default:
       return state;
   }
@@ -87,11 +87,11 @@ function containers(state = defaults.containers, action) {
 function items(state = defaults.items, action) {
   switch (action.type) {
     case actions.ITEM_CREATE:
-      return item_util.reduce_item_create(state, action.id_item, action.item_type, action.id_container);
+      return item_funcs.reduce_item_create(state, action.id_item, action.item_type, action.id_container);
     case actions.ITEM_DELETE:
-      return item_util.reduce_item_delete(state, action.id_item);
+      return item_funcs.reduce_item_delete(state, action.id_item);
     case actions.ITEM_CHANGE_CONTAINER:
-      return item_util.reduce_item_change_container(state, action.id_item, action.id_container);
+      return item_funcs.reduce_item_change_container(state, action.id_item, action.id_container);
     default:
       return state;
   }

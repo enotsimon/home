@@ -1,6 +1,6 @@
 import Util from "common/util";
-import game from './monster';
-import * as actions from './actions';
+import game from '../monster';
+import * as actions from '../actions';
 
 export function dispatch_init(id) {
   let containers = game.store.getState().containers;
