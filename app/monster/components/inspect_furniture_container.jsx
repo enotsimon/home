@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import InspectFurniture from 'monster/components/inspect_furniture';
 import game from 'monster/monster';
-import {inspect_furniture_item_click} from 'monster/actions';
+import {inspect_furniture_item_click, inspect_furniture_inventory_item_click} from 'monster/actions'
 import {INVENTORY} from 'monster/lib/containers'
 
 const get_item_data = (id_item, state) => {
@@ -38,13 +38,14 @@ const state_to_props = state => {
     items_list: container.items.map(id_item => get_item_data(id_item, state)),
     inventory_items_list: inventory.items.map(id_item => get_item_data(id_item, state)),
     active_item: state.menues.inspect_furniture.id_item,
+    inventory_active_item: state.menues.inspect_furniture.inventory_id_item,
   };
 }
 
 const dispatch_to_props = dispatch => {
   return {
-    on_item_click: id_item => {
-      dispatch(inspect_furniture_item_click(id_item));
+    on_item_click: (id_item, is_inventory) => {
+      dispatch(is_inventory ? inspect_furniture_inventory_item_click(id_item) : inspect_furniture_item_click(id_item));
     },
     on_pick_up_item_click: id_item => {
       console.log('on_pick_up_item_click', id_item);
