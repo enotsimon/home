@@ -16,7 +16,7 @@ import dialogs from 'monster/config/dialogs';
 import furniture from 'monster/config/furniture';
 
 import {INVENTORY, container_dispatch_init} from './lib/containers'
-import * as item_funcs from './lib/items'
+import {item_create} from './lib/items'
 
 class Game {
   init_game() {
@@ -51,7 +51,7 @@ class Game {
       
       for (let id_item in furniture_item.items) {
         let item_config = furniture_item.items[id_item];
-        item_funcs.item_create(item_config.type, id_container);
+        item_create(item_config.type, id_container);
       }
     }
   }
