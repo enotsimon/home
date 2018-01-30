@@ -133,6 +133,8 @@ const text = {
   items: {
     bottle: "пустая бутылка",
     blank_scroll: "чистый свиток заклинания",
+    humble_dress: "скромное платье",
+    dried_fish: "сушеная рыба",
     fearful_beasts_book: 'книга "ужасные твари темных глубин"',
   },
 
@@ -172,8 +174,10 @@ const text = {
     },
     inspect_furniture: {
       items_list: 'предметы',
-      pick_up_text: 'забрать',
-      inspect_text: 'осмотреть',
+      pick_up: 'забрать',
+      drop: 'выложить',
+      inspect: 'осмотреть',
+      inventory: 'инвентарь',
     },
   },
 };

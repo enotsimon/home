@@ -15,7 +15,7 @@ import scenes from 'monster/config/scenes';
 import dialogs from 'monster/config/dialogs';
 import furniture from 'monster/config/furniture';
 
-import {INVENTORY, container_dispatch_init} from './lib/containers'
+import {INVENTORY, container_dispatch_init, container_dispatch_add_item} from './lib/containers'
 import {item_create} from './lib/items'
 
 class Game {
@@ -42,7 +42,11 @@ class Game {
 
   create_containers_and_items() {
     // TODO add special containers -- alchemy menu container, ?
-    container_dispatch_init(INVENTORY);
+    container_dispatch_init(INVENTORY)
+    // TEMP DEBUG
+    item_create('humble_dress', INVENTORY)
+    item_create('dried_fish', INVENTORY)
+
 
     for (let id_furniture in this.config.furniture) {
       let furniture_item = this.config.furniture[id_furniture];
