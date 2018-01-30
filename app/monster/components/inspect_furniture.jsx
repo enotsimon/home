@@ -33,6 +33,26 @@ const InspectFurniture = (props) => {
           </div>
         }
       </SimplePanelSuccess>
+      {/* as you can see its a copy-paste of code above */}
+      <SimplePanelSuccess title={props.inventory_text}>
+        {props.inventory_items_list.map(e => {
+          let active = e.id_item === props.active_item
+          return (<StButton key={e.id_item} on_click={() => props.on_item_click(e.id_item)} block={false} active={active}>
+            {e.text}
+          </StButton>)
+        })}
+        {props.active_item &&
+          <div>
+            <div className='spacer'></div>
+            <StButton on_click={() => props.on_drop_item_click(props.active_item)} block={false}>
+              {props.drop_text}
+            </StButton>
+            <StButton on_click={() => props.on_inspect_item_click(props.active_item)} block={false}>
+              {props.inspect_text}
+            </StButton>
+          </div>
+        }
+      </SimplePanelSuccess>
     </SimplePanelSuccess>
   );
 }
@@ -40,10 +60,18 @@ const InspectFurniture = (props) => {
 InspectFurniture.propTypes = {
   items_list_text: PropTypes.string.isRequired,
   pick_up_text: PropTypes.string.isRequired,
+  drop_text: PropTypes.string.isRequired,
   inspect_text: PropTypes.string.isRequired,
+  inventory_text: PropTypes.string.isRequired,
   furniture_name: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
   items_list: PropTypes.arrayOf(
+    PropTypes.shape({
+      id_item: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  inventory_items_list: PropTypes.arrayOf(
     PropTypes.shape({
       id_item: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
