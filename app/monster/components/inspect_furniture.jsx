@@ -17,7 +17,7 @@ const InspectFurniture = (props) => {
       <SimplePanelSuccess title={props.items_list_text}>
         {props.items_list.map(e => {
           let active = e.id_item === props.active_item
-          return (<StButton key={e.id_item} on_click={() => props.on_item_click(e.id_item)} block={false} active={active}>
+          return (<StButton key={e.id_item} on_click={() => props.on_item_click(e.id_item, false)} block={false} active={active}>
             {e.text}
           </StButton>)
         })}
@@ -36,12 +36,12 @@ const InspectFurniture = (props) => {
       {/* as you can see its a copy-paste of code above */}
       <SimplePanelSuccess title={props.inventory_text}>
         {props.inventory_items_list.map(e => {
-          let active = e.id_item === props.active_item
-          return (<StButton key={e.id_item} on_click={() => props.on_item_click(e.id_item)} block={false} active={active}>
+          let active = e.id_item === props.inventory_active_item
+          return (<StButton key={e.id_item} on_click={() => props.on_item_click(e.id_item, true)} block={false} active={active}>
             {e.text}
           </StButton>)
         })}
-        {props.active_item &&
+        {props.inventory_active_item &&
           <div>
             <div className='spacer'></div>
             <StButton on_click={() => props.on_drop_item_click(props.active_item)} block={false}>
@@ -78,6 +78,7 @@ InspectFurniture.propTypes = {
     })
   ).isRequired,
   active_item: PropTypes.string, // string or null
+  inventory_active_item: PropTypes.string, // string or null
   on_item_click: PropTypes.func.isRequired,
   on_pick_up_item_click: PropTypes.func.isRequired,
   on_inspect_item_click: PropTypes.func.isRequired,

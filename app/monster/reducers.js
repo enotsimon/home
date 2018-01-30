@@ -34,6 +34,7 @@ let defaults = {
     inspect_furniture: {
       id_furniture: null,
       id_item: null,
+      inventory_id_item: null,
     },
   },
   user_notification: {
@@ -109,11 +110,13 @@ function current_scene_name(state = defaults.current_scene_name, action) {
 function inspect_furniture(state = defaults.menues.inspect_furniture, action) {
   switch (action.type) {
     case actions.INSPECT_BEGIN:
-      return {...state, id_furniture: action.id_furniture, id_item: null};
+      return {...state, id_furniture: action.id_furniture, id_item: null, inventory_id_item: null};
     case actions.INSPECT_END: // ???
-      return {...state, id_furniture: null, id_item: null};
+      return {...state, id_furniture: null, id_item: null, inventory_id_item: null};
     case actions.INSPECT_FURNITURE_ITEM_CLICK:
-      return {...state, id_item: action.id_item}
+      return {...state, id_item: action.id_item, inventory_id_item: null}
+    case actions.INSPECT_FURNITURE_INVENTORY_ITEM_CLICK:
+      return {...state, id_item: null, inventory_id_item: action.id_item}
     default:
       return state;
   }
