@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import * as actions from './actions';
 
-import * as container_funcs from './lib/containers';
+import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import * as item_funcs from './lib/items'
 
 let defaults = {
@@ -74,11 +74,11 @@ function flags(state = defaults.flags, action) {
 function containers(state = defaults.containers, action) {
   switch (action.type) {
     case actions.CONTAINER_INIT:
-      return container_funcs.reduce_init_container(state, action.id_container);
+      return container_reduce_init(state, action.id_container);
     case actions.CONTAINER_ADD_ITEM:
-      return container_funcs.reduce_add_item(state, action.id_container, action.id_item);
+      return container_reduce_add_item(state, action.id_container, action.id_item);
     case actions.CONTAINER_REMOVE_ITEM:
-      return container_funcs.reduce_remove_item(state, action.id_container, action.id_item);
+      return container_reduce_remove_item(state, action.id_container, action.id_item);
     default:
       return state;
   }

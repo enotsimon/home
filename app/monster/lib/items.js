@@ -3,7 +3,7 @@ import uuidv1 from 'uuid/v1';
 import Util from "common/util";
 import game from '../monster'
 import * as actions from '../actions'
-import * as container_funcs from './containers'
+import {INVENTORY, container_dispatch_add_item, container_dispatch_remove_item} from './containers'
 
 //
 // the very buisness logic
@@ -11,7 +11,7 @@ import * as container_funcs from './containers'
 export function item_create(type, id_container) {
   let id_item = type + '-' + uuidv1();
   game.store.dispatch(actions.item_create(id_item, type, id_container));
-  container_funcs.dispatch_add_item(id_container, id_item);
+  container_dispatch_add_item(id_container, id_item);
 }
 
 export function item_delete(id_item) {
@@ -21,7 +21,7 @@ export function item_delete(id_item) {
     return false;
   }
   // use backlink!?
-  container_funcs.dispatch_remove_item(items[id_item].id_container, id_item);
+  container_dispatch_remove_item(items[id_item].id_container, id_item);
   game.store.dispatch(actions.item_delete(id_item));
 }
 
@@ -40,9 +40,13 @@ export function item_change_container(id_item, id_container) {
   if (state.containers[id_prev_container].items.indexOf(id_item) === -1) {
     throw({msg: 'cannot change item container cause item is not in prev container', id_item, id_prev_container});
   }
-  container_funcs.dispatch_remove_item(id_prev_container, id_item);
-  container_funcs.dispatch_add_item(id_container, id_item);
+  container_dispatch_remove_item(id_prev_container, id_item);
+  container_dispatch_add_item(id_container, id_item);
   game.store.dispatch(actions.item_change_container(id_item, id_container));
+}
+
+export function put_item_to_inventory(id_item) {
+  item_change_container(id_item, INVENTORY);
 }
 
 //
