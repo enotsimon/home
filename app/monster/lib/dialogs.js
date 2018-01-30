@@ -1,6 +1,6 @@
 
-import game from './monster';
-import * as actions from './actions';
+import game from '../monster'
+import * as actions from '../actions'
 
 export function start_dialog(id_mobile) {
   if (!game.config.dialogs.mobiles[id_mobile]) {
