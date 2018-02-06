@@ -5,7 +5,7 @@ import TextEntry from './text_entry'
 import {SimplePanelSuccess} from 'common/components/panel'
 import StButton from './st_button'
 
-const container_data = (title, items_list, on_list_item_click, active_item, on_button_click, button_text) => {
+const container_data = (title, id_furniture, items_list, on_list_item_click, active_item, on_button_click, button_text) => {
   return (
     <SimplePanelSuccess title={title}>
       {items_list.map(e => {
@@ -19,7 +19,7 @@ const container_data = (title, items_list, on_list_item_click, active_item, on_b
           <div className='spacer'></div>
           <TextEntry>{active_item.description}</TextEntry>
           <div className='spacer'></div>
-          <StButton on_click={() => on_button_click(active_item.id)} block={false}>
+          <StButton on_click={() => on_button_click(active_item.id, id_furniture)} block={false}>
             {button_text}
           </StButton>
         </div>
@@ -30,15 +30,16 @@ const container_data = (title, items_list, on_list_item_click, active_item, on_b
 
 const InspectFurniture = (props) => {
   return (
-    <SimplePanelSuccess title={props.furniture_name}>
+    <SimplePanelSuccess title={props.furniture.name}>
       <TextEntry>
-        {props.description}
+        {props.furniture.description}
       </TextEntry>
 
       <div className="spacer"></div>
 
       {container_data(
         props.items_list_text,
+        props.furniture.id,
         props.items_list,
         (id) => props.on_item_click(id, false),
         props.active_item,
@@ -48,6 +49,7 @@ const InspectFurniture = (props) => {
 
       {container_data(
         props.inventory_text,
+        props.furniture.id,
         props.inventory_items_list,
         (id) => props.on_item_click(id, true),
         props.inventory_active_item,
@@ -62,19 +64,22 @@ const item_data = PropTypes.shape({
   id: PropTypes.string, // or null
   name: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
-})
+}).isRequired
 
 InspectFurniture.propTypes = {
   items_list_text: PropTypes.string.isRequired,
   pick_up_text: PropTypes.string.isRequired,
   drop_text: PropTypes.string.isRequired,
   inventory_text: PropTypes.string.isRequired,
-  furniture_name: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  furniture: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+  }).isRequired,
   items_list: PropTypes.arrayOf(item_data).isRequired,
   inventory_items_list: PropTypes.arrayOf(item_data).isRequired,
-  active_item: item_data, // string or null
-  inventory_active_item: item_data, // string or null
+  active_item: item_data,
+  inventory_active_item: item_data,
   on_item_click: PropTypes.func.isRequired,
   on_pick_up_item_click: PropTypes.func.isRequired,
 };
