@@ -44,10 +44,10 @@ const InspectFurniture = (props) => {
         {props.inventory_active_item &&
           <div>
             <div className='spacer'></div>
-            <StButton on_click={() => props.on_drop_item_click(props.active_item)} block={false}>
+            <StButton on_click={() => props.on_drop_item_click(props.inventory_active_item)} block={false}>
               {props.drop_text}
             </StButton>
-            <StButton on_click={() => props.on_inspect_item_click(props.active_item)} block={false}>
+            <StButton on_click={() => props.on_inspect_item_click(props.inventory_active_item)} block={false}>
               {props.inspect_text}
             </StButton>
           </div>
