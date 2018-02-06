@@ -6,7 +6,7 @@ import {INVENTORY} from 'monster/lib/containers'
 
 const get_item_data = (id_item, state) => {
   let item = state.items[id_item]
-  let text = game.config.text.items[item.type]
+  let text = game.config.text.items[item.type].name
   if (!text) {
     throw({msg: "item text not found in config", id_item})
   }
