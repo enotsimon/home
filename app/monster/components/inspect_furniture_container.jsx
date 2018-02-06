@@ -1,8 +1,9 @@
 import { connect } from 'react-redux';
 import InspectFurniture from 'monster/components/inspect_furniture';
 import game from 'monster/monster';
-import {inspect_furniture_item_click, inspect_furniture_inventory_item_click} from 'monster/actions'
+import {inspect_furniture_item_click, inspect_furniture_inventory_item_click, inspect_begin} from 'monster/actions'
 import {INVENTORY} from 'monster/lib/containers'
+import {item_change_container} from 'monster/lib/items'
 
 const get_item_data = (id, state) => {
   if (!id) {
@@ -36,8 +37,7 @@ const state_to_props = state => {
     pick_up_text: game.config.text.menues.inspect_furniture.pick_up,
     drop_text: game.config.text.menues.inspect_furniture.drop,
     inventory_text: game.config.text.menues.inspect_furniture.inventory,
-    furniture_name: text.name,
-    description: text.description,
+    furniture: {...text, id: id_furniture},
     items_list: container.items.map(id_item => get_item_data(id_item, state)),
     inventory_items_list: inventory.items.map(id_item => get_item_data(id_item, state)),
     active_item: get_item_data(menu_state.id_item, state),
@@ -50,11 +50,13 @@ const dispatch_to_props = dispatch => {
     on_item_click: (id_item, is_inventory) => {
       dispatch(is_inventory ? inspect_furniture_inventory_item_click(id_item) : inspect_furniture_item_click(id_item));
     },
-    on_pick_up_item_click: id_item => {
-      console.log('on_pick_up_item_click', id_item);
+    on_pick_up_item_click: (id_item, id_furniture) => {
+      item_change_container(id_item, INVENTORY)
+      dispatch(inspect_begin(id_furniture))
     },
-    on_drop_item_click: id_item => {
-      console.log('on_drop_item_click', id_item);
+    on_drop_item_click: (id_item, id_furniture) => {
+      item_change_container(id_item, id_furniture)
+      dispatch(inspect_begin(id_furniture))
     },
   }
 }
