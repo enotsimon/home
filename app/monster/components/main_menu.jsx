@@ -1,37 +1,29 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import {SimplePanelSuccess} from 'common/components/panel'
 import MainMenuElement from 'monster/components/main_menu_element';
 import MainMenuSublement from 'monster/components/main_menu_subelement';
 
-class MainMenu extends React.Component {
-
-  render() {
-    return (
-      <div className="panel panel-success">
-        <div className="panel-heading">
-          <h4 className="panel-title">
-            main menu
-          </h4>
-        </div>
-        <div className="panel-body">
-          <div className="col-md-6">
-            {this.props.elements.map((e, i) => {
-              return <MainMenuElement key={i} on_click={() => this.props.on_element_click(e.id)} {...e} />
-            })}
-          </div>
-          <div className="col-md-6">
-            {this.props.subelements.map((e, i) => {
-              return <MainMenuSublement key={i} on_click={() => this.props.on_subelement_click(e.id)} {...e} />
-            })}
-          </div>
-        </div>
+const MainMenu = (props) => {
+  return (
+    <SimplePanelSuccess title={props.title}>
+      <div className="col-md-6">
+        {props.elements.map((e, i) => {
+          return <MainMenuElement key={i} on_click={() => props.on_element_click(e.id)} {...e} />
+        })}
       </div>
-    );
-  }
+      <div className="col-md-6">
+        {props.subelements.map((e, i) => {
+          return <MainMenuSublement key={i} on_click={() => props.on_subelement_click(e.id)} {...e} />
+        })}
+      </div>
+    </SimplePanelSuccess>
+  )
 }
 
 MainMenu.propTypes = {
+  title: PropTypes.string.isRequired,
   elements: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
