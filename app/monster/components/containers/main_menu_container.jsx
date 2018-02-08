@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import MainMenu from './main_menu';
+import MainMenu from 'monster/components/main_menu';
 import {main_menu_click, main_menu_subelement_click, inspect_begin, bound_change_scene} from 'monster/actions';
 import game from 'monster/monster';
 import {start_dialog} from 'monster/lib/dialogs'
