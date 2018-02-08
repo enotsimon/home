@@ -24,7 +24,7 @@ function get_item_text(type, id) {
   return game.config.text[type][id].name;
 }
 
-const mapStateToProps = state => {
+const state_to_props = state => {
   let main_menu = state.menues.main_menu;
   let current_element_obj = main_menu.elements.find(e => e.id == main_menu.current_element);
   return {
@@ -44,7 +44,7 @@ const mapStateToProps = state => {
   };
 }
 
-const mapDispatchToProps = dispatch => {
+const dispetch_to_props = dispatch => {
   return {
     on_element_click: id => {
       dispatch(main_menu_click(id));
@@ -66,5 +66,5 @@ const mapDispatchToProps = dispatch => {
   };
 }
 
-const MainMenuContainer = connect(mapStateToProps, mapDispatchToProps)(MainMenu);
+const MainMenuContainer = connect(state_to_props, dispetch_to_props)(MainMenu);
 export default MainMenuContainer;
