@@ -2,11 +2,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MainMenuContainer from './main_menu_container';
-import SceneContainer from './scene_container';
-import DialogContainer from './dialog_container';
-import InspectFurnitureContainer from './inspect_furniture_container';
-import ShowHideBlock from './show_hide_block';
+import MainMenuContainer from './containers/main_menu_container'
+import SceneContainer from './containers/scene_container'
+import DialogContainer from './containers/dialog_container'
+import InspectFurnitureContainer from './containers/inspect_furniture_container'
+import ShowHideBlock from './containers/show_hide_block'
 
 class App extends React.Component {
   render() {
