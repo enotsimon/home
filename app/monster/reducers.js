@@ -44,98 +44,54 @@ let defaults = {
   },
 };
 
-function game_phase(state = defaults.game_phase, action) {
-  switch (action.type) {
-    case actions.CHANGE_SCENE:
-      return 'idle';
-    case actions.DIALOG_START:
-      return 'dialog';
-    case actions.DIALOG_FINISH:
-      return 'idle';
-    case actions.INSPECT_BEGIN:
-      return 'inspect';
-    case actions.INSPECT_END: // ???
-      return 'idle';
-    default:
-      return state;
-  }
+const game_phase = {
+  [actions.CHANGE_SCENE]: (state, action) => 'idle',
+  [actions.DIALOG_START]: (state, action) => 'dialog',
+  [actions.DIALOG_FINISH]: (state, action) => 'idle',
+  [actions.INSPECT_BEGIN]: (state, action) => 'inspect',
+  [actions.INSPECT_END]: (state, action) => 'idle',
 }
 
-function flags(state = defaults.flags, action) {
-  switch (action.type) {
-    case actions.CHANGE_GLOBAL_FLAG:
-      let new_state = {...state};
-      new_state[action.name] = action.value;
-      return new_state;
-    default:
-      return state;
-  }
+const flags = {
+  [actions.CHANGE_GLOBAL_FLAG]: (state, action) => {
+    return {...state, [action.name]: action.value};
+  },
 }
 
-function containers(state = defaults.containers, action) {
-  switch (action.type) {
-    case actions.CONTAINER_INIT:
-      return container_reduce_init(state, action.id_container);
-    case actions.CONTAINER_ADD_ITEM:
-      return container_reduce_add_item(state, action.id_container, action.id_item);
-    case actions.CONTAINER_REMOVE_ITEM:
-      return container_reduce_remove_item(state, action.id_container, action.id_item);
-    default:
-      return state;
-  }
+const containers = {
+  [actions.CONTAINER_INIT]: (state, action) =>
+    container_reduce_init(state, action.id_container),
+  [actions.CONTAINER_ADD_ITEM]: (state, action) =>
+    container_reduce_add_item(state, action.id_container, action.id_item),
+  [actions.CONTAINER_REMOVE_ITEM]: (state, action) =>
+    container_reduce_remove_item(state, action.id_container, action.id_item),
 }
 
-function items(state = defaults.items, action) {
-  switch (action.type) {
-    case actions.ITEM_CREATE:
-      return reduce_item_create(state, action.id_item, action.item_type, action.id_container);
-    case actions.ITEM_DELETE:
-      return reduce_item_delete(state, action.id_item);
-    case actions.ITEM_CHANGE_CONTAINER:
-      return reduce_item_change_container(state, action.id_item, action.id_container);
-    default:
-      return state;
-  }
+const items = {
+  [actions.ITEM_CREATE]: (state, action) =>
+    reduce_item_create(state, action.id_item, action.item_type, action.id_container),
+  [actions.ITEM_DELETE]: (state, action) =>
+    reduce_item_delete(state, action.id_item),
+  [actions.ITEM_CHANGE_CONTAINER]: (state, action) =>
+    reduce_item_change_container(state, action.id_item, action.id_container),
 }
 
-function current_scene_name(state = defaults.current_scene_name, action) {
-  switch (action.type) {
-    case actions.CHANGE_SCENE:
-      return action.scene_name;
-    default:
-      return state;
-  }
+const current_scene_name = {
+  [actions.CHANGE_SCENE]: (state, action) => action.scene_name,
 }
 
-function inspect_furniture(state = defaults.menues.inspect_furniture, action) {
-  switch (action.type) {
-    case actions.INSPECT_BEGIN:
-      return {...state, id_furniture: action.id_furniture, id_item: null, inventory_id_item: null};
-    case actions.INSPECT_END: // ???
-      return {...state, id_furniture: null, id_item: null, inventory_id_item: null};
-    case actions.INSPECT_FURNITURE_ITEM_CLICK:
-      return {...state, id_item: action.id_item, inventory_id_item: null}
-    case actions.INSPECT_FURNITURE_INVENTORY_ITEM_CLICK:
-      return {...state, id_item: null, inventory_id_item: action.id_item}
-    default:
-      return state;
-  }
-}
 
-function money(state = defaults.money, action) {
-  switch (action.type) {
-    case actions.CHANGE_MONEY_AMOUNT:
-      console.log('action', actions.CHANGE_MONEY_AMOUNT, action, state);
-      if (action.money_type != 'fishes' && action.money_type != 'foxes') {
-        throw({message: "bad money type", value: action.money_type});
-      }
-      let new_state = {...state};
-      // @TODO add negative values chack
-      new_state[action.money_type] += action.amount;
-      return new_state;
-    default:
-      return state;
-  }
+const money = {
+  [actions.CHANGE_MONEY_AMOUNT]: (state, action) => {
+    console.log('action', actions.CHANGE_MONEY_AMOUNT, action, state);
+    if (action.money_type != 'fishes' && action.money_type != 'foxes') {
+      throw({message: "bad money type", value: action.money_type});
+    }
+    let new_state = {...state};
+    // @TODO add negative values chack
+    new_state[action.money_type] += action.amount;
+    return new_state;
+  },
 }
 
 
@@ -146,20 +102,17 @@ function money(state = defaults.money, action) {
  *  get given clothes from inventory
  *  put it on
  */
-function clothes(state = defaults.clothes, action) {
-  switch (action.type) {
-    case actions.DRESS_CLOTHES:
-      console.log('action', actions.DRESS_CLOTHES, action, state);
-      // TOSO -- its just a draft
-      if (!action.item.body_layer) {
-        console.log('actions.DRESS_CLOTHES fail -- not a clothes', action.item);
-        return state;
-      }
-      let new_state = {...state, body: action.item};
-      
-      return new_state;
-    default:
+const clothes = {
+  [actions.DRESS_CLOTHES]: (state, action) => {
+    console.log('action', actions.DRESS_CLOTHES, action, state);
+    // TOSO -- its just a draft
+    if (!action.item.body_layer) {
+      console.log('actions.DRESS_CLOTHES fail -- not a clothes', action.item);
       return state;
+    }
+    let new_state = {...state, body: action.item};
+    
+    return new_state;
   }
 }
 
@@ -167,87 +120,88 @@ function clothes(state = defaults.clothes, action) {
 /////////////////////////////////////////
 // UI
 /////////////////////////////////////////
+const inspect_furniture = {
+  [actions.INSPECT_BEGIN]: (state, action) =>
+    ({...state, id_furniture: action.id_furniture, id_item: null, inventory_id_item: null}),
+  // ???
+  [actions.INSPECT_END]: (state, action) =>
+    ({...state, id_furniture: null, id_item: null, inventory_id_item: null}),
+  [actions.INSPECT_FURNITURE_ITEM_CLICK]: (state, action) =>
+    ({...state, id_item: action.id_item, inventory_id_item: null}),
+  [actions.INSPECT_FURNITURE_INVENTORY_ITEM_CLICK]: (state, action) =>
+    ({...state, id_item: null, inventory_id_item: action.id_item}),
+}
 
-function main_menu(state = defaults.menues.main_menu, action) {
-  let state_copy;
-  switch (action.type) {
-    case actions.REBUILD_MAIN_MENU:
-      let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
-      let menu = {
-        elements: [
-          {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
-          {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
-          {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
-        ],
-        current_element: null,
-      };
-      return menu;
-    case actions.MAIN_MENU_CLICK:
-      state_copy = {
-        ...state,
-        current_element: action.id
-      }
-      return state_copy;
-    // really nothing interesting, just unset current_element
-    case actions.MAIN_MENU_SUBELEMENT_CLICK:
-      state_copy = {
-        ...state,
-        current_element: null
-      }
-      return state_copy;
-    default:
-      return state;
+const main_menu = {
+  [actions.REBUILD_MAIN_MENU]: (state, action) => {
+    let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
+    let menu = {
+      elements: [
+        {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
+        {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
+        {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
+      ],
+      current_element: null,
+    };
+    return menu;
+  },
+  [actions.MAIN_MENU_CLICK]: (state, action) => {
+    return {...state, current_element: action.id}
+  },
+  // really nothing interesting, just unset current_element
+  [actions.MAIN_MENU_SUBELEMENT_CLICK]: (state, action) => {
+    return {...state, current_element: null}
+  },
+}
+
+const dialogs = {
+  [actions.DIALOG_START]: (state, action) => {
+    return {...state, id_mobile: action.id_mobile}
+  },
+  [actions.DIALOG_FINISH]: (state, action) => {
+    return defaults.menues.dialogs
+  },
+  [actions.DIALOG_ACTIVATE_NPC_SENTENCE]: (state, action) => {
+    return {...state, npc_sentence: action.sentence, player_sentences: []}
+  },
+  [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: (state, action) => {
+    return {...state, player_sentences: action.sentences}
   }
 }
 
-function dialogs(state = defaults.menues.dialogs, action) {
-  let new_state = {...state};
-  switch (action.type) {
-    case actions.DIALOG_START:
-      new_state.id_mobile = action.id_mobile;
-      return new_state;
-    case actions.DIALOG_FINISH:
-      // flush dialogs state
-      return defaults.menues.dialogs;
-    case actions.DIALOG_ACTIVATE_NPC_SENTENCE:
-      new_state.npc_sentence = action.sentence;
-      new_state.player_sentences = []; // flush player's answers
-      return new_state;
-    case actions.DIALOG_ACTIVATE_PLAYER_SENTENCES:
-      new_state.player_sentences = action.sentences;
-      return new_state;
-    // TODO add player_prev_sentence
-    default:
-      return state;
+const user_notification = {
+  [actions.SHOW_NOTIFICATION]: (state, action) => {
+    console.log('action', action.type, action, state)
+    return {level: action.level, message: action.message, additional: action.additional}
   }
 }
 
-function user_notification(state = defaults.user_notification, action) {
-  switch (action.type) {
-    case actions.SHOW_NOTIFICATION:
-      console.log('action', action.type, action, state);
-      return {level: action.level, message: action.message, additional: action.additional};
-    default:
-      return state;
+function create_reducer(default_state, handlers) {
+  return (state = default_state, action) => {
+    if (handlers.hasOwnProperty(action.type)) {
+      return handlers[action.type](state, action)
+    } else if (handlers.hasOwnProperty('default')) {
+      return handlers.default(state, action)
+    } else {
+      return state
+    }
   }
 }
-
-
 
 const root_reducer = combineReducers({
   menues: combineReducers({
-    main_menu,
-    dialogs,
-    inspect_furniture,
+    main_menu: create_reducer(defaults.menues.main_menu, main_menu),
+    dialogs: create_reducer(defaults.menues.dialogs, dialogs),
+    inspect_furniture: create_reducer(defaults.menues.inspect_furniture, inspect_furniture),
   }),
-  game_phase,
-  current_scene_name,
-  containers,
-  items,
-  flags,
-  money,
-  clothes,
-  user_notification,
+  game_phase: create_reducer(defaults.game_phase, game_phase),
+  current_scene_name: create_reducer(defaults.current_scene_name, current_scene_name),
+  containers: create_reducer(defaults.containers, containers),
+  items: create_reducer(defaults.items, items),
+  flags: create_reducer(defaults.flags, flags),
+  money: create_reducer(defaults.money, money),
+  clothes: create_reducer(defaults.clothes, clothes),
+  user_notification: create_reducer(defaults.user_notification, user_notification),
 });
 
 export default root_reducer;
