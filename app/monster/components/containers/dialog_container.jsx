@@ -21,7 +21,7 @@ function colored_npc_name(id_mobile) {
   return id_mobile ? '{' + game.config.text.mobiles[id_mobile].name + '|mobiles|' + id_mobile + '}' : '';
 }
 
-const mapStateToProps = state => {
+const state_to_props = state => {
   let dialog_state = state.menues.dialogs;
   let player_prev_sentence = {id: '', phrases: ''};
   let npc_sentence = {id: '', phrases: ''};
@@ -41,6 +41,6 @@ const mapStateToProps = state => {
   };
 }
 
-const DialogContainer = connect(mapStateToProps)(Dialog);
+const DialogContainer = connect(state_to_props)(Dialog);
 
 export default DialogContainer;
