@@ -195,6 +195,9 @@ const text = {
       inspect: 'осмотреть',
       inventory: 'инвентарь',
     },
+    journal: {
+      name: 'журнал',
+    }
   },
 };
 

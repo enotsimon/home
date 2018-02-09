@@ -3,6 +3,7 @@ import * as actions from './actions';
 
 import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
+import {journal_add_entry} from 'monster/lib/journal'
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -18,6 +19,9 @@ let defaults = {
   flags: {},
   containers: {},
   items: {},
+  journal: {
+    data: [],
+  },
 
   // UI react parts
   menues: {
@@ -80,6 +84,9 @@ const current_scene_name = {
   [actions.CHANGE_SCENE]: (state, action) => action.scene_name,
 }
 
+const journal = {
+  default: journal_add_entry
+}
 
 const money = {
   [actions.CHANGE_MONEY_AMOUNT]: (state, action) => {
@@ -199,6 +206,7 @@ const root_reducer = combineReducers({
   containers: create_reducer(defaults.containers, containers),
   items: create_reducer(defaults.items, items),
   flags: create_reducer(defaults.flags, flags),
+  journal: create_reducer(defaults.journal, journal),
   money: create_reducer(defaults.money, money),
   clothes: create_reducer(defaults.clothes, clothes),
   user_notification: create_reducer(defaults.user_notification, user_notification),
