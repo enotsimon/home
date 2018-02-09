@@ -44,7 +44,7 @@ const state_to_props = state => {
   };
 }
 
-const dispetch_to_props = dispatch => {
+const dispatch_to_props = dispatch => {
   return {
     on_element_click: id => {
       dispatch(main_menu_click(id));
@@ -66,5 +66,5 @@ const dispetch_to_props = dispatch => {
   };
 }
 
-const MainMenuContainer = connect(state_to_props, dispetch_to_props)(MainMenu);
+const MainMenuContainer = connect(state_to_props, dispatch_to_props)(MainMenu);
 export default MainMenuContainer;
