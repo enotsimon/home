@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const StButton = (props) => {
-  let {active: active = false, enabled: enabled = true, block: block = true} = props
+  let {active: active = false, enabled: enabled = true, block: block = true, extra_classes: extra_classes = ''} = props
   let btn_type = !active ? 'btn-default' : 'btn-success'
   let btn_block = block ? 'btn-block' : ''
-  let btn_class = `btn ${btn_type} ${btn_block}`
+  let btn_class = `btn ${btn_type} ${btn_block} ${extra_classes}`
 
   return (
     <button
@@ -28,6 +28,7 @@ StButton.propTypes = {
   active: PropTypes.bool,
   enabled: PropTypes.bool,
   block: PropTypes.bool,
+  extra_classes: PropTypes.string,
 };
 
 export default StButton;
