@@ -56,6 +56,10 @@ const InspectFurniture = (props) => {
         props.on_drop_item_click,
         props.drop_text
       )}
+
+      <StButton on_click={props.on_close_click} block={false}>
+        {props.close_text}
+      </StButton>
     </SimplePanelSuccess>
   );
 }
@@ -71,6 +75,7 @@ InspectFurniture.propTypes = {
   pick_up_text: PropTypes.string.isRequired,
   drop_text: PropTypes.string.isRequired,
   inventory_text: PropTypes.string.isRequired,
+  close_text: PropTypes.string.isRequired,
   furniture: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
@@ -82,6 +87,7 @@ InspectFurniture.propTypes = {
   inventory_active_item: item_data,
   on_item_click: PropTypes.func.isRequired,
   on_pick_up_item_click: PropTypes.func.isRequired,
+  on_close_click: PropTypes.func.isRequired,
 };
 
 export default InspectFurniture;

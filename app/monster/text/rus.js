@@ -194,6 +194,7 @@ const text = {
       drop: 'выложить',
       inspect: 'осмотреть',
       inventory: 'инвентарь',
+      close_menu: 'закрыть',
     },
     journal: {
       name: 'журнал',

@@ -1,7 +1,12 @@
 import { connect } from 'react-redux';
 import InspectFurniture from 'monster/components/inspect_furniture';
 import game from 'monster/monster';
-import {inspect_furniture_item_click, inspect_furniture_inventory_item_click, inspect_begin} from 'monster/actions'
+import {
+  inspect_furniture_item_click,
+  inspect_furniture_inventory_item_click,
+  inspect_begin,
+  inspect_end
+} from 'monster/actions'
 import {INVENTORY} from 'monster/lib/containers'
 import {item_change_container} from 'monster/lib/items'
 
@@ -37,6 +42,7 @@ const state_to_props = state => {
     pick_up_text: game.config.text.menues.inspect_furniture.pick_up,
     drop_text: game.config.text.menues.inspect_furniture.drop,
     inventory_text: game.config.text.menues.inspect_furniture.inventory,
+    close_text: game.config.text.menues.inspect_furniture.close_menu,
     furniture: {...text, id: id_furniture},
     items_list: container.items.map(id_item => get_item_data(id_item, state)),
     inventory_items_list: inventory.items.map(id_item => get_item_data(id_item, state)),
@@ -58,6 +64,9 @@ const dispatch_to_props = dispatch => {
       item_change_container(id_item, id_furniture)
       dispatch(inspect_begin(id_furniture))
     },
+    on_close_click: () => {
+      dispatch(inspect_end())
+    }
   }
 }
 
