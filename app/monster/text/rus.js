@@ -200,6 +200,19 @@ const text = {
       name: 'журнал',
     }
   },
+
+  //////////////////////////////////////////////////////
+  // journal
+  //////////////////////////////////////////////////////
+  journal: {
+    change_scene: 'переходит на сцену',
+    change_money_amount: 'деньги изменились на',
+    dress_clothes: 'одевает',
+    inventory_add_item: 'забирает',
+    inventory_remove_item: 'выкладывает',
+    dialog_start: 'начинается диалог с',
+    dialog_finish: 'диалог окончен',
+  }
 };
 
 export default text;

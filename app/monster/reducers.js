@@ -30,7 +30,7 @@ let defaults = {
       current_element: null,
     },
     dialogs: {
-      id_mobile: null,
+      id_mobile: null, // TODO remove it!!! pass it explisitly every time!
       player_prev_sentence: null,
       npc_sentence: null,
       player_sentences: [],
