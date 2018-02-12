@@ -85,8 +85,8 @@ export function dialog_finish() {
   return {type: DIALOG_FINISH};
 }
 
-export function dialog_activate_npc_sentence(sentence) {
-  return {type: DIALOG_ACTIVATE_NPC_SENTENCE, sentence};
+export function dialog_activate_npc_sentence(sentence, id_mobile) {
+  return {type: DIALOG_ACTIVATE_NPC_SENTENCE, sentence, id_mobile};
 }
 
 export function dialog_player_says(sentence) {
