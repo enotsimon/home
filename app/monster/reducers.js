@@ -163,13 +163,13 @@ const main_menu = {
 
 const dialogs = {
   [actions.DIALOG_START]: (state, action) => {
-    return {...state, id_mobile: action.id_mobile}
+    return {...state, id_mobile: action.id_mobile} // TODO remove id_mobile
   },
   [actions.DIALOG_FINISH]: (state, action) => {
     return defaults.menues.dialogs
   },
   [actions.DIALOG_ACTIVATE_NPC_SENTENCE]: (state, action) => {
-    return {...state, npc_sentence: action.sentence, player_sentences: []}
+    return {...state, id_mobile: action.id_mobile, npc_sentence: action.sentence, player_sentences: []}
   },
   [actions.DIALOG_PLAYER_SAYS]: (state, action) => {
     return {...state, player_prev_sentence: action.sentence}
