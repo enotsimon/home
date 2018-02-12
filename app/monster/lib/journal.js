@@ -66,28 +66,19 @@ const actions_config = {
     text: (action) =>
       `${text().journal.dialog_finish}`,
   }, // ?
-  [actions.DIALOG_ACTIVATE_NPC_SENTENCE]: {
+  [actions.DIALOG_NPC_SAYS]: {
     level: journal_msg_levels.GAME,
-    text: (action) => {
-      let id_mobile = game.store.getState().menues.dialogs.id_mobile
-      if (!id_mobile) {
-        return 'suk suk suk'
-      }
-      console.log('DIALOG_ACTIVATE_NPC_SENTENCE', id_mobile, action.sentence.phrases)
-      return `${text().mobiles[id_mobile].name}: ${text().dialogs[action.sentence.phrases]}`
-    }
+    text: (action) =>
+      `${text().mobiles[action.id_mobile].name}: ${text().dialogs[action.sentence.phrases]}`,
+  },
+  [actions.DIALOG_PLAYER_SAYS]: {
+    level: journal_msg_levels.GAME,
+    text: (action) =>
+      `${rathni_name()}: ${text().dialogs[action.sentence.phrases]}`,
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
-    level: journal_msg_levels.GAME,
-    text: (action) => {
-      let id_mobile = game.store.getState().menues.dialogs.id_mobile
-      if (!id_mobile) {
-        return 'pak pak pak'
-      }
-      console.log('DIALOG_ACTIVATE_PLAYER_SENTENCES', action.sentences)
-      //return `${rathni_name()}: ${text().dialogs[action.sentence.phrases]}`
-      return `${rathni_name()}: bla`
-    }
+    level: journal_msg_levels.DEBUG,
+    text: (action) => 'dialog activate player sentences: ' + action.sentences.map(e => e.id).join(', '),
   },
   [actions.INSPECT_BEGIN]: {level: journal_msg_levels.DEBUG}, // ?
   [actions.INSPECT_END]: {level: journal_msg_levels.DEBUG}, // ?

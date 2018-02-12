@@ -32,3 +32,9 @@
 .spacer {
   margin: 25px;
 }
+
+.journal-container {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
