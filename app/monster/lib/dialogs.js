@@ -17,6 +17,7 @@ export function handle_player_sentence(id_sentence) {
   }
   let sentence = game.config.dialogs.sentences[id_sentence];
   apply_consequences(sentence);
+  game.store.dispatch(actions.dialog_player_says(sentence));
   // sentence.continuation = null is okay and means dialog is finished
   if (sentence.continuation === null) {
     game.store.dispatch(actions.dialog_finish());

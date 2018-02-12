@@ -11,6 +11,7 @@ export const CHANGE_GLOBAL_FLAG = 'change_global_flag';
 export const DIALOG_START = 'dialog_start';
 export const DIALOG_FINISH = 'dialog_finish';
 export const DIALOG_ACTIVATE_NPC_SENTENCE = 'dialog_activate_npc_sentence';
+export const DIALOG_PLAYER_SAYS = 'dialog_player_says';
 export const DIALOG_ACTIVATE_PLAYER_SENTENCES = 'dialog_activate_player_sentences';
 export const INSPECT_BEGIN = 'inspect_begin';
 export const INSPECT_END = 'inspect_end';
@@ -86,6 +87,10 @@ export function dialog_finish() {
 
 export function dialog_activate_npc_sentence(sentence) {
   return {type: DIALOG_ACTIVATE_NPC_SENTENCE, sentence};
+}
+
+export function dialog_player_says(sentence) {
+  return {type: DIALOG_PLAYER_SAYS, sentence};
 }
 
 export function dialog_activate_player_sentences(sentences) {
