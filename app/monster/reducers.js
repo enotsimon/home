@@ -171,6 +171,9 @@ const dialogs = {
   [actions.DIALOG_ACTIVATE_NPC_SENTENCE]: (state, action) => {
     return {...state, npc_sentence: action.sentence, player_sentences: []}
   },
+  [actions.DIALOG_PLAYER_SAYS]: (state, action) => {
+    return {...state, player_prev_sentence: action.sentence}
+  },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: (state, action) => {
     return {...state, player_sentences: action.sentences}
   }
