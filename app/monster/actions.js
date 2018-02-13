@@ -22,26 +22,6 @@ export const ITEM_CREATE = 'item_create';
 export const ITEM_DELETE = 'item_delete';
 export const ITEM_CHANGE_CONTAINER = 'item_change_container';
 
-export const ERROR_CHANGE_SCENE_UNKNOWN_SCENE = 'error_change_scene_unknown_scene';
-export const ERROR_CHANGE_SCENE_NOT_LINKED_SCENE = 'error_change_scene_not_linked_scene';
-export const SHOW_NOTIFICATION = 'show_notification';
-
-
-////////////////////////
-// error messages
-////////////////////////
-export function error_change_scene_unknown_scene(scene_name) {
-  return show_notification('error', ERROR_CHANGE_SCENE_UNKNOWN_SCENE, {target_scene: scene_name});
-}
-
-export function error_change_scene_not_linked_scene(scene_name) {
-  return show_notification('error', ERROR_CHANGE_SCENE_NOT_LINKED_SCENE, {target_scene: scene_name});
-}
-
-export function show_notification(level, message, additional) {
-  return {type: SHOW_NOTIFICATION, level, message, additional};
-}
-
 /////////////////////////
 // main
 /////////////////////////
