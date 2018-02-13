@@ -28,7 +28,7 @@ const actions_config = {
   [actions.REBUILD_MAIN_MENU]: {
     level: journal_msg_levels.DEBUG,
     text: (action) =>
-      `rebuild main menu. current_scene: ${action.current_scene.name}`
+      `rebuild_main_menu. current_scene: ${action.current_scene.name}`
   },
   [actions.CHANGE_MONEY_AMOUNT]: {
     level: journal_msg_levels.GAME,
@@ -54,7 +54,7 @@ const actions_config = {
   [actions.CHANGE_GLOBAL_FLAG]: {
     level: journal_msg_levels.ADMIN,
     text: (action) =>
-      `change global flag ${action.name} to ${JSON.stringify(action.value)}`
+      `change global flag ${action.name} to '${JSON.stringify(action.value)}'`
   },
   [actions.DIALOG_START]: {
     level: journal_msg_levels.GAME,
@@ -78,20 +78,56 @@ const actions_config = {
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
     level: journal_msg_levels.DEBUG,
-    text: (action) => 'dialog activate player sentences: ' + action.sentences.map(e => e.id).join(', '),
+    text: (action) => 'dialog_activate_player_sentences. sentences: ' + action.sentences.map(e => e.id).join(', '),
   },
-  [actions.INSPECT_BEGIN]: {level: journal_msg_levels.DEBUG}, // ?
-  [actions.INSPECT_END]: {level: journal_msg_levels.DEBUG}, // ?
-  [actions.CONTAINER_INIT]: {level: journal_msg_levels.ADMIN},
-  [actions.CONTAINER_ADD_ITEM]: {level: journal_msg_levels.ADMIN},
-  [actions.CONTAINER_REMOVE_ITEM]: {level: journal_msg_levels.ADMIN},
-  [actions.ITEM_CREATE]: {level: journal_msg_levels.ADMIN},
-  [actions.ITEM_DELETE]: {level: journal_msg_levels.ADMIN},
-  [actions.ITEM_CHANGE_CONTAINER]: {level: journal_msg_levels.ADMIN},
-  [actions.MAIN_MENU_CLICK]: {level: journal_msg_levels.DEBUG},
-  [actions.MAIN_MENU_SUBELEMENT_CLICK]: {level: journal_msg_levels.DEBUG},
-  [actions.INSPECT_FURNITURE_ITEM_CLICK]: {level: journal_msg_levels.DEBUG},
-  [actions.INSPECT_FURNITURE_INVENTORY_ITEM_CLICK]: {level: journal_msg_levels.DEBUG},
+  [actions.INSPECT_BEGIN]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => 'inspect_begin',
+  }, // ?
+  [actions.INSPECT_END]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => 'inspect_end',
+  }, // ?
+  [actions.CONTAINER_INIT]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `init container '${action.id_container}'`,
+  },
+  [actions.CONTAINER_ADD_ITEM]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `add item '${action.id_item}' to container '${action.id_container}'`,
+  },
+  [actions.CONTAINER_REMOVE_ITEM]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `remove item '${action.id_item}' from container '${action.id_container}'`,
+  },
+  [actions.ITEM_CREATE]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `create item '${action.id_item}' type '${action.item_type}' in container '${action.id_container}'`,
+  },
+  [actions.ITEM_DELETE]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `delete item '${action.id_item}'`,
+  },
+  [actions.ITEM_CHANGE_CONTAINER]: {
+    level: journal_msg_levels.ADMIN,
+    text: (action) => `item '${action.id_item}' change container to '${action.id_container}'`,
+  },
+  [actions.MAIN_MENU_CLICK]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => `main_menu_click '${action.id}'`,
+  },
+  [actions.MAIN_MENU_SUBELEMENT_CLICK]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => `main_menu_subelement_click '${action.id}'`,
+  },
+  [actions.INSPECT_FURNITURE_ITEM_CLICK]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => `inspect_furniture_item_click '${action.id_item}'`,
+  },
+  [actions.INSPECT_FURNITURE_INVENTORY_ITEM_CLICK]: {
+    level: journal_msg_levels.DEBUG,
+    text: (action) => `inspect_furniture_inventory_item_click '${action.id_item}'`,
+  },
 }
 
 export const journal_add_entry = (state, action) => {
