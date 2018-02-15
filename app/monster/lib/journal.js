@@ -59,7 +59,7 @@ const actions_config = {
   [actions.DIALOG_START]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `${text().journal.dialog_start} ${text().mobiles[action.id_mobile].name}`,
+      `${text().journal.dialog_start} {${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}`,
   },
   [actions.DIALOG_FINISH]: {
     level: journal_msg_levels.GAME,
@@ -69,12 +69,12 @@ const actions_config = {
   [actions.DIALOG_NPC_SAYS]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `${text().mobiles[action.id_mobile].name}: ${text().dialogs[action.sentence.phrases]}`,
+      `{${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}: ${text().dialogs[action.sentence.phrases]}`,
   },
   [actions.DIALOG_PLAYER_SAYS]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `${rathni_name()}: ${text().dialogs[action.sentence.phrases]}`,
+      `{${rathni_name()}|mobiles|rathni}: ${text().dialogs[action.sentence.phrases]}`,
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
     level: journal_msg_levels.DEBUG,
