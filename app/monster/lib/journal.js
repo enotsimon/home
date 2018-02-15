@@ -11,7 +11,7 @@ export const journal_msg_levels = {
   UNKNOWN: 'unknown',
 }
 
-const msg_level_colors = {
+export const msg_level_colors = {
   [journal_msg_levels.GAME]: 'green',
   [journal_msg_levels.ADMIN]: 'darkblue',
   [journal_msg_levels.DEBUG]: 'darkgrey',
@@ -146,3 +146,6 @@ export const journal_decorate_entry = (entry) => {
     : entry.action.type
   return {level: entry.level, color: msg_level_colors[entry.level], msg}
 }
+
+// TODO add admin mode check
+export const journal_availible_levels = () => Object.values(journal_msg_levels)
