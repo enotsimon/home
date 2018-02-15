@@ -162,3 +162,7 @@ export function inspect_furniture_inventory_item_click(id_item) {
   return {type: INSPECT_FURNITURE_INVENTORY_ITEM_CLICK, id_item};
 }
 
+export const journal_filter_click = (level) => {
+  return {type: 'journal_filter_click', level};
+}
+

@@ -3,7 +3,7 @@ import * as actions from './actions';
 
 import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
-import {journal_add_entry} from 'monster/lib/journal'
+import {journal_add_entry, journal_msg_levels} from 'monster/lib/journal'
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -20,6 +20,7 @@ let defaults = {
   containers: {},
   items: {},
   journal: {
+    enabled_levels: [journal_msg_levels.GAME],
     data: [],
   },
 
@@ -80,6 +81,16 @@ const current_scene_name = {
 }
 
 const journal = {
+  // note that we do not add this action to journal
+  [actions.journal_filter_click.name]: (state, action) => {
+    let i = state.enabled_levels.indexOf(action.level)
+    if (state.enabled_levels.length === 1 && i !== -1) {
+      return state
+    }
+    let enabled_levels = [...state.enabled_levels]
+    i !== -1 ? enabled_levels.splice(i, 1) : enabled_levels.push(action.level)
+    return {...state, enabled_levels}
+  },
   default: journal_add_entry
 }
 
