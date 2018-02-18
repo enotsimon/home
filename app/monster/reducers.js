@@ -31,7 +31,6 @@ let defaults = {
       current_element: null,
     },
     dialogs: {
-      id_mobile: null, // TODO remove it!!! pass it explisitly every time!
       player_prev_sentence: null,
       npc_sentence: null,
       player_sentences: [],
@@ -168,9 +167,6 @@ const main_menu = {
 }
 
 const dialogs = {
-  [actions.DIALOG_START]: (state, action) => {
-    return {...state, id_mobile: action.id_mobile} // TODO remove id_mobile
-  },
   [actions.DIALOG_FINISH]: (state, action) => {
     return defaults.menues.dialogs
   },

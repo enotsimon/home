@@ -54,7 +54,7 @@ function dialog_activate_npc_node(id_node) {
   // its okay if there's more than one sutable sentences, we suppose that first one is 'most sutable'
   let sentence = filtered_sentences[0];
 
-  game.store.dispatch(actions.dialog_npc_says(sentence, node.owner));
+  game.store.dispatch(actions.dialog_npc_says(sentence, sentence.owner));
 
   apply_consequences(sentence);
 
