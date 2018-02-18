@@ -33,7 +33,7 @@ const state_to_props = state => {
     player_sentences = dialog_state.player_sentences.map(sentence => sentence_to_props(sentence));
   }
   return {
-    npc_name: colored_npc_name(dialog_state.id_mobile),
+    npc_name: colored_npc_name(dialog_state.npc_sentence.owner),
     player_prev_sentence,
     npc_sentence,
     player_sentences,

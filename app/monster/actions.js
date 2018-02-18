@@ -57,6 +57,7 @@ export function change_global_flag(name, value) {
 }
 
 // dialogs //////////////////////
+// TODO id_mobile is only for journal. but what if we start multi-person dialog?
 export function dialog_start(id_mobile) {
   return {type: DIALOG_START, id_mobile};
 }
