@@ -195,6 +195,8 @@ const text = {
       inspect: 'осмотреть',
       inventory: 'инвентарь',
       close_menu: 'закрыть',
+      item_owner: 'владелец',
+      cant_take_owned_item: 'нельзя забирать предметы принадлежащие кому-то другому',
     },
     journal: {
       name: 'журнал',

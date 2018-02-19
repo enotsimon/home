@@ -53,3 +53,9 @@
 .journal-filter-button {
   margin-left: 3px;
 }
+
+.notification-contaner {
+  padding: 10px;
+  font-weight: bold;
+  border-radius: 5px;
+}

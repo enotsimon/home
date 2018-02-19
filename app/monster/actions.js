@@ -101,8 +101,8 @@ export function container_remove_item(id_container, id_item) {
 }
 
 // items //////////////////////////////
-export function item_create(id_item, item_type, id_container) {
-  return {type: ITEM_CREATE, id_item, item_type, id_container};
+export function item_create(id_item, item_type, id_container, owner) {
+  return {type: ITEM_CREATE, id_item, item_type, id_container, owner};
 }
 
 export function item_delete(id_item) {
@@ -167,3 +167,5 @@ export const journal_filter_click = (level) => {
   return {type: 'journal_filter_click', level};
 }
 
+export const notification_msg = (level, msg) => ({type: 'notification_msg', level, msg})
+export const notification_close = () => ({type: 'notification_close'})

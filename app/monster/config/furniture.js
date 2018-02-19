@@ -2,13 +2,13 @@
 const furniture = {
   mage_room_table: {
     items: [
-      {type: "bottle"},
-      {type: "blank_scroll"},
+      {type: "bottle", owner: "mage"},
+      {type: "blank_scroll", owner: "mage"},
     ],
   },
   mage_room_shelf: {
     items: [
-      {type: "fearful_beasts_book"},
+      {type: "fearful_beasts_book", owner: "mage"},
     ],
   },
   mage_room_bed: {
