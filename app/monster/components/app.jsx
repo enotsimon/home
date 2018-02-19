@@ -8,6 +8,7 @@ import DialogContainer from './containers/dialog_container'
 import InspectFurnitureContainer from './containers/inspect_furniture_container'
 import ShowHideBlock from './containers/show_hide_block'
 import JournalContainer from './containers/journal_container'
+import NotificationContainer from './containers/notification_container'
 
 class App extends React.Component {
   render() {
@@ -32,7 +33,8 @@ class App extends React.Component {
               <MainMenuContainer />
             </ShowHideBlock>
 
-            {/* we show journal alwais */}
+            {/* we show journal and notifications alwais */}
+            <NotificationContainer/>
             <JournalContainer/>
           </div>
         </div>
@@ -49,4 +51,4 @@ App.propTypes = {
   show_furniture_phases: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default App;
+export default App

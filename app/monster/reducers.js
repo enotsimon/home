@@ -41,6 +41,10 @@ let defaults = {
       inventory_id_item: null,
     },
   },
+  notification: {
+    level: null,
+    msg: null,
+  }
 };
 
 const game_phase = {
@@ -68,7 +72,7 @@ const containers = {
 
 const items = {
   [actions.ITEM_CREATE]: (state, action) =>
-    reduce_item_create(state, action.id_item, action.item_type, action.id_container),
+    reduce_item_create(state, action.id_item, action.item_type, action.id_container, action.owner),
   [actions.ITEM_DELETE]: (state, action) =>
     reduce_item_delete(state, action.id_item),
   [actions.ITEM_CHANGE_CONTAINER]: (state, action) =>
@@ -181,6 +185,11 @@ const dialogs = {
   }
 }
 
+const notification = {
+  [actions.notification_msg.name]: (state, action) => ({level: action.level, msg: action.msg}),
+  [actions.notification_close.name]: (state, action) => defaults.notification,
+}
+
 function create_reducer(default_state, handlers) {
   return (state = default_state, action) => {
     if (handlers.hasOwnProperty(action.type)) {
@@ -207,6 +216,7 @@ const root_reducer = combineReducers({
   journal: create_reducer(defaults.journal, journal),
   money: create_reducer(defaults.money, money),
   clothes: create_reducer(defaults.clothes, clothes),
+  notification: create_reducer(defaults.notification, notification),
 });
 
 export default root_reducer;

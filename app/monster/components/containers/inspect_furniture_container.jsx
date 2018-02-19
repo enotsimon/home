@@ -19,7 +19,11 @@ const get_item_data = (id, state) => {
   if (!text) {
     throw({msg: "item text not found in config", id})
   }
-  return {...text, id}
+  let owner = item.owner ? `{${game.config.text.mobiles[item.owner].name}|mobiles|${item.owner}}` : ''
+  if (item.owner && !game.config.text.mobiles[item.owner]) {
+    throw({msg: "no owner text entry", id_mobile: item.owner})
+  }
+  return {...text, id, owner}
 }
 
 const state_to_props = state => {
@@ -43,6 +47,7 @@ const state_to_props = state => {
     drop_text: game.config.text.menues.inspect_furniture.drop,
     inventory_text: game.config.text.menues.inspect_furniture.inventory,
     close_text: game.config.text.menues.inspect_furniture.close_menu,
+    item_owner_text: game.config.text.menues.inspect_furniture.item_owner,
     furniture: {...text, id: id_furniture},
     items_list: container.items.map(id_item => get_item_data(id_item, state)),
     inventory_items_list: inventory.items.map(id_item => get_item_data(id_item, state)),
