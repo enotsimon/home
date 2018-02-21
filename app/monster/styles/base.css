@@ -1,0 +1,61 @@
+
+.default-text {
+  color: black;
+  font-weight: normal;
+}
+
+.mobiles-text {
+  color: #d76e00; /* kinda orange */
+  font-weight: bold;
+}
+
+.scenes-text {
+  color: green;
+  font-weight: bold;
+}
+
+.furniture-text {
+  color: blue;
+  font-weight: bold;
+}
+
+.items-text {
+  color: darkgreen;
+  font-weight: bold;
+}
+
+.info-text {
+  color: #b60aff; /* kinda purple */
+  font-weight: bold;
+}
+
+.spacer {
+  margin: 25px;
+}
+
+.journal-container {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.journal-entry {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin: 3px;
+  padding: 0 5px 0 5px;
+}
+
+.journal-filters-container {
+  margin: 5px 0 0 0;
+}
+
+.journal-filter-button {
+  margin-left: 3px;
+}
+
+.notification-contaner {
+  padding: 10px;
+  font-weight: bold;
+  border-radius: 5px;
+}
