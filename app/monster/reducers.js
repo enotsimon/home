@@ -4,6 +4,7 @@ import * as actions from './actions';
 import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
 import {journal_add_entry, journal_msg_levels} from 'monster/lib/journal'
+import {get_scene_available_links} from 'monster/lib/scenes'
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -157,7 +158,7 @@ const main_menu = {
     let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
     let menu = {
       elements: [
-        {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
+        {id: 'go_to', items: prepare_items(get_scene_available_links(action.current_scene), 'scenes')},
         {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
         {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
       ],
