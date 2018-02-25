@@ -92,14 +92,6 @@ const actions_config = {
     level: journal_msg_levels.ADMIN,
     text: (action) => `init container '${action.id_container}'`,
   },
-  [actions.CONTAINER_ADD_ITEM]: {
-    level: journal_msg_levels.ADMIN,
-    text: (action) => `add item '${action.id_item}' to container '${action.id_container}'`,
-  },
-  [actions.CONTAINER_REMOVE_ITEM]: {
-    level: journal_msg_levels.ADMIN,
-    text: (action) => `remove item '${action.id_item}' from container '${action.id_container}'`,
-  },
   [actions.ITEM_CREATE]: {
     level: journal_msg_levels.ADMIN,
     text: (action) => `create item '${action.id_item}' type '${action.item_type}' in container '${action.id_container}'`,

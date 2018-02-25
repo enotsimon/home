@@ -16,8 +16,6 @@ export const DIALOG_ACTIVATE_PLAYER_SENTENCES = 'dialog_activate_player_sentence
 export const INSPECT_BEGIN = 'inspect_begin';
 export const INSPECT_END = 'inspect_end';
 export const CONTAINER_INIT = 'container_init';
-export const CONTAINER_ADD_ITEM = 'container_add_item';
-export const CONTAINER_REMOVE_ITEM = 'container_remove_item';
 export const ITEM_CREATE = 'item_create';
 export const ITEM_DELETE = 'item_delete';
 export const ITEM_CHANGE_CONTAINER = 'item_change_container';
@@ -90,14 +88,6 @@ export function inspect_end() {
 // containers /////////////////////////
 export function container_init(id_container) {
   return {type: CONTAINER_INIT, id_container};
-}
-
-export function container_add_item(id_container, id_item) {
-  return {type: CONTAINER_ADD_ITEM, id_container, id_item};
-}
-
-export function container_remove_item(id_container, id_item) {
-  return {type: CONTAINER_REMOVE_ITEM, id_container, id_item};
 }
 
 // items //////////////////////////////

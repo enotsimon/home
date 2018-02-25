@@ -14,7 +14,7 @@ import mobiles from 'monster/config/mobiles';
 import scenes from 'monster/config/scenes';
 import dialogs from 'monster/config/dialogs';
 import furniture from 'monster/config/furniture';
-import {INVENTORY, container_dispatch_init, container_dispatch_add_item} from './lib/containers'
+import {INVENTORY, container_dispatch_init} from './lib/containers'
 import {item_create} from './lib/items'
 
 class Game {
