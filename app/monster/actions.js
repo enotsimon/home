@@ -1,5 +1,6 @@
 
 import game from './monster';
+import {get_scene_available_links} from 'monster/lib/scenes'
 
 export const CHANGE_SCENE = 'change_scene';
 export const REBUILD_MAIN_MENU = 'rebuild_main_menu';
@@ -107,17 +108,20 @@ export function item_change_container(id_item, id_container) {
 /////////////////////////////////
 // bound action creators
 /////////////////////////////////
+// TODO move code to 'lib/scenes'
 export function bound_change_scene(scene_name) {
   let target_scene = game.config.scenes[scene_name];
   let current_scene = game.config.scenes[game.store.getState().current_scene_name];
   if (!target_scene) {
-    game.store.dispatch(error_change_scene_unknown_scene(scene_name));
+    throw({msg: 'unknown scene', scene_name})
     return false;
   }
   // current_scene can be null -- on game init
-  if (current_scene && current_scene.links.indexOf(target_scene.name) == -1) {
-    game.store.dispatch(error_change_scene_not_linked_scene(scene_name));
-    return false;
+  if (current_scene) {
+    let links = get_scene_available_links(current_scene)
+    if (links.indexOf(target_scene.name) == -1) {
+      throw({msg: 'not linked scene', scene_name, current_scene})
+    }
   }
 
   game.store.dispatch(inspect_end()); // ???

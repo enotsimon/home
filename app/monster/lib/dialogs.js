@@ -1,6 +1,8 @@
 
 import game from '../monster'
 import * as actions from '../actions'
+import {check_preconditions} from './preconditions'
+import {apply_consequences} from './consequences'
 
 export function start_dialog(id_mobile) {
   if (!game.config.dialogs.mobiles[id_mobile]) {
@@ -65,87 +67,6 @@ function dialog_activate_npc_node(id_node) {
   // some pause and using redux-thunk
   game.store.dispatch(actions.dialog_activate_player_sentences(player_sentences));
 }
-
-
-///////////////////////////
-// preconditions
-///////////////////////////
-function check_preconditions(sentence) {
-  if (!sentence.preconditions) {
-    return true;
-  }
-  return sentence.preconditions.every(precondition => check_precondition(precondition));
-}
-
-function check_precondition(precondition) {
-  if (!precondition.type) {
-    throw({msg: 'precondition has no type', precondition});
-  }
-  switch (precondition.type) {
-    case 'flag':
-      return check_precondition_of_flag_type(precondition);
-    default:
-      throw({msg: 'unknown precondition type', precondition});
-  }
-}
-
-function check_precondition_of_flag_type(precondition) {
-  if (!precondition.name || typeof precondition.name !== 'string') {
-    throw({msg: "precondition of flag type should has 'name' property and it should be string", precondition});
-  }
-  if (!precondition.hasOwnProperty('value')) {
-    throw({msg: "precondition of flag type should has 'value' property", precondition});
-  }
-  let state = game.store.getState();
-  // if flag is absent in global state we init it with initial false value
-  if (state.flags[precondition.name] === undefined) {
-    game.store.dispatch(actions.change_global_flag(precondition.name, false));
-    state = game.store.getState();
-  }
-  return state.flags[precondition.name] == precondition.value;
-}
-
-
-
-///////////////////////////
-// consequences
-///////////////////////////
-function apply_consequences(sentence) {
-  if (!sentence.consequences) {
-    return true;
-  }
-  sentence.consequences.forEach(consequence => apply_consequence(consequence));
-}
-
-// TODO same as check_precondition()
-function apply_consequence(consequence) {
-  if (!consequence.type) {
-    throw({msg: 'consequence has no type', consequence});
-  }
-  switch (consequence.type) {
-    case 'flag':
-      return apply_consequence_of_flag_type(consequence);
-    default:
-      throw({msg: 'unknown consequence type', consequence});
-  }
-}
-
-// TODO same as check_precondition_of_flag_type()
-function apply_consequence_of_flag_type(consequence) {
-  if (!consequence.name || typeof consequence.name !== 'string') {
-    throw({msg: "consequence of flag type should has 'name' property and it should be string", consequence});
-  }
-  if (!consequence.hasOwnProperty('value')) {
-    throw({msg: "consequence of flag type should has 'value' property", consequence});
-  }
-  game.store.dispatch(actions.change_global_flag(consequence.name, consequence.value));
-}
-
-
-
-////////////////////////////
-// continuation
-////////////////////////////
 
 // handle player's node
 function  prepare_player_sentences(npc_sentence) {
