@@ -64,10 +64,14 @@ const flags = {
 const containers = {
   [actions.CONTAINER_INIT]: (state, action) =>
     container_reduce_init(state, action.id_container),
-  [actions.CONTAINER_ADD_ITEM]: (state, action) =>
+  [actions.ITEM_CREATE]: (state, action) =>
     container_reduce_add_item(state, action.id_container, action.id_item),
-  [actions.CONTAINER_REMOVE_ITEM]: (state, action) =>
-    container_reduce_remove_item(state, action.id_container, action.id_item),
+  [actions.ITEM_DELETE]: (state, action) =>
+    container_reduce_remove_item(state, action.id_item),
+  [actions.ITEM_CHANGE_CONTAINER]: (state, action) => {
+    let mid_state = container_reduce_remove_item(state, action.id_item)
+    return container_reduce_add_item(state, action.id_container, action.id_item)
+  }
 }
 
 const items = {
