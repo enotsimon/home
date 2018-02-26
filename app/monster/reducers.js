@@ -56,10 +56,21 @@ const game_phase = {
   [actions.INSPECT_END]: (state, action) => 'idle',
 }
 
+// return NEW object!!!
+const increment_object_key = (object, key) => ({...object, [key]: (object[key] || 0) + 1})
+
 const flags = {
   [actions.CHANGE_GLOBAL_FLAG]: (state, action) => {
     return {...state, [action.name]: action.value};
   },
+  // i'm not sure if inner auto counters should be plased together with user-level flags
+  [actions.CHANGE_SCENE]: (state, action) =>
+    increment_object_key(state, 'counter-scene_visit-' + action.scene_name),
+  [actions.DIALOG_START]: (state, action) =>
+    increment_object_key(state, 'counter-dialogs-' + action.id_mobile),
+  // dont use it cause INSPECT_BEGIN runs after any action with furniture, not once per 'inspect session'
+  //[actions.INSPECT_BEGIN]: (state, action) =>
+  //  increment_object_key(state, 'counter-furniture_inspect-' + action.id_furniture),
 }
 
 const containers = {

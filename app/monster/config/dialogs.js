@@ -78,10 +78,7 @@ const dialogs = {
       owner: 'tricky_bell',
       phrases: 'tricky_bell_init',
       preconditions: [
-        {type: 'flag', name: 'tricky_bell_init', value: false},
-      ],
-      consequences: [
-        {type: 'flag', name: 'tricky_bell_init', value: true},
+        {type: 'flag', name: 'counter-dialogs-tricky_bell', value: 1},
       ],
       continuation: 'on_tricky_bell_init',
     },
