@@ -80,3 +80,5 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#app')
   );
 });
+
+require('./alchemy_test')
