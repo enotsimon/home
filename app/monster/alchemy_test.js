@@ -3,6 +3,16 @@ import Util from "common/util"
 //
 // UTILS
 //
+const array_uniq = (array) => {
+  let uniq = []
+  array.forEach(e => {
+    if (uniq.indexOf(e) === -1) {
+      uniq = [...uniq, e]
+    }
+  })
+  return uniq
+}
+
 const array_stat = (array) => array.reduce((res, e) => {
   res[e] = (res[e] || 0) + 1
   return res
@@ -116,21 +126,15 @@ const ex_all_combinations = (alphabet, length) => {
     e = e.sort()
     return sequence_to_string(e)
   })
-  let uniq = []
-  copy.forEach(e => {
-    if (uniq.indexOf(e) === -1) {
-      uniq = [...uniq, e]
-    }
-  })
-  return uniq
+  return array_uniq(copy)
 }
 // experimantal funcs
 
 
 //console.log('spell_random_length stat', array_stat([...Array(1000)].map(() => spell_random_length(2, 10))))
 
-const count_spells = 100
-const count_symbols = 30 //count_spells * 1
+const count_spells = 50
+const count_symbols = 15 //count_spells * 1
 //const count_foundations = Math.ceil(count_spells / 4)
 const count_foundations = 4 * 5 // 4 -- count classes, 5 -- count in every class
 const count_ingredients = count_spells * 1
@@ -201,3 +205,53 @@ let test_seq_length = 2
 console.log('ex_all_transpositions 1', ex_all_transpositions(test_alphabet, test_seq_length, true))
 console.log('ex_all_transpositions 2', ex_all_transpositions(test_alphabet, test_seq_length, false))
 console.log('ex_all_combinations', ex_all_combinations(test_alphabet, test_seq_length))
+
+console.log('ex_all_combinations of 2 symbol-spells', alphabet.length, ex_all_combinations(alphabet, 2))
+console.log('ex_all_combinations of 3 symbol-spells', alphabet.length, ex_all_combinations(alphabet, 3)) // 4060 variants
+
+///////////////////////////////////////////////////////////////////
+// generate all using predefined distribution by symbol frequency
+///////////////////////////////////////////////////////////////////
+let symbols = {
+  1: {weight: 5},
+  2: {weight: 5},
+  3: {weight: 5},
+  4: {weight: 4},
+  5: {weight: 4},
+  6: {weight: 4},
+  7: {weight: 3},
+  8: {weight: 3},
+  9: {weight: 3},
+  10: {weight: 2},
+  11: {weight: 2},
+  12: {weight: 2},
+  13: {weight: 1},
+  14: {weight: 1},
+  15: {weight: 1},
+}
+
+let random_sequence_with_weights = (symbols, length) => {
+  if (length > Object.keys(symbols)) {
+    throw({msg: 'too big lenght', lenght})
+  }
+  let arr = []
+  for (let i in symbols) {
+    let weight = symbols[i].weight 
+    while (weight--) {
+      arr = [...arr, i]
+    }
+  }
+  // is it correct way?
+  arr = arr.sort(() => Math.random() - 0.5)
+  arr = array_uniq(arr)
+  return arr.slice(0, length)
+}
+
+let new_ingedients = [...Array(count_ingredients)].map(() => {
+  return random_sequence_with_weights(symbols, ingredient_random_length(2, 6))
+})
+console.log('new_ingedients', new_ingedients)
+
+let ni_symbols = []
+new_ingedients.forEach(ingedient => ingedient.forEach(symbol => ni_symbols = [...ni_symbols, symbol]))
+console.log('new_ingedients symbols stat', array_stat(ni_symbols))
