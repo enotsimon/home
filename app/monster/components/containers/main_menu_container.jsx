@@ -11,17 +11,24 @@ function get_main_menu_control(id) {
   return game.config.text.menues.main_menu.controls[id];
 }
 
-function get_item_text(type, id) {
-  if (!game.config.text[type]) {
-    throw({msg: "no text entry in config.text by given type", type});
+// FIXME its a temp solution, its a hack actually
+function get_item_text(type, data) {
+  if (!(data instanceof Array)) {
+    data = [data]
   }
-  if (!game.config.text[type][id]) {
-    throw({msg: "no text entry in config.text by given id in given category", type, id});
-  }
-  if (!game.config.text[type][id].name) {
-    throw({msg: "no name prop by given type and id", type, id});
-  }
-  return game.config.text[type][id].name;
+  data = data.map(id => {
+    if (!game.config.text[type]) {
+      throw({msg: "no text entry in config.text by given type", type});
+    }
+    if (!game.config.text[type][id]) {
+      throw({msg: "no text entry in config.text by given id in given category", type, id});
+    }
+    if (!game.config.text[type][id].name) {
+      throw({msg: "no name prop by given type and id", type, id});
+    }
+    return game.config.text[type][id].name;
+  })
+  return data.join(', ')
 }
 
 const state_to_props = state => {
@@ -37,8 +44,8 @@ const state_to_props = state => {
     })),
     subelements: current_element_obj
       ? current_element_obj.items.map(item => ({
-        id: item.id,
-        text: get_item_text(item.type, item.id),
+        id: item.action_data,
+        text: get_item_text(item.text_type, item.text_data),
       }))
       : [],
   };

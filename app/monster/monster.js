@@ -81,4 +81,4 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 });
 
-require('./alchemy_test')
+//require('./alchemy_test')

@@ -5,6 +5,7 @@ import {container_reduce_init, container_reduce_add_item, container_reduce_remov
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
 import {journal_add_entry, journal_msg_levels} from 'monster/lib/journal'
 import {get_scene_available_links} from 'monster/lib/scenes'
+import {scene_get_possible_dialogs} from 'monster/lib/dialogs'
 
 let defaults = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
@@ -65,9 +66,12 @@ const flags = {
   },
   // i'm not sure if inner auto counters should be plased together with user-level flags
   [actions.CHANGE_SCENE]: (state, action) =>
+    // TODO get counter name thru function 
     increment_object_key(state, 'counter-scene_visit-' + action.scene_name),
-  [actions.DIALOG_START]: (state, action) =>
-    increment_object_key(state, 'counter-dialogs-' + action.id_mobile),
+  // TODO -- now we dont have action.id_mobile and so wer are to figure out something
+  //[actions.DIALOG_START]: (state, action) =>
+    // TODO get counter name thru function 
+    //increment_object_key(state, 'counter-dialogs-' + action.id_mobile),
   // dont use it cause INSPECT_BEGIN runs after any action with furniture, not once per 'inspect session'
   //[actions.INSPECT_BEGIN]: (state, action) =>
   //  increment_object_key(state, 'counter-furniture_inspect-' + action.id_furniture),
@@ -166,11 +170,12 @@ const inspect_furniture = {
 
 const main_menu = {
   [actions.REBUILD_MAIN_MENU]: (state, action) => {
-    let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
+    let dialogs_data = scene_get_possible_dialogs(action.current_scene)
+    let prepare_items = (links, type) => links.map(e => ({text_data: e, text_type: type, action_data: e}));
     let menu = {
       elements: [
         {id: 'go_to', items: prepare_items(get_scene_available_links(action.current_scene), 'scenes')},
-        {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
+        {id: 'speak_to', items: dialogs_data.map(e => ({text_data: e.talkers, text_type: 'mobiles', action_data: e.node}))},
         {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
       ],
       current_element: null,

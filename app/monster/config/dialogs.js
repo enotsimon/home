@@ -20,15 +20,7 @@
  */
 
 const dialogs = {
-  mobiles: {
-    tricky_bell: {
-      root_node: 'tricky_bell_root',
-    },
-  },
-
-
   nodes: {
-
     tricky_bell_root: {
       type: 'npc',
       sentences: [
@@ -36,14 +28,12 @@ const dialogs = {
         'tricky_bell_1',
       ],
     },
-
     tricky_bell_2: {
       type: 'npc',
       sentences: [
         'tricky_bell_2',
       ],
     },
-
     on_tricky_bell_init: {
       type: 'player',
       sentences: [
@@ -52,7 +42,6 @@ const dialogs = {
         'on_tricky_bell_init_3',
       ],
     },
-
     on_tricky_bell_1: {
       type: 'player',
       sentences: [
@@ -61,19 +50,15 @@ const dialogs = {
         'on_tricky_bell_1_3',
       ],
     },
-
     on_tricky_bell_2: {
       type: 'player',
       sentences: [
         'on_tricky_bell_2',
       ],
     },
-
   },
 
-
   sentences: {
-
     tricky_bell_init: {
       owner: 'tricky_bell',
       phrases: 'tricky_bell_init',
@@ -82,62 +67,52 @@ const dialogs = {
       ],
       continuation: 'on_tricky_bell_init',
     },
-
     tricky_bell_1: {
       owner: 'tricky_bell',
       phrases: 'tricky_bell_1',
       continuation: 'on_tricky_bell_1',
     },
-
     tricky_bell_2: {
       owner: 'tricky_bell',
       phrases: 'tricky_bell_2',
       continuation: 'on_tricky_bell_2',
     },
-
     on_tricky_bell_init_1: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_init_1',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_init_2: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_init_2',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_init_3: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_init_3',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_1_1: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_1_1',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_1_2: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_1_2',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_1_3: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_1_3',
       continuation: 'tricky_bell_2',
     },
-
     on_tricky_bell_2: {
       owner: 'rathni',
       phrases: 'on_tricky_bell_2',
       continuation: null,
     }
   },
+}
 
-};
-
-export default dialogs;
+export default dialogs
