@@ -8,6 +8,9 @@ const scenes = {
       {id_scene: "mage_home_hall"},
       {id_scene: "mage_home_vallo_room"}
     ],
+    dialogs: [
+      //{talkers: ["mage"], node: 'mage_root'},
+    ],
   },
 
   mage_home_hall: {
@@ -23,6 +26,9 @@ const scenes = {
           {type: 'flag', name: 'mage_home_entrance_door_unlocked', value: true},
         ],
       }
+    ],
+    dialogs: [
+      {talkers: ["tricky_bell"], node: 'tricky_bell_root'},
     ],
   },
 

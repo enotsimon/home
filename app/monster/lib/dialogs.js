@@ -4,13 +4,22 @@ import * as actions from '../actions'
 import {check_preconditions} from './preconditions'
 import {apply_consequences} from './consequences'
 
-export function start_dialog(id_mobile) {
-  if (!game.config.dialogs.mobiles[id_mobile]) {
-    throw({msg: 'unknown dialog owner', id_mobile});
-  }
-  game.store.dispatch(actions.dialog_start(id_mobile));
-  let id_node = game.config.dialogs.mobiles[id_mobile].root_node;
-  dialog_activate_npc_node(id_node);
+// scene -- object, not scene id
+export function scene_get_possible_dialogs(scene) {
+  return (scene.dialogs || []).map(e => {
+    if (!e.talkers) {
+      throw({msg: "dialog config has no 'talkers' prop"})
+    }
+    if (!e.node) {
+      throw({msg: "dialog config has no 'node' prop"})
+    }
+    return e
+  })
+}
+
+export function start_dialog(id_node) {
+  game.store.dispatch(actions.dialog_start())
+  dialog_activate_npc_node(id_node)
 }
 
 export function handle_player_sentence(id_sentence) {

@@ -59,7 +59,7 @@ const actions_config = {
   [actions.DIALOG_START]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `${text().journal.dialog_start} {${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}`,
+      `${text().journal.dialog_start}`,
   },
   [actions.DIALOG_FINISH]: {
     level: journal_msg_levels.GAME,
