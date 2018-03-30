@@ -59,3 +59,10 @@
   font-weight: bold;
   border-radius: 5px;
 }
+
+/* try to use it for plus button in config_generator, but failed */
+.plus-button {
+  border-radius: 50%;
+  width: 35px;
+  height: 38px;
+}
