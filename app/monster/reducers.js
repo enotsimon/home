@@ -68,10 +68,9 @@ const flags = {
   [actions.CHANGE_SCENE]: (state, action) =>
     // TODO get counter name thru function 
     increment_object_key(state, 'counter-scene_visit-' + action.scene_name),
-  // TODO -- now we dont have action.id_mobile and so wer are to figure out something
-  //[actions.DIALOG_START]: (state, action) =>
+  [actions.DIALOG_START]: (state, action) =>
     // TODO get counter name thru function 
-    //increment_object_key(state, 'counter-dialogs-' + action.id_mobile),
+    increment_object_key(state, 'counter-dialogs-' + action.id_node),
   // dont use it cause INSPECT_BEGIN runs after any action with furniture, not once per 'inspect session'
   //[actions.INSPECT_BEGIN]: (state, action) =>
   //  increment_object_key(state, 'counter-furniture_inspect-' + action.id_furniture),
