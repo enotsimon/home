@@ -63,7 +63,7 @@ const dialogs = {
       owner: 'tricky_bell',
       phrases: 'tricky_bell_init',
       preconditions: [
-        {type: 'flag', name: 'counter-dialogs-tricky_bell', value: 1},
+        {type: 'flag', name: 'counter-dialogs-tricky_bell_root', value: 1},
       ],
       continuation: 'on_tricky_bell_init',
     },

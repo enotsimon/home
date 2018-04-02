@@ -18,7 +18,7 @@ export function scene_get_possible_dialogs(scene) {
 }
 
 export function start_dialog(id_node) {
-  game.store.dispatch(actions.dialog_start())
+  game.store.dispatch(actions.dialog_start(id_node))
   dialog_activate_npc_node(id_node)
 }
 
