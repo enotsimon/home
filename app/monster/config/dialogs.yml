@@ -1,0 +1,224 @@
+---
+- id: well_formatted_example
+  sequence:
+  - <b>: hey
+  - <r>: what?
+  - <b>: you're bitch
+  - id: r_answer
+    choose:
+    - cond: show_once_per_dialog
+      sequence:
+      - <r>: what! fuck off!
+      - <b>: okay! but try_again
+      - goto: r_answer
+    - cond: show_once_per_dialog
+      sequence:
+      - <r>: i gonna kill you!
+      - <b>: im not impressed...
+      - goto: r_answer
+    - sequence:
+      - <r>: quit this shit now...
+      - <b>: bye then!
+
+- id: tricky_bell_root
+  seqence:
+  - cond:
+      type: flag
+      name: counter-dialogs-tricky_bell_root
+      what: equal
+      value: 1
+    after:
+      type: flag
+      name: test-flag
+      value: true
+    <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
+    choose:
+    - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
+      seqence:
+      - <tricky_bell>: "я тебя не знаю, проваливай!"
+      - <rathni>: 'ах ты гад! ну и ладно!'
+    - <rathni>: 'эээ... ты всегда такой грубый?'
+      seqence:
+      - <tricky_bell>: "такая уж работа, сорян. а теперь вали!"
+      - <rathni>: 'сам вали!'
+    - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
+      seqence:
+      - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
+      - <rathni>: 'ну лан...'
+  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: not_equal, value: 1}
+    <tricky_bell>: "опять ты? что теперь?"
+    choose:
+    - <rathni>: 'и тебе привет...'
+      seqence:
+      - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
+        id_node: tricky_bell_say_goto_hell
+      - <rathni>: '(конец диалога)'
+    - <rathni>: 'ничего...'
+      seqence: tricky_bell_say_goto_hell
+    - <rathni>: 'как же ты достал уже!'
+      seqence: tricky_bell_say_goto_hell
+
+- id: barmen_root
+  sequence:
+  #- cond: {type: flag, name: counter-dialogs-barmen_root, value: 1}
+  - if: counter-dialogs-barmen_root == 1
+    sequence:
+      - <barmen>: привет, я бармен-белка, чего тебе налить?
+      - choose:
+        - if: we_already_asked_about_what_to_drink == false
+          sequence:
+          - <rathni>: привет, а что есть?
+          - <barmen>: у меня есть лучшие сорта разной бормотухи, бодяги и пойла. что тебя интересует?
+            after: we_already_asked_about_what_to_drink = true  
+          - id: choose_drink_root
+            choose:
+            - sequence:
+              - <rathni>: ну я наверное про бормотуху...
+              - if: we_already_asked_about_what_to_drink == false
+                <barmen>: любишь что покрепче? отлично! у меня есть сколопендрова кровь, лавовая бомба ну и змеиная настойка. ну еще есть стеклопротирка, если ты бомжуешь. только эта -- прям здесь не блевать! выходи на улицу!
+              - if: we_already_asked_about_what_to_drink == true
+                <barmen>: все как обычно -- сколопендрова кровь, лавовая бомба и змеиная настойка. ну и стеклопротирка, да, куда ж без нее...
+              - id: choose_bormotuha
+                choose:
+                - cond: show_once_per_dialog
+                  sequence:
+                  - <rathni>: надеюсь сколопендрова кровь это не настоящая сколопендрова кровь?
+                  - <barmen>: да не, она просто такого цвета
+                  - <rathni>: а из чего ее гонят?
+                  - <barmen>: из дров. ха-ха-ха! да не, серьезно...
+                  - <rathni>: ну ладно, как скажешь
+                  - goto: choose_bormotuha
+                - cond: show_once_per_dialog
+                  sequence:
+                  - <rathni>: что как там лавовая бомба? советуешь?
+                  - <barmen>: отличная вещь, хит на все времена, очень бодрит. ток поосторожнее там -- ощущение бодряка от нее очень коварно и обманчиво...
+                  - <rathni>: ого, ладно!
+                  - goto: choose_bormotuha
+                - cond: show_once_per_dialog
+                  sequence:
+                  - <rathni>: змеиная настойка?
+                  - <barmen>: ну да, обычная настойка... со змеями... что сказать? еще туда всяких тараканов кладут, вроде...
+                  - <rathni>: ага, тараканы! это все меняет!
+                  - <barmen>: многим нравится...
+                  - <rathni>: так я говорю!
+                  - goto: choose_bormotuha
+                - cond: show_once_per_dialog
+                  sequence:
+                  - <rathni>: а стеклопротирка как? ничего? она же не для того чтобы стекла протирать, правда? она же просто так называется?
+                  - <barmen>: давай, утешай себя
+                  - <rathni>: нууу... то есть да? я вот стекла водой протираю...
+                  - <barmen>: ну это не вода. не сомневайся! но в качестве утешения могу сказать тебе что я стекла тоже водой протираю
+                  - <rathni>: а что... она пользуется популяртностью?
+                  - <barmen>: да, определенно
+                  - <rathni>: а эти... ее любители... они все еще с нами?... они не покидают нас пока?
+                  - <barmen>: послушай, я тебя уговаривать не собираюсь
+                  - <rathni>: ладно, принято
+                  - goto: choose_bormotuha
+                - buy: {money: fish, value: 5, get: shot_of_scolopendra_blood_luquire}
+                  #cond: {type: money, subtype: fish, what: >=, value: 5}
+                  #after:
+                  #  - {type: change_money, subtype: fish, value: -5}
+                  #  - {type: add_item, value: shot_of_scolopendra_blood_luquire}
+                  sequence:
+                  - <rathni>: мне сколопендрову кровь. люблю сколопендр. в смысле дрова люблю...
+                  - id: barmen_sell_something_and_say_random_phrase
+                    # блин нам перед этим надо записать случайное значние 0..2 в какой-то флаг
+                    before: {type: flag, name: barmen_random_phrase_value, value: random(2)}
+                    sequence:
+                    - if: barmen_random_phrase_value == 0
+                      <barmen>: держи, и постарайся не умереть, хотя бы прям здесь
+                    - if: barmen_random_phrase_value == 1
+                      <barmen>: держи, на здоровье
+                    - if: barmen_random_phrase_value == 2
+                      <barmen>: желание клиента -- закон!
+                    - goto: barmen_root
+                - buy: {money: fish, value: 6, get: shot_of_lava_blood_luquire}
+                  sequence:
+                  - <rathni>: давай сюда лавовую бомбу!
+                  - goto: barmen_sell_something_and_say_random_phrase
+                - buy: {money: fish, value: 4, get: shot_of_snake_luquire}
+                  sequence:
+                  - <rathni>: мне змеиную... с тараканами! да!
+                  - goto: barmen_sell_something_and_say_random_phrase
+                - buy: {money: fish, value: 3, get: shot_of_glass_cleaner_luquire}
+                  sequence:
+                  - <rathni>: давай стеклопротирку! попробую что-ли... стекла протереть... ей. пора уже... их почистить... ага
+                  - <barmen>: ток смотри не помри, дорогуша, я буду скучать
+                  - goto: barmen_root
+                - if: {type: money, subtype: fish, what: <, value: 3}
+                  sequence:
+                  - <rathni>: ой, сорян, я чет не при деньгах сегодня...
+                  - <barmen>: в долг не даю. даже тебе, красотка
+                  - goto: barmen_root
+                - sequence:
+                  - <rathni>: лан, забудь про бормотуху...
+                  - goto: choose_drink_root
+            - sequence:
+              - <rathni>: расскажи мне про бодягу
+
+            - sequence:
+              - <rathni>: что насчет пойла?
+
+            - sequence:
+              - <rathni>: а что-нибудь безалкогольное есть?
+              - <barmen>: да, есть всякий сочек-мочек... ты об этом?
+              - <rathni>: ну да, наверное
+              - <barmen>: ага, ну там есть сочек... да... ну из фруктов разных... ага, есть еще божественный коктейль "слив унитаза", просто бомба! он из... ну... того что обычно в унитаз сливают... будешь? а, ну еще есть перемолотые жучки... это если ты сколопендра... есть еще искрящаяся вода святого... как там его... ну ты поняла...
+              - id: choose_juice_drinks
+                choose:
+                - if: rathni_knows_abount_murmurla == true
+                  sequence:
+                  - <rathni>: а из мурмурлы сочек есть?
+                  - <barmen>: это что еще такое?
+                  - <rathni>: оо! это божественный фрукт!... я его никогда не видела...
+                  - <barmen>: хм... ну, я тоже
+                  - goto: choose_juice_drinks
+                - buy: {money: fish, value: 3, get: glass_of_fruit_juice}
+                  sequence:
+                  - <rathni>: ну мне фруктового сочку тогда
+                  - <barmen>: как скажешь, спортсмен
+                  - goto: barmen_root
+                - buy: {money: fish, value: 3, get: glass_of_toilet_waste_coctail}
+                  sequence:
+                  - <rathni>: божественный коктейль! слив унитаза!
+                  - <barmen>: он твой, золотце # заменить. золота там нет
+                  - goto: barmen_root
+                - buy: {money: fish, value: 4, get: glass_of_bugs_coctail}
+                  sequence:
+                  - <rathni>: давай мне жучков стакан!
+                  - <barmen>: о, отнесешь знакомой сколопендре! да?... да?... ты же не...
+                  - <rathni>: ...
+                  - <barmen>: ты же не... будешь пить это сама?
+                  - <rathni>: давай сюда его сейчас!
+                  - <barmen>: хорошо, хорошо, вот
+                  - goto: barmen_root
+                - buy: {money: fish, value: 2, get: glass_of_saint_water}
+                  sequence:
+                  - <rathni>: мне стаканчик искрящейся...
+                  - <barmen>: сладенькая...
+                  - <rathni>: ммм?
+                  - <barmen>: держи
+                  - goto: barmen_root
+            - sequence:
+              - <rathni>: можно мне просто воды...
+              - <barmen>: просто воду попей из лужи на улице! вали из моего бара с глаз моих нахрен!
+              - choose:
+                - after:
+                  - {type: relations, with: barmen, value: -1}
+                  - {type: flag, name: barmen_rathni_water_problem, value: true}  
+                  sequence:
+                  - <rathni>: чего? сам ты пошел!
+                - sequence:
+                  - <rathni>: ладно, ладно! успокойся, чего ты так сразу нервничать?
+                  - <barmen>: брррр! трисет прям как про воду слышу! не расстраивай меня, слышишь?
+                  - <rathni>: ладно, не буду!
+                  - goto: choose_drink_root
+  - if: counter-dialogs-barmen_root > 1
+    before: {type: flag, name: barmen_random_phrase_value, value: random(2)}
+    sequence:
+    - if: barmen_random_phrase_value == 0
+      <barmen>: привет, что будешь?
+    - if: barmen_random_phrase_value == 1
+      <barmen>: привет, что пьем сегодня?
+    - if: barmen_random_phrase_value == 2
+      <barmen>: а вот и ты опять! чего налить?
