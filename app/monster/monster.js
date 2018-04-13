@@ -82,3 +82,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 //require('./alchemy_test')
+
+require('./yaml_parser_test')
