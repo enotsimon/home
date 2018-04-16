@@ -69,10 +69,10 @@
         sequence:
         - goto: barmen_choose_drink_root
       - if: we_already_asked_about_what_to_drink == false
+        after: we_already_asked_about_what_to_drink = true
         sequence:
         - <rathni>: привет, а что есть?
         - <barmen>: у меня есть лучшие сорта разной бормотухи, бодяги и пойла. что тебя интересует?
-          after: we_already_asked_about_what_to_drink = true  
         - goto: barmen_choose_drink_root
   - if: counter-dialogs-barmen_root > 1
     before: {type: flag, name: barmen_random_phrase_value, value: random(2)}
