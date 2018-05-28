@@ -1,6 +1,7 @@
-import yaml from 'js-yaml'
+
 import uuid from 'uuid'
-console.log('uuidv1', uuid.v1())
+import * as R from 'ramda'
+import yaml from 'js-yaml'
 
 let config = `
 dialogs:
@@ -70,52 +71,48 @@ scenes:
 
 const parse_yaml_config_dialogs = (config) => {
   let dialogs = []
-  dialogs = parse_dialog_process_config_tree(config, parse_dialog_set_id)
-  /*
-  config.forEach(element => {
-    let cell = parse_dialog_element(element)
-    dialogs = [...dialogs, cell]
-    if (element.sequence) {
-      //let parse_dialog_sequence(element.sequence)
-    }
-    console.log('cell', cell)
-  })*/
+  dialogs = parse_dialog_process_config_tree(parse_dialog_set_id, config)
+  dialogs = parse_dialog_process_config_tree(parse_dialog_process_element, dialogs)
   return dialogs
 }
 
-const parse_dialog_process_config_tree = (config, func) => {
+// TODO not sure if its good idea to pass parent_element, next_element
+// cause it makes this func very specific
+const parse_dialog_process_config_tree = (func, config, next_element = null, parent_element = null) => {
   if (config instanceof Array) {
-    return config.map(e => parse_dialog_process_config_tree(e, func))
+    //return config.map(e => parse_dialog_process_config_tree(func, e, next_element, ))
+    let pairs = R.aperture(2, [...config, null])
+    return pairs.map(([e, next]) => parse_dialog_process_config_tree(func, e, next, parent_element))
   } else {
-    let element = func(config)
+    let element = func(config, next_element, parent_element)
     if (element.sequence && element.choose) {
       throw({msg: "dialogs config element got both 'sequence' and 'choose' props", element})
     }
     if (element.sequence) {
-      element.sequence = parse_dialog_process_config_tree(element.sequence, func)
+      element.sequence = parse_dialog_process_config_tree(func, element.sequence, null, element)
     }
     if (element.choose) {
-      element.choose = parse_dialog_process_config_tree(element.choose, func)
+      element.choose = parse_dialog_process_config_tree(func, element.choose, null, element)
     }
     return element
   }
 }
 
+// TODO add id prefix
 const parse_dialog_set_id = (element) => {
   return {...element, id: element.id || uuid.v1()}
 }
 
-const parse_dialog_element = (element, prev_element = null) => {
-  let cell = {id: null, cond: null, car: null, cdr: null, before: [], after: []}
-  // set_id
-  cell.id = element.id ? element.id : uuidv1()
-  // set_cond
+const parse_dialog_process_element = (element, next_element, parent_element) => {
+  let cell = {...element} // !!!
+  //console.log('cell', [cell, next_element, parent_element])
+  //let cell = {id: element.id, cond: null, car: null, cdr: null, before: [], after: []}
+  
   cell.cond = parse_dialog_cond(element)
-  // parse_before
-  cell.before = element.before
-  // parse_after
-  cell.after = element.after
-
+  //cell.before = element.before
+  //cell.after = element.after
+  cell.car = get_cell_car(element)
+  cell.cdr = get_cell_cdr(element, next_element, parent_element)
   return cell
 }
 
@@ -125,6 +122,51 @@ const parse_dialog_cond = element => {
     throw({msg: "element got both 'cond' and 'if' props", element})
   }
   return element.cond || element.if
+}
+
+const get_cell_car = element => {
+  let phrases = get_phrase_from_element(element)
+  if (phrases) {
+    return {...phrases, type: 'phrase'}
+  } else if (element.sequence) {
+    // {type: 'link', id: element.sequence[0].id} ???
+    return element.sequence[0].id
+  } else if (element.choose) {
+    // crap!
+    return {type: 'choose', ids: element.choose.map(e => e.id)}
+  } else {
+    return null
+  }
+}
+
+const get_cell_cdr = (element, next_element, parent_element) => {
+  // parent_element.car.type !!! ??? this may change
+  if (parent_element && parent_element.car && parent_element.car.type === 'choose') {
+    return null
+  } else if (element.goto) {
+    return element.goto
+  } else if (next_element === null) {
+    return null
+  } else {
+    if (!next_element.id) {
+      throw({msg: 'cannot set cell cdr cause next_element has no id', element, next_element})
+    }
+    return next_element.id
+  }
+}
+
+const get_phrase_from_element = element => {
+  let phrases = []
+  for (let key in element) {
+    let matches = /<(.*)>/.exec(key)
+    if (matches) {
+      phrases = [...phrases, {mobile: matches[1], phrase: element[key]}]
+    }
+  }
+  if (phrases.length && phrases.length !== 1) {
+    throw({msg: 'element has more than one phrase', element, phrases})
+  }
+  return phrases.length ? phrases[0] : null
 }
 
 const parse_yaml_config = (config) => {
