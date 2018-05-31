@@ -3,20 +3,6 @@ import uuid from 'uuid'
 import * as R from 'ramda'
 import yaml from 'js-yaml'
 
-// async config parsing
-let rrr = fetch('/monster/config/config.yml')
-  .then(response => {
-    if (response.ok) {
-      return response.text()
-    }
-    throw {msg: 'cant get config', response}
-  })
-  .then(text => {
-    parser_test(text)
-  })
-  .catch(alert)
-
-
 const parse_yaml_config_dialogs = (config) => {
   let dialogs = []
   dialogs = parse_dialog_process_config_tree(parse_dialog_set_id, config)
@@ -117,21 +103,10 @@ const get_phrase_from_element = element => {
   return phrases.length ? phrases[0] : null
 }
 
-const parse_yaml_config = (config) => {
+export const parse_yaml_config = (yaml_doc) => {
+  let config = yaml.safeLoad(yaml_doc)
   return {
     dialogs: parse_yaml_config_dialogs(config.dialogs),
     scenes: config.scenes,
   }
-}
-
-const parser_test = (config) => {
-  let game_config = []
-  try {
-    let doc = yaml.safeLoad(config)
-    console.log('parsed yaml doc', doc)
-    game_config = parse_yaml_config(doc)
-  } catch (e) {
-    console.log('error', e)
-  }
-  console.log('parsed config', game_config)
 }
