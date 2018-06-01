@@ -103,7 +103,6 @@ const get_phrase_from_element = element => {
   return phrases.length ? phrases[0] : null
 }
 
-export const parse_yaml_config = (yaml_doc) => {
-  let config = yaml.safeLoad(yaml_doc)
-  return {...config, dialogs: parse_yaml_config_dialogs(config.dialogs)}
-}
+export const parse_dialogs = (yaml_doc) => parse_yaml_config_dialogs(parse_raw(yaml_doc))
+
+export const parse_raw = (yaml_doc) => yaml.safeLoad(yaml_doc)
