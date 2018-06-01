@@ -37,8 +37,8 @@ export default class ExpRule extends Tableau {
   }
 
   out_of_border_func() {
+    //return Util.rand(0, 1); ???
     return 0;
-    return Util.rand(0, 1);
   }
 
   //
@@ -72,7 +72,7 @@ export default class ExpRule extends Tableau {
       //case '000000001':
       //case '001000000':
       //case '000000100':
-        return 1;
+        //return 1;
       default:
         return 0;
     }
