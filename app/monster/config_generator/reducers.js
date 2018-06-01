@@ -2,7 +2,8 @@ import { combineReducers } from 'redux'
 import * as actions from './actions'
 
 let defaults = {
-  scenes: require('monster/config/scenes').default, // TEMP
+  // DONT WORK!
+  //scenes: require('monster/config/scenes').default, // TEMP
 }
 
 const scenes = {

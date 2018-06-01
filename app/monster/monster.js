@@ -10,10 +10,7 @@ import * as actions from './actions';
 import Util from "common/util";
 import App from 'monster/components/app';
 
-import mobiles from 'monster/config/mobiles';
-import scenes from 'monster/config/scenes';
-import dialogs from 'monster/config/dialogs';
-import furniture from 'monster/config/furniture';
+import dialogs from 'monster/config/dialogs'; // TEMP
 import {INVENTORY, container_dispatch_init} from './lib/containers'
 import {item_create} from './lib/items'
 import {parse_yaml_config} from './yaml_parser_test'
@@ -86,12 +83,9 @@ let game_inited = fetch(config_path + '/config.yml')
     let yaml_config = parse_yaml_config(text)
     console.log('yaml_config', yaml_config)
     
-    // TEMP
-    let config = {
-      mobiles,
-      scenes,
+    // TEMP merge old dialogs
+    let config = {...yaml_config, 
       dialogs,
-      furniture,
       text: require('./text/rus.js').default,
     }
 
