@@ -71,7 +71,7 @@ const init_game = () => {
 }
 
 let config = {}
-const load_config_entry = (config_file_name, parse_func, prop_name) => {
+const load_config_entry = (config_file_name, parse_func) => {
   let config_path = '/monster/config' // TEMP
 
   return fetch(config_path + '/' + config_file_name + '.yml')
@@ -81,24 +81,19 @@ const load_config_entry = (config_file_name, parse_func, prop_name) => {
     }
     throw {msg: 'cant get config', config_file_name, response}
   })
-  .then(text => {
-    let parsed_config = parse_func(text)
-    console.log('parsed config', config_file_name, parsed_config)
-    game.config[prop_name] = parsed_config
-  })
+  .then(parse_func)
 }
 
 Promise.all([
-  load_config_entry('dialogs', parse_dialogs, 'dialogs'),
-  load_config_entry('scenes', parse_raw, 'scenes'),
-  load_config_entry('mobiles', parse_raw, 'mobiles'),
-  load_config_entry('furniture', parse_raw, 'furniture'),
+  load_config_entry('dialogs', parse_dialogs),
+  load_config_entry('scenes', parse_raw),
+  load_config_entry('mobiles', parse_raw),
+  load_config_entry('furniture', parse_raw),
   contentLoaded
-]).then(() => {
-  game.config.text = require('./text/rus.js').default
-  // TEMP until yaml dialogs config is on the way
-  game.config.dialogs = dialogs
-  console.log('config IS', game.config)
+]).then(([_, scenes, mobiles, furniture]) => {
+  // TEMP use dialogs imported from js until yaml dialogs config is on the way
+  game.config = {dialogs, scenes, mobiles, furniture, text: require('./text/rus.js').default}
+  console.log('gonna init game')
   init_game()
   init_react()
 })
