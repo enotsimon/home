@@ -13,7 +13,7 @@ import App from 'monster/components/app';
 import dialogs from 'monster/config/dialogs'; // TEMP
 import {INVENTORY, container_dispatch_init} from './lib/containers'
 import {item_create} from './lib/items'
-import {parse_yaml_config} from './yaml_parser_test'
+import {parse_dialogs, parse_raw} from './yaml_parser_test'
 import {contentLoaded} from 'document-promises'
 
 const check_config_cosistency = () => {
@@ -40,7 +40,7 @@ const create_containers_and_items = (config) => {
 }
 
 const game = {
-  config: null,
+  config: {},
   store: createStore(root_reducer)
 }
 export default game
@@ -64,33 +64,43 @@ const init_react = () => {
 }
 
 // WARNING! this crap changes input args!
-const init_game = (game, config) => {
-  check_config_cosistency(config)
-  game.config = config // !!!
+const init_game = () => {
+  check_config_cosistency(game.config)
   create_containers_and_items(game.config)
   actions.bound_change_scene('mage_room')
 }
 
-let config_path = '/monster/config'
-let game_inited = fetch(config_path + '/config.yml')
+let config = {}
+const load_config_entry = (config_file_name, parse_func, prop_name) => {
+  let config_path = '/monster/config' // TEMP
+
+  return fetch(config_path + '/' + config_file_name + '.yml')
   .then(response => {
     if (response.ok) {
       return response.text()
     }
-    throw {msg: 'cant get config', response}
+    throw {msg: 'cant get config', config_file_name, response}
   })
   .then(text => {
-    let yaml_config = parse_yaml_config(text)
-    console.log('yaml_config', yaml_config)
-    
-    // TEMP merge old dialogs
-    let config = {...yaml_config, 
-      dialogs,
-      text: require('./text/rus.js').default,
-    }
-
-    init_game(game, config)
+    let parsed_config = parse_func(text)
+    console.log('parsed config', config_file_name, parsed_config)
+    game.config[prop_name] = parsed_config
   })
-Promise.all([game_inited, contentLoaded]).then(init_react)
+}
+
+Promise.all([
+  load_config_entry('dialogs', parse_dialogs, 'dialogs'),
+  load_config_entry('scenes', parse_raw, 'scenes'),
+  load_config_entry('mobiles', parse_raw, 'mobiles'),
+  load_config_entry('furniture', parse_raw, 'furniture'),
+  contentLoaded
+]).then(() => {
+  game.config.text = require('./text/rus.js').default
+  // TEMP until yaml dialogs config is on the way
+  game.config.dialogs = dialogs
+  console.log('config IS', game.config)
+  init_game()
+  init_react()
+})
 
 //require('./alchemy_test')
