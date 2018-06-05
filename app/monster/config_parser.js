@@ -3,10 +3,16 @@ import uuid from 'uuid'
 import * as R from 'ramda'
 import yaml from 'js-yaml'
 
+// i hate it
+let temp_conf = []
+
 const parse_yaml_config_dialogs = (config) => {
   let dialogs = []
   dialogs = parse_dialog_process_config_tree(parse_dialog_set_id, config)
+  temp_conf = []
   dialogs = parse_dialog_process_config_tree(parse_dialog_process_element, dialogs)
+  console.log('dialogs', dialogs)
+  console.log('temp_conf', temp_conf)
   return dialogs
 }
 
@@ -38,16 +44,17 @@ const parse_dialog_set_id = (element) => {
 }
 
 const parse_dialog_process_element = (element, next_element, parent_element) => {
-  let cell = {...element} // !!!
-  //console.log('cell', [cell, next_element, parent_element])
-  //let cell = {id: element.id, cond: null, car: null, cdr: null, before: [], after: []}
-  
-  cell.cond = parse_dialog_cond(element)
-  //cell.before = element.before
-  //cell.after = element.after
-  cell.car = get_cell_car(element)
-  cell.cdr = get_cell_cdr(element, next_element, parent_element)
-  return cell
+  let cell = {
+    id: element.id,
+    cond: parse_dialog_cond(element),
+    car: get_cell_car(element),
+    cdr: get_cell_cdr(element, next_element, parent_element),
+    before: element.before, // TODO parse
+    after: element.after, // TODO parse
+  }
+  // its a damn crap! rewrite it ASAP!
+  temp_conf = [...temp_conf, cell]
+  return element // yes! we need it for parse_dialog_process_config_tree()
 }
 
 // TODO add parsing of data
