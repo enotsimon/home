@@ -13,7 +13,7 @@ import App from 'monster/components/app';
 import dialogs from 'monster/config/dialogs'; // TEMP
 import {INVENTORY, container_dispatch_init} from './lib/containers'
 import {item_create} from './lib/items'
-import {parse_dialogs, parse_raw} from './yaml_parser_test'
+import {parse_dialogs, parse_raw} from './config_parser'
 import {contentLoaded} from 'document-promises'
 
 const check_config_cosistency = () => {
