@@ -1,6 +1,6 @@
 ---
 - id: tricky_bell_root
-  seqence:
+  sequence:
   - cond:
       type: flag
       name: counter-dialogs-tricky_bell_root
@@ -13,29 +13,29 @@
     <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
     choose:
     - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
-      seqence:
+      sequence:
       - <tricky_bell>: "я тебя не знаю, проваливай!"
       - <rathni>: 'ах ты гад! ну и ладно!'
     - <rathni>: 'эээ... ты всегда такой грубый?'
-      seqence:
-      - <tricky_bell>: "такая уж работа, сорян. а теперь вали!"
+      sequence:
+      - <tricky_bell>: "такая уж работа, извиняй. а теперь вали!"
       - <rathni>: 'сам вали!'
     - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
-      seqence:
+      sequence:
       - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
       - <rathni>: 'ну лан...'
   - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: not_equal, value: 1}
     <tricky_bell>: "опять ты? что теперь?"
     choose:
     - <rathni>: 'и тебе привет...'
-      seqence:
+      sequence:
       - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
         id_node: tricky_bell_say_goto_hell
       - <rathni>: '(конец диалога)'
     - <rathni>: 'ничего...'
-      seqence: tricky_bell_say_goto_hell
+      sequence: tricky_bell_say_goto_hell
     - <rathni>: 'как же ты достал уже!'
-      seqence: tricky_bell_say_goto_hell
+      sequence: tricky_bell_say_goto_hell
 
 #- id: barmen_root
 #  sequence:
@@ -83,7 +83,7 @@
 - id: barmen_choose_drink_root
   choose:
   - <rathni>: ну я наверное про бормотуху...
-    seqence:  
+    sequence:  
     - if: we_already_asked_about_what_to_drink == false
       <barmen>: любишь что покрепче? отлично! у меня есть сколопендрова кровь, лавовая бомба ну и змеиная настойка. ну еще есть стеклопротирка, если ты бомжуешь. только эта -- прям здесь не блевать! выходи на улицу!
     - if: we_already_asked_about_what_to_drink == true

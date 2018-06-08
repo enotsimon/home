@@ -10,7 +10,7 @@ import * as actions from './actions';
 import Util from "common/util";
 import App from 'monster/components/app';
 
-import dialogs from 'monster/config/dialogs'; // TEMP
+//import dialogs from 'monster/config/dialogs'; // TEMP
 import {INVENTORY, container_dispatch_init} from './lib/containers'
 import {item_create} from './lib/items'
 import {parse_dialogs, parse_raw} from './config_parser'
@@ -90,10 +90,9 @@ Promise.all([
   load_config_entry('mobiles', parse_raw),
   load_config_entry('furniture', parse_raw),
   contentLoaded
-]).then(([_, scenes, mobiles, furniture]) => {
+]).then(([dialogs, scenes, mobiles, furniture]) => {
   // TEMP use dialogs imported from js until yaml dialogs config is on the way
   game.config = {dialogs, scenes, mobiles, furniture, text: require('./text/rus.js').default}
-  console.log('gonna init game')
   init_game()
   init_react()
 })

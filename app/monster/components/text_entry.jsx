@@ -40,7 +40,7 @@ class TextEntry extends React.Component {
     ));
 
     if (this.props.children instanceof Array) {
-      return (<div>{this.props.children.map((e, i) => (<p key={i}>{text_block(e, i)}</p>))}</div>);
+      return (<div>{this.props.children.map((e, i) => (<div key={i}>{text_block(e, i)}</div>))}</div>);
     } else {
       return (<span>{text_block(this.props.children, 0)}</span>);
     }

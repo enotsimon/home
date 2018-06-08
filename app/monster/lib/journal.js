@@ -69,7 +69,7 @@ const actions_config = {
   [actions.DIALOG_NPC_SAYS]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `{${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}: ${text().dialogs[action.sentence.phrases]}`,
+      `{${text().mobiles[action.sentence.owner].name}|mobiles|${action.sentence.owner}}: ${action.sentence.phrases}`,
   },
   [actions.DIALOG_PLAYER_SAYS]: {
     level: journal_msg_levels.GAME,
