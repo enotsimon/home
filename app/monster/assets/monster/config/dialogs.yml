@@ -51,3 +51,34 @@
         - <r>: omg again i'm a looser
         - <b>: yeah, you are! and let's try again
         - goto: r_answer
+
+- id: tricky_bell_root
+  sequence:
+  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: equal, value: 1}
+    after: {type: flag, name: test-flag, value: true}
+    <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
+    choose:
+    - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
+      sequence:
+      - <tricky_bell>: "я тебя не знаю, проваливай!"
+      - <rathni>: 'ах ты гад! ну и ладно!'
+    - <rathni>: 'эээ... ты всегда такой грубый?'
+      sequence:
+      - <tricky_bell>: "такая уж работа, извиняй. а теперь вали!"
+      - <rathni>: 'сам вали!'
+    - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
+      sequence:
+      - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
+      - <rathni>: 'ну лан...'
+  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: not_equal, value: 1}
+    <tricky_bell>: "опять ты? что теперь?"
+    choose:
+    - <rathni>: 'и тебе привет...'
+      sequence:
+      - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
+        id_node: tricky_bell_say_goto_hell
+      - <rathni>: '(конец диалога)'
+    - <rathni>: 'ничего...'
+      sequence: tricky_bell_say_goto_hell
+    - <rathni>: 'как же ты достал уже!'
+      sequence: tricky_bell_say_goto_hell

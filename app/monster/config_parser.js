@@ -1,19 +1,22 @@
 
-import uuid from 'uuid'
 import * as R from 'ramda'
 import yaml from 'js-yaml'
 
-// i hate it
-let temp_conf = []
+export const parse_raw = (yaml_doc) => yaml.safeLoad(yaml_doc)
+export const parse_dialogs = (yaml_doc) => parse_yaml_config_dialogs(parse_raw(yaml_doc))
 
-const parse_yaml_config_dialogs = (config) => {
-  let dialogs = []
-  dialogs = parse_dialog_process_config_tree(parse_dialog_set_id, config)
-  temp_conf = []
-  dialogs = parse_dialog_process_config_tree(parse_dialog_process_element, dialogs)
-  console.log('dialogs', dialogs)
-  console.log('temp_conf', temp_conf)
-  return dialogs
+// i hate it
+let dialogs_conf = []
+let i = 0
+
+const parse_yaml_config_dialogs = (dialogs) => {
+  dialogs = parse_dialog_process_config_tree(parse_dialog_set_id, dialogs)
+  dialogs = parse_dialog_process_config_tree(parse_dialog_expand_macro, dialogs)
+  dialogs_conf = []
+  parse_dialog_process_config_tree(parse_dialog_process_element, dialogs)
+  let conf_as_object = R.reduce((acc, e) => ({...acc, [e.id]: e}), {}, dialogs_conf)
+  console.log('conf_as_object', conf_as_object)
+  return conf_as_object
 }
 
 // TODO not sure if its good idea to pass parent_element, next_element
@@ -40,7 +43,12 @@ const parse_dialog_process_config_tree = (func, config, next_element = null, par
 
 // TODO add id prefix
 const parse_dialog_set_id = (element) => {
-  return {...element, id: element.id || uuid.v1()}
+  return {...element, id: element.id || '' + ++i}
+}
+
+// TODO
+const parse_dialog_expand_macro = (element, next_element, parent_element) => {
+  return element
 }
 
 const parse_dialog_process_element = (element, next_element, parent_element) => {
@@ -53,7 +61,7 @@ const parse_dialog_process_element = (element, next_element, parent_element) => 
     after: element.after, // TODO parse
   }
   // its a damn crap! rewrite it ASAP!
-  temp_conf = [...temp_conf, cell]
+  dialogs_conf = [...dialogs_conf, cell]
   return element // yes! we need it for parse_dialog_process_config_tree()
 }
 
@@ -85,8 +93,13 @@ const get_cell_cdr = (element, next_element, parent_element) => {
   if (parent_element && parent_element.car && parent_element.car.type === 'choose') {
     return null
   } else if (element.goto) {
+    // should it be here or in parse_dialog_expand_macro()?
     return element.goto
   } else if (next_element === null) {
+    return null
+  } else if (element.sequence) {
+    return null
+  } else if (element.choose) {
     return null
   } else {
     if (!next_element.id) {
@@ -109,7 +122,3 @@ const get_phrase_from_element = element => {
   }
   return phrases.length ? phrases[0] : null
 }
-
-export const parse_dialogs = (yaml_doc) => parse_yaml_config_dialogs(parse_raw(yaml_doc))
-
-export const parse_raw = (yaml_doc) => yaml.safeLoad(yaml_doc)

@@ -14,12 +14,12 @@ class Dialog extends React.Component {
       <SimplePanelSuccess title="dialog">
           
         {/* TODO add player name so we can understand who's speaking */}
-        <p><TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry></p>
+        <div><TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry></div>
 
-        <p>
+        <div>
           {this.mobile_name(this.props.npc_name)}
           <TextEntry>{this.props.npc_sentence.phrases}</TextEntry>
-        </p>
+        </div>
 
         {/* TODO add player name so we can understand who's speaking */}
         {this.props.player_sentences.map(sentence => {

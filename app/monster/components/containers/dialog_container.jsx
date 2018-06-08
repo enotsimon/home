@@ -4,12 +4,9 @@ import game from 'monster/monster';
 import {handle_player_sentence} from 'monster/lib/dialogs'
 
 function sentence_to_props(sentence) {
-  if (!game.config.text.dialogs[sentence.phrases]) {
-    throw({msg: 'sentence phrases not found in game.config.text.dialogs', sentence});
-  }
   return {
     id: sentence.id,
-    phrases: game.config.text.dialogs[sentence.phrases],
+    phrases: sentence.phrases,
   };
 }
 

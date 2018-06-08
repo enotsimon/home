@@ -195,7 +195,7 @@ const dialogs = {
     return defaults.menues.dialogs
   },
   [actions.DIALOG_NPC_SAYS]: (state, action) => {
-    return {...state, id_mobile: action.id_mobile, npc_sentence: action.sentence, player_sentences: []}
+    return {...state, npc_sentence: action.sentence, player_sentences: []}
   },
   [actions.DIALOG_PLAYER_SAYS]: (state, action) => {
     return {...state, player_prev_sentence: action.sentence}
