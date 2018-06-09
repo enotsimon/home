@@ -4,7 +4,7 @@
   - <b>: hey
   - <r>: what?
   - <b>: you're bitch
-  - id: r_answer
+  - id: barmen_root.r_answer
     choose:
     - <r>: what! fuck off!
       cond: show_once_per_dialog
@@ -28,7 +28,7 @@
         - <c>: yeah, i agree!
         - <b>: see?
         - goto: lets_continue_here
-      - id: lets_continue_here
+      - id: barmen_root.lets_continue_here
         sequence:
         - <r>: and i dont care and kill you anyway!
         - <b>: boooring...
@@ -79,6 +79,6 @@
         id_node: tricky_bell_say_goto_hell
       - <rathni>: '(конец диалога)'
     - <rathni>: 'ничего...'
-      sequence: tricky_bell_say_goto_hell
+      sequence: [goto: tricky_bell_say_goto_hell]
     - <rathni>: 'как же ты достал уже!'
-      sequence: tricky_bell_say_goto_hell
+      sequence: [goto: tricky_bell_say_goto_hell]
