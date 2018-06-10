@@ -5,16 +5,16 @@ import yaml from 'js-yaml'
 export const parse_raw = (yaml_doc) => yaml.safeLoad(yaml_doc)
 export const parse_dialogs = (yaml_doc) => parse_yaml_config_dialogs(parse_raw(yaml_doc))
 
-const parse_yaml_config_dialogs = (dialogs) => {
+const parse_yaml_config_dialogs = dialogs => {
   // map is because in dialogs config organized as array, and next element in this array
   // is NOT logical next element for it
+  // FIXME seq is crashing
   let keys = ['sequence', 'seq', 'choose']
+  dialogs.forEach(e => walk_tree(e, null, null, keys, e2 => expand_macro(e2, keys)))
   dialogs.forEach(e => walk_tree(e, null, null, keys, set_id, [e.id, 1]))
   dialogs.forEach(e => walk_tree(e, null, null, keys, set_parent_and_next))
   let conf = R.mergeAll(R.map(e => walk_tree(e, null, null, keys, flatten_tree, {}), dialogs))
   conf = R.map(e => replace_arrays_of_elements_with_arrays_of_ids(e, keys), conf)
-  // not shure if we should do it here, maybe before flatten_tree
-  conf = R.map(expand_macro, conf)
   conf = R.map(seq_to_sequence, conf)
   conf = R.map(process_element, conf)
   
@@ -69,9 +69,24 @@ const replace_arrays_of_elements_with_arrays_of_ids = (element, keys) => {
   return clone
 }
 
-// TODO
-const expand_macro = element => {
-  return element
+// warn we change input element, not returning new one
+const expand_macro = (element, keys) => {
+  expand_macro_split_cells_with_phrase_and_sequence_or_choose(element, keys)
+}
+
+// TODO should remove it? exception below is enough
+const expand_macro_split_cells_with_phrase_and_sequence_or_choose = (element, keys) => {
+  return null
+  let phrase = get_phrase_from_element(element)
+  if (!phrase) {
+    return null
+  }
+  keys.forEach(key => {
+    if (element[key]) {
+      //let {[key]: value, ...clone} = element
+      //console.log('OH YES', clone, element)
+    }
+  })
 }
 
 const seq_to_sequence = element => {
@@ -104,9 +119,13 @@ const parse_cond = element => {
 }
 
 const get_cell_car = element => {
-  let phrases = get_phrase_from_element(element)
-  if (phrases) {
-    return {...phrases, type: 'phrase'}
+  let phrase = get_phrase_from_element(element)
+  // TEMP
+  if (phrase && (element.sequence || element.choose)) {
+    throw({msg: "sorry, element cannot has phrase AND sequence or choose props in one time", element})
+  }
+  if (phrase) {
+    return {...phrase, type: 'phrase'}
   } else if (element.sequence) {
     // {type: 'link', id: element.sequence[0].id} ???
     return element.sequence[0]
