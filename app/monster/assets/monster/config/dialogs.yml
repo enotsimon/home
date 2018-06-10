@@ -6,14 +6,14 @@
   - <b>: you're bitch
   - id: barmen_root.r_answer
     choose:
-    - <r>: what! fuck off!
-      cond: show_once_per_dialog
+    - cond: show_once_per_dialog
       sequence:
+      - <r>: what! fuck off!
       - <b>: okay! but try_again
       - goto: r_answer
-    - <r>: i gonna kill you!
-      cond: show_once_per_dialog
+    - cond: show_once_per_dialog
       sequence:
+      - <r>: i gonna kill you!
       - cond: some == 1
         sequence:
         - <b>: im not impressed...
@@ -56,29 +56,33 @@
   sequence:
   - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: equal, value: 1}
     after: {type: flag, name: test-flag, value: true}
-    <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
-    choose:
-    - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
-      sequence:
-      - <tricky_bell>: "я тебя не знаю, проваливай!"
-      - <rathni>: 'ах ты гад! ну и ладно!'
-    - <rathni>: 'эээ... ты всегда такой грубый?'
-      sequence:
-      - <tricky_bell>: "такая уж работа, извиняй. а теперь вали!"
-      - <rathni>: 'сам вали!'
-    - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
-      sequence:
-      - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
-      - <rathni>: 'ну лан...'
+    seq:
+    - <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
+    - choose:
+      - sequence:
+        - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
+        - <tricky_bell>: "я тебя не знаю, проваливай!"
+        - <rathni>: 'ах ты гад! ну и ладно!'
+      - sequence:
+        - <rathni>: 'эээ... ты всегда такой грубый?'
+        - <tricky_bell>: "такая уж работа, извиняй. а теперь вали!"
+        - <rathni>: 'сам вали!'
+      - sequence:
+        - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
+        - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
+        - <rathni>: 'ну лан...'
   - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: not_equal, value: 1}
-    <tricky_bell>: "опять ты? что теперь?"
-    choose:
-    - <rathni>: 'и тебе привет...'
-      sequence:
-      - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
-        id_node: tricky_bell_say_goto_hell
-      - <rathni>: '(конец диалога)'
-    - <rathni>: 'ничего...'
-      sequence: [goto: tricky_bell_say_goto_hell]
-    - <rathni>: 'как же ты достал уже!'
-      sequence: [goto: tricky_bell_say_goto_hell]
+    seq:
+    - <tricky_bell>: "опять ты? что теперь?"
+    - choose:
+      - seq:
+        - <rathni>: 'и тебе привет...'
+        - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
+          id_node: tricky_bell_say_goto_hell
+        - <rathni>: '(конец диалога)'
+      - seq:
+        - <rathni>: 'ничего...'
+        - goto: tricky_bell_say_goto_hell
+      - seq:
+        - <rathni>: 'как же ты достал уже!'
+        - goto: tricky_bell_say_goto_hell

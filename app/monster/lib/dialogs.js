@@ -41,8 +41,8 @@ export function handle_player_sentence(id_sentence) {
 // privates
 ///////////////////////
 function handle_dialog_cell(id_node) {
-  console.log('handle_dialog_cell we are in', id_node)
   let cell = game.config.dialogs[id_node]
+  console.log('handle_dialog_cell we are in', id_node, cell)
   if (!cell) {
     throw({msg: 'node not found in dialogs config', id_node, dialogs: game.config.dialogs})
   }
@@ -86,6 +86,9 @@ function handle_dialog_cell(id_node) {
   }
 }
 
+function activete_player_choise(phrases) {
+  console.log('activete_player_choise', phrases)
+}
 
 function get_sentences_from_node(node) {
   return node.sentences.map(id_sentence => {
