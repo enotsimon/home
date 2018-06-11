@@ -17,35 +17,21 @@ export function scene_get_possible_dialogs(scene) {
   })
 }
 
-export function start_dialog(id_node) {
-  game.store.dispatch(actions.dialog_start(id_node))
-  handle_dialog_cell(id_node)
+export function start_dialog(id_cell) {
+  game.store.dispatch(actions.dialog_start(id_cell))
+  handle_dialog_cell(id_cell)
 }
 
-export function handle_player_sentence(id_sentence) {
-  if (!game.config.dialogs.sentences[id_sentence]) {
-    throw({msg: 'current dialog sentence not found in dialogs config', id_sentence});
-  }
-  let sentence = game.config.dialogs.sentences[id_sentence];
-  apply_consequences(sentence);
-  game.store.dispatch(actions.dialog_player_says(sentence));
-  // sentence.continuation = null is okay and means dialog is finished
-  if (sentence.continuation === null) {
-    game.store.dispatch(actions.dialog_finish());
-  } else {
-    dialog_activate_npc_node(sentence.continuation);
-  }
+export function handle_player_sentence(id_cell) {
+  console.log('handle_player_sentence', id_cell)
+  handle_dialog_cell(id_cell)
 }
 
 ///////////////////////
 // privates
 ///////////////////////
-function handle_dialog_cell(id_node) {
-  let cell = game.config.dialogs[id_node]
-  console.log('handle_dialog_cell we are in', id_node, cell)
-  if (!cell) {
-    throw({msg: 'node not found in dialogs config', id_node, dialogs: game.config.dialogs})
-  }
+function handle_dialog_cell(id_cell) {
+  let cell = get_cell_from_config(id_cell)
   let cond_fulfilled = true
   if (cell.cond) {
     // TODO apply cond
@@ -53,7 +39,6 @@ function handle_dialog_cell(id_node) {
   }
   // TODO before
   if (cond_fulfilled && cell.car) {
-    console.log('CAR', cell.id)
     if (cell.car === null) {
       console.log('null node, goto cdr', cell.id)
     } else if (typeof cell.car === 'string') {
@@ -61,10 +46,14 @@ function handle_dialog_cell(id_node) {
       return handle_dialog_cell(cell.car)
     } else if (cell.car.type === 'phrase') {
       console.log('we got phrase here!', cell.car)
-      game.store.dispatch(actions.dialog_npc_says({
+      // FIXME rewtite scheme to just actions.dialog_phrase()
+      let func = cell.car.mobile === 'rathni'
+        ? actions.dialog_player_says
+        : actions.dialog_npc_says
+      game.store.dispatch(func({
         owner: cell.car.mobile,
         phrases: cell.car.phrase,
-        id: cell.car.id,
+        id: cell.id,
       }))
     } else if (cell.car.type === 'choose') {
       // we do not proceed to cdr
@@ -83,26 +72,36 @@ function handle_dialog_cell(id_node) {
     } else {
       console.log('unknown cdr type', cell.cdr)
     }
+  } else {
+    console.log('seems like end of dialog', cell)
+    game.store.dispatch(actions.dialog_finish())
   }
 }
 
 function activete_player_choise(choose) {
-  let phrases = choose.ids.map(get_phrase_from_choose_option)
-  console.log('activete_player_choise', choose, phrases)
-  let sentences = phrases.map(e => ({phrases: e.phrase, id: e.id, owner: e.mobile}), phrases)
-  game.store.dispatch(actions.dialog_activate_player_sentences(sentences))
+  let phrases = choose.ids.map(prepare_player_choise_object)
+  game.store.dispatch(actions.dialog_activate_player_sentences(phrases))
 }
 
-function get_phrase_from_choose_option(id) {
-  let cell = game.config.dialogs[id]
-  if (!cell) {
-    throw({msg: 'dialog cell not found in config', id, config: game.config.dialogs})
-  }
+/**
+ * player_choise_object is NOT dialog cell, not at all
+ * @param {*} id_cell
+ */
+function prepare_player_choise_object(id_cell) {
+  let cell = get_cell_from_config(id_cell)
   // phrase should be in cell car anyway, no cdr
   if (cell.car && cell.car.type === 'phrase') {
-    return cell.car
+    return {
+      id: cell.id,
+      owner: cell.car.mobile,
+      phrases: cell.car.phrase,
+    }
   } else if (cell.car && typeof cell.car === 'string') {
-    return get_phrase_from_choose_option(cell.car)
+    // if it is a chain of cells, we should set phrase from 'phrase' type cell,
+    // but we should write first cell id cause it should
+    // be 'activated' on click, not cell with actual phrase
+    let next = prepare_player_choise_object(cell.car)
+    return {...next, id: cell.id}
   } else {
     // TODO is it correct?
     throw({msg: 'cannot find phrase in choose option', cell})
@@ -168,4 +167,12 @@ function  prepare_player_sentences(npc_sentence) {
     throw({msg: 'no sutable sentences in dialog node', node});
   }
   return filtered_sentences;
+}
+
+function get_cell_from_config(id_cell) {
+  let cell = game.config.dialogs[id_cell]
+  if (!cell) {
+    throw({msg: 'cell not found in dialogs config', id_cell, dialogs: game.config.dialogs})
+  }
+  return cell
 }

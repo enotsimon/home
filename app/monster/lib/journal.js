@@ -74,7 +74,7 @@ const actions_config = {
   [actions.DIALOG_PLAYER_SAYS]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `{${rathni_name()}|mobiles|rathni}: ${text().dialogs[action.sentence.phrases]}`,
+      `{${rathni_name()}|mobiles|rathni}: ${action.sentence.phrases}`,
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
     level: journal_msg_levels.DEBUG,
