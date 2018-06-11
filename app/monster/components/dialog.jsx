@@ -39,6 +39,7 @@ class Dialog extends React.Component {
 Dialog.propTypes = {
   player_sentences: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
+    owner: PropTypes.any.isRequired,
     phrases: PropTypes.any.isRequired,
   })).isRequired,
   on_player_sentence_click: PropTypes.func.isRequired,
