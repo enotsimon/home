@@ -109,7 +109,7 @@ const get_cell_car = element => {
     throw({msg: "sorry, element cannot has phrase AND sequence or choose props in one time", element})
   }
   if (phrase) {
-    return {...phrase, type: 'phrase', id: element.id}
+    return {...phrase, type: 'phrase'}
   } else if (element.sequence) {
     // {type: 'link', id: element.sequence[0].id} ???
     return element.sequence[0]
