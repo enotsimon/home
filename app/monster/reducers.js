@@ -194,7 +194,7 @@ const dialogs = {
     return defaults.menues.dialogs
   },
   [actions.dialog_phrase.name]: (state, action) => {
-    return {...state, phrases: [...state.phrases, action.phrase]}
+    return {player_sentences: [], phrases: [...state.phrases, action.phrase]}
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: (state, action) => {
     return {...state, player_sentences: action.sentences}
