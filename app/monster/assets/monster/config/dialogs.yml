@@ -54,7 +54,7 @@
 
 - id: tricky_bell_root
   sequence:
-  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: equal, value: 1}
+  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: ==, value: 1}
     after: {type: flag, name: test-flag, value: true}
     seq:
     - <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
@@ -71,7 +71,7 @@
         - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
         - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
         - <rathni>: 'ну лан...'
-  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: not_equal, value: 1}
+  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: '!=', value: 1}
     seq:
     - <tricky_bell>: "опять ты? что теперь?"
     - choose:

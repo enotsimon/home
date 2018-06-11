@@ -63,8 +63,8 @@ function handle_dialog_cell(id_node) {
       console.log('we got phrase here!', cell.car)
       game.store.dispatch(actions.dialog_npc_says({
         owner: cell.car.mobile,
-        phrases: [cell.car.phrase],
-        id: cell.id,
+        phrases: cell.car.phrase,
+        id: cell.car.id,
       }))
     } else if (cell.car.type === 'choose') {
       // we do not proceed to cdr
@@ -86,8 +86,27 @@ function handle_dialog_cell(id_node) {
   }
 }
 
-function activete_player_choise(phrases) {
-  console.log('activete_player_choise', phrases)
+function activete_player_choise(choose) {
+  let phrases = choose.ids.map(get_phrase_from_choose_option)
+  console.log('activete_player_choise', choose, phrases)
+  let sentences = phrases.map(e => ({phrases: e.phrase, id: e.id, owner: e.mobile}), phrases)
+  game.store.dispatch(actions.dialog_activate_player_sentences(sentences))
+}
+
+function get_phrase_from_choose_option(id) {
+  let cell = game.config.dialogs[id]
+  if (!cell) {
+    throw({msg: 'dialog cell not found in config', id, config: game.config.dialogs})
+  }
+  // phrase should be in cell car anyway, no cdr
+  if (cell.car && cell.car.type === 'phrase') {
+    return cell.car
+  } else if (cell.car && typeof cell.car === 'string') {
+    return get_phrase_from_choose_option(cell.car)
+  } else {
+    // TODO is it correct?
+    throw({msg: 'cannot find phrase in choose option', cell})
+  }
 }
 
 function get_sentences_from_node(node) {
