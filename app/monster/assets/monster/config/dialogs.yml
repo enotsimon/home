@@ -33,8 +33,8 @@
         - <r>: and i dont care and kill you anyway!
         - <b>: boooring...
         - goto: r_answer
-    - <r>: quit this shit now...
-      sequence:
+    - sequence:
+      - <r>: quit this shit now...
       - <b>: bye then!
     # choose element is sequence, not a phrase
     # cond applied to sequence, not a phrase!
