@@ -46,11 +46,7 @@ function handle_dialog_cell(id_cell) {
       return handle_dialog_cell(cell.car)
     } else if (cell.car.type === 'phrase') {
       console.log('we got phrase here!', cell.car)
-      // FIXME rewtite scheme to just actions.dialog_phrase()
-      let func = cell.car.mobile === 'rathni'
-        ? actions.dialog_player_says
-        : actions.dialog_npc_says
-      game.store.dispatch(func({
+      game.store.dispatch(actions.dialog_phrase({
         owner: cell.car.mobile,
         phrases: cell.car.phrase,
         id: cell.id,
@@ -60,7 +56,7 @@ function handle_dialog_cell(id_cell) {
       console.log('we have choose here!', cell.car)
       return activete_player_choise(cell.car) // TODO
     } else {
-      console.log('unknown car type', cell)
+      throw({msg: 'unknown car type', cell})
     }
   }
   // TODO after
@@ -70,10 +66,11 @@ function handle_dialog_cell(id_cell) {
       console.log('cdr goto id', cell.cdr)
       return handle_dialog_cell(cell.cdr)
     } else {
-      console.log('unknown cdr type', cell.cdr)
+      throw({msg: 'unknown cdr type', cell})
     }
   } else {
     console.log('seems like end of dialog', cell)
+    // TODO add (end of dialog) fake node
     game.store.dispatch(actions.dialog_finish())
   }
 }

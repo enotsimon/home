@@ -66,15 +66,10 @@ const actions_config = {
     text: (action) =>
       `${text().journal.dialog_finish}`,
   }, // ?
-  [actions.DIALOG_NPC_SAYS]: {
+  [actions.dialog_phrase.name]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `{${text().mobiles[action.sentence.owner].name}|mobiles|${action.sentence.owner}}: ${action.sentence.phrases}`,
-  },
-  [actions.DIALOG_PLAYER_SAYS]: {
-    level: journal_msg_levels.GAME,
-    text: (action) =>
-      `{${rathni_name()}|mobiles|rathni}: ${action.sentence.phrases}`,
+      `{${text().mobiles[action.phrase.owner].name}|mobiles|${action.phrase.owner}}: ${action.phrase.phrases}`,
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
     level: journal_msg_levels.DEBUG,
