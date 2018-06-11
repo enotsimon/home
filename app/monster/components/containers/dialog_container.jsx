@@ -20,7 +20,6 @@ function colored_npc_name(id_mobile) {
 
 const state_to_props = state => {
   let dialog_state = state.menues.dialogs;
-  let player_prev_sentence = {id: '', phrases: ''};
   let npc_sentence = {id: '', phrases: ''};
   let player_sentences = [];
   if (dialog_state.npc_sentence) {
@@ -30,11 +29,10 @@ const state_to_props = state => {
     player_sentences = dialog_state.player_sentences.map(sentence => sentence_to_props(sentence));
   }
   return {
-    npc_name: colored_npc_name(dialog_state.npc_sentence.owner),
-    player_prev_sentence,
     npc_sentence,
     player_sentences,
     on_player_sentence_click: handle_player_sentence,
+    phrases: dialog_state.phrases.map(e => ({...e, owner: colored_npc_name(e.owner)}))
   };
 }
 

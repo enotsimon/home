@@ -12,14 +12,13 @@ class Dialog extends React.Component {
   render() {
     return (
       <SimplePanelSuccess title="dialog">
-          
-        {/* TODO add player name so we can understand who's speaking */}
-        <div><TextEntry>{this.props.player_prev_sentence.phrases}</TextEntry></div>
 
-        <div>
-          {this.mobile_name(this.props.npc_name)}
-          <TextEntry>{this.props.npc_sentence.phrases}</TextEntry>
-        </div>
+        {this.props.phrases.map(phrase =>
+          <div key={phrase.id}>
+            <span><TextEntry>{phrase.owner}</TextEntry>:&nbsp;</span>
+            <TextEntry>{phrase.phrases}</TextEntry>
+          </div>
+        )}
 
         {/* TODO add player name so we can understand who's speaking */}
         {this.props.player_sentences.map(sentence => {
@@ -38,20 +37,16 @@ class Dialog extends React.Component {
 }
 
 Dialog.propTypes = {
-  player_prev_sentence: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    phrases: PropTypes.any.isRequired,
-  }).isRequired,
-  npc_name: PropTypes.any.isRequired,
-  npc_sentence: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    phrases: PropTypes.any.isRequired,
-  }).isRequired,
   player_sentences: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     phrases: PropTypes.any.isRequired,
   })).isRequired,
   on_player_sentence_click: PropTypes.func.isRequired,
+  phrases: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    owner: PropTypes.any.isRequired, // ???
+    phrases: PropTypes.any.isRequired,
+  })).isRequired,
 };
 
-export default Dialog;
+export default Dialog

@@ -11,8 +11,6 @@ export const INVENTORY_REMOVE_ITEM = 'inventory_remove_item';
 export const CHANGE_GLOBAL_FLAG = 'change_global_flag';
 export const DIALOG_START = 'dialog_start';
 export const DIALOG_FINISH = 'dialog_finish';
-export const DIALOG_NPC_SAYS = 'dialog_npc_says';
-export const DIALOG_PLAYER_SAYS = 'dialog_player_says';
 export const DIALOG_ACTIVATE_PLAYER_SENTENCES = 'dialog_activate_player_sentences';
 export const INSPECT_BEGIN = 'inspect_begin';
 export const INSPECT_END = 'inspect_end';
@@ -65,12 +63,8 @@ export function dialog_finish() {
   return {type: DIALOG_FINISH};
 }
 
-export function dialog_npc_says(sentence) {
-  return {type: DIALOG_NPC_SAYS, sentence};
-}
-
-export function dialog_player_says(sentence) {
-  return {type: DIALOG_PLAYER_SAYS, sentence};
+export function dialog_phrase(phrase) {
+  return {type: 'dialog_phrase', phrase}
 }
 
 export function dialog_activate_player_sentences(sentences) {

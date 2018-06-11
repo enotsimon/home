@@ -33,9 +33,8 @@ let defaults = {
       current_element: null,
     },
     dialogs: {
-      player_prev_sentence: null,
-      npc_sentence: null,
       player_sentences: [],
+      phrases: [],
     },
     inspect_furniture: {
       id_furniture: null,
@@ -194,15 +193,12 @@ const dialogs = {
   [actions.DIALOG_FINISH]: (state, action) => {
     return defaults.menues.dialogs
   },
-  [actions.DIALOG_NPC_SAYS]: (state, action) => {
-    return {...state, npc_sentence: action.sentence, player_sentences: []}
-  },
-  [actions.DIALOG_PLAYER_SAYS]: (state, action) => {
-    return {...state, player_prev_sentence: action.sentence}
+  [actions.dialog_phrase.name]: (state, action) => {
+    return {...state, phrases: [...state.phrases, action.phrase]}
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: (state, action) => {
     return {...state, player_sentences: action.sentences}
-  }
+  },
 }
 
 const notification = {
