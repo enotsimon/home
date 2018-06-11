@@ -1,4 +1,8 @@
 ---
+- id: end_of_dialog
+  choose:
+  - <rathni>: (конец диалога)
+
 - id: barmen_root
   sequence:
   - <b>: hey
@@ -36,6 +40,7 @@
     - sequence:
       - <r>: quit this shit now...
       - <b>: bye then!
+      - goto: end_of_dialog
     # choose element is sequence, not a phrase
     # cond applied to sequence, not a phrase!
     # we can fugure it as a 'null' phrase with 'sequence' prop
@@ -63,23 +68,26 @@
         - <rathni>: 'привет, звонок! это же я, ратни, не узнал?'
         - <tricky_bell>: "я тебя не знаю, проваливай!"
         - <rathni>: 'ах ты гад! ну и ладно!'
+        - goto: end_of_dialog
       - sequence:
         - <rathni>: 'эээ... ты всегда такой грубый?'
         - <tricky_bell>: "такая уж работа, извиняй. а теперь вали!"
         - <rathni>: 'сам вали!'
+        - goto: end_of_dialog
       - sequence:
         - <rathni>: 'что значт что мне здесь надо? я здесь живу вообще-то!'
         - <tricky_bell>: "... это все меняет ... тогда просто отстань от меня"
         - <rathni>: 'ну лан...'
+        - goto: end_of_dialog
   - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: '!=', value: 1}
     seq:
     - <tricky_bell>: "опять ты? что теперь?"
     - choose:
       - seq:
         - <rathni>: 'и тебе привет...'
-        - <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
-          id_node: tricky_bell_say_goto_hell
-        - <rathni>: '(конец диалога)'
+        - id_node: tricky_bell_say_goto_hell
+          <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
+        - goto: end_of_dialog
       - seq:
         - <rathni>: 'ничего...'
         - goto: tricky_bell_say_goto_hell
