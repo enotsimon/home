@@ -109,13 +109,12 @@ const get_cell_car = element => {
     throw({msg: "sorry, element cannot has phrase AND sequence or choose props in one time", element})
   }
   if (phrase) {
-    return {...phrase, type: 'phrase'}
+    return {...phrase, type: 'phrase', id: element.id}
   } else if (element.sequence) {
     // {type: 'link', id: element.sequence[0].id} ???
     return element.sequence[0]
   } else if (element.choose) {
-    // crap!
-    return {type: 'choose', ids: element.choose.map(e => e.id)}
+    return {type: 'choose', ids: element.choose}
   } else {
     return null
   }
