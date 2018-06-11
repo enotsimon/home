@@ -71,22 +71,6 @@ const replace_arrays_of_elements_with_arrays_of_ids = (element, keys) => {
 
 // warn we change input element, not returning new one
 const expand_macro = (element, keys) => {
-  expand_macro_split_cells_with_phrase_and_sequence_or_choose(element, keys)
-}
-
-// TODO should remove it? exception below is enough
-const expand_macro_split_cells_with_phrase_and_sequence_or_choose = (element, keys) => {
-  return null
-  let phrase = get_phrase_from_element(element)
-  if (!phrase) {
-    return null
-  }
-  keys.forEach(key => {
-    if (element[key]) {
-      //let {[key]: value, ...clone} = element
-      //console.log('OH YES', clone, element)
-    }
-  })
 }
 
 const seq_to_sequence = element => {
