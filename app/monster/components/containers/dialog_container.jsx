@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import Dialog from 'monster/components/dialog';
 import game from 'monster/monster';
-import {handle_player_sentence} from 'monster/lib/dialogs'
+import {handle_dialog_cell} from 'monster/lib/dialogs'
 
 function sentence_to_props(sentence) {
   return {
@@ -22,7 +22,7 @@ const state_to_props = state => {
   let dialog_state = state.menues.dialogs
   return {
     player_sentences: dialog_state.player_sentences,
-    on_player_sentence_click: handle_player_sentence,
+    on_player_sentence_click: handle_dialog_cell,
     phrases: dialog_state.phrases.map(e => ({...e, owner: colored_npc_name(e.owner)}))
   };
 }
