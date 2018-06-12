@@ -16,7 +16,7 @@ mage_home_hall:
   - id_scene: mage_room
   - id_scene: mage_home_cellar
   - id_scene: mage_home_outdoor
-    preconditions:
+    cond:
     - type: flag
       name: mage_home_entrance_door_unlocked
       value: true

@@ -1,8 +1,8 @@
 
 import game from '../monster'
 import * as actions from '../actions'
-import {check_preconditions} from './preconditions'
-import {apply_consequences} from './consequences'
+//import {apply_consequences} from './consequences'
+import {check_cond} from './cond'
 
 // scene -- object, not scene id
 export function scene_get_possible_dialogs(scene) {
@@ -24,11 +24,7 @@ export function start_dialog(id_cell) {
 
 export function handle_dialog_cell(id_cell) {
   let cell = get_cell_from_config(id_cell)
-  let cond_fulfilled = true
-  if (cell.cond) {
-    // TODO apply cond
-    cond_fulfilled = true
-  }
+  let cond_fulfilled = check_cond(cell.cond)
   // TODO before
   if (cond_fulfilled && cell.car) {
     if (cell.car === null) {
