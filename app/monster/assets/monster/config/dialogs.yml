@@ -10,7 +10,7 @@
   - <b>: you're bitch
   - id: barmen_root.r_answer
     choose:
-    - cond: show_once_per_dialog
+    - cond: once_per_dialog
       sequence:
       - <r>: what! fuck off!
       - <b>: okay! but try_again
@@ -59,7 +59,8 @@
 
 - id: tricky_bell_root
   sequence:
-  - cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: ==, value: 1}
+  # cond: {type: flag, name: counter-dialogs-tricky_bell_root, what: ==, value: 1}
+  - cond: counter-dialogs-tricky_bell_root == 1
     after: {type: flag, name: test-flag, value: true}
     seq:
     - <tricky_bell>: 'кто здесь? отвечай, кто ты такой? и что тебе здесь надо!?'
