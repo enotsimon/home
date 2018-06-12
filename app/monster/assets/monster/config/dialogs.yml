@@ -86,7 +86,7 @@
     - choose:
       - seq:
         - <rathni>: 'и тебе привет...'
-        - id_node: tricky_bell_say_goto_hell
+        - id: tricky_bell_say_goto_hell
           <tricky_bell>: 'я запомнил что ты сказал. теперь проваливай!'
         - goto: end_of_dialog
       - seq:
