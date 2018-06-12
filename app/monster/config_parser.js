@@ -15,7 +15,6 @@ const parse_yaml_config_dialogs = dialogs => {
   dialogs.forEach(e => walk_tree(e, null, null, keys, set_parent_and_next))
   let conf = R.mergeAll(R.map(e => walk_tree(e, null, null, keys, flatten_tree, {}), dialogs))
   conf = R.map(e => replace_arrays_of_elements_with_arrays_of_ids(e, keys), conf)
-  conf = R.map(seq_to_sequence, conf)
   conf = R.map(process_element, conf)
   
   console.log('conf', conf)
@@ -71,14 +70,36 @@ const replace_arrays_of_elements_with_arrays_of_ids = (element, keys) => {
 
 // warn we change input element, not returning new one
 const expand_macro = (element, keys) => {
+  seq_to_sequence(element)
+  expand_cond(element)
+}
+
+const expand_cond = (element) => {
+  if (element.cond && element.if) {
+    throw({msg: "element got both 'cond' and 'if' props", element})
+  }
+  if (element.if) {
+    element.cond = element.if
+    element.if = undefined
+  }
+  if (typeof(element.cond) === 'string') {
+    let parts = element.cond.split(/\s+/)
+    if (parts.length) {
+      element.cond = {type: "flag", name: parts[0], what: parts[1], value: parts[2]}
+    } else {
+      // throw
+    }
+  }
 }
 
 const seq_to_sequence = element => {
-  if (element.seq) {
-    let {seq, ...clone} = element
-    return {...clone, sequence: element.seq}
+  if (element.seq && element.sequence) {
+    throw({msg: "element got both 'seq' and 'sequence' props", element})
   }
-  return element
+  if (element.seq) {
+    element.sequence = element.seq
+    element.seq = undefined
+  }
 }
 
 const process_element = element => {
