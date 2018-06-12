@@ -22,14 +22,7 @@ export function start_dialog(id_cell) {
   handle_dialog_cell(id_cell)
 }
 
-export function handle_player_sentence(id_cell) {
-  handle_dialog_cell(id_cell)
-}
-
-///////////////////////
-// privates
-///////////////////////
-function handle_dialog_cell(id_cell) {
+export function handle_dialog_cell(id_cell) {
   let cell = get_cell_from_config(id_cell)
   let cond_fulfilled = true
   if (cell.cond) {
