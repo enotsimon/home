@@ -12,7 +12,12 @@ exports.files = {
 exports.plugins = {
   babel: {
     presets: ['latest', 'react'],
-    plugins: ["transform-object-rest-spread"]
+    plugins: ["transform-object-rest-spread", "transform-flow-strip-types"]
+  },
+  flowtype: {
+    warnOnly: false,
+    method: "status", // check-contents
+    statusDelay: 250
   }
 };
 
