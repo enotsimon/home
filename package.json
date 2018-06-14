@@ -20,10 +20,13 @@
   "devDependencies": {
     "auto-reload-brunch": "^2",
     "babel-brunch": "~6.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-latest": "^6",
     "babel-preset-react": "~6.22",
     "brunch": "^2",
     "clean-css-brunch": "^2",
+    "flow-bin": "^0.74.0",
+    "flow-brunch": "^0.2.4",
     "uglify-js-brunch": "^2"
   }
 }
