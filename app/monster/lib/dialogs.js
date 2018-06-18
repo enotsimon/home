@@ -11,6 +11,7 @@ import type {
   dialog_cell,
   dialog_cell_car_phrase,
   dialog_cell_car_choose,
+  action_dialog_phrase,
 } from './../types/dialog_types'
 
 
@@ -94,7 +95,7 @@ function activate_player_choise(choose: dialog_cell_car_choose): void {
  * player_choise_object is NOT dialog cell, not at all
  * @param {*} id_cell
  */
-function prepare_player_choise_object(id_cell: id_dialog_cell) {
+function prepare_player_choise_object(id_cell: id_dialog_cell): action_dialog_phrase {
   let cell = get_cell_from_config(id_cell)
   // phrase should be in cell car anyway, no cdr
   if (cell.car && typeof cell.car === 'string') {
@@ -109,6 +110,8 @@ function prepare_player_choise_object(id_cell: id_dialog_cell) {
       owner: cell.car.mobile,
       phrases: cell.car.phrase,
     }
+  } else {
+    throw({msg: 'cannot find player choise object, id_cell car type is incorrect', id_cell})
   }
 }
 
