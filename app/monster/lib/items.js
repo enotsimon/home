@@ -78,7 +78,7 @@ export function reduce_item_change_container(state, id_item, id_container) {
 }
 
 //
-// data obj
+// FIXME get rid of class using
 //
 export class Item {
   constructor(id, type, id_container, owner) {
