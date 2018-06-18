@@ -34,3 +34,10 @@ export type dialogs_config = Array<dialog_cell>
 
 // 
 export type dialogs_raw_config_element = any // @FIXME!!! Array<Object> | Object
+
+// TODO change it
+export type action_dialog_phrase = {
+  id: id_dialog_cell,
+  owner: id_mobile,
+  phrases: string, // TODO it can be array, but we dont use it feature
+}

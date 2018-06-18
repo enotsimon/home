@@ -13,6 +13,7 @@ import type {
   dialog_cell_car_choose,
 } from './../types/dialog_types'
 
+
 // scene -- object, not scene id
 export function scene_get_possible_dialogs(scene: scene): Array<scene_dialogs> {
   return (scene.dialogs || []).map(e => {
@@ -78,9 +79,9 @@ function handle_dialog_cell_cdr(cell_cdr: dialog_cell_cdr): void {
 function activate_phrase(id_cell: id_dialog_cell, cell_car: dialog_cell_car_phrase): void {
   console.log('we got phrase here!', cell_car)
   game.store.dispatch(actions.dialog_phrase({
+    id: id_cell,
     owner: cell_car.mobile,
     phrases: cell_car.phrase,
-    id: id_cell,
   }))
 }
 

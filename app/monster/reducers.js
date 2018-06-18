@@ -144,7 +144,7 @@ const clothes = {
       console.log('actions.DRESS_CLOTHES fail -- not a clothes', action.item);
       return state;
     }
-    let new_state = {...state, body: action.item};
+    let new_state = {...state, body: action.item}
     
     return new_state;
   }
