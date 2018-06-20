@@ -1,13 +1,20 @@
-import { combineReducers } from 'redux';
-import * as actions from './actions';
-
+// @flow
+import { combineReducers } from 'redux'
+import * as actions from './actions'
 import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
-import {journal_add_entry, journal_msg_levels} from 'monster/lib/journal'
-import {get_scene_available_links} from 'monster/lib/scenes'
-import {scene_get_possible_dialogs} from 'monster/lib/dialogs'
+import {journal_add_entry, journal_msg_levels} from './lib/journal'
+import {get_scene_available_links} from './lib/scenes'
+import {scene_get_possible_dialogs} from './lib/dialogs'
 
-let defaults = {
+import type {
+  state,
+  state_game_phase,
+  reducer_map,
+  state_flags,
+} from './types/state'
+
+let defaults: state = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
   current_scene_name: null,
   money: {
@@ -48,26 +55,25 @@ let defaults = {
   }
 };
 
-const game_phase = {
-  [actions.CHANGE_SCENE]: (state, action) => 'idle',
-  [actions.DIALOG_START]: (state, action) => 'dialog',
-  [actions.DIALOG_FINISH]: (state, action) => 'idle',
-  [actions.INSPECT_BEGIN]: (state, action) => 'inspect',
-  [actions.INSPECT_END]: (state, action) => 'idle',
+const game_phase: reducer_map = {
+  [actions.CHANGE_SCENE]: (state: state_game_phase, action: any): state_game_phase => 'idle',
+  [actions.DIALOG_START]: (state: state_game_phase, action: any): state_game_phase => 'dialog',
+  [actions.DIALOG_FINISH]: (state: state_game_phase, action: any): state_game_phase => 'idle',
+  [actions.INSPECT_BEGIN]: (state: state_game_phase, action: any): state_game_phase => 'inspect',
+  [actions.INSPECT_END]: (state: state_game_phase, action: any): state_game_phase => 'idle',
 }
 
 // return NEW object!!!
-const increment_object_key = (object, key) => ({...object, [key]: (object[key] || 0) + 1})
+const increment_object_key = (object: Object, key: string): Object => ({...object, [key]: (object[key] || 0) + 1})
 
-const flags = {
-  [actions.CHANGE_GLOBAL_FLAG]: (state, action) => {
-    return {...state, [action.name]: action.value};
-  },
+const flags: reducer_map = {
+  [actions.CHANGE_GLOBAL_FLAG]: (state: state_flags, action): state_flags =>
+    ({...state, [action.name]: action.value}),
   // i'm not sure if inner auto counters should be plased together with user-level flags
-  [actions.CHANGE_SCENE]: (state, action) =>
+  [actions.CHANGE_SCENE]: (state: state_flags, action): state_flags =>
     // TODO get counter name thru function 
     increment_object_key(state, 'counter-scene_visit-' + action.scene_name),
-  [actions.DIALOG_START]: (state, action) =>
+  [actions.DIALOG_START]: (state: state_flags, action): state_flags =>
     // TODO get counter name thru function 
     increment_object_key(state, 'counter-dialogs-' + action.id_node),
   // dont use it cause INSPECT_BEGIN runs after any action with furniture, not once per 'inspect session'
@@ -75,7 +81,7 @@ const flags = {
   //  increment_object_key(state, 'counter-furniture_inspect-' + action.id_furniture),
 }
 
-const containers = {
+const containers: reducer_map = {
   [actions.CONTAINER_INIT]: (state, action) =>
     container_reduce_init(state, action.id_container),
   [actions.ITEM_CREATE]: (state, action) =>
@@ -206,11 +212,12 @@ const notification = {
   [actions.notification_close.name]: (state, action) => defaults.notification,
 }
 
-function create_reducer(default_state, handlers) {
+function create_reducer(default_state: any, handlers: reducer_map) {
   return (state = default_state, action) => {
     if (handlers.hasOwnProperty(action.type)) {
       return handlers[action.type](state, action)
-    } else if (handlers.hasOwnProperty('default')) {
+    //} else if (handlers.hasOwnProperty('default')) {
+    } else if (handlers.default) {
       return handlers.default(state, action)
     } else {
       return state
@@ -233,6 +240,6 @@ const root_reducer = combineReducers({
   money: create_reducer(defaults.money, money),
   clothes: create_reducer(defaults.clothes, clothes),
   notification: create_reducer(defaults.notification, notification),
-});
+})
 
-export default root_reducer;
+export default root_reducer
