@@ -1,4 +1,4 @@
-
+// @flow
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { createStore } from 'redux';
@@ -7,8 +7,8 @@ import { Provider } from 'react-redux'
 import root_reducer from './reducers';
 import * as actions from './actions';
 
-import Util from "common/util";
-import App from 'monster/components/app';
+import Util from "./../common/util";
+import App from './components/app'
 
 //import dialogs from 'monster/config/dialogs'; // TEMP
 import {INVENTORY, container_dispatch_init} from './lib/containers'
@@ -16,31 +16,51 @@ import {item_create} from './lib/items'
 import {parse_dialogs, parse_raw} from './config_parser'
 import {contentLoaded} from 'document-promises'
 
-const check_config_cosistency = () => {
-  // TODO
+import type {Store} from 'redux'
+
+import type {dialogs_config} from './types/dialog_types'
+import type {containers_config} from './types/container_types'
+import type {scenes_config} from './types/scene_types'
+import type {mobiles_config} from './types/mobile_types'
+
+const check_config_cosistency = (config: GameConfig): void => {
+  // TODO ??? maybe config parser should do it all?
 }
 
-const create_containers_and_items = (config) => {
+const create_containers_and_items = (config: GameConfig): void => {
   // TODO add special containers -- alchemy menu container, ?
   container_dispatch_init(INVENTORY)
   // TEMP DEBUG
   item_create('humble_dress', INVENTORY, null)
   item_create('dried_fish', INVENTORY, null)
 
-  for (let id_furniture in config.furniture) {
-    let furniture_item = config.furniture[id_furniture];
-    let id_container = id_furniture;
-    container_dispatch_init(id_container);
+  for (let id_container in config.furniture) {
+    let furniture_item = config.furniture[id_container]
+    container_dispatch_init(id_container)
     
-    for (let id_item in furniture_item.items) {
-      let item_config = furniture_item.items[id_item];
-      item_create(item_config.type, id_container, item_config.owner);
-    }
+    furniture_item.items.forEach(item => item_create(item.type, id_container, item.owner))
   }
 }
+type GameConfig = {
+  dialogs: dialogs_config,
+  scenes: scenes_config,
+  mobiles: mobiles_config,
+  furniture: containers_config,
+  text: Object,
+}
+type GameData = {
+  config: GameConfig,
+  store: Store<any>,
+}
 
-const game = {
-  config: {},
+const game: GameData = {
+  config: {
+    dialogs: {},
+    scenes: {},
+    mobiles: {},
+    furniture: {},
+    text: {}
+  },
   store: createStore(root_reducer)
 }
 export default game
@@ -55,12 +75,17 @@ const init_react = () => {
     show_furniture_phases: ["inspect"],
   }
 
-  ReactDOM.render(
-    <Provider store={game.store}>
-      <App {...show_hide_block_phases_spec} />
-    </Provider>,
-    document.querySelector('#app')
-  )
+  let dom_container = document.querySelector('#app')
+  if (dom_container) {
+    ReactDOM.render(
+      <Provider store={game.store}>
+        <App {...show_hide_block_phases_spec} />
+      </Provider>,
+      dom_container
+    )
+  } else {
+    throw({msg: "no document element by id 'app' found"})
+  }
 }
 
 // WARNING! this crap changes input args!
@@ -71,7 +96,7 @@ const init_game = () => {
 }
 
 let config = {}
-const load_config_entry = (config_file_name, parse_func) => {
+function load_config_entry<T>(config_file_name: string, parse_func: (string => T)): Promise<T> {
   let config_path = '/monster/config' // TEMP
 
   return fetch(config_path + '/' + config_file_name + '.yml')
