@@ -5,7 +5,7 @@ mage_room_table:
 
 mage_room_shelf:
   items:
-    - {type: fearful_beasts_book, owner: mage}
+  - {type: fearful_beasts_book, owner: mage}
 
 mage_room_bed:
   items: []

@@ -30,7 +30,7 @@ export type dialog_cell = {
   after: dialog_cell_after,
 }
 
-export type dialogs_config = Array<dialog_cell>
+export type dialogs_config = {[id: id_dialog_cell]: dialog_cell}
 
 // 
 export type dialogs_raw_config_element = any // @FIXME!!! Array<Object> | Object
