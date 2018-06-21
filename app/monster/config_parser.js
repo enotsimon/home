@@ -176,7 +176,7 @@ const get_cell_cdr = (element): dialog_cell_cdr => {
   } else if (element.next === null) {
     return null
   } else if (element.choose) {
-    return null
+    throw({msg: "not shure what to do when element of choose type and has cdr same time", element})
   } else {
     if (!element.next.id) {
       throw({msg: 'cannot set cell cdr cause element.next has no id', element})
