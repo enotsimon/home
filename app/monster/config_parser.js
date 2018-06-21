@@ -175,8 +175,6 @@ const get_cell_cdr = (element): dialog_cell_cdr => {
     return element.goto
   } else if (element.next === null) {
     return null
-  } else if (element.sequence) {
-    return null
   } else if (element.choose) {
     return null
   } else {
