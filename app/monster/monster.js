@@ -97,7 +97,7 @@ const init_game = () => {
 
 let config = {}
 function load_config_entry<T>(config_file_name: string, parse_func: (string => T)): Promise<T> {
-  let config_path = '/monster/config' // TEMP
+  let config_path = './monster/config' // TEMP
 
   return fetch(config_path + '/' + config_file_name + '.yml')
   .then(response => {
