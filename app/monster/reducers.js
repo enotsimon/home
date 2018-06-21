@@ -1,11 +1,20 @@
-import { combineReducers } from 'redux';
-import * as actions from './actions';
-
+// @flow
+import { combineReducers } from 'redux'
+import * as actions from './actions'
 import {container_reduce_init, container_reduce_add_item, container_reduce_remove_item} from './lib/containers'
 import {reduce_item_create, reduce_item_delete, reduce_item_change_container} from './lib/items'
-import {journal_add_entry, journal_msg_levels} from 'monster/lib/journal'
+import {journal_add_entry, journal_msg_levels} from './lib/journal'
+import {get_scene_available_links} from './lib/scenes'
+import {scene_get_possible_dialogs} from './lib/dialogs'
 
-let defaults = {
+import type {
+  state,
+  state_game_phase,
+  reducer_map,
+  state_flags,
+} from './types/state'
+
+let defaults: state = {
   game_phase: 'idle', // idle, dialog, inspect | alchemy, travel_map, interaction (with container), inventory?
   current_scene_name: null,
   money: {
@@ -31,9 +40,8 @@ let defaults = {
       current_element: null,
     },
     dialogs: {
-      player_prev_sentence: null,
-      npc_sentence: null,
       player_sentences: [],
+      phrases: [],
     },
     inspect_furniture: {
       id_furniture: null,
@@ -47,27 +55,43 @@ let defaults = {
   }
 };
 
-const game_phase = {
-  [actions.CHANGE_SCENE]: (state, action) => 'idle',
-  [actions.DIALOG_START]: (state, action) => 'dialog',
-  [actions.DIALOG_FINISH]: (state, action) => 'idle',
-  [actions.INSPECT_BEGIN]: (state, action) => 'inspect',
-  [actions.INSPECT_END]: (state, action) => 'idle',
+const game_phase: reducer_map = {
+  [actions.CHANGE_SCENE]: (state: state_game_phase, action: any): state_game_phase => 'idle',
+  [actions.DIALOG_START]: (state: state_game_phase, action: any): state_game_phase => 'dialog',
+  [actions.DIALOG_FINISH]: (state: state_game_phase, action: any): state_game_phase => 'idle',
+  [actions.INSPECT_BEGIN]: (state: state_game_phase, action: any): state_game_phase => 'inspect',
+  [actions.INSPECT_END]: (state: state_game_phase, action: any): state_game_phase => 'idle',
 }
 
-const flags = {
-  [actions.CHANGE_GLOBAL_FLAG]: (state, action) => {
-    return {...state, [action.name]: action.value};
-  },
+// return NEW object!!!
+const increment_object_key = (object: Object, key: string): Object => ({...object, [key]: (object[key] || 0) + 1})
+
+const flags: reducer_map = {
+  [actions.CHANGE_GLOBAL_FLAG]: (state: state_flags, action): state_flags =>
+    ({...state, [action.name]: action.value}),
+  // i'm not sure if inner auto counters should be plased together with user-level flags
+  [actions.CHANGE_SCENE]: (state: state_flags, action): state_flags =>
+    // TODO get counter name thru function 
+    increment_object_key(state, 'counter-scene_visit-' + action.scene_name),
+  [actions.DIALOG_START]: (state: state_flags, action): state_flags =>
+    // TODO get counter name thru function 
+    increment_object_key(state, 'counter-dialogs-' + action.id_node),
+  // dont use it cause INSPECT_BEGIN runs after any action with furniture, not once per 'inspect session'
+  //[actions.INSPECT_BEGIN]: (state, action) =>
+  //  increment_object_key(state, 'counter-furniture_inspect-' + action.id_furniture),
 }
 
-const containers = {
+const containers: reducer_map = {
   [actions.CONTAINER_INIT]: (state, action) =>
     container_reduce_init(state, action.id_container),
-  [actions.CONTAINER_ADD_ITEM]: (state, action) =>
+  [actions.ITEM_CREATE]: (state, action) =>
     container_reduce_add_item(state, action.id_container, action.id_item),
-  [actions.CONTAINER_REMOVE_ITEM]: (state, action) =>
-    container_reduce_remove_item(state, action.id_container, action.id_item),
+  [actions.ITEM_DELETE]: (state, action) =>
+    container_reduce_remove_item(state, action.id_item),
+  [actions.ITEM_CHANGE_CONTAINER]: (state, action) => {
+    let mid_state = container_reduce_remove_item(state, action.id_item)
+    return container_reduce_add_item(state, action.id_container, action.id_item)
+  }
 }
 
 const items = {
@@ -126,7 +150,7 @@ const clothes = {
       console.log('actions.DRESS_CLOTHES fail -- not a clothes', action.item);
       return state;
     }
-    let new_state = {...state, body: action.item};
+    let new_state = {...state, body: action.item}
     
     return new_state;
   }
@@ -150,11 +174,12 @@ const inspect_furniture = {
 
 const main_menu = {
   [actions.REBUILD_MAIN_MENU]: (state, action) => {
-    let prepare_items = (links, type) => links.map(e => ({id: e, type: type}));
+    let dialogs_data = scene_get_possible_dialogs(action.current_scene)
+    let prepare_items = (links, type) => links.map(e => ({text_data: e, text_type: type, action_data: e}));
     let menu = {
       elements: [
-        {id: 'go_to', items: prepare_items(action.current_scene.links, 'scenes')},
-        {id: 'speak_to', items: prepare_items(action.current_scene.mobiles, 'mobiles')},
+        {id: 'go_to', items: prepare_items(get_scene_available_links(action.current_scene), 'scenes')},
+        {id: 'speak_to', items: dialogs_data.map(e => ({text_data: e.talkers, text_type: 'mobiles', action_data: e.node}))},
         {id: 'inspect', items: prepare_items(action.current_scene.furniture, 'furniture')},
       ],
       current_element: null,
@@ -174,15 +199,12 @@ const dialogs = {
   [actions.DIALOG_FINISH]: (state, action) => {
     return defaults.menues.dialogs
   },
-  [actions.DIALOG_NPC_SAYS]: (state, action) => {
-    return {...state, id_mobile: action.id_mobile, npc_sentence: action.sentence, player_sentences: []}
-  },
-  [actions.DIALOG_PLAYER_SAYS]: (state, action) => {
-    return {...state, player_prev_sentence: action.sentence}
+  [actions.dialog_phrase.name]: (state, action) => {
+    return {player_sentences: [], phrases: [...state.phrases, action.phrase]}
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: (state, action) => {
     return {...state, player_sentences: action.sentences}
-  }
+  },
 }
 
 const notification = {
@@ -190,11 +212,12 @@ const notification = {
   [actions.notification_close.name]: (state, action) => defaults.notification,
 }
 
-function create_reducer(default_state, handlers) {
+function create_reducer(default_state: any, handlers: reducer_map) {
   return (state = default_state, action) => {
     if (handlers.hasOwnProperty(action.type)) {
       return handlers[action.type](state, action)
-    } else if (handlers.hasOwnProperty('default')) {
+    //} else if (handlers.hasOwnProperty('default')) {
+    } else if (handlers.default) {
       return handlers.default(state, action)
     } else {
       return state
@@ -217,6 +240,6 @@ const root_reducer = combineReducers({
   money: create_reducer(defaults.money, money),
   clothes: create_reducer(defaults.clothes, clothes),
   notification: create_reducer(defaults.notification, notification),
-});
+})
 
-export default root_reducer;
+export default root_reducer

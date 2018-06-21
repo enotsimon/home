@@ -1,6 +1,7 @@
 import Util from "common/util";
 import game from '../monster';
 import * as actions from '../actions';
+import {get_item} from './items'
 
 export const INVENTORY = 'inventory';
 
@@ -64,16 +65,17 @@ export function container_reduce_add_item(state, id_container, id_item) {
   return new_state;
 }
 
-export function container_reduce_remove_item(state, id_container, id_item) {
-  let new_state = {...state};
-  let container = {...new_state[id_container]};
-  Util.remove_element(id_item, container.items);
-  new_state[container.id] = container;
-  return new_state;
+export function container_reduce_remove_item(state, id_item) {
+  let new_state = {...state}
+  let item = get_item(id_item)
+  let container = {...new_state[item.id_container]}
+  Util.remove_element(id_item, container.items)
+  new_state[container.id] = container
+  return new_state
 }
 
 //
-// data obj
+// FIXME get rid of class
 //
 export class Container {
   constructor(id) {

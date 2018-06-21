@@ -212,7 +212,8 @@ const text = {
     dress_clothes: 'одевает',
     inventory_add_item: 'забирает',
     inventory_remove_item: 'выкладывает',
-    dialog_start: 'начинается диалог с',
+    // FIXME -- no more we know with whom we are talking
+    dialog_start: 'начинается диалог',
     dialog_finish: 'диалог окончен',
   }
 };
