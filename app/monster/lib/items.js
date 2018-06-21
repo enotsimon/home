@@ -3,7 +3,7 @@ import uuidv1 from 'uuid/v1';
 import Util from "common/util";
 import game from '../monster'
 import * as actions from '../actions'
-import {INVENTORY, container_dispatch_add_item, container_dispatch_remove_item} from './containers'
+import {INVENTORY} from './containers'
 import {show_notification} from 'monster/lib/notification'
 
 //
@@ -12,18 +12,11 @@ import {show_notification} from 'monster/lib/notification'
 export function item_create(type, id_container, owner) {
   let id_item = type + '-' + uuidv1();
   game.store.dispatch(actions.item_create(id_item, type, id_container, owner));
-  container_dispatch_add_item(id_container, id_item);
 }
 
 export function item_delete(id_item) {
-  let items = game.store.getState().items;
-  if (!items[id_item]) {
-    // throw?
-    return false;
-  }
-  // use backlink!?
-  container_dispatch_remove_item(items[id_item].id_container, id_item);
-  game.store.dispatch(actions.item_delete(id_item));
+  let item = get_item(id_item)
+  game.store.dispatch(actions.item_delete(id_item))
 }
 
 export function item_change_container(id_item, id_container) {
@@ -46,13 +39,19 @@ export function item_change_container(id_item, id_container) {
     show_notification('warning', game.config.text.menues.inspect_furniture.cant_take_owned_item)
     return false
   }
-  container_dispatch_remove_item(id_prev_container, id_item);
-  container_dispatch_add_item(id_container, id_item);
   game.store.dispatch(actions.item_change_container(id_item, id_container));
 }
 
 export function put_item_to_inventory(id_item) {
   item_change_container(id_item, INVENTORY);
+}
+
+export function get_item(id_item) {
+  let item = game.store.getState().items[id_item];
+  if (!item) {
+    throw({msg: 'item not found in state', id_item})
+  }
+  return item
 }
 
 //
@@ -79,7 +78,7 @@ export function reduce_item_change_container(state, id_item, id_container) {
 }
 
 //
-// data obj
+// FIXME get rid of class using
 //
 export class Item {
   constructor(id, type, id_container, owner) {

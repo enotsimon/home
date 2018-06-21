@@ -59,22 +59,17 @@ const actions_config = {
   [actions.DIALOG_START]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `${text().journal.dialog_start} {${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}`,
+      `${text().journal.dialog_start}`,
   },
   [actions.DIALOG_FINISH]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
       `${text().journal.dialog_finish}`,
   }, // ?
-  [actions.DIALOG_NPC_SAYS]: {
+  [actions.dialog_phrase.name]: {
     level: journal_msg_levels.GAME,
     text: (action) =>
-      `{${text().mobiles[action.id_mobile].name}|mobiles|${action.id_mobile}}: ${text().dialogs[action.sentence.phrases]}`,
-  },
-  [actions.DIALOG_PLAYER_SAYS]: {
-    level: journal_msg_levels.GAME,
-    text: (action) =>
-      `{${rathni_name()}|mobiles|rathni}: ${text().dialogs[action.sentence.phrases]}`,
+      `{${text().mobiles[action.phrase.owner].name}|mobiles|${action.phrase.owner}}: ${action.phrase.phrases}`,
   },
   [actions.DIALOG_ACTIVATE_PLAYER_SENTENCES]: {
     level: journal_msg_levels.DEBUG,
@@ -91,14 +86,6 @@ const actions_config = {
   [actions.CONTAINER_INIT]: {
     level: journal_msg_levels.ADMIN,
     text: (action) => `init container '${action.id_container}'`,
-  },
-  [actions.CONTAINER_ADD_ITEM]: {
-    level: journal_msg_levels.ADMIN,
-    text: (action) => `add item '${action.id_item}' to container '${action.id_container}'`,
-  },
-  [actions.CONTAINER_REMOVE_ITEM]: {
-    level: journal_msg_levels.ADMIN,
-    text: (action) => `remove item '${action.id_item}' from container '${action.id_container}'`,
   },
   [actions.ITEM_CREATE]: {
     level: journal_msg_levels.ADMIN,

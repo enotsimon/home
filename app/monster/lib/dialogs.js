@@ -1,172 +1,124 @@
-
+// @flow
 import game from '../monster'
 import * as actions from '../actions'
+//import {apply_consequences} from './consequences'
+import {check_cond} from './cond'
+import type {scene, scene_dialogs} from './../types/scene_types'
+import type {
+  id_dialog_cell,
+  dialog_cell_car,
+  dialog_cell_cdr,
+  dialog_cell,
+  dialog_cell_car_phrase,
+  dialog_cell_car_choose,
+  action_dialog_phrase,
+} from './../types/dialog_types'
 
-export function start_dialog(id_mobile) {
-  if (!game.config.dialogs.mobiles[id_mobile]) {
-    throw({msg: 'unknown dialog owner', id_mobile});
-  }
-  game.store.dispatch(actions.dialog_start(id_mobile));
-  let id_node = game.config.dialogs.mobiles[id_mobile].root_node;
-  dialog_activate_npc_node(id_node);
-}
 
-export function handle_player_sentence(id_sentence) {
-  if (!game.config.dialogs.sentences[id_sentence]) {
-    throw({msg: 'current dialog sentence not found in dialogs config', id_sentence});
-  }
-  let sentence = game.config.dialogs.sentences[id_sentence];
-  apply_consequences(sentence);
-  game.store.dispatch(actions.dialog_player_says(sentence));
-  // sentence.continuation = null is okay and means dialog is finished
-  if (sentence.continuation === null) {
-    game.store.dispatch(actions.dialog_finish());
-  } else {
-    dialog_activate_npc_node(sentence.continuation);
-  }
-}
-
-///////////////////////
-// privates
-///////////////////////
-function get_sentences_from_node(node) {
-  return node.sentences.map(id_sentence => {
-    if (!game.config.dialogs.sentences[id_sentence]) {
-      throw({msg: 'sentence not found in config', id_sentence, node});
+// scene -- object, not scene id
+export function scene_get_possible_dialogs(scene: scene): Array<scene_dialogs> {
+  return (scene.dialogs || []).map(e => {
+    if (!e.talkers) {
+      throw({msg: "dialog config has no 'talkers' prop"})
     }
-    // id prop is hellish hack! it is used in dialog.jsx, be careful!
-    return {...game.config.dialogs.sentences[id_sentence], id: id_sentence};
-  });
+    if (!e.node) {
+      throw({msg: "dialog config has no 'node' prop"})
+    }
+    return e
+  })
 }
 
-function dialog_activate_npc_node(id_node) {
-  if (!game.config.dialogs.nodes[id_node]) {
-    throw({msg: 'dialog node not found in dialogs config', id_node});
-  }
-  let node = game.config.dialogs.nodes[id_node];
-  // find sutable npc sentence
-  let sentences = get_sentences_from_node(node);
-  let filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
-  if (filtered_sentences.length === 0) {
-    // i dunno, maybe its ok if no sentences in node, but for now throw exception
-    throw({msg: 'no sutable sentences in dialog node', node});
-  }
-  // its okay if there's more than one sutable sentences, we suppose that first one is 'most sutable'
-  let sentence = filtered_sentences[0];
-
-  game.store.dispatch(actions.dialog_npc_says(sentence, sentence.owner));
-
-  apply_consequences(sentence);
-
-  let player_sentences = prepare_player_sentences(sentence);
-  // TODO add some sort of consequences highlight
-
-  // we do it separately from dialog_npc_says for now, but maybe should join together with
-  // some pause and using redux-thunk
-  game.store.dispatch(actions.dialog_activate_player_sentences(player_sentences));
+export function start_dialog(id_cell: id_dialog_cell): void {
+  game.store.dispatch(actions.dialog_start(id_cell))
+  handle_dialog_cell(id_cell)
 }
 
-
-///////////////////////////
-// preconditions
-///////////////////////////
-function check_preconditions(sentence) {
-  if (!sentence.preconditions) {
-    return true;
+export function handle_dialog_cell(id_cell: id_dialog_cell): void {
+  let cell = get_cell_from_config(id_cell)
+  // TODO before
+  if (check_cond(cell.cond)) {
+    let proceed_to_cdr = handle_dialog_cell_car(cell.id, cell.car)
+    if (!proceed_to_cdr) {
+      return
+    }
   }
-  return sentence.preconditions.every(precondition => check_precondition(precondition));
+  // TODO after
+  handle_dialog_cell_cdr(cell.cdr)
 }
 
-function check_precondition(precondition) {
-  if (!precondition.type) {
-    throw({msg: 'precondition has no type', precondition});
+// TODO move id_cell to dialog_cell_car_phrase data
+function handle_dialog_cell_car(id_cell: id_dialog_cell, cell_car: dialog_cell_car): boolean {
+  if (cell_car === null) {
+    // nothing, go to cdr
+    return true
+  } else if (typeof cell_car === 'string') {
+    console.log('car goto id', cell_car)
+    handle_dialog_cell(cell_car)
+    return false
+  } else if (cell_car.type === 'phrase') {
+    activate_phrase(id_cell, cell_car)
+    return true
+  } else if (cell_car.type === 'choose') {
+    // we do not proceed to cdr
+    console.log('we have choose here!', cell_car)
+    activate_player_choise(cell_car) // TODO
+    return false
   }
-  switch (precondition.type) {
-    case 'flag':
-      return check_precondition_of_flag_type(precondition);
-    default:
-      throw({msg: 'unknown precondition type', precondition});
-  }
+  return false
 }
 
-function check_precondition_of_flag_type(precondition) {
-  if (!precondition.name || typeof precondition.name !== 'string') {
-    throw({msg: "precondition of flag type should has 'name' property and it should be string", precondition});
-  }
-  if (!precondition.hasOwnProperty('value')) {
-    throw({msg: "precondition of flag type should has 'value' property", precondition});
-  }
-  let state = game.store.getState();
-  // if flag is absent in global state we init it with initial false value
-  if (state.flags[precondition.name] === undefined) {
-    game.store.dispatch(actions.change_global_flag(precondition.name, false));
-    state = game.store.getState();
-  }
-  return state.flags[precondition.name] == precondition.value;
-}
-
-
-
-///////////////////////////
-// consequences
-///////////////////////////
-function apply_consequences(sentence) {
-  if (!sentence.consequences) {
-    return true;
-  }
-  sentence.consequences.forEach(consequence => apply_consequence(consequence));
-}
-
-// TODO same as check_precondition()
-function apply_consequence(consequence) {
-  if (!consequence.type) {
-    throw({msg: 'consequence has no type', consequence});
-  }
-  switch (consequence.type) {
-    case 'flag':
-      return apply_consequence_of_flag_type(consequence);
-    default:
-      throw({msg: 'unknown consequence type', consequence});
+function handle_dialog_cell_cdr(cell_cdr: dialog_cell_cdr): void {
+  if (cell_cdr === null) {
+    console.log('seems like end of dialog', cell_cdr)
+    game.store.dispatch(actions.dialog_finish())
+  } else if (typeof cell_cdr === 'string') {
+    console.log('cdr goto id', cell_cdr)
+    handle_dialog_cell(cell_cdr)
   }
 }
 
-// TODO same as check_precondition_of_flag_type()
-function apply_consequence_of_flag_type(consequence) {
-  if (!consequence.name || typeof consequence.name !== 'string') {
-    throw({msg: "consequence of flag type should has 'name' property and it should be string", consequence});
-  }
-  if (!consequence.hasOwnProperty('value')) {
-    throw({msg: "consequence of flag type should has 'value' property", consequence});
-  }
-  game.store.dispatch(actions.change_global_flag(consequence.name, consequence.value));
+function activate_phrase(id_cell: id_dialog_cell, cell_car: dialog_cell_car_phrase): void {
+  console.log('we got phrase here!', cell_car)
+  game.store.dispatch(actions.dialog_phrase({
+    id: id_cell,
+    owner: cell_car.mobile,
+    phrases: cell_car.phrase,
+  }))
 }
 
+function activate_player_choise(choose: dialog_cell_car_choose): void {
+  let phrases = choose.ids.map(prepare_player_choise_object)
+  game.store.dispatch(actions.dialog_activate_player_sentences(phrases))
+}
 
+/**
+ * player_choise_object is NOT dialog cell, not at all
+ * @param {*} id_cell
+ */
+function prepare_player_choise_object(id_cell: id_dialog_cell): action_dialog_phrase {
+  let cell = get_cell_from_config(id_cell)
+  // phrase should be in cell car anyway, no cdr
+  if (cell.car && typeof cell.car === 'string') {
+    // if it is a chain of cells, we should set phrase from 'phrase' type cell,
+    // but we should write first cell id cause it should
+    // be 'activated' on click, not cell with actual phrase
+    let next = prepare_player_choise_object(cell.car)
+    return {...next, id: cell.id}
+  } else if (cell.car && cell.car.type === 'phrase') {
+    return {
+      id: cell.id,
+      owner: cell.car.mobile,
+      phrases: cell.car.phrase,
+    }
+  } else {
+    throw({msg: 'cannot find player choise object, id_cell car type is incorrect', id_cell})
+  }
+}
 
-////////////////////////////
-// continuation
-////////////////////////////
-
-// handle player's node
-function  prepare_player_sentences(npc_sentence) {
-  if (!npc_sentence.continuation) {
-    throw({msg: 'npc sentence should have continuation prop', npc_sentence});
+function get_cell_from_config(id_cell: id_dialog_cell): dialog_cell {
+  let cell = game.config.dialogs[id_cell]
+  if (!cell) {
+    throw({msg: 'cell not found in dialogs config', id_cell, dialogs: game.config.dialogs})
   }
-  let player_node = game.config.dialogs.nodes[npc_sentence.continuation];
-  if (!player_node) {
-    throw({msg: "player's node not found by npc_sentence continuation", npc_sentence});
-  }
-  // maybe we should remove type prop completely?
-  if (player_node.type !== 'player') {
-    throw({msg: "player's node type is incorrent (should be 'player')", player_node});
-  }
-  // copy-paste of dialog_activate_npc_node()
-  let sentences = get_sentences_from_node(player_node);
-  // TODO add admin mode with possibility to see or even to choose improper sentences
-  let filtered_sentences = sentences.filter(sentence => check_preconditions(sentence));
-  if (filtered_sentences.length === 0) {
-    // i dunno, maybe its ok if no sentences in node, but for now throw exception
-    throw({msg: 'no sutable sentences in dialog node', node});
-  }
-  return filtered_sentences;
+  return cell
 }
