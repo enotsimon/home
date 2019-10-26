@@ -55,3 +55,6 @@ export default class Luna extends Planet {
     return Math.acos(scalar / module)
   }
 }
+
+// eslint-disable-next-line no-new
+new Luna()
