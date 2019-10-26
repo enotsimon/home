@@ -1,8 +1,5 @@
 
 import Util from 'common/util'
-import Color from 'common/color'
-import BasicDrawer from 'experimental/basic_drawer'
-import * as PIXI from 'pixi.js'
 import Planet from 'experimental/planet'
 
 export default class Luna extends Planet {
@@ -53,7 +50,8 @@ export default class Luna extends Planet {
     const c1 = this.calc_single_point(1, 0, 0, 0, a.precession, a.nutation)
     const c2 = this.calc_single_point(1, 0, 0, 0, b.precession, b.nutation)
     const scalar = c1.x * c2.x + c1.y * c2.y + c1.z * c2.z
-    const module = Math.sqrt(c1.x * c1.x + c1.y * c1.y + c1.z * c1.z) * Math.sqrt(c2.x * c2.x + c2.y * c2.y + c2.z * c2.z)
+    const sqSum = p => p.x * p.x + p.y * p.y + p.z * p.z
+    const module = Math.sqrt(sqSum(c1)) * Math.sqrt(sqSum(c2))
     return Math.acos(scalar / module)
   }
 }

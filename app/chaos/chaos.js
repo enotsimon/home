@@ -15,7 +15,11 @@ class Chaos {
     // constants
     this.x_size = 20
     this.y_size = 20
-    this.symbols = ['✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭', '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✽', '✾', '✿', '❀', '❁', '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖']
+    this.symbols = [
+      '✕', '✖', '✙', '✚', '✛', '✜', '✠', '✡', '✢', '✣', '✤', '✥', '✦', '✧', '✩', '✪', '✫', '✬', '✭',
+      '✮', '✯', '✰', '✱', '✲', '✳', '✴', '✵', '✶', '✷', '✸', '✹', '✺', '✻', '✽', '✾', '✿', '❀', '❁',
+      '❂', '❃', '❄', '❅', '❆', '❇', '❈', '❉', '❊', '❋', '❖'
+    ]
     this.symbol_min_weight = 8
     this.symbol_max_weight = 16
     this.symbol_classes_min_length = 15
@@ -32,10 +36,10 @@ class Chaos {
       symbols_arr = symbols_arr.concat((new Array(symbol_weight)).fill(symbol))
     })
 
-    this.symbol_classes = Array.from(Array(this.symbol_classes_count), e => {
+    this.symbol_classes = Array.from(Array(this.symbol_classes_count), () => {
       const length = Util.rand(this.symbol_classes_min_length, this.symbol_classes_max_length)
       // should symbol classes contain only uniq elements or not?
-      return Array.from(Array(length), ee => Util.rand_element(this.symbols))
+      return Array.from(Array(length), () => Util.rand_element(this.symbols))
     })
 
     this.data = Array.from(Array(this.y_size).keys(), y => {
@@ -55,6 +59,7 @@ class Chaos {
     this.advance_symbol_classes()
     this.exchange_symbols()
     this.store.dispatch(actions.tick())
+    // eslint-disable-next-line
     setTimeout(() => this.run(--count), this.tick_delay)
   }
 

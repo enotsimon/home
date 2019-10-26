@@ -1,7 +1,6 @@
 
 import { connect } from 'react-redux'
 import Grid from 'chaos/components/grid'
-import { advance_symbols_complete } from 'chaos/actions'
 
 import chaos from 'chaos/chaos'
 
@@ -17,7 +16,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = () => {
   return {
     on_element_click: id => {
       console.log('dont believe it works!!! click on', id)
