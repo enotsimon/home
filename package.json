@@ -8,13 +8,9 @@
     "node": ">=8.10"
   },
   "scripts": {
-    "start-brunch": "brunch watch --server",
-    "build-brunch": "brunch build --production",
-    "clean": "rm -rf dist/*",
-    "build": "yarn build-dev",
-    "build-dev": "webpack --config webpack.config.js --mode=development",
-    "build-test": "webpack --config webpack.config.js --env.test --mode=development",
-    "build-prod": "webpack --config webpack.config.js --env.production --mode=production",
+    "start": "brunch watch --server",
+    "build": "brunch build --production",
+    "clean": "rm -rf public/*",
     "flow": "flow",
     "lint:staged": "lint-staged",
     "lint": "yarn run lint:js && yarn run lint:css",
@@ -102,8 +98,7 @@
   },
   "pre-commit": [
     "lint:staged",
-    "flow",
-    "test"
+    "flow"
   ],
   "lint-staged": {
     "*.{cmd,html,json,md,sh,txt,xml,yml}": [
