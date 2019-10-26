@@ -93,7 +93,6 @@
     "brunch": "^2",
     "clean-css-brunch": "^2",
     "flow-bin": "^0.74.0",
-    "flow-brunch": "^0.2.4",
     "uglify-js-brunch": "^2"
   },
   "pre-commit": [

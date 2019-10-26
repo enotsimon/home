@@ -4203,23 +4203,10 @@ flatten@^1.0.2:
   resolved "https://registry.yarnpkg.com/flatten/-/flatten-1.0.2.tgz#dae46a9d78fbe25292258cc1e780a41d95c03782"
   integrity sha1-2uRqnXj74lKSJYzB54CkHZXAN4I=
 
-"flow-bin@>=0.35.0 <1.0.0":
-  version "0.110.1"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.110.1.tgz#24ac70bf0871a5d6bc181ba99801ded4d5e3b442"
-  integrity sha512-6FhvNKNvPQ523mx7sqNxTQvI/HgAWa/pbIsQuCst53qRqs387EFfYqgm4I3Zae5HLaVFacBwgWKmjKd92vf19w==
-
 flow-bin@^0.74.0:
   version "0.74.0"
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.74.0.tgz#8017bb00efb37cbe8d81fbb7f464038bde06adc9"
   integrity sha512-tIN9J5qg71S4UbofCu80tve8a+p7Hj7ytwUtu79cLg9KJVVTNnVVJXKgCghVzaZT1Rvl9SMHVPlDs9uYhPHEGQ==
-
-flow-brunch@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/flow-brunch/-/flow-brunch-0.2.4.tgz#aee05b3bda164c8838d1bd9518c3678958ef9a58"
-  integrity sha1-ruBbO9oWTIg40b2VGMNniVjvmlg=
-  dependencies:
-    chalk "^1.1.3"
-    flow-bin ">=0.35.0 <1.0.0"
 
 flush-write-stream@^1.0.0:
   version "1.1.1"
