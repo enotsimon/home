@@ -18,6 +18,7 @@
     "If": true
   },
   "rules": {
+    "jsx-control-statements/jsx-jcs-no-undef": 0,
     "react/no-unused-prop-types": 0,
     "import/no-unresolved": 0,
     "camelcase": 0,
@@ -141,7 +142,10 @@
       "onlyFilesWithFlowAnnotation": false
     },
     "import/resolver": {
-      "babel-module": {}
+      "babel-module": {},
+      "node": {
+        "paths": ["app"]
+      }
     }
   }
 }
