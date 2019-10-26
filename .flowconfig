@@ -1,2 +1,12 @@
+[ignore]
+
+[libs]
+
 [options]
-module.name_mapper='^\(.*\)$' -> '<PROJECT_ROOT>/app/\1'
+suppress_comment= \\(.\\|\n\\)*\\$FlowIgnore
+
+module.file_ext=.js
+module.file_ext=.jsx
+module.file_ext=.json
+
+esproposal.decorators=ignore
