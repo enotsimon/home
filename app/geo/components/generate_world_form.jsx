@@ -1,15 +1,14 @@
-import React from 'react';
-import InputSpinner from 'common/components/input_spinner';
-import {game} from "geo/game";
+import React from 'react'
+import InputSpinner from 'common/components/input_spinner'
+import { game } from 'geo/game'
 
 export default class GenerateWorldForm extends React.Component {
-
   submit(e) {
-    game.rrt_epsilon = parseInt(document.querySelector('#gwf_rrt_epsilon').value);
-    e.preventDefault();
-    console.clear();
-    game.map_drawer.map.stage.children.forEach(layer => layer.removeChildren());
-    game.generate_map();
+    game.rrt_epsilon = parseInt(document.querySelector('#gwf_rrt_epsilon').value)
+    e.preventDefault()
+    console.clear()
+    game.map_drawer.map.stage.children.forEach(layer => layer.removeChildren())
+    game.generate_map()
   }
 
   render() {
@@ -18,7 +17,7 @@ export default class GenerateWorldForm extends React.Component {
         <form className="form-horizontal">
           <div className="form-group">
             <label htmlFor="epsilon" className="col-sm-4 control-label">rrt nodes distance</label>
-            <div className="col-sm-8"><InputSpinner name='gwf_rrt_epsilon' value={game.rrt_epsilon}/></div>
+            <div className="col-sm-8"><InputSpinner name="gwf_rrt_epsilon" value={game.rrt_epsilon} /></div>
           </div>
           <div className="form-group">
             <div className="col-sm-offset-4 col-sm-8">
@@ -27,6 +26,6 @@ export default class GenerateWorldForm extends React.Component {
           </div>
         </form>
       </div>
-    );
+    )
   }
 }

@@ -13,126 +13,114 @@
  */
 export default class AStar {
   constructor(getNeighboursFunc, euristicFunc = false, euristicWeight = 1, pointIndexFunc = false) {
-    this.getNeighboursFunc = getNeighboursFunc;
-    this.euristicFunc = euristicFunc ? euristicFunc : AStar.standardEuristic;
-    this.euristicWeight = euristicWeight;
-    this.pointIndexFunc = pointIndexFunc;
+    this.getNeighboursFunc = getNeighboursFunc
+    this.euristicFunc = euristicFunc || AStar.standardEuristic
+    this.euristicWeight = euristicWeight
+    this.pointIndexFunc = pointIndexFunc
   }
 
 
   static standardEuristic(pointFrom, pointTo) {
-    return Math.abs(pointFrom.x - pointTo.x) + Math.abs(pointFrom.y - pointTo.y);
+    return Math.abs(pointFrom.x - pointTo.x) + Math.abs(pointFrom.y - pointTo.y)
   }
 
 
   find(startPoint, finishPoint) {
-    let openList = {},
-        closedList = {};
-    this.addToOpenList(startPoint, 0, null, openList);
-    this.counter = 0; // TEMP
-    return this.step(openList, closedList, finishPoint);
+    const openList = {}
+
+
+    const closedList = {}
+    this.addToOpenList(startPoint, 0, null, openList)
+    this.counter = 0 // TEMP
+    return this.step(openList, closedList, finishPoint)
   }
 
 
   step(openList, closedList, finishPoint) {
-    this.counter++;
+    this.counter++
     if (this.counter > 10000) {
-      throw('counter overflow');
+      throw ('counter overflow')
     }
     if (this.openListIsEmpty(openList)) {
-      return false; // no way to finish
+      return false // no way to finish
     }
-    let pointObj = this.popPointFromOpenList(openList);
+    const pointObj = this.popPointFromOpenList(openList)
     // TODO -- preferable way is diagonal. do it some way
-    let neighbours = this.getNeighboursFunc(pointObj.point);
+    const neighbours = this.getNeighboursFunc(pointObj.point)
     for (let i = 0; i < neighbours.length; i++) {
-      let e = neighbours[i];
-      let weight = e.weight + pointObj.weight + this.euristicWeight*this.euristicFunc(e.point, finishPoint);
+      const e = neighbours[i]
+      const weight = e.weight + pointObj.weight + this.euristicWeight * this.euristicFunc(e.point, finishPoint)
 
       if (e.point == finishPoint) {
-        let path = [e.point, pointObj.point],
-            iPointObj = pointObj;
+        const path = [e.point, pointObj.point]
+
+
+        let iPointObj = pointObj
         while (iPointObj.parent != null) {
-          path.push(iPointObj.parent.point);
-          iPointObj = iPointObj.parent;
+          path.push(iPointObj.parent.point)
+          iPointObj = iPointObj.parent
         }
-        return path;
+        return path
       }
-      else if (this.checkPointInClosedList(e, closedList)) {
+      if (this.checkPointInClosedList(e, closedList)) {
         // just do nothing
       } else {
-        let foundInOpenList = this.getFromOpenList(e, openList);
+        const foundInOpenList = this.getFromOpenList(e, openList)
         if (foundInOpenList) {
-          foundInOpenList.parent = pointObj;
-          foundInOpenList.weight = weight;
+          foundInOpenList.parent = pointObj
+          foundInOpenList.weight = weight
         } else {
-          this.addToOpenList(e.point, weight, pointObj, openList);
+          this.addToOpenList(e.point, weight, pointObj, openList)
         }
       }
     }
-    this.addToClosedList(pointObj, closedList);
-    return this.step(openList, closedList, finishPoint);
+    this.addToClosedList(pointObj, closedList)
+    return this.step(openList, closedList, finishPoint)
   }
-
-
 
 
   // TODO -- its a hack -- we suggest some imput data structure
   // TODO -- change the whole func to call to this.pointIndexFunc thru all code
   listKey(pointObj) {
     if (this.pointIndexFunc) {
-      return this.pointIndexFunc(pointObj.point);
+      return this.pointIndexFunc(pointObj.point)
     }
-    return pointObj.point.location.x + '|' + pointObj.point.location.y;
+    return `${pointObj.point.location.x}|${pointObj.point.location.y}`
   }
 
 
   addToOpenList(point, pointWeight, parentPointObj, openList) {
-    let pointObj = {point: point, weight: pointWeight, parent: parentPointObj};
-    openList[this.listKey(pointObj)] = pointObj;
+    const pointObj = { point, weight: pointWeight, parent: parentPointObj }
+    openList[this.listKey(pointObj)] = pointObj
   }
 
   openListIsEmpty(openList) {
-    return Object.keys(openList).length == 0;
+    return Object.keys(openList).length == 0
   }
 
   getFromOpenList(pointObj, openList) {
-    return openList[this.listKey(pointObj)];
+    return openList[this.listKey(pointObj)]
   }
 
   popPointFromOpenList(openList) {
-    let cur = {}, index;
-    for (let i in openList) {
+    let cur = {}; let
+      index
+    for (const i in openList) {
       if ((openList[i].weight < cur.weight) || !cur.weight) {
-        cur = openList[i];
-        index = i;
+        cur = openList[i]
+        index = i
       }
     }
-    delete(openList[index]);
-    return cur;
+    delete (openList[index])
+    return cur
   }
-
 
 
   addToClosedList(pointObj, closedList) {
-    closedList[this.listKey(pointObj)] = pointObj;
+    closedList[this.listKey(pointObj)] = pointObj
   }
 
   checkPointInClosedList(pointObj, closedList) {
-    return closedList[this.listKey(pointObj)] != undefined;
+    return closedList[this.listKey(pointObj)] != undefined
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

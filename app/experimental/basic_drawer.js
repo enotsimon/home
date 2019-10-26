@@ -1,106 +1,102 @@
 
-import Util from "common/util";
-import Color from "common/color";
-import * as d3 from "d3";
-import App from 'experimental/components/app';
-import ReactDOM from 'react-dom';
-import React from 'react';
-import * as PIXI from "pixi.js";
+import Util from 'common/util'
+import Color from 'common/color'
+import * as d3 from 'd3'
+import App from 'experimental/components/app'
+import ReactDOM from 'react-dom'
+import React from 'react'
+import * as PIXI from 'pixi.js'
 
 export default class BasicDrawer {
   constructor(regime) {
-    this.real_size = 800;
-    this.regime = regime;
-    this.ticks = 0;
-    this.tick_speed = 1;
-    this.react_app = React.createElement(App, {additional: this.update_debug_info()});
+    this.real_size = 800
+    this.regime = regime
+    this.ticks = 0
+    this.tick_speed = 1
+    this.react_app = React.createElement(App, { additional: this.update_debug_info() })
     document.addEventListener('DOMContentLoaded', () => {
-      ReactDOM.render(this.react_app, document.querySelector('#app'));
-      this.init();
-    });
+      ReactDOM.render(this.react_app, document.querySelector('#app'))
+      this.init()
+    })
   }
 
   // TODO update debug info not directly, but from setState()
   init() {
     this.pixi = new PIXI.Application(this.real_size, this.real_size, {
-      backgroundColor : Color.to_pixi([0, 0, 0]),
+      backgroundColor: Color.to_pixi([0, 0, 0]),
       antialias: true,
       view: document.getElementById('view'),
-    });
-    this.pixi.stage.interactive = true; // ??
-    console.log('renderer', this.pixi.renderer);
+    })
+    this.pixi.stage.interactive = true // ??
+    console.log('renderer', this.pixi.renderer)
 
-    this.base_container = new PIXI.Container();
+    this.base_container = new PIXI.Container()
     if (this.regime == 'square') {
       // square map is 100x100 size
-      this.size = 100;
-      let scale = this.real_size/this.size | 0;
-      this.base_container.scale = {x: scale, y: scale};
+      this.size = 100
+      const scale = this.real_size / this.size | 0
+      this.base_container.scale = { x: scale, y: scale }
     } else if (this.regime == 'circle') {
       // circle map is circle with radils=100, coords from -100 to 100
-      this.size = 200;
-      let scale = this.real_size/this.size | 0;
-      this.base_container.scale = {x: scale, y: scale};
-      this.base_container.position.x = this.real_size / 2 | 0;
-      this.base_container.position.y = this.real_size / 2 | 0;
+      this.size = 200
+      const scale = this.real_size / this.size | 0
+      this.base_container.scale = { x: scale, y: scale }
+      this.base_container.position.x = this.real_size / 2 | 0
+      this.base_container.position.y = this.real_size / 2 | 0
     } else if (!this.regime) {
-      throw('regime is not set');
+      throw ('regime is not set')
     } else {
-      throw('unknown regime: '+regime);
+      throw (`unknown regime: ${regime}`)
     }
 
-    this.pixi.stage.addChild(this.base_container);
-    document.getElementById('view_container').appendChild(this.pixi.view);
+    this.pixi.stage.addChild(this.base_container)
+    document.getElementById('view_container').appendChild(this.pixi.view)
 
     // copy-paste from Interation
-    document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false);
-    
-    this.ticks = 0; // here?
-    this.tick_time = 0;
+    document.addEventListener('mousemove', this.mouse_move_handler.bind(this), false)
+
+    this.ticks = 0 // here?
+    this.tick_time = 0
     this.pixi.ticker.add((delta) => {
-      this.ticks++;
+      this.ticks++
       if (this.ticks % 10 == 0) {
-        d3.select('#fps_counter').html(this.pixi.ticker.FPS | 0);
-        this.update_debug_info().forEach(e => document.getElementById(e.id).innerHTML = e.value);
+        d3.select('#fps_counter').html(this.pixi.ticker.FPS | 0)
+        this.update_debug_info().forEach(e => document.getElementById(e.id).innerHTML = e.value)
       }
-      this.tick_delta = delta;
-      this.tick_time += delta;
-      this.redraw();
-    });
-    //////////////////////////////////
-    this.init_graphics();
+      this.tick_delta = delta
+      this.tick_time += delta
+      this.redraw()
+    })
+    // ////////////////////////////////
+    this.init_graphics()
   }
 
   clear_all() {
-    this.base_container.removeChildren();
+    this.base_container.removeChildren()
   }
 
   init_graphics() {
-    
+
   }
 
   redraw() {
-    
+
   }
 
   update_debug_info() {
-    return [];
+    return []
   }
-
-
-
-
 
 
   mouse_move_handler(event) {
     if (event.target != this.pixi.view) {
-      return false;
+      return false
     }
-    let mouse_coords = this.get_mouse_coords(event);
-    d3.select('#mouse_pos').html('{x: '+mouse_coords.x+', y: '+mouse_coords.y+'}');
+    const mouse_coords = this.get_mouse_coords(event)
+    d3.select('#mouse_pos').html(`{x: ${mouse_coords.x}, y: ${mouse_coords.y}}`)
   }
 
   get_mouse_coords(event) {
-    return {x: event.offsetX, y: event.offsetY};
+    return { x: event.offsetX, y: event.offsetY }
   }
 }

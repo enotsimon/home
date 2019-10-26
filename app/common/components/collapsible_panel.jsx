@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 export default class CollapsiblePanel extends React.Component {
   constructor(args) {
-    super();
-    this.header = args.header;
-    this.name = args.name;
-    this.content_func = args.content_func;
+    super()
+    this.header = args.header
+    this.name = args.name
+    this.content_func = args.content_func
   }
 
   render() {
@@ -13,7 +13,11 @@ export default class CollapsiblePanel extends React.Component {
       <div className="panel panel-success">
         <div className="panel-heading">
           <h4 className="panel-title">
-            <a data-toggle="collapse" href={'#'+this.name}>{this.header} <span className="caret"></span></a>
+            <a data-toggle="collapse" href={`#${this.name}`}>
+              {this.header}
+              {' '}
+              <span className="caret" />
+            </a>
           </h4>
         </div>
         <div id={this.name} className="panel-collapse collapse">
@@ -21,7 +25,7 @@ export default class CollapsiblePanel extends React.Component {
             {this.content_func()}
           </div>
         </div>
-      </div>          
-    );
+      </div>
+    )
   }
 }

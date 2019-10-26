@@ -1,6 +1,6 @@
 
-import SamplePreview from "experimental/components/sample_preview";
-import React from 'react';
+import SamplePreview from 'experimental/components/sample_preview'
+import React from 'react'
 
 export default class SamplesCollecton extends React.Component {
   render() {
@@ -35,7 +35,7 @@ export default class SamplesCollecton extends React.Component {
 
             {React.createElement(SamplePreview, {
               name: 'basic random tableau',
-              description: `random start configuration, pixels change their colors with edgy jump from white to black`,
+              description: 'random start configuration, pixels change their colors with edgy jump from white to black',
               sample_url: './basic_tableau.html',
               img_path: './thumbnails/basic_tableau.jpg',
               status: 'ready',
@@ -43,7 +43,7 @@ export default class SamplesCollecton extends React.Component {
 
             {React.createElement(SamplePreview, {
               name: 'smooth random tableau',
-              description: `random start configuration, pixels change their colors smoothly -- black to white and backward`,
+              description: 'random start configuration, pixels change their colors smoothly -- black to white and backward',
               sample_url: './smooth_tableau.html',
               img_path: './thumbnails/smooth_tableau.jpg',
               status: 'ready',
@@ -51,7 +51,7 @@ export default class SamplesCollecton extends React.Component {
 
             {React.createElement(SamplePreview, {
               name: 'rule 30',
-              description: `cellular automaton evolution of rule 30 introduced by stephen wolfram in 1983`,
+              description: 'cellular automaton evolution of rule 30 introduced by stephen wolfram in 1983',
               sample_url: './rule_30.html',
               img_path: './thumbnails/rule_30.jpg',
               status: 'ready',
@@ -68,7 +68,7 @@ export default class SamplesCollecton extends React.Component {
 
             {React.createElement(SamplePreview, {
               name: 'orbits',
-              description: `experiment with 3d polar functions`,
+              description: 'experiment with 3d polar functions',
               sample_url: './orbits.html',
               img_path: './thumbnails/orbits.jpg',
               status: 'in_progress',
@@ -76,7 +76,7 @@ export default class SamplesCollecton extends React.Component {
 
             {React.createElement(SamplePreview, {
               name: 'luna',
-              description: `its like moon -- planet with craters on surface`,
+              description: 'its like moon -- planet with craters on surface',
               sample_url: './luna.html',
               img_path: './thumbnails/luna.jpg',
               status: 'ready',
@@ -85,6 +85,6 @@ export default class SamplesCollecton extends React.Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import GridContainer from './grid_container';
+import React from 'react'
+import GridContainer from 'chaos/components/grid_container'
 
 export default class App extends React.Component {
   render() {
@@ -16,6 +16,6 @@ export default class App extends React.Component {
         </div>
 
       </div>
-    );
+    )
   }
 }

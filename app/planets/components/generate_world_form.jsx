@@ -1,14 +1,13 @@
-import React from 'react';
-import InputSpinner from 'common/components/input_spinner';
-import {game} from "planets/game";
+import React from 'react'
+import InputSpinner from 'common/components/input_spinner'
+import { game } from 'planets/game'
 
 export default class GenerateWorldForm extends React.Component {
-
   submit(e) {
-    e.preventDefault();
-    console.clear();
-    game.map_drawer.map.stage.children.forEach(layer => layer.removeChildren());
-    game.generate_world();
+    e.preventDefault()
+    console.clear()
+    game.map_drawer.map.stage.children.forEach(layer => layer.removeChildren())
+    game.generate_world()
   }
 
   render() {
@@ -22,6 +21,6 @@ export default class GenerateWorldForm extends React.Component {
           </div>
         </form>
       </div>
-    );
+    )
   }
 }

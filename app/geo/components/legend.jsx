@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export default class Legend extends React.Component {
   render() {
@@ -6,6 +6,6 @@ export default class Legend extends React.Component {
       <div>
         <p>here will be map legend...</p>
       </div>
-    );
+    )
   }
 }
