@@ -82,6 +82,14 @@ export default class SamplesCollecton extends React.Component {
               status: 'ready',
             })}
 
+            {React.createElement(SamplePreview, {
+              name: 'wavy sphere',
+              description: 'sphere with waves',
+              sample_url: './wavy_sphere.html',
+              img_path: './thumbnails/wavy_planet.jpg',
+              status: 'ready',
+            })}
+
           </div>
         </div>
       </div>

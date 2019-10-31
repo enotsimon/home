@@ -33,10 +33,13 @@ export const calcSinglePoint = (
   return { x: x2, y: y2, z: z2 }
 }
 
-export const createPlanetDrawer = (sphereMap: SphereMapBuilder = defaultSphereMap): void => createDrawer(
+export const createPlanetDrawer = (
+  sphereMap: SphereMapBuilder = defaultSphereMap,
+  mapTransparency: number = 0.25,
+): void => createDrawer(
   'circle',
   updateDebugInfo,
-  state => initGraphics(state, sphereMap),
+  state => initGraphics(state, sphereMap, mapTransparency),
   redraw
 )
 
@@ -68,7 +71,7 @@ const initGraphicsFromSphereMap = (sphereMapData: Array<PlanetSpherePoint>, stat
   })
 }
 
-const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder): DrawerState => {
+const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTransparency: number): DrawerState => {
   const state = { ...oldState }
   state.planet = new PIXI.Container()
   state.base_container.addChild(state.planet)
@@ -77,7 +80,7 @@ const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder): Drawe
   state.precession = null
   state.nutation = null
   state.points = initGraphicsFromSphereMap(sphereMap(state), state)
-  state.map_transparency_alpha = 0.25
+  state.map_transparency_alpha = mapTransparency
   state.draw_contour = true
   if (state.draw_contour) {
     const contour = new PIXI.Graphics()
