@@ -84,11 +84,10 @@ const initDrawer = (
     state.ticks += 1
     if (state.ticks % 10 === 0) {
       d3.select('#fps_counter').html(pixi.ticker.FPS || 0)
-      // $FlowIgnore
       updateDebugInfo(state).forEach(e => {
         if (document.getElementById(e.id)) {
           // $FlowIgnore
-          document.getElementById(e.id).innerHTML = e.value
+          document.getElementById(e.id).innerHTML = `${e.value}`
         } else {
           console.log(`no element by id ${e.id}`)
         }
