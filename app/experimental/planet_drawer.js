@@ -5,7 +5,7 @@ import * as PIXI from 'pixi.js'
 
 import { createDrawer } from 'experimental/drawer'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 
 export type PlanetXYZPoint = { x: number, y: number, z: number }
 export type PlanetSpherePoint = { phi: number, theta: number }
@@ -40,7 +40,7 @@ export const createPlanetDrawer = (sphereMap: SphereMapBuilder = defaultSphereMa
   redraw
 )
 
-const updateDebugInfo = (state: DrawerState) => [
+const updateDebugInfo = (state: DrawerState): Array<DrawerDebugInfoUnit> => [
   { id: 'debug_info_precession', text: 'precession', value: Math.round(Util.degrees(state.precession)) },
   { id: 'debug_info_nutation', text: 'nutation', value: Math.round(Util.degrees(state.nutation)) },
   { id: 'debug_info_rotation', text: 'rotation', value: Math.round(Util.degrees(state.rotation)) },

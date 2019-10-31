@@ -18,11 +18,17 @@ export type DrawerState = {
   [string]: any,
 }
 
+export type DrawerDebugInfoUnit = {
+  id: string,
+  text: string,
+  value: string | number,
+}
+
 export type DrawerNewStateCallback = (DrawerState) => DrawerState
 
 const initDrawer = (
   regime: DrawerRegime,
-  updateDebugInfo: DrawerState => [],
+  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
 ): void => {
@@ -93,7 +99,7 @@ const initDrawer = (
 
 export const createDrawer = (
   regime: DrawerRegime,
-  updateDebugInfo: DrawerState => [],
+  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
 ): void => {
