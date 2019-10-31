@@ -7,7 +7,19 @@ import { createDrawer } from 'experimental/drawer'
 
 import type { DrawerState } from 'experimental/drawer'
 
-export const calcSinglePoint = (radius, phi, theta, rotation, precession, nutation) => {
+export type PlanetXYZPoint = { x: number, y: number, z: number }
+export type PlanetSpherePoint = { phi: number, theta: number }
+export type PlanetSpherePointWG = PlanetSpherePoint & { graphics: Object }
+export type SphereMapBuilder = (state: DrawerState) => Array<PlanetSpherePoint>
+
+export const calcSinglePoint = (
+  radius: number,
+  phi: number,
+  theta: number,
+  rotation: number,
+  precession: number,
+  nutation: number
+): PlanetXYZPoint => {
   const x = radius * Math.cos(phi) * Math.sin(theta)
   const y = radius * Math.sin(phi) * Math.sin(theta)
   const z = radius * Math.cos(theta)
@@ -21,7 +33,7 @@ export const calcSinglePoint = (radius, phi, theta, rotation, precession, nutati
   return { x: x2, y: y2, z: z2 }
 }
 
-export const createPlanetDrawer = (sphereMap: Function = defaultSphereMap): void => createDrawer(
+export const createPlanetDrawer = (sphereMap: SphereMapBuilder = defaultSphereMap): void => createDrawer(
   'circle',
   updateDebugInfo,
   state => initGraphics(state, sphereMap),
@@ -36,7 +48,7 @@ const updateDebugInfo = (state: DrawerState) => [
 ]
 
 // TODO -- move it out from here or just delete
-const defaultSphereMap = () => {
+const defaultSphereMap: SphereMapBuilder = () => {
   return [...Array(500).keys()].map(() => {
     return {
       phi: Util.rand_float(0, 2 * Math.PI),
@@ -45,9 +57,9 @@ const defaultSphereMap = () => {
   })
 }
 
-const initGraphicsFromSphereMap = (sphereMapData, state) => {
-  return sphereMapData.map(e => {
-    e.graphics = new PIXI.Graphics()
+const initGraphicsFromSphereMap = (sphereMapData: Array<PlanetSpherePoint>, state): Array<PlanetSpherePointWG> => {
+  return sphereMapData.map(spherePoint => {
+    const e = { ...spherePoint, graphics: new PIXI.Graphics() }
     e.graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
     e.graphics.drawRect(0, 0, 0.0025 * state.size, 0.0025 * state.size)
     e.graphics.endFill()
@@ -56,7 +68,7 @@ const initGraphicsFromSphereMap = (sphereMapData, state) => {
   })
 }
 
-const initGraphics = (oldState: DrawerState, sphereMap: Function): DrawerState => {
+const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder): DrawerState => {
   const state = { ...oldState }
   state.planet = new PIXI.Container()
   state.base_container.addChild(state.planet)
