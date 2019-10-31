@@ -85,8 +85,14 @@ const initDrawer = (
     if (state.ticks % 10 === 0) {
       d3.select('#fps_counter').html(pixi.ticker.FPS || 0)
       // $FlowIgnore
-      // FIXME
-      // updateDebugInfo(state).forEach(e => { document.getElementById(e.id).innerHTML = e.value })
+      updateDebugInfo(state).forEach(e => {
+        if (document.getElementById(e.id)) {
+          // $FlowIgnore
+          document.getElementById(e.id).innerHTML = e.value
+        } else {
+          console.log(`no element by id ${e.id}`)
+        }
+      })
     }
     state.tick_delta = delta
     state.tickTime += delta
@@ -103,8 +109,8 @@ export const createDrawer = (
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
 ): void => {
-  // TODO move it from here??? bad place
-  const app = React.createElement(App, { additional: [] })
+  // $FlowIgnore no state here but we dont care
+  const app = React.createElement(App, { additional: updateDebugInfo({}) })
   document.addEventListener('DOMContentLoaded', () => {
     // $FlowIgnore
     ReactDOM.render(app, document.querySelector('#app')) // TODO create it

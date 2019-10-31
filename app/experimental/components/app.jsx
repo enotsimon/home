@@ -1,5 +1,4 @@
 
-import DebugInfo from 'experimental/components/debug_info'
 import React from 'react'
 
 export default class App extends React.Component {
@@ -40,17 +39,17 @@ export default class App extends React.Component {
           <div className="panel-body">
             <div>
               <div>
-FPS:
+                FPS:
                 <span id="fps_counter" />
               </div>
               <div>
-mouse position:
-                <span id="mouse_pos">{0, 0}</span>
+                mouse position:
+                <span id="mouse_pos">{}</span>
               </div>
               {this.state.additional.map(e => (
                 <div key={e.id}>
                   {e.text}
-:
+                  :
                   {' '}
                   <span id={e.id}>{e.value}</span>
                 </div>
