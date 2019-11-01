@@ -20,7 +20,7 @@ const config: Array<SamplePreviewConfig> = [
       i.e. move it to the center of coordinates and make all others spin around it`,
     sample_url: './planets_focus.html',
     img_path: './thumbnails/planets_focus.jpg',
-    status: 'in_progress',
+    status: 'draft',
   },
   {
     name: 'basic random tableau',
@@ -56,7 +56,7 @@ const config: Array<SamplePreviewConfig> = [
     description: 'experiment with 3d polar functions',
     sample_url: './orbits.html',
     img_path: './thumbnails/orbits.jpg',
-    status: 'in_progress',
+    status: 'draft',
   },
   {
     name: 'luna',
