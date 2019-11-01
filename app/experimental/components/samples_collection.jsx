@@ -74,21 +74,19 @@ const config: Array<SamplePreviewConfig> = [
   },
 ]
 
-export default class SamplesCollecton extends React.Component {
-  render() {
-    return (
-      <div className="col-md-8 col-md-offset-2">
-        <div className="panel panel-success">
-          <div className="panel-heading">
-            <h4 className="panel-title">
-              a collection of funny graphics samples
-            </h4>
-          </div>
-          <div className="panel-body">
-            {config.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
-          </div>
-        </div>
+const SamplesCollecton = () => (
+  <div className="col-md-8 col-md-offset-2">
+    <div className="panel panel-success">
+      <div className="panel-heading">
+        <h4 className="panel-title">
+          a collection of funny graphics samples
+        </h4>
       </div>
-    )
-  }
-}
+      <div className="panel-body">
+        {config.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
+      </div>
+    </div>
+  </div>
+)
+
+export default SamplesCollecton
