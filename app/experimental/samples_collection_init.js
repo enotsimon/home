@@ -2,6 +2,9 @@ import ReactDOM from 'react-dom'
 import React from 'react'
 import SamplesCollecton from 'experimental/components/samples_collection'
 
-document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(<SamplesCollecton />, document.querySelector('#main'))
-})
+ReactDOM.render(
+  <div style={{ margin: '20px' }}>
+    <SamplesCollecton />
+  </div>,
+  document.body.appendChild(document.createElement('div'))
+)

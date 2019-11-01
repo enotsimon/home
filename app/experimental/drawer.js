@@ -108,11 +108,11 @@ export const createDrawer = (
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
 ): void => {
-  // $FlowIgnore no state here but we dont care
-  const app = React.createElement(App, { additional: updateDebugInfo({}) })
-  document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    // $FlowIgnore no state here but we dont care
+    <div style={{ maxWidth: '1280px' }}><App additional={updateDebugInfo({})} /></div>,
     // $FlowIgnore
-    ReactDOM.render(app, document.querySelector('#app')) // TODO create it
-    initDrawer(regime, updateDebugInfo, initGraphics, redraw)
-  })
+    document.body.appendChild(document.createElement('div'))
+  )
+  initDrawer(regime, updateDebugInfo, initGraphics, redraw)
 }
