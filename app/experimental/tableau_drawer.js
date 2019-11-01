@@ -4,7 +4,7 @@ import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import { createDrawer } from 'experimental/drawer'
 
-import type { DrawerNewStateCallback, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 export type TableauCell = {
   x: number,
@@ -20,17 +20,21 @@ export type TableauState = DrawerState & {
   color_change_per_tick: number,
   data: TableauData,
 }
+export type TableauElementMutator = (TableauCell, number) => TableauCell
 
-export const createTableauDrawer = () => {
+export const createTableauDrawer = (
+  initElementState: TableauElementMutator,
+  mutateElementState: TableauElementMutator,
+) => {
   createDrawer(
     'square',
     () => [], // ???
-    initGraphics,
-    redraw
+    state => initGraphics(state, initElementState),
+    state => redraw(state, mutateElementState)
   )
 }
 
-const initGraphics: DrawerNewStateCallback = (oldState: DrawerState): TableauState => {
+const initGraphics = (oldState: DrawerState, initElementState): TableauState => {
   let state = { ...oldState }
   state.x_size = 100
   state.y_size = 100
@@ -53,14 +57,14 @@ const initGraphics: DrawerNewStateCallback = (oldState: DrawerState): TableauSta
       state.data[y][x] = { x, y, color: 0, new_color: 0, graphics }
     }
   }
-  state = initState(state)
+  state = initState(state, initElementState)
   state = updateCells(state)
   return state
 }
 
-const redraw: DrawerNewStateCallback = (oldState: TableauState): TableauState => {
+const redraw = (oldState: TableauState, mutateElementState): TableauState => {
   let state = { ...oldState }
-  state = mutateState(state)
+  state = mutateState(state, mutateElementState)
   state = updateCells(state)
   return state
 }
@@ -76,12 +80,11 @@ const forAllElements = (func: Function, state: TableauState): TableauState => {
   return { ...state, data: newData }
 }
 
-const initState = (state: TableauState): TableauState =>
-  forAllElements(element => initElementState(element), state)
+const initState = (state: TableauState, initElementState): TableauState => {
+  return forAllElements(element => initElementState(element, state.color_change_per_tick), state)
+}
 
-const initElementState = (element: TableauCell): TableauCell => ({ ...element, color: Math.random() })
-
-const mutateState = (oldState: TableauState): TableauState => {
+const mutateState = (oldState: TableauState, mutateElementState): TableauState => {
   let state = { ...oldState }
   state = forAllElements(element => mutateElementState(element, state.color_change_per_tick), state)
   state = forAllElements(element => {
@@ -90,13 +93,6 @@ const mutateState = (oldState: TableauState): TableauState => {
     return element
   }, state)
   return state
-}
-
-// this func suppose to change new_color prop, not color!
-const mutateElementState = (element: TableauCell, color_change_per_tick: number): TableauCell => {
-  /* eslint-disable-next-line no-param-reassign */
-  element.new_color = (element.color + (color_change_per_tick / 256)) % 1
-  return element
 }
 
 /* dunno if its needed
