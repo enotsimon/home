@@ -3,17 +3,15 @@ import { createTableauDrawer } from 'experimental/tableau_drawer'
 
 import type { TableauCell } from 'experimental/tableau_drawer'
 
-/* TODO -- use SmoothTableauCell for initElementState
 type SmoothTableauCell = TableauCell & {
   sign: number,
 }
-*/
 
-const initElementState = (element: TableauCell): TableauCell => ({ ...element, color: Math.random(), sign: 1 })
+const initElementState = (element: TableauCell): SmoothTableauCell => ({ ...element, color: Math.random(), sign: 1 })
 
 // this func suppose to change new_color prop, not color!
-const mutateElementState = (e: TableauCell, color_change_per_tick: number): TableauCell => {
-  const element = { ...e }
+const mutateElementState = (e: SmoothTableauCell, color_change_per_tick: number): SmoothTableauCell => {
+  const element: SmoothTableauCell = { ...e }
   if (element.color <= 0) {
     element.sign = 1
   } else if (element.color >= 1) {
@@ -26,4 +24,7 @@ const mutateElementState = (e: TableauCell, color_change_per_tick: number): Tabl
   return element
 }
 
+// i dunno how to teach flow that initElementState returns SmoothTableauCell
+// and so mutateElementState will take SmoothTableauCell, not TableauCell
+// $FlowIgnore
 createTableauDrawer(initElementState, mutateElementState)
