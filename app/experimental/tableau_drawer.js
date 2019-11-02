@@ -7,6 +7,7 @@ import { createDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
 
 export type TableauCell = {
+  throttle: number,
   x: number,
   y: number,
   color: number,
@@ -20,24 +21,32 @@ export type TableauState = DrawerState & {
   color_change_per_tick: number,
   data: TableauData,
 }
-export type TableauElementMutator = (TableauCell, number) => TableauCell
+export type TableauElementMutator = (TableauCell, TableauState) => TableauCell
+
+export const getElementColor = (x: number, y: number, state: TableauState, outOfBorderFunc: () => number): number => {
+  return state.data[y] && state.data[y][x] ? state.data[y][x].color : outOfBorderFunc()
+}
 
 export const createTableauDrawer = (
   initElementState: TableauElementMutator,
   mutateElementState: TableauElementMutator,
+  throttle: number = 1,
+  x_size: number = 100,
+  y_size: number = 100,
 ) => {
   createDrawer(
     'square',
     () => [], // ???
-    state => initGraphics(state, initElementState),
+    state => initGraphics(state, initElementState, throttle, x_size, y_size),
     state => redraw(state, mutateElementState)
   )
 }
 
-const initGraphics = (oldState: DrawerState, initElementState): TableauState => {
+const initGraphics = (oldState: DrawerState, initElementState, throttle, x_size, y_size): TableauState => {
   let state = { ...oldState }
-  state.x_size = 100
-  state.y_size = 100
+  state.throttle = throttle
+  state.x_size = x_size
+  state.y_size = y_size
   state.color_change_per_tick = 8
   state.data = []
   const square_size = Math.min(state.size / state.x_size, state.size / state.y_size)
@@ -85,8 +94,12 @@ const initState = (state: TableauState, initElementState): TableauState => {
 }
 
 const mutateState = (oldState: TableauState, mutateElementState): TableauState => {
-  let state = { ...oldState }
-  state = forAllElements(element => mutateElementState(element, state.color_change_per_tick), state)
+  let state: TableauState = { ...oldState }
+  // throttle to lower speed
+  if (state.ticks % state.throttle !== 0) {
+    return state
+  }
+  state = forAllElements(element => mutateElementState(element, state), state)
   state = forAllElements(element => {
     /* eslint-disable-next-line no-param-reassign */
     element.color = element.new_color
@@ -94,9 +107,3 @@ const mutateState = (oldState: TableauState, mutateElementState): TableauState =
   }, state)
   return state
 }
-
-/* dunno if its needed
-const get_element_color = (x, y, out_of_border_func) => {
-  return state.data[y] && state.data[y][x] ? state.data[y][x].color : out_of_border_func(x, y)
-}
-*/
