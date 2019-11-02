@@ -7,8 +7,7 @@ import type { SamplePreviewConfig } from 'experimental/components/sample_preview
 const config: Array<SamplePreviewConfig> = [
   {
     name: 'moving arrows',
-    description: `schizophreniac arrows moving all around.
-      add cosinus interpolation on arrow's turns`,
+    description: 'schizophreniac arrows moving all around',
     sample_url: './moving_arrows.html',
     img_path: './thumbnails/moving_arrows.png',
     status: 'almost_ready',
