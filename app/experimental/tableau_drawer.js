@@ -8,6 +8,7 @@ import type { DrawerState } from 'experimental/drawer'
 
 export type TableauCell = {
   throttle: number,
+  cyclesLimit: number,
   x: number,
   y: number,
   color: number,
@@ -31,20 +32,22 @@ export const createTableauDrawer = (
   initElementState: TableauElementMutator,
   mutateElementState: TableauElementMutator,
   throttle: number = 1,
+  cyclesLimit: number = 0,
   x_size: number = 100,
   y_size: number = 100,
 ) => {
   createDrawer(
     'square',
     () => [], // ???
-    state => initGraphics(state, initElementState, throttle, x_size, y_size),
-    state => redraw(state, mutateElementState)
+    state => initGraphics(state, initElementState, throttle, cyclesLimit, x_size, y_size),
+    state => redraw(state, mutateElementState, initElementState)
   )
 }
 
-const initGraphics = (oldState: DrawerState, initElementState, throttle, x_size, y_size): TableauState => {
-  let state = { ...oldState }
+const initGraphics = (oldState, initElementState, throttle, cyclesLimit, x_size, y_size): TableauState => {
+  let state: TableauState = { ...oldState }
   state.throttle = throttle
+  state.cyclesLimit = cyclesLimit
   state.x_size = x_size
   state.y_size = y_size
   state.color_change_per_tick = 8
@@ -71,9 +74,9 @@ const initGraphics = (oldState: DrawerState, initElementState, throttle, x_size,
   return state
 }
 
-const redraw = (oldState: TableauState, mutateElementState): TableauState => {
+const redraw = (oldState: TableauState, mutateElementState, initElementState): TableauState => {
   let state = { ...oldState }
-  state = mutateState(state, mutateElementState)
+  state = mutateState(state, mutateElementState, initElementState)
   state = updateCells(state)
   return state
 }
@@ -93,8 +96,12 @@ const initState = (state: TableauState, initElementState): TableauState => {
   return forAllElements(element => initElementState(element, state.color_change_per_tick), state)
 }
 
-const mutateState = (oldState: TableauState, mutateElementState): TableauState => {
+const mutateState = (oldState: TableauState, mutateElementState, initElementState): TableauState => {
   let state: TableauState = { ...oldState }
+  // reinit all tableau after life cycle expired
+  if (state.cyclesLimit && (state.ticks % (state.cyclesLimit * state.throttle) === 1)) {
+    return initState(state, initElementState)
+  }
   // throttle to lower speed
   if (state.ticks % state.throttle !== 0) {
     return state
