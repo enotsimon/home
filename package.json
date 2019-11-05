@@ -8,8 +8,6 @@
     "node": ">=8.10"
   },
   "scripts": {
-    "start": "brunch watch --server",
-    "build": "brunch build --production",
     "clean": "rm -rf dist/*",
     "flow": "flow",
     "lint:staged": "lint-staged",
@@ -19,7 +17,7 @@
     "test": "mocha --require ignore-styles --require babel-core/register test/*.test.js",
     "pre-commit": "lint-staged",
     "serve": "webpack-dev-server --env.serve --mode=development",
-    "build-wp": "yarn build-dev",
+    "build": "yarn build-dev",
     "build-dev": "webpack --config webpack.config.js --mode=development",
     "build-test": "webpack --config webpack.config.js --env.test --mode=development",
     "build-prod": "webpack --config webpack.config.js --env.production --mode=production"
