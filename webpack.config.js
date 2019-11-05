@@ -81,7 +81,10 @@ module.exports = () => [
     ],
 
     plugins: [
-      new HtmlWebpackPlugin({ title: 'enot simon home app' }),
+      new HtmlWebpackPlugin({
+        title: 'enot simon home app',
+        favicon: 'assets/favicon.jpeg',
+      }),
       new webpack.NamedModulesPlugin(),
       new webpack.HotModuleReplacementPlugin(),
       new CopyWebpackPlugin([
