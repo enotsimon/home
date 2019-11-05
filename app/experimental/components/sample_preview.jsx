@@ -22,7 +22,7 @@ const SamplePreview = (props: SamplePreviewConfig) => {
           <div className="panel-title">
             {props.name}
           </div>
-          <span className={`label label-primary ${statusClass}`}>
+          <span className={`label ${statusClass}`}>
             {statusText}
           </span>
         </div>
