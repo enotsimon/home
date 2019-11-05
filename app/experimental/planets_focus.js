@@ -3,6 +3,7 @@ import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import * as d3 from 'd3'
+import * as R from 'ramda'
 
 import { createDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
@@ -52,7 +53,7 @@ const redraw = (oldState: DrawerState): DrawerState => {
   if (state.focus_change_tick <= 0) {
     state.focus_change_tick = state.focus_change_threshold
     if (!state.forced_focus) {
-      const cur_index = state.bodies.indexOf(state.focused_body)
+      const cur_index = findIndexOfFocusedBody(state.focused_body)(state.bodies)
       state.focused_body = state.bodies[cur_index === state.bodies.length - 1 ? 0 : cur_index + 1]
       console.log('now focus on', state.focused_body.name)
     }
@@ -61,6 +62,8 @@ const redraw = (oldState: DrawerState): DrawerState => {
   d3.select('#debug_info_focus_on').html(state.focused_body.name)
   return state
 }
+
+const findIndexOfFocusedBody = (focused_body) => R.findIndex(body => body.name === focused_body.name)
 
 const updateMatrixByFocus = (oldState: DrawerState): DrawerState => {
   const state = { ...oldState }
