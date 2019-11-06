@@ -1,5 +1,6 @@
 // @flow
 import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 export type SamplePreviewStatus = 'draft' | 'in_progress' | 'almost_ready' | 'ready'
 
