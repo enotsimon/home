@@ -20,8 +20,9 @@ export class Sample extends React.Component<Props> {
   }
 
   // bad. but i dont care for now
+  // TODO fix to Link
   goBack() {
-    window.location.href = './samples_collection.html'
+    window.location.href = '/samples_collection'
   }
 
   render() {

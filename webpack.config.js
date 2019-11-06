@@ -104,6 +104,7 @@ module.exports = () => [
     devServer: {
       contentBase: outputPath,
       port: 8020,
+      historyApiFallback: true,
       hot: true,
       after: () => {
       }

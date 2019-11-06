@@ -27,16 +27,16 @@ ReactDOM.render((
     <main>
       <Switch>
         <Route exact path="/" component={SamplesCollecton} />
-        <Route path="/samples_collection.html" component={SamplesCollecton} />
-        <Route path="/moving_arrows.html" render={() => createDrawer(initMovingArrows)} />
-        <Route path="/planets_focus.html" render={() => createDrawer(initPlanetFocus)} />
-        <Route path="/basic_tableau.html" render={() => createDrawer(initRandomTableau)} />
-        <Route path="/smooth_tableau.html" render={() => createDrawer(initSmoothTableau)} />
-        <Route path="/rule_30.html" render={() => createDrawer(initRule30)} />
-        <Route path="/vichniac_vote.html" render={() => createDrawer(initVichniacVote)} />
-        <Route path="/orbits.html" render={() => createDrawer(initOrbits)} />
-        <Route path="/luna.html" render={() => createDrawer(initLuna)} />
-        <Route path="/wavy_sphere.html" render={() => createDrawer(initWavyPlanet)} />
+        <Route path="/samples_collection" component={SamplesCollecton} />
+        <Route path="/moving_arrows" render={() => createDrawer(initMovingArrows)} />
+        <Route path="/planets_focus" render={() => createDrawer(initPlanetFocus)} />
+        <Route path="/basic_tableau" render={() => createDrawer(initRandomTableau)} />
+        <Route path="/smooth_tableau" render={() => createDrawer(initSmoothTableau)} />
+        <Route path="/rule_30" render={() => createDrawer(initRule30)} />
+        <Route path="/vichniac_vote" render={() => createDrawer(initVichniacVote)} />
+        <Route path="/orbits" render={() => createDrawer(initOrbits)} />
+        <Route path="/luna" render={() => createDrawer(initLuna)} />
+        <Route path="/wavy_sphere" render={() => createDrawer(initWavyPlanet)} />
         {/* dont work. 404 routed from dev server itself */}
         <Route path="/" render={page404} />
       </Switch>
