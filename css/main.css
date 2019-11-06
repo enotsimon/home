@@ -1,0 +1,21 @@
+.status_draft {
+  background-color: #990000;
+}
+
+.status_in_progress {
+  background-color: #ffa500;
+}
+
+.status_almost_ready {
+  background-color: #f3da0b;
+}
+
+.status_ready {
+  background-color: #85cf17;
+}
+
+.sample_preview {
+  padding: 10px;
+  display: inline-block;
+  vertical-align: top;
+}
