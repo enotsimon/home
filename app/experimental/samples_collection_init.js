@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'assets/css/main.css'
 
 ReactDOM.render(
-  <div style={{ margin: '20px' }}>
-    <SamplesCollecton />
-  </div>,
+  <SamplesCollecton />,
   document.body.appendChild(document.createElement('div'))
 )

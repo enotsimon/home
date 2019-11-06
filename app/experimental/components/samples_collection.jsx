@@ -74,15 +74,17 @@ const config: Array<SamplePreviewConfig> = [
 ]
 
 const SamplesCollecton = () => (
-  <div className="col-md-8 col-md-offset-2">
-    <div className="panel panel-success">
-      <div className="panel-heading">
-        <h4 className="panel-title">
-          a collection of funny graphics samples
-        </h4>
-      </div>
-      <div className="panel-body">
-        {config.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
+  <div style={{ margin: '20px' }}>
+    <div className="col-md-8 col-md-offset-2">
+      <div className="panel panel-success">
+        <div className="panel-heading">
+          <h4 className="panel-title">
+            a collection of funny graphics samples
+          </h4>
+        </div>
+        <div className="panel-body">
+          {config.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
+        </div>
       </div>
     </div>
   </div>
