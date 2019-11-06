@@ -4,7 +4,6 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin')
 
 const isDebug = process.argv.includes('--mode=development')
 const srcDir = path.resolve(__dirname, 'app')
@@ -93,13 +92,7 @@ module.exports = () => [
           from: 'assets/', // Will resolve to RepoDir/src/assets
           to: '' // Copies all files from above dest to dist/assets
         },
-        {
-          // Wildcard is specified hence will copy only css files
-          from: 'css/*.css', // Will resolve to RepoDir/src/css and all *.css files from this directory
-          to: ''// Copies all matched css files from above dest to dist/css
-        }
       ]),
-      new HtmlWebpackTagsPlugin({ tags: ['css/main.css'], append: true })
     ],
 
     output: {
