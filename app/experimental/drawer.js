@@ -43,7 +43,7 @@ const initDrawer = (
   const pixi = new PIXI.Application(realSize, realSize, {
     backgroundColor: Color.to_pixi([0, 0, 0]),
     antialias: true,
-    view: document.getElementById('view'), // TODO create it
+    view: document.getElementById('view'), // TODO looks bad
   })
   pixi.stage.interactive = true // ??
   console.log('renderer', pixi.renderer)
@@ -73,8 +73,6 @@ const initDrawer = (
   }
 
   pixi.stage.addChild(state.base_container)
-  // $FlowIgnore
-  document.getElementById('view_container').appendChild(pixi.view)
   // $FlowIgnore
   document.addEventListener('mousemove', mouse_move_handler.bind(this), false)
 
