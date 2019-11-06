@@ -26,7 +26,7 @@ export type DrawerDebugInfoUnit = {
 
 export type DrawerNewStateCallback = (DrawerState) => DrawerState
 
-const initDrawer = (
+export const initDrawer = (
   regime: DrawerRegime,
   updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
   initGraphics: DrawerNewStateCallback,
@@ -72,7 +72,8 @@ const initDrawer = (
     d3.select('#mouse_pos').html(`{x: ${mouse_coords.x}, y: ${mouse_coords.y}}`)
   }
 
-  pixi.stage.addChild(state.base_container)
+  // TEMP
+  // pixi.stage.addChild(state.base_container)
   // $FlowIgnore
   document.addEventListener('mousemove', mouse_move_handler.bind(this), false)
 
@@ -108,9 +109,8 @@ export const createDrawer = (
 ): void => {
   ReactDOM.render(
     // $FlowIgnore no state here but we dont care
-    <div style={{ maxWidth: '1280px' }}><Sample additional={updateDebugInfo({})} /></div>,
+    <Sample additional={updateDebugInfo({})} init={() => initDrawer(regime, updateDebugInfo, initGraphics, redraw)} />,
     // $FlowIgnore
     document.body.appendChild(document.createElement('div'))
   )
-  initDrawer(regime, updateDebugInfo, initGraphics, redraw)
 }
