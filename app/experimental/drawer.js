@@ -1,10 +1,10 @@
 // @flow
 import Color from 'common/color'
 import * as d3 from 'd3'
-import App from 'experimental/components/app'
 import ReactDOM from 'react-dom'
 import React from 'react'
 import * as PIXI from 'pixi.js'
+import { Sample } from 'experimental/components/Sample'
 
 export type DrawerRegime = 'square' | 'circle'
 
@@ -108,7 +108,7 @@ export const createDrawer = (
 ): void => {
   ReactDOM.render(
     // $FlowIgnore no state here but we dont care
-    <div style={{ maxWidth: '1280px' }}><App additional={updateDebugInfo({})} /></div>,
+    <div style={{ maxWidth: '1280px' }}><Sample additional={updateDebugInfo({})} /></div>,
     // $FlowIgnore
     document.body.appendChild(document.createElement('div'))
   )
