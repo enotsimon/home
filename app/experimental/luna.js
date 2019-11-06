@@ -1,6 +1,6 @@
 // @flow
 import Util from 'common/util'
-import { createPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
+import { initPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
@@ -61,4 +61,4 @@ const sphereAnglesDistance = (a: Crater, b: Crater): number => {
   return Math.acos(scalar / module)
 }
 
-createPlanetDrawer(sphereMap)
+export const initLuna = () => initPlanetDrawer(sphereMap)

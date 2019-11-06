@@ -3,7 +3,7 @@ import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 
 import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 
@@ -33,10 +33,10 @@ export const calcSinglePoint = (
   return { x: x2, y: y2, z: z2 }
 }
 
-export const createPlanetDrawer = (
+export const initPlanetDrawer = (
   sphereMap: SphereMapBuilder = defaultSphereMap,
   mapTransparency: number = 0.25,
-): void => createDrawer(
+): void => initDrawer(
   'circle',
   updateDebugInfo,
   state => initGraphics(state, sphereMap, mapTransparency),

@@ -5,12 +5,12 @@ import * as PIXI from 'pixi.js'
 import * as d3 from 'd3'
 import * as R from 'ramda'
 
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
 
 type StellarBody = {
-  base_container: ?Object,
-  graphics: ?Object,
+  base_container: Object,
+  graphics: Object,
   name: string,
   parent: ?StellarBody,
   orbital_radius: number,
@@ -134,7 +134,7 @@ const setGraphicsTransformByStellarCoords = (origBody: StellarBody): StellarBody
   return body
 }
 
-createDrawer(
+export const initPlanetFocus = () => initDrawer(
   'circle',
   () => [],
   initGraphics,

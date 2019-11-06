@@ -3,7 +3,7 @@ import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
 
 
@@ -94,7 +94,7 @@ const linearInterpolation = (min: number, max: number, x: number): number => {
   return min * (1 - x) + max * x
 }
 
-createDrawer(
+export const initMovingArrows = () => initDrawer(
   'square',
   updateDebugInfo,
   initGraphics,

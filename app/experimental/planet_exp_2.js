@@ -1,6 +1,6 @@
 // @flow
 import Util from 'common/util'
-import { createPlanetDrawer } from 'experimental/planet_drawer'
+import { initPlanetDrawer } from 'experimental/planet_drawer'
 
 import type { SphereMapBuilder } from 'experimental/planet_drawer'
 
@@ -27,4 +27,4 @@ const sphereMap: SphereMapBuilder = () => {
   return map
 }
 
-createPlanetDrawer(sphereMap, 0)
+export const initWavyPlanet = () => initPlanetDrawer(sphereMap, 0)

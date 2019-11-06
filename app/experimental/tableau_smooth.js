@@ -1,5 +1,5 @@
 // @flow
-import { createTableauDrawer } from 'experimental/tableau_drawer'
+import { initTableauDrawer } from 'experimental/tableau_drawer'
 
 import type { TableauCell } from 'experimental/tableau_drawer'
 
@@ -27,4 +27,4 @@ const mutateElementState = (e: SmoothTableauCell, state): SmoothTableauCell => {
 // i dunno how to teach flow that initElementState returns SmoothTableauCell
 // and so mutateElementState will take SmoothTableauCell, not TableauCell
 // $FlowIgnore
-createTableauDrawer(initElementState, mutateElementState)
+export const initSmoothTableau = () => initTableauDrawer(initElementState, mutateElementState)

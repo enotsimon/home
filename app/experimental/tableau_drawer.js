@@ -2,7 +2,7 @@
 import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 
 import type { DrawerState } from 'experimental/drawer'
 
@@ -28,7 +28,7 @@ export const getElementColor = (x: number, y: number, state: TableauState, outOf
   return state.data[y] && state.data[y][x] ? state.data[y][x].color : outOfBorderFunc()
 }
 
-export const createTableauDrawer = (
+export const initTableauDrawer = (
   initElementState: TableauElementMutator,
   mutateElementState: TableauElementMutator,
   throttle: number = 1,
@@ -36,7 +36,7 @@ export const createTableauDrawer = (
   x_size: number = 100,
   y_size: number = 100,
 ) => {
-  createDrawer(
+  initDrawer(
     'square',
     () => [], // ???
     state => initGraphics(state, initElementState, throttle, cyclesLimit, x_size, y_size),

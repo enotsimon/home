@@ -1,6 +1,6 @@
 // @flow
 import Util from 'common/util'
-import { createTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
+import { initTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
 
 /**
  * https://en.wikipedia.org/wiki/Rule_30
@@ -52,4 +52,4 @@ const elementStateRule = (l, r, s) => {
   }
 }
 
-createTableauDrawer(initElementState, mutateElementState, 3)
+export const initRule30 = () => initTableauDrawer(initElementState, mutateElementState, 3)

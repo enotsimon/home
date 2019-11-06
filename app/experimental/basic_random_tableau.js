@@ -1,5 +1,5 @@
 // @flow
-import { createTableauDrawer } from 'experimental/tableau_drawer'
+import { initTableauDrawer } from 'experimental/tableau_drawer'
 
 import type { TableauCell } from 'experimental/tableau_drawer'
 
@@ -10,4 +10,4 @@ const mutateElementState = (element: TableauCell, state): TableauCell => {
   return { ...element, new_color: (element.color + (state.color_change_per_tick / 256)) % 1 }
 }
 
-createTableauDrawer(initElementState, mutateElementState)
+export const initRandomTableau = () => initTableauDrawer(initElementState, mutateElementState)

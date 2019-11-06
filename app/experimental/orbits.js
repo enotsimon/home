@@ -3,7 +3,7 @@ import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
 
 type Figure = {
@@ -74,7 +74,7 @@ const calcSinglePoint = (radius, angle, precession, nutation) => {
   return { x: nx, y: ny }
 }
 
-createDrawer(
+export const initOrbits = () => initDrawer(
   'circle',
   updateDebugInfo,
   initGraphics,

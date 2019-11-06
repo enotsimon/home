@@ -72,8 +72,7 @@ export const initDrawer = (
     d3.select('#mouse_pos').html(`{x: ${mouse_coords.x}, y: ${mouse_coords.y}}`)
   }
 
-  // TEMP
-  // pixi.stage.addChild(state.base_container)
+  pixi.stage.addChild(state.base_container)
   // $FlowIgnore
   document.addEventListener('mousemove', mouse_move_handler.bind(this), false)
 
@@ -88,7 +87,8 @@ export const initDrawer = (
           // $FlowIgnore
           document.getElementById(e.id).innerHTML = `${e.value}`
         } else {
-          console.log(`no element by id ${e.id}`)
+          // FIXME comment until rewrite it to normal way
+          // console.log(`no element by id ${e.id}`)
         }
       })
     }
