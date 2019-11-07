@@ -34,6 +34,7 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   random.use(seedrandom(seed))
   // TODO min distance between
   state.dots = recursiveAddDots(state.size / 2, totalDots)
+  state.dots = connectDotsToSpiral(state.dots)
   // Color.to_pixi([255, 255, 255])
   state.dotsGraphics = state.dots.map(dot => {
     const graphics = new PIXI.Graphics()
@@ -53,7 +54,7 @@ const redraw = (state: DrawerState): DrawerState => {
   return state
 }
 
-const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: number = 0) => {
+const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: number = 0): Array<Dot> => {
   const theVeryDistanceLimit = 0.02 * scale
   if (limit === 0) {
     return dots
@@ -73,8 +74,32 @@ const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: numbe
   if (tooClose) {
     return recursiveAddDots(scale, limit, dots, cycles + 1)
   }
-  const dot = { angle, radius, x, y, parent: null, children: [] }
+  const dot = { id: limit, angle, radius, x, y, parent: null, children: [] }
   return recursiveAddDots(scale, limit - 1, [...dots, dot], 0)
+}
+
+const connectDotsToSpiral = (dots: Array<Dot>): Array<Dot> => {
+  if (R.length(dots) === 0) {
+    return dots
+  }
+  // just to be sure
+  R.forEach(d => {
+    if (d.parent || R.length(d.children) !== 0) {
+      throw new Error('call connectDotsToSpiral() on non-blank dots list')
+    }
+  })(dots)
+  const mostDistantDot = R.sort((d1, d2) => d2.radius - d1.radius)(dots)[0]
+  return connectDotsToSpiralRecursive(mostDistantDot, dots)
+}
+
+const connectDotsToSpiralRecursive = (curDot: Dot, origDots: Array<Dot>): Array<Dot> => {
+  const dots = [...origDots]
+  const openList = R.filter(d => d.id !== curDot.id && R.length(d.children) === 0)
+  if (R.length(openList) === 0) {
+    return dots
+  }
+  // TODO
+  return dots
 }
 
 export const initDotsSpiral = () => initDrawer(
