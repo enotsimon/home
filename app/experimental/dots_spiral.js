@@ -61,16 +61,19 @@ const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: numbe
   if (cycles === 1000) {
     throw new Error('too many cycles')
   }
-  // FIXME не равномерное распределение!
-  const angle = random.float(0, 2 * Math.PI)
-  const radius = scale * random.float()
-  const { x, y } = Util.from_polar_coords(angle, radius)
+  // TODO stupid way, but -- dont care
+  const x = random.int(-scale, scale)
+  const y = random.int(-scale, scale)
+  const { angle, radius } = Util.to_polar_coords(x, y)
+  // theVeryDistanceLimit i added because of circle contour
+  if (radius > (scale - theVeryDistanceLimit)) {
+    return recursiveAddDots(scale, limit, dots, cycles)
+  }
   const tooClose = R.find(d => Util.distance(d, { x, y }) <= theVeryDistanceLimit)(dots)
   if (tooClose) {
     return recursiveAddDots(scale, limit, dots, cycles + 1)
   }
   const dot = { angle, radius, x, y, parent: null, children: [] }
-  console.log('i add', dot)
   return recursiveAddDots(scale, limit - 1, [...dots, dot], 0)
 }
 
