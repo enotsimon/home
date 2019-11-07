@@ -191,7 +191,7 @@ int CGlEngineFunctions::GetAngleABC( POINTFLOAT a, POINTFLOAT b, POINTFLOAT c )
 */
 
 /**
- * angle between three points where b is in radians
+ * angle between three points where b is apex (middle point)
  */
 export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
   const ab = { x: b.x - a.x, y: b.y - a.y }
