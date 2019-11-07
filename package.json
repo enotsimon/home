@@ -101,7 +101,8 @@
     "webpack-dev-server": "^3.1.1"
   },
   "pre-commit": [
-    "lint:staged"
+    "lint:staged",
+    "test"
   ],
   "lint-staged": {
     "*.{cmd,html,json,md,sh,txt,xml,yml}": [
