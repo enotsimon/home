@@ -1,5 +1,4 @@
 // @flow
-import Util from 'common/util'
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
@@ -30,7 +29,7 @@ type Dot = {
 
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
-  const totalDots = 50
+  const totalDots = 250
   const seed = Date.now()
   random.use(seedrandom(seed))
   // TODO min distance between
@@ -67,12 +66,12 @@ const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: numbe
   // TODO stupid way, but -- dont care
   const x = random.int(-scale, scale)
   const y = random.int(-scale, scale)
-  const { angle, radius } = Util.to_polar_coords(x, y)
+  const { angle, radius } = U.toPolarCoords(x, y)
   // theVeryDistanceLimit i added because of circle contour
   if (radius > (scale - theVeryDistanceLimit)) {
     return recursiveAddDots(scale, limit, dots, cycles)
   }
-  const tooClose = R.find(d => Util.distance(d, { x, y }) <= theVeryDistanceLimit)(dots)
+  const tooClose = R.find(d => U.distance(d, { x, y }) <= theVeryDistanceLimit)(dots)
   if (tooClose) {
     return recursiveAddDots(scale, limit, dots, cycles + 1)
   }
