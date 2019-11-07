@@ -16,6 +16,7 @@ import { initVichniacVote } from 'experimental/vichniac_vote'
 import { initOrbits } from 'experimental/orbits'
 import { initLuna } from 'experimental/luna'
 import { initWavyPlanet } from 'experimental/planet_exp_2'
+import { initDotsSpiral } from 'experimental/dots_spiral'
 
 // TODO fix updateDebugInfo()
 const createDrawer = init => <Sample additional={[]} init={init} />
@@ -37,6 +38,7 @@ ReactDOM.render((
         <Route path="/orbits" render={() => createDrawer(initOrbits)} />
         <Route path="/luna" render={() => createDrawer(initLuna)} />
         <Route path="/wavy_sphere" render={() => createDrawer(initWavyPlanet)} />
+        <Route path="/dots_spiral" render={() => createDrawer(initDotsSpiral)} />
         {/* dont work. 404 routed from dev server itself */}
         <Route path="/" render={page404} />
       </Switch>
