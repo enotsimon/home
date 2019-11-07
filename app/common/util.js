@@ -1,3 +1,6 @@
+/**
+ * DEPRECATED!!!
+ */
 
 export default class Util {
   static exec_in_cycle_with_delay(index, limit, delay, func, final_func = function () {}) {
