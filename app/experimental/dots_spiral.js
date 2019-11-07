@@ -30,7 +30,7 @@ type Dot = {
 
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
-  const totalDots = 100
+  const totalDots = 50
   const seed = Date.now()
   random.use(seedrandom(seed))
   // TODO min distance between
@@ -103,7 +103,9 @@ const connectDotsToSpiralRecursive = (curDot: Dot, origDots: Array<Dot>, cycles 
   if (R.length(openList) === 0) {
     return dots
   }
-  const anyDamnPoint = { x: 2 * curDot.x, y: curDot.y }
+  // FIXME the very problem is that i dont understand why we need ssytem center
+  // i thought we can take any quite distant point for it, but -- it works incorrect
+  const anyDamnPoint = { x: 0, y: 0 }
   const openListWithAngles = openList.map(d => ({ ...d, diffAngle: U.angleBy3Points(anyDamnPoint, curDot, d) }))
   const sortedByAngle = R.sort((d1, d2) => d2.diffAngle - d1.diffAngle)(openListWithAngles)
   const nextDot = sortedByAngle[0]
