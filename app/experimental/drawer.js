@@ -22,7 +22,7 @@ export type DrawerDebugInfoUnit = {
 
 export type DrawerNewStateCallback = (DrawerState) => DrawerState
 
-export type DrawerOnTickCallback = (fps: number) => void
+export type DrawerOnTickCallback = (fps: number, delta: number, debugInfo: Array<DrawerDebugInfoUnit>) => void
 
 const BASIC_TICK_THROTTLE = 10
 
@@ -31,7 +31,7 @@ export const initDrawer = (
   updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
-  drawerOnTickCallback: DrawerOnTickCallback,
+  onTickCallback: DrawerOnTickCallback,
 ): void => {
   let state = {
     ticks: 0,
@@ -72,22 +72,13 @@ export const initDrawer = (
   pixi.ticker.add(delta => {
     state.ticks += 1
     if (state.ticks % BASIC_TICK_THROTTLE === 0) {
-      drawerOnTickCallback(pixi.ticker.FPS)
-      updateDebugInfo(state).forEach(e => {
-        if (document.getElementById(e.id)) {
-          // $FlowIgnore
-          document.getElementById(e.id).innerHTML = `${e.value}`
-        } else {
-          // FIXME comment until rewrite it to normal way
-          // console.log(`no element by id ${e.id}`)
-        }
-      })
+      onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     }
     state.tick_delta = delta
     state.tickTime += delta
     state = redraw(state)
   })
-
-  // it was, but not sure if needed
-  // const clear_all = () => state.base_container.removeChildren()
 }
+
+// it was, but not sure if needed
+// const clear_all = () => state.base_container.removeChildren()

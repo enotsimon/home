@@ -14,6 +14,7 @@ type Props = {
 
 export class Sample extends React.Component<Props> {
   componentDidMount() {
+    // we just pass dispatchActionTick to init()
     this.props.init(this.props.dispatchActionTick)
   }
 
