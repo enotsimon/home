@@ -24,11 +24,15 @@ const createReducerFromMap = (defaultState: any, handlers: ReducerMap) => {
 
 type State = {
   fps: number,
+  mousePos: { x: number, y: number },
 }
 
-export const reducers = createReducerFromMap({}, {
-  actionTick: (state, { fps }) => {
-    // throw new Error('dsacds')
-    return { ...state, fps }
-  },
+const defaultState = {
+  fps: 0,
+  mousePos: { x: 0, y: 0 },
+}
+
+export const reducers = createReducerFromMap(defaultState, {
+  actionTick: (state, { fps }) => ({ ...state, fps }),
+  actionMouseMove: (state, { event }) => ({ ...state, mousePos: { x: event.offsetX, y: event.offsetY } }),
 })

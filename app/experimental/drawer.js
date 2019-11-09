@@ -1,6 +1,5 @@
 // @flow
 import Color from 'common/color'
-import * as d3 from 'd3'
 import * as PIXI from 'pixi.js'
 
 export type DrawerRegime = 'square' | 'circle'
@@ -24,6 +23,8 @@ export type DrawerDebugInfoUnit = {
 export type DrawerNewStateCallback = (DrawerState) => DrawerState
 
 export type DrawerOnTickCallback = (fps: number) => void
+
+const BASIC_TICK_THROTTLE = 10
 
 export const initDrawer = (
   regime: DrawerRegime,
@@ -64,23 +65,13 @@ export const initDrawer = (
     throw (`unknown regime: ${regime}`)
   }
 
-  const mouse_move_handler = event => {
-    if (event.target !== pixi.view) {
-      return false
-    }
-    const mouse_coords = { x: event.offsetX, y: event.offsetY }
-    d3.select('#mouse_pos').html(`{x: ${mouse_coords.x}, y: ${mouse_coords.y}}`)
-  }
-
   pixi.stage.addChild(state.base_container)
-  // $FlowIgnore
-  document.addEventListener('mousemove', mouse_move_handler.bind(this), false)
 
   state = initGraphics(state)
 
   pixi.ticker.add(delta => {
     state.ticks += 1
-    if (state.ticks % 10 === 0) {
+    if (state.ticks % BASIC_TICK_THROTTLE === 0) {
       drawerOnTickCallback(pixi.ticker.FPS)
       updateDebugInfo(state).forEach(e => {
         if (document.getElementById(e.id)) {

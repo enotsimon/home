@@ -5,7 +5,9 @@ import type { DrawerDebugInfoUnit, DrawerOnTickCallback } from 'experimental/dra
 
 type Props = {
   dispatchActionTick: DrawerOnTickCallback,
+  dispatchActionMouseMove: (event: Event) => void,
   fps: number,
+  mousePos: { x: number, y: number },
   additional: Array<DrawerDebugInfoUnit>,
   init: (DrawerOnTickCallback) => void,
 }
@@ -22,6 +24,10 @@ export class Sample extends React.Component<Props> {
   // TODO fix to Link
   goBack() {
     window.location.href = '/samples_collection'
+  }
+
+  onMouseMove(event: SyntheticMouseEvent<any>) {
+    this.props.dispatchActionMouseMove(event.nativeEvent)
   }
 
   render() {
@@ -43,7 +49,7 @@ export class Sample extends React.Component<Props> {
           <div className="panel panel-success">
             <div className="panel-body">
               <div className="" id="view_container">
-                <canvas id="view" width="800" height="800" />
+                <canvas id="view" width="800" height="800" onMouseMove={this.onMouseMove.bind(this)} />
               </div>
             </div>
           </div>
@@ -57,7 +63,7 @@ export class Sample extends React.Component<Props> {
                 </div>
                 <div>
                   mouse position:
-                  <span id="mouse_pos">{}</span>
+                  <span>{JSON.stringify(this.props.mousePos, null, 2)}</span>
                 </div>
                 {this.props.additional.map(e => (
                   <div key={e.id}>
