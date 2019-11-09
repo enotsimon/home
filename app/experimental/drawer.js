@@ -1,10 +1,7 @@
 // @flow
 import Color from 'common/color'
 import * as d3 from 'd3'
-import ReactDOM from 'react-dom'
-import React from 'react'
 import * as PIXI from 'pixi.js'
-import { Sample } from 'experimental/components/Sample'
 
 export type DrawerRegime = 'square' | 'circle'
 
@@ -99,18 +96,4 @@ export const initDrawer = (
 
   // it was, but not sure if needed
   // const clear_all = () => state.base_container.removeChildren()
-}
-
-export const createDrawer = (
-  regime: DrawerRegime,
-  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
-  initGraphics: DrawerNewStateCallback,
-  redraw: DrawerNewStateCallback,
-): void => {
-  ReactDOM.render(
-    // $FlowIgnore no state here but we dont care
-    <Sample additional={updateDebugInfo({})} init={() => initDrawer(regime, updateDebugInfo, initGraphics, redraw)} />,
-    // $FlowIgnore
-    document.body.appendChild(document.createElement('div'))
-  )
 }
