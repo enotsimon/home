@@ -1,9 +1,10 @@
 // @flow
-import { combineReducers } from 'redux'
+// import { combineReducers } from 'redux'
 
 // copy-paste from monster
 // ------------------------
-type ReducerMapCallback = (state: any, action: any) => any
+type Action = { type: string, [string]: any }
+type ReducerMapCallback = (state: State, action: Action) => State
 type ReducerMap = {
   [key: string]: ReducerMapCallback, // FIXME state: any
   default?: ReducerMapCallback,
@@ -21,12 +22,13 @@ const createReducerFromMap = (defaultState: any, handlers: ReducerMap) => {
 }
 // ------------------------
 
-const tickHandlers = {
-  // actionSetMap: () => 0,
-  // actionTick: (tick: Tick) => tick + 1,
+type State = {
+  fps: number,
 }
 
-export const reducers = combineReducers({
-  tick: createReducerFromMap({}, tickHandlers),
-  debugIngo: createReducerFromMap({}, {}),
+export const reducers = createReducerFromMap({}, {
+  actionTick: (state, { fps }) => {
+    // throw new Error('dsacds')
+    return { ...state, fps }
+  },
 })

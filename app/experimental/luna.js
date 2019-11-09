@@ -2,7 +2,7 @@
 import Util from 'common/util'
 import { initPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
 
 type Crater = {
@@ -61,4 +61,4 @@ const sphereAnglesDistance = (a: Crater, b: Crater): number => {
   return Math.acos(scalar / module)
 }
 
-export const initLuna = () => initPlanetDrawer(sphereMap)
+export const initLuna = (onTickCallback: DrawerOnTickCallback) => initPlanetDrawer(sphereMap, onTickCallback)

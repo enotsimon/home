@@ -1,6 +1,7 @@
 // @flow
 import { initPlanetDrawer } from 'experimental/planet_drawer'
 
+import type { DrawerOnTickCallback } from 'experimental/drawer'
 import type { SphereMapBuilder } from 'experimental/planet_drawer'
 
 const sphereMap: SphereMapBuilder = () => {
@@ -20,4 +21,4 @@ const sphereMap: SphereMapBuilder = () => {
   return map
 }
 
-export const initPlanetExp = () => initPlanetDrawer(sphereMap, 0)
+export const initPlanetExp = (onTickCallback: DrawerOnTickCallback) => initPlanetDrawer(sphereMap, onTickCallback, 0)

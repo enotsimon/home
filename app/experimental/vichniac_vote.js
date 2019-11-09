@@ -1,6 +1,8 @@
 // @flow
 import { initTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
 
+import type { DrawerOnTickCallback } from 'experimental/drawer'
+
 const outOfBorderFunc = () => 1
 
 const initElementState = (element) => ({ ...element, color: Math.random() > 0.5 ? 1 : 0 })
@@ -20,9 +22,10 @@ const mutateElementState = (element, state) => {
   return { ...element, new_color: e1 + e2 + e3 + e4 + e5 + e6 + e7 + e8 + e9 > 4 ? 1 : 0 }
 }
 
-export const initVichniacVote = () => initTableauDrawer(
+export const initVichniacVote = (onTickCallback: DrawerOnTickCallback) => initTableauDrawer(
   initElementState,
   mutateElementState,
+  onTickCallback,
   15,
   20,
   200,

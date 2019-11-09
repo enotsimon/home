@@ -7,7 +7,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type DotsState = DrawerState & {
   dots: Array<Dot>,
@@ -142,9 +142,10 @@ const drawLines = (dots: Array<Dot>, container: Object): void => {
   })
 }
 
-export const initDotsSpiral = () => initDrawer(
+export const initDotsSpiral = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   'circle',
   () => [],
   initGraphics,
   redraw,
+  drawerOnTickCallback,
 )

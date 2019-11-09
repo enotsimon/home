@@ -5,11 +5,11 @@ import { actionTick } from '../../actions'
 import { Sample } from '../Sample'
 
 const mergeProps = (state, { dispatch }, ownProps) => {
-  const dispatchActionTick = () => dispatch(actionTick())
   return {
     ...ownProps,
+    fps: state.fps,
     additional: [{ id: 'sika', text: 'test', value: 43 }],
-    dispatchActionTick,
+    dispatchActionTick: (fps) => dispatch(actionTick(fps)),
   }
 }
 

@@ -1,2 +1,2 @@
 // @flow
-export const actionTick = () => ({ type: 'actionTick' })
+export const actionTick = (fps: number) => ({ type: 'actionTick', fps })

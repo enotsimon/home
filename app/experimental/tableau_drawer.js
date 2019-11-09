@@ -4,7 +4,7 @@ import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import { initDrawer } from 'experimental/drawer'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 export type TableauCell = {
   throttle: number,
@@ -31,6 +31,7 @@ export const getElementColor = (x: number, y: number, state: TableauState, outOf
 export const initTableauDrawer = (
   initElementState: TableauElementMutator,
   mutateElementState: TableauElementMutator,
+  onTickCallback: DrawerOnTickCallback,
   throttle: number = 1,
   cyclesLimit: number = 0,
   x_size: number = 100,
@@ -40,7 +41,8 @@ export const initTableauDrawer = (
     'square',
     () => [], // ???
     state => initGraphics(state, initElementState, throttle, cyclesLimit, x_size, y_size),
-    state => redraw(state, mutateElementState, initElementState)
+    state => redraw(state, mutateElementState, initElementState),
+    onTickCallback,
   )
 }
 

@@ -1,22 +1,21 @@
 // @flow
 import React from 'react'
 
-import type { DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerDebugInfoUnit, DrawerOnTickCallback } from 'experimental/drawer'
 
 type Props = {
+  dispatchActionTick: DrawerOnTickCallback,
+  fps: number,
   additional: Array<DrawerDebugInfoUnit>,
-  init: () => void,
+  init: (DrawerOnTickCallback) => void,
 }
 
 export class Sample extends React.Component<Props> {
   componentDidMount() {
-    console.log('COMPONENT MOUNT')
-    this.props.init()
+    this.props.init(this.props.dispatchActionTick)
   }
 
   componentDidUpdate() {
-    console.log('COMPONENT UPDATE')
-    this.props.init()
   }
 
   // bad. but i dont care for now
@@ -53,8 +52,8 @@ export class Sample extends React.Component<Props> {
             <div className="panel-body">
               <div>
                 <div>
-                  FPS:
-                  <span id="fps_counter" />
+                  FPS:&nbsp;
+                  <span>{this.props.fps}</span>
                 </div>
                 <div>
                   mouse position:

@@ -4,7 +4,7 @@ import Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type Figure = {
   id: number,
@@ -74,9 +74,10 @@ const calcSinglePoint = (radius, angle, precession, nutation) => {
   return { x: nx, y: ny }
 }
 
-export const initOrbits = () => initDrawer(
+export const initOrbits = (onTickCallback: DrawerOnTickCallback) => initDrawer(
   'circle',
   updateDebugInfo,
   initGraphics,
   redraw,
+  onTickCallback,
 )

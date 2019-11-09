@@ -6,7 +6,7 @@ import * as d3 from 'd3'
 import * as R from 'ramda'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type StellarBody = {
   base_container: Object,
@@ -134,9 +134,10 @@ const setGraphicsTransformByStellarCoords = (origBody: StellarBody): StellarBody
   return body
 }
 
-export const initPlanetFocus = () => initDrawer(
+export const initPlanetFocus = (onTickCallback: DrawerOnTickCallback) => initDrawer(
   'circle',
   () => [],
   initGraphics,
   redraw,
+  onTickCallback,
 )

@@ -23,11 +23,14 @@ export type DrawerDebugInfoUnit = {
 
 export type DrawerNewStateCallback = (DrawerState) => DrawerState
 
+export type DrawerOnTickCallback = (fps: number) => void
+
 export const initDrawer = (
   regime: DrawerRegime,
   updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
   initGraphics: DrawerNewStateCallback,
   redraw: DrawerNewStateCallback,
+  drawerOnTickCallback: DrawerOnTickCallback,
 ): void => {
   let state = {
     ticks: 0,
@@ -78,7 +81,7 @@ export const initDrawer = (
   pixi.ticker.add(delta => {
     state.ticks += 1
     if (state.ticks % 10 === 0) {
-      d3.select('#fps_counter').html(pixi.ticker.FPS || 0)
+      drawerOnTickCallback(pixi.ticker.FPS)
       updateDebugInfo(state).forEach(e => {
         if (document.getElementById(e.id)) {
           // $FlowIgnore
