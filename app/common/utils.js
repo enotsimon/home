@@ -8,12 +8,12 @@ import random from 'random'
 type Radians = number
 type Degrees = number
 
-type PolarPoint = {
+export type PolarPoint = {
   angle: number,
   radius: number,
 }
 
-type XYPoint = {
+export type XYPoint = {
   x: number,
   y: number,
 }

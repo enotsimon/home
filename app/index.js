@@ -20,6 +20,7 @@ import { initOrbits } from 'experimental/orbits'
 import { initLuna } from 'experimental/luna'
 import { initWavyPlanet } from 'experimental/planet_exp_2'
 import { initDotsSpiral } from 'experimental/dots_spiral'
+import { initVoronoi } from 'experimental/voronoi'
 
 // const store = createStore(reducers, window.__REDUX_DEVTOOL1S_EXTENSION__(), applyMiddleware(thunk)
 // const store = createStore(reducers, window.__REDUX_DEVTOOLS_1EXTENSION__())
@@ -48,6 +49,7 @@ ReactDOM.render((
           <Route path="/luna" render={() => createDrawer(initLuna)} />
           <Route path="/wavy_sphere" render={() => createDrawer(initWavyPlanet)} />
           <Route path="/dots_spiral" render={() => createDrawer(initDotsSpiral)} />
+          <Route path="/voronoi" render={() => createDrawer(initVoronoi)} />
           {/* dont work. 404 routed from dev server itself */}
           <Route path="/" render={page404} />
         </Switch>
