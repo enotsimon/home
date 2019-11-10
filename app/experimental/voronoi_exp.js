@@ -20,7 +20,7 @@ type State = DrawerState & {
   voronoiGraphics: Object,
 }
 
-const LLOYD_MAX_STEPS = 1000
+const LLOYD_MAX_STEPS = 100
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -42,10 +42,8 @@ const redraw = (state: DrawerState): DrawerState => {
   }
   state.base_container.removeChildren()
   const voronoi = generate(state.voronoi.cells, state.size, state.size, 1)
-  const rotation = state.rotation + Math.PI / 180
   return rotateGraphics({
     ...state,
-    rotation,
     voronoi,
     step: state.step + 1,
     voronoiGraphics: drawDiagram(state.base_container, voronoi),
@@ -81,7 +79,7 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram): Object =
 }
 
 const rotateGraphics = state => {
-  const rotation = state.rotation + Math.PI / 180 / 50
+  const rotation = state.rotation + Math.PI / 180 / 4
   const voronoiGraphics = state.voronoiGraphics
   voronoiGraphics.pivot = { x: state.voronoi.width / 2, y: state.voronoi.height / 2 }
   voronoiGraphics.x = state.voronoi.width / 2
