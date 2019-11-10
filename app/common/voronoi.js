@@ -13,7 +13,10 @@ import * as R from 'ramda'
 
 type XYPoint = { x: number, y: number }
 
-type VoronoiNode = XYPoint & { links: Array<VoronoiNode> }
+type VoronoiNode = XYPoint & {
+  links: Array<VoronoiNode>,
+  cells: Array<VoronoiCell>,
+}
 
 type VoronoiEdgeIndex = number
 
