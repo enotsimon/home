@@ -47,11 +47,12 @@ export const generate = (
   nodes: Array<XYPoint>,
   width: number,
   height: number,
-  lloydRelaxationSteps: number = 0
+  lloydRelaxationSteps: number = 0,
+  lloydRelaxationToMove: number = 1,
 ): VoronoiDiagram => {
   const d3Voronoi = d3.voronoi().x(p => p.x).y(p => p.y).size([width, height])
   const d3Diagram = R.reduce(
-    acc => lloydRelaxation(acc, d3Voronoi),
+    acc => lloydRelaxation(acc, d3Voronoi, lloydRelaxationToMove),
     d3Voronoi(nodes),
     R.range(0, lloydRelaxationSteps)
   )

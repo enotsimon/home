@@ -20,7 +20,7 @@ type State = DrawerState & {
   voronoiGraphics: Object,
 }
 
-const LLOYD_MAX_STEPS = 100
+const LLOYD_MAX_STEPS = 1000
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -41,7 +41,7 @@ const redraw = (state: DrawerState): DrawerState => {
     return rotateGraphics(state)
   }
   state.base_container.removeChildren()
-  const voronoi = generate(state.voronoi.cells, state.size, state.size, 1)
+  const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, 0.1)
   return rotateGraphics({
     ...state,
     voronoi,

@@ -18,7 +18,7 @@ type State = DrawerState & {
   voronoi: VoronoiDiagram,
 }
 
-const LLOYD_MAX_STEPS = 100
+const LLOYD_MAX_STEPS = 1000
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -40,7 +40,7 @@ const redraw = (state: DrawerState): DrawerState => {
   state.base_container.removeChildren()
   const newState = {
     ...state,
-    voronoi: generate(state.voronoi.cells, state.size, state.size, 1),
+    voronoi: generate(state.voronoi.cells, state.size, state.size, 1, 0.1),
     step: state.step + 1,
   }
   drawDiagram(newState.base_container, newState.voronoi)
