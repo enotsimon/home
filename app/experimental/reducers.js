@@ -12,7 +12,7 @@ type ReducerMap = {
 }
 const createReducerFromMap = (defaultState: State, handlers: ReducerMap) => {
   // FIXME state: any, action: any
-  return (state: any = defaultState, action: any) => {
+  return (state: State = defaultState, action: Action) => {
     if (handlers[action.type] !== undefined) {
       return handlers[action.type](state, action)
     } if (handlers.default) {
