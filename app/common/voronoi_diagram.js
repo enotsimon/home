@@ -2,6 +2,7 @@ import Util from 'common/util'
 import * as d3 from 'd3'
 
 /**
+ * DEPRECATED
  *  we take original voronoi diagram from d3,
  *  add lloyd relaxation
  *  and then reorganize its internal structure, cause its annoying and awful, for my taste
