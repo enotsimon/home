@@ -78,7 +78,7 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram): Object =
   return graphics
 }
 
-const rotateGraphics = state => {
+const rotateGraphics = (state: State): State => {
   const rotation = state.rotation + Math.PI / 180 / 4
   const voronoiGraphics = state.voronoiGraphics
   voronoiGraphics.pivot = { x: state.voronoi.width / 2, y: state.voronoi.height / 2 }
