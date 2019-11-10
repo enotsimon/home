@@ -123,6 +123,7 @@ export const generate = (
     })
     // links sorted by distance -- from lowest to highest!
     links.sort((e1, e2) => Util.distance(cell, e1) - Util.distance(cell, e2))
+    /* eslint-disable-next-line no-param-reassign */
     cell.links = links
   })
   diagram.width = width
