@@ -14,8 +14,11 @@ import type { VoronoiDiagram } from 'common/voronoi'
 
 
 type State = DrawerState & {
+  step: number,
   voronoi: VoronoiDiagram,
 }
+
+const LLOYD_MAX_STEPS = 100
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -23,13 +26,25 @@ const initGraphics = (oldState: DrawerState): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   const points = randomPointsPolarNaive(state.size / 2, totalDots)
+  state.step = 0
   state.voronoi = generate(points, state.size, state.size, 0)
   drawDiagram(state.base_container, state.voronoi)
   return state
 }
 
 const redraw = (state: DrawerState): DrawerState => {
-  return state
+  // add some dynamic lloyd relaxation
+  if (state.step >= LLOYD_MAX_STEPS) {
+    return state
+  }
+  state.base_container.removeChildren()
+  const newState = {
+    ...state,
+    voronoi: generate(state.voronoi.cells, state.size, state.size, 1),
+    step: state.step + 1,
+  }
+  drawDiagram(newState.base_container, newState.voronoi)
+  return newState
 }
 
 const randomPointsPolarNaive = (scale: number, limit: number): Array<XYPoint> => R.map(() => {
