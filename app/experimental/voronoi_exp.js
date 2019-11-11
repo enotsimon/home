@@ -31,7 +31,6 @@ const initGraphics = (oldState: DrawerState): State => {
   state.step = 0
   state.rotation = 0
   state.voronoi = generate(points, state.size, state.size, 0)
-  drawDiagram(state.base_container, state.voronoi)
   return state
 }
 
@@ -46,7 +45,7 @@ const redraw = (state: DrawerState): DrawerState => {
     ...state,
     voronoi,
     step: state.step + 1,
-    voronoiGraphics: drawDiagram(state.base_container, voronoi),
+    voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size),
   })
 }
 
@@ -63,10 +62,11 @@ const randomPointsInSquare = (count: number): Array<XYPoint> => R.map(() => {
   return { x: random.float(), y: random.float() }
 })(R.range(0, count))
 
-const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram): Object => {
+const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number): Object => {
   const graphics = new PIXI.Graphics()
-  graphics.lineStyle(0.5, Color.to_pixi([255, 255, 255]), 1)
+  graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
+  addCircleMask(graphics, parentContainer, size)
   voronoi.cells.forEach(cell => {
     graphics.beginFill(Color.to_pixi([125, 125, 125]), 1)
     cell.nodes.forEach((node, i) => {
@@ -76,6 +76,22 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram): Object =
     graphics.closePath()
   })
   return graphics
+}
+
+const addCircleMask = (graphics: Object, parentContainer: Object, size: number): void => {
+  const mask = new PIXI.Graphics()
+  mask.beginFill(Color.to_pixi([255, 255, 255]))
+  // FIXME pass coords
+  mask.drawCircle(size / 2, size / 2, size / 2)
+  mask.endFill()
+  /* eslint-disable-next-line no-param-reassign */
+  graphics.mask = mask
+  parentContainer.addChild(mask)
+  const contour = new PIXI.Graphics()
+  const contourWidth = size / 200
+  contour.lineStyle(contourWidth, Color.to_pixi([255, 255, 255]))
+  contour.drawCircle(size / 2, size / 2, size / 2 - contourWidth / 2)
+  parentContainer.addChild(contour)
 }
 
 const rotateGraphics = (state: State): State => {
