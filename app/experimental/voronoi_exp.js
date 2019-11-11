@@ -8,7 +8,7 @@ import seedrandom from 'seedrandom'
 
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { VoronoiDiagram } from 'common/voronoi'
 
@@ -21,10 +21,12 @@ type State = DrawerState & {
 }
 
 const LLOYD_MAX_STEPS = 1000
+const LLOYD_TO_MOVE = 0.1
+const DOTS_TOTAL = 100
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
-  const totalDots = 100
+  const totalDots = DOTS_TOTAL
   const seed = Date.now()
   random.use(seedrandom(seed))
   const points = randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
@@ -40,7 +42,7 @@ const redraw = (state: DrawerState): DrawerState => {
     return rotateGraphics(state)
   }
   state.base_container.removeChildren()
-  const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, 0.1)
+  const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, LLOYD_TO_MOVE)
   return rotateGraphics({
     ...state,
     voronoi,
@@ -104,11 +106,14 @@ const rotateGraphics = (state: State): State => {
   return { ...state, rotation }
 }
 
+const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
+  { id: 'step', text: 'lloyd relaxation step (0.1)', value: state.step },
+]
 
 export const initVoronoiRotating = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   // thats because d3.voronoi cant handle negative values!
   'square',
-  () => [],
+  updateDebugInfo,
   initGraphics,
   redraw,
   drawerOnTickCallback,
