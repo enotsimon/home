@@ -95,7 +95,7 @@ const addCircleMask = (graphics: Object, parentContainer: Object, size: number):
 }
 
 const rotateGraphics = (state: State): State => {
-  const rotation = state.rotation + Math.PI / 180 / 4
+  const rotation = state.rotation + Math.PI / 180 / 6
   const voronoiGraphics = state.voronoiGraphics
   voronoiGraphics.pivot = { x: state.voronoi.width / 2, y: state.voronoi.height / 2 }
   voronoiGraphics.x = state.voronoi.width / 2
