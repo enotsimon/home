@@ -169,7 +169,8 @@ const lloydRelaxation = (d3Diagram, d3Voronoi, toMove = 1) => {
     // it by value of 'to_move' to direction to centroid
     const poly = p.map(e => { return { x: e[0], y: e[1] } })
     const pf = Util.convex_polygon_centroid(poly)
-    return Util.move_by_vector(p.data, pf, toMove)
+    // ...p.data is for passing original input point to cell like d3 does
+    return { ...p.data, ...Util.move_by_vector(p.data, pf, toMove) }
   })
   return d3Voronoi(newPoints)
 }
