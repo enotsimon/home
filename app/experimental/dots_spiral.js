@@ -55,6 +55,7 @@ const redraw = (state: DrawerState): DrawerState => {
   return state
 }
 
+// TODO move it to utils like random-points-generator
 const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: number = 0): Array<Dot> => {
   const theVeryDistanceLimit = 0.02 * scale
   if (limit === 0) {

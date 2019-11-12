@@ -1,5 +1,6 @@
 // @flow
 import random from 'random'
+import * as R from 'ramda'
 
 /**
  * its a copy-paste of old util.js but refactored
@@ -202,6 +203,21 @@ export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
   return alpha
   // return (int) floor(alpha * 180. / pi + 0.5);
 }
+
+
+//
+// random points
+//
+export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
+  const angle = random.float(0, 2 * Math.PI)
+  const radius = random.float(0, scale)
+  return fromPolarCoords(angle, radius)
+})(R.range(0, count))
+
+export const randomPointsInSquare = (count: number): Array<XYPoint> => R.map(() => {
+  return { x: random.float(), y: random.float() }
+})(R.range(0, count))
+
 
 /*
 FROM trees_util

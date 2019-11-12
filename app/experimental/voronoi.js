@@ -1,7 +1,7 @@
 // @flow
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
-import * as R from 'ramda'
+// import * as R from 'ramda'
 import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
@@ -9,7 +9,6 @@ import seedrandom from 'seedrandom'
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
-import type { XYPoint } from 'common/utils'
 import type { VoronoiDiagram } from 'common/voronoi'
 
 
@@ -25,7 +24,7 @@ const initGraphics = (oldState: DrawerState): State => {
   const totalDots = 100
   const seed = Date.now()
   random.use(seedrandom(seed))
-  const points = randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
+  const points = U.randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
   state.step = 0
   state.voronoi = generate(points, state.size, state.size, 0)
   drawDiagram(state.base_container, state.voronoi)
@@ -46,19 +45,6 @@ const redraw = (state: DrawerState): DrawerState => {
   drawDiagram(newState.base_container, newState.voronoi)
   return newState
 }
-
-// not used from now exported just to prevent eslint errors
-export const randomPointsPolarNaive = (scale: number, count: number): Array<XYPoint> => R.map(() => {
-  const angle = random.float(0, 2 * Math.PI)
-  const radius = random.float(0, scale)
-  const { x, y } = U.fromPolarCoords(angle, radius)
-  // x and y from 0 to 2 scale. thats because d3.voronoi cant handle negative values!
-  return { x: x + scale, y: y + scale }
-})(R.range(0, count))
-
-const randomPointsInSquare = (count: number): Array<XYPoint> => R.map(() => {
-  return { x: random.float(), y: random.float() }
-})(R.range(0, count))
 
 const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram): void => {
   const graphics = new PIXI.Graphics()
