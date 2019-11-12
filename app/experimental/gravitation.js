@@ -26,6 +26,8 @@ type State = DrawerState & {
   points: Array<Point>,
 }
 
+const GRAVITY_STRENGTH = 0.01
+
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
   const seed = Date.now()
@@ -41,7 +43,13 @@ const initGraphics = (oldState: DrawerState): State => {
     id: 2,
     x: 50,
     y: 60,
-    mass: 5,
+    mass: 2,
+    speed: { x: 0, y: 0 },
+  }, {
+    id: 3,
+    x: 40,
+    y: 50,
+    mass: 3,
     speed: { x: 0, y: 0 },
   }]
   return state
@@ -74,7 +82,7 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
     if (p === p2) {
       return accSpeed
     }
-    const acceleration = 0.1 * p2.mass / (U.distance(p, p2) ** 2)
+    const acceleration = GRAVITY_STRENGTH * p2.mass / (U.distance(p, p2) ** 2)
     const accVector = { x: acceleration * (p2.x - p.x), y: acceleration * (p2.y - p.y) }
     return crossSumm(accSpeed, accVector)
   }, { x: 0, y: 0 }, points)
