@@ -73,7 +73,7 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
     return crossSumm(accSpeed, accVector)
   }, { x: 0, y: 0 }, points)
   if (p.id === 2) {
-    console.log('acc sum', p.speed, accelerationSum)
+    // console.log('acc sum', p.speed, accelerationSum)
   }
   return { ...p, speed: crossSumm(p.speed, accelerationSum) }
 })(points)
