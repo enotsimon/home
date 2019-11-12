@@ -214,8 +214,8 @@ export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<
   return fromPolarCoords(angle, radius)
 })(R.range(0, count))
 
-export const randomPointsInSquare = (count: number): Array<XYPoint> => R.map(() => {
-  return { x: random.float(), y: random.float() }
+export const randomPointsInSquare = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
+  return { x: random.float(0, scale), y: random.float(0, scale) }
 })(R.range(0, count))
 
 
