@@ -96,7 +96,7 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
   { id: 'step', text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 
-export const initVoronoiRotating = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
+export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   // thats because d3.voronoi cant handle negative values!
   'square',
   updateDebugInfo,
