@@ -56,7 +56,9 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
   parentContainer.addChild(graphics)
   addCircleMask(graphics, parentContainer, size)
   voronoi.cells.forEach(cell => {
-    graphics.beginFill(Color.to_pixi([125, 125, 125]), 1)
+    // 125 is max 'lightness', 25 is min
+    const c = 125 - 100 * U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2)
+    graphics.beginFill(Color.to_pixi([c, c, c]), 1)
     cell.nodes.forEach((node, i) => {
       /* eslint-disable-next-line no-unused-expressions */
       i === 0 ? graphics.moveTo(node.x, node.y) : graphics.lineTo(node.x, node.y)
