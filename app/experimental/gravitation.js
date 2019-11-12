@@ -7,7 +7,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 
 type Vector = XYPoint
@@ -22,6 +22,7 @@ type Point = {
 }
 
 type State = DrawerState & {
+  step: number,
   points: Array<Point>,
 }
 
@@ -29,12 +30,13 @@ const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
+  state.step = 0
   state.points = [{
     id: 1,
     x: 50,
     y: 40,
     mass: 1,
-    speed: { x: 0.1, y: 0 },
+    speed: { x: 0, y: 0 },
   }, {
     id: 2,
     x: 50,
@@ -47,6 +49,10 @@ const initGraphics = (oldState: DrawerState): State => {
 
 const redraw = (oldState: DrawerState): DrawerState => {
   const state = { ...oldState }
+  state.step += 1
+  if (state.step > 100) {
+    // return state
+  }
   state.points = calcGravityAcceleration(state.points)
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   state.base_container.removeChildren()
@@ -54,7 +60,7 @@ const redraw = (oldState: DrawerState): DrawerState => {
     // console.log('PIONT', p)
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-    graphics.drawCircle(0, 0, p.mass)
+    graphics.drawCircle(0, 0, p.mass / 2)
     graphics.endFill()
     graphics.x = p.x
     graphics.y = p.y
@@ -73,7 +79,7 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
     return crossSumm(accSpeed, accVector)
   }, { x: 0, y: 0 }, points)
   if (p.id === 2) {
-    // console.log('acc sum', p.speed, accelerationSum)
+    // console.log('acc sum', accelerationSum)
   }
   return { ...p, speed: crossSumm(p.speed, accelerationSum) }
 })(points)
@@ -83,8 +89,10 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
-// const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => []
-const updateDebugInfo = () => []
+const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
+  { id: 'step', text: 'step', value: state.step },
+  { id: 'distance', text: 'distance', value: U.distance(state.points[0], state.points[1]) },
+]
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   'square',
