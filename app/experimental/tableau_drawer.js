@@ -7,8 +7,6 @@ import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 export type TableauCell = {
-  throttle: number,
-  cyclesLimit: number,
   x: number,
   y: number,
   color: number,
@@ -16,12 +14,15 @@ export type TableauCell = {
   graphics: Object, // PIXI
 }
 export type TableauData = Array<Array<TableauCell>>
-export type TableauState = DrawerState & {
+export type TableauState = {|
+  ...DrawerState,
   x_size: number,
   y_size: number,
   color_change_per_tick: number,
   data: TableauData,
-}
+  throttle: number,
+  cyclesLimit: number,
+|}
 export type TableauElementMutator = (TableauCell, TableauState) => TableauCell
 
 export const getElementColor = (x: number, y: number, state: TableauState, outOfBorderFunc: () => number): number => {
@@ -95,7 +96,7 @@ const forAllElements = (func: Function, state: TableauState): TableauState => {
 }
 
 const initState = (state: TableauState, initElementState): TableauState => {
-  return forAllElements(element => initElementState(element, state.color_change_per_tick), state)
+  return forAllElements(element => initElementState(element, state), state)
 }
 
 const mutateState = (oldState: TableauState, mutateElementState, initElementState): TableauState => {
