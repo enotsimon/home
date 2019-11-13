@@ -6,11 +6,12 @@ import * as PIXI from 'pixi.js'
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
-
 // TODO:
 //   - add debug info of angle_inc, acceleration, speed
 //   - zooming with speed change? tried, looks bad
 //   - fix graphics redraw leaps!!!
+
+// TODO flow
 
 const updateDebugInfo = () => []
 

@@ -15,13 +15,19 @@ type Figure = {
   nutation_coef: number,
 }
 
+type State = {|
+  ...DrawerState,
+  count_figures: number,
+  figures: Array<Figure>,
+|}
+
 const updateDebugInfo = (state) => [
   { id: 'debug_info_precession', text: 'precession', value: state.figures ? state.figures[0].precession_coef : '' },
   { id: 'debug_info_nutation', text: 'nutation', value: state.figures ? state.figures[0].nutation_coef : '' },
   { id: 'debug_info_additional', text: 'angle state.acceleration', value: state.acceleration },
 ]
 
-const initGraphics = (oldState: DrawerState): DrawerState => {
+const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
   state.count_figures = 1
   state.figures = [...Array(state.count_figures).keys()].map(i => {
@@ -39,7 +45,7 @@ const initGraphics = (oldState: DrawerState): DrawerState => {
   return state
 }
 
-const redraw = (oldState: DrawerState): DrawerState => {
+const redraw = (oldState: State): State => {
   const state = { ...oldState }
   state.acceleration = 5 * Math.cos(0.005 * state.tickTime)
   state.figures.forEach(figure => drawFullCircle(figure, state))

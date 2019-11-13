@@ -12,13 +12,14 @@ import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'exp
 import type { VoronoiDiagram } from 'common/voronoi'
 
 
-type State = DrawerState & {
+type State = {|
+  ...DrawerState,
   step: number,
   generation: number,
   rotation: number,
   voronoi: VoronoiDiagram,
   voronoiGraphics: Object,
-}
+|}
 
 const LLOYD_MAX_STEPS = 3000
 const LLOYD_WAVE = 250

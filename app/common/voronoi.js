@@ -44,7 +44,7 @@ export type VoronoiDiagram = {
 }
 
 export const generate = (
-  nodes: Array<XYPoint>,
+  nodes: Array<XYPoint>, // FIXME
   width: number,
   height: number,
   lloydRelaxationSteps: number = 0,

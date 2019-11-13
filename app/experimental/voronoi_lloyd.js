@@ -8,16 +8,16 @@ import seedrandom from 'seedrandom'
 
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 
-
-type State = DrawerState & {
+type State = {|
+  ...DrawerState,
   step: number,
   rotation: number,
   voronoi: VoronoiDiagram,
   voronoiGraphics: Object,
-}
+|}
 
 const LLOYD_MAX_STEPS = 1000
 const LLOYD_TO_MOVE = 0.1
@@ -35,12 +35,13 @@ const initGraphics = (oldState: DrawerState): State => {
   return state
 }
 
-const redraw = (state: DrawerState): DrawerState => {
+const redraw = (state: State): State => {
   // add some dynamic lloyd relaxation
   if (state.step >= LLOYD_MAX_STEPS) {
     return rotateGraphics(state)
   }
   state.base_container.removeChildren()
+  // $FlowIgnore FIXME
   const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, LLOYD_TO_MOVE)
   return rotateGraphics({
     ...state,
@@ -94,7 +95,7 @@ const rotateGraphics = (state: State): State => {
   return { ...state, rotation }
 }
 
-const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
+const updateDebugInfo = (state: State) => [
   { id: 'step', text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 

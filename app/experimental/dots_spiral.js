@@ -9,11 +9,12 @@ import seedrandom from 'seedrandom'
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
-type DotsState = DrawerState & {
+type DotsState = {|
+  ...DrawerState,
   dots: Array<Dot>,
   // note they are separated from 'buisness' objects
   dotsGraphics: Array<Object>, // PIXI graphics
-}
+|}
 
 type DotId = number
 type Dot = {
@@ -51,7 +52,7 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   return state
 }
 
-const redraw = (state: DrawerState): DrawerState => {
+const redraw = (state: DotsState): DotsState => {
   return state
 }
 

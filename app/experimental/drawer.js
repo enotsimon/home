@@ -4,7 +4,7 @@ import * as PIXI from 'pixi.js'
 
 export type DrawerRegime = 'square' | 'circle'
 
-export type DrawerState = {
+export type DrawerState = {|
   ticks: number,
   tickTime: number,
   size: number,
@@ -12,7 +12,9 @@ export type DrawerState = {
   base_container: Object, // TODO
   // TODO split callbacks state and drawer state
   [string]: any,
-}
+|}
+
+export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
 
 export type DrawerDebugInfoUnit = {
   id: string,
@@ -20,17 +22,19 @@ export type DrawerDebugInfoUnit = {
   value: string | number,
 }
 
-export type DrawerNewStateCallback = (DrawerState) => DrawerState
-
 export type DrawerOnTickCallback = (fps: number, delta: number, debugInfo: Array<DrawerDebugInfoUnit>) => void
+
+export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<DrawerDebugInfoUnit>
+export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
+export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
 const BASIC_TICK_THROTTLE = 10
 
-export const initDrawer = (
+export const initDrawer = <T: Object>(
   regime: DrawerRegime,
-  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
-  initGraphics: DrawerNewStateCallback,
-  redraw: DrawerNewStateCallback,
+  updateDebugInfo: DrawerDebugInfoCallback<T>,
+  initGraphics: DrawerInitCallback<T>,
+  redraw: DrawerRedrawCallback<T>,
   onTickCallback: DrawerOnTickCallback,
 ): void => {
   let state = {
@@ -72,13 +76,12 @@ export const initDrawer = (
   pixi.ticker.add(delta => {
     state.ticks += 1
     if (state.ticks % BASIC_TICK_THROTTLE === 0) {
+      // $FlowIgnore FIXME dont understand whats wrong
       onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     }
     state.tick_delta = delta
     state.tickTime += delta
+    // $FlowIgnore FIXME dont understand whats wrong
     state = redraw(state)
   })
 }
-
-// it was, but not sure if needed
-// const clear_all = () => state.base_container.removeChildren()

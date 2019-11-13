@@ -21,10 +21,11 @@ type Point = {
   // acc: Vector,
 }
 
-type State = DrawerState & {
+type State = {|
+  ...DrawerState,
   step: number,
   points: Array<Point>,
-}
+|}
 
 const GRAVITY_STRENGTH = 0.01
 
@@ -55,7 +56,7 @@ const initGraphics = (oldState: DrawerState): State => {
   return state
 }
 
-const redraw = (oldState: DrawerState): DrawerState => {
+const redraw = (oldState: State): State => {
   const state = { ...oldState }
   state.step += 1
   if (state.step > 100) {
