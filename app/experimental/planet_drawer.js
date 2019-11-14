@@ -12,6 +12,8 @@ export type PlanetSpherePoint = { phi: number, theta: number }
 export type PlanetSpherePointWG = PlanetSpherePoint & { graphics: Object }
 export type SphereMapBuilder = (state: DrawerState) => Array<PlanetSpherePoint>
 
+// TODO fix flow types
+
 export const calcSinglePoint = (
   radius: number,
   phi: number,
@@ -20,17 +22,21 @@ export const calcSinglePoint = (
   precession: number,
   nutation: number
 ): PlanetXYZPoint => {
-  const x = radius * Math.cos(phi) * Math.sin(theta)
-  const y = radius * Math.sin(phi) * Math.sin(theta)
-  const z = radius * Math.cos(theta)
-  const sinR = Math.sin(rotation); const cos_r = Math.cos(rotation)
-  const sinP = Math.sin(precession); const cos_p = Math.cos(precession)
-  const sinN = Math.sin(nutation); const cos_n = Math.cos(nutation)
-  const cosNsinR = cos_n * sinR; const cos_n_cos_r = cos_n * cos_r
-  const x2 = x * (cos_p * cos_r - sinP * cosNsinR) + y * (-cos_p * sinR - sinP * cos_n_cos_r) + z * (sinP * sinN)
-  const y2 = x * (sinP * cos_r + cos_p * cosNsinR) + y * (-sinP * sinR + cos_p * cos_n_cos_r) + z * (-cos_p * sinN)
-  const z2 = x * (sinN * sinR) + y * (sinN * cos_r) + z * cos_n
-  return { x: x2, y: y2, z: z2 }
+  const x1 = radius * Math.cos(phi) * Math.sin(theta)
+  const y1 = radius * Math.sin(phi) * Math.sin(theta)
+  const z1 = radius * Math.cos(theta)
+  const sinR = Math.sin(rotation)
+  const cosR = Math.cos(rotation)
+  const sinP = Math.sin(precession)
+  const cosP = Math.cos(precession)
+  const sinN = Math.sin(nutation)
+  const cosN = Math.cos(nutation)
+  const cosNsinR = cosN * sinR
+  const cosNcosR = cosN * cosR
+  const x = x1 * (cosP * cosR - sinP * cosNsinR) + y1 * (-cosP * sinR - sinP * cosNcosR) + z1 * (sinP * sinN)
+  const y = x1 * (sinP * cosR + cosP * cosNsinR) + y1 * (-sinP * sinR + cosP * cosNcosR) + z1 * (-cosP * sinN)
+  const z = x1 * (sinN * sinR) + y1 * (sinN * cosR) + z1 * cosN
+  return { x, y, z }
 }
 
 export const initPlanetDrawer = (
