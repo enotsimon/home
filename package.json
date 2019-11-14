@@ -14,7 +14,7 @@
     "lint": "yarn run lint:js && yarn run lint:css",
     "lint:js": "eslint --ext .js --ext .jsx .",
     "lint:css": "stylelint --fix --di \"**/*.scss\"",
-    "test": "mocha --require ignore-styles --require babel-core/register test/*.test.js",
+    "test": "NODE_PATH=./app mocha --require ignore-styles --require babel-core/register test/*.test.js",
     "pre-commit": "lint-staged",
     "serve": "webpack-dev-server --env.serve --mode=development",
     "build": "yarn build-dev",
