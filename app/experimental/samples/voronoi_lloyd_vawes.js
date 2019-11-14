@@ -10,6 +10,7 @@ import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
+import type { ChannelMatrix } from 'common/color'
 
 
 type State = {|
@@ -19,9 +20,10 @@ type State = {|
   rotation: number,
   voronoi: VoronoiDiagram,
   voronoiGraphics: Object,
+  colorMatrixes: Array<ChannelMatrix>,
 |}
 
-const LLOYD_MAX_STEPS = 3000
+const LLOYD_MAX_STEPS = 50000
 const LLOYD_WAVE = 250
 const LLOYD_TO_MOVE = 0.25
 const COUNT_POINTS = 100
@@ -34,6 +36,7 @@ const initGraphics = (oldState: DrawerState): State => {
   const points = randomPoints(COUNT_POINTS, state.size, state.generation)
   state.step = 0
   state.rotation = 0
+  state.colorMatrixes = Color.allChannelMatrixes(2).sort(() => random.float(-1, 1))
   state.voronoi = generate(points, state.size, state.size, 0)
   return state
 }
@@ -60,22 +63,23 @@ const redraw = (oldState: State): State => {
     ...state,
     voronoi,
     step: state.step + 1,
-    voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size),
+    voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size, state.colorMatrixes),
   })
 }
 
 const randomPoints = (count: number, size: number, generation: number) =>
   U.randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
 
-const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number): Object => {
+const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrixes): Object => {
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
   addCircleMask(graphics, parentContainer, size)
   voronoi.cells.forEach(cell => {
-    // 125 is max 'lightness', 25 is min
-    const c = 125 - 100 * U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2)
-    graphics.beginFill(Color.to_pixi([c, c, c]), 1)
+    // $FlowIgnore will fix voronoi soon
+    const { r, g, b } = colorMatrixes[cell.generation % colorMatrixes.length]
+    const c = U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2)
+    graphics.beginFill(Color.to_pixi([r - c * r * 4 / 5, g - c * g * 4 / 5, b - c * b * 4 / 5]), 1)
     cell.nodes.forEach((node, i) => {
       /* eslint-disable-next-line no-unused-expressions */
       i === 0 ? graphics.moveTo(node.x, node.y) : graphics.lineTo(node.x, node.y)
