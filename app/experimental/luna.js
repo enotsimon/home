@@ -2,8 +2,8 @@
 import Util from 'common/util'
 import { initPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
 
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
-import type { SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
+import type { DrawerOnTickCallback } from 'experimental/drawer'
+import type { PlanetState, SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
 
 type Crater = {
   precession: number,
@@ -11,7 +11,7 @@ type Crater = {
   diameter: number,
 }
 
-const sphereMap: SphereMapBuilder = (state: DrawerState): Array<PlanetSpherePoint> => {
+const sphereMap: SphereMapBuilder = (state: PlanetState): Array<PlanetSpherePoint> => {
   let map = []
   let count_craters = 50
   let i = 0

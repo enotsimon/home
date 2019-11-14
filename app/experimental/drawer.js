@@ -16,6 +16,7 @@ export type DrawerState = {|
 
 export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
 
+// TODO remove id
 export type DrawerDebugInfoUnit = {
   id: string,
   text: string,

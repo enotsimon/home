@@ -6,13 +6,13 @@ import { initDrawer } from 'experimental/drawer'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
-export type TableauCell = {
+export type TableauCell = {|
   x: number,
   y: number,
   color: number,
   new_color: number,
   graphics: Object, // PIXI
-}
+|}
 export type TableauData = Array<Array<TableauCell>>
 export type TableauState = {|
   ...DrawerState,

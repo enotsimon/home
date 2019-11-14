@@ -12,7 +12,17 @@ export type PlanetSpherePoint = { phi: number, theta: number }
 export type PlanetSpherePointWG = PlanetSpherePoint & { graphics: Object }
 export type SphereMapBuilder = (state: DrawerState) => Array<PlanetSpherePoint>
 
-// TODO fix flow types
+export type PlanetState = {|
+  ...DrawerState,
+  planet: Object, // FIXME PIXI
+  radius: number,
+  rotation: number,
+  precession: number,
+  nutation: number,
+  points: Array<PlanetSpherePointWG>,
+  map_transparency_alpha: number,
+  draw_contour: boolean,
+|}
 
 export const calcSinglePoint = (
   radius: number,
@@ -77,7 +87,7 @@ const initGraphicsFromSphereMap = (sphereMapData: Array<PlanetSpherePoint>, stat
   })
 }
 
-const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTransparency: number): DrawerState => {
+const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTransparency: number): PlanetState => {
   const state = { ...oldState }
   state.planet = new PIXI.Container()
   state.base_container.addChild(state.planet)
@@ -85,9 +95,9 @@ const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTra
   state.rotation = null
   state.precession = null
   state.nutation = null
-  state.points = initGraphicsFromSphereMap(sphereMap(state), state)
   state.map_transparency_alpha = mapTransparency
   state.draw_contour = true
+  state.points = initGraphicsFromSphereMap(sphereMap(state), state)
   if (state.draw_contour) {
     const contour = new PIXI.Graphics()
     contour.lineStyle(1, Color.to_pixi([255, 255, 255]))
@@ -97,7 +107,7 @@ const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTra
   return state
 }
 
-const redraw = (oldState: DrawerState): DrawerState => {
+const redraw = (oldState: PlanetState): PlanetState => {
   const state = { ...oldState }
   // here was function change_angles(state.ticks)
   state.rotation = Util.radians(0) + state.ticks * (2 * Math.PI / 360)

@@ -3,9 +3,10 @@ import { initTableauDrawer } from 'experimental/tableau_drawer'
 
 import type { TableauCell } from 'experimental/tableau_drawer'
 
-type SmoothTableauCell = TableauCell & {
+type SmoothTableauCell = {|
+  ...TableauCell,
   sign: number,
-}
+|}
 
 const initElementState = (element: TableauCell): SmoothTableauCell => ({ ...element, color: Math.random(), sign: 1 })
 
