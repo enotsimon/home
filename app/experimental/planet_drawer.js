@@ -60,10 +60,10 @@ export const initPlanetDrawer = (
 )
 
 const updateDebugInfo = (state: DrawerState): Array<DrawerDebugInfoUnit> => [
-  { id: 'debug_info_precession', text: 'precession', value: Math.round(Util.degrees(state.precession)) },
-  { id: 'debug_info_nutation', text: 'nutation', value: Math.round(Util.degrees(state.nutation)) },
-  { id: 'debug_info_rotation', text: 'rotation', value: Math.round(Util.degrees(state.rotation)) },
-  { id: 'debug_info_count_points', text: 'count points', value: state.points ? state.points.length : 0 },
+  { text: 'precession', value: Math.round(Util.degrees(state.precession)) },
+  { text: 'nutation', value: Math.round(Util.degrees(state.nutation)) },
+  { text: 'rotation', value: Math.round(Util.degrees(state.rotation)) },
+  { text: 'count points', value: state.points ? state.points.length : 0 },
 ]
 
 // TODO -- move it out from here or just delete

@@ -67,11 +67,10 @@ export class Sample extends React.Component<Props> {
                   <span>{JSON.stringify(this.props.mousePos, null, 2)}</span>
                 </div>
                 {this.props.additional.map(e => (
-                  <div key={e.id}>
+                  <div key={e.text}>
                     {e.text}
-                    :
-                    {' '}
-                    <span id={e.id}>{e.value}</span>
+                    :&nbsp;
+                    {e.value}
                   </div>
                 ))}
               </div>

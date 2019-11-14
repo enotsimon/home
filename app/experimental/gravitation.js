@@ -99,8 +99,8 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
 const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
-  { id: 'step', text: 'step', value: state.step },
-  { id: 'distance', text: 'distance', value: U.distance(state.points[0], state.points[1]) },
+  { text: 'step', value: state.step },
+  { text: 'distance', value: U.distance(state.points[0], state.points[1]) },
 ]
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(

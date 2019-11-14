@@ -96,7 +96,7 @@ const rotateGraphics = (state: State): State => {
 }
 
 const updateDebugInfo = (state: State) => [
-  { id: 'step', text: 'lloyd relaxation step (0.1)', value: state.step },
+  { text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(

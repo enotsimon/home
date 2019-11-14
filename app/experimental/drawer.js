@@ -17,11 +17,10 @@ export type DrawerState = {|
 export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
 
 // TODO remove id
-export type DrawerDebugInfoUnit = {
-  id: string,
+export type DrawerDebugInfoUnit = {|
   text: string,
   value: string | number,
-}
+|}
 
 export type DrawerOnTickCallback = (fps: number, delta: number, debugInfo: Array<DrawerDebugInfoUnit>) => void
 

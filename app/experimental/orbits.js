@@ -22,9 +22,9 @@ type State = {|
 |}
 
 const updateDebugInfo = (state) => [
-  { id: 'debug_info_precession', text: 'precession', value: state.figures ? state.figures[0].precession_coef : '' },
-  { id: 'debug_info_nutation', text: 'nutation', value: state.figures ? state.figures[0].nutation_coef : '' },
-  { id: 'debug_info_additional', text: 'angle state.acceleration', value: state.acceleration },
+  { text: 'precession', value: state.figures ? state.figures[0].precession_coef : '' },
+  { text: 'nutation', value: state.figures ? state.figures[0].nutation_coef : '' },
+  { text: 'angle state.acceleration', value: state.acceleration },
 ]
 
 const initGraphics = (oldState: DrawerState): State => {
