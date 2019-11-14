@@ -1,7 +1,7 @@
 // @flow
 import Color from 'common/color'
 import * as PIXI from 'pixi.js'
-import * as R from 'ramda'
+// import * as R from 'ramda'
 import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
@@ -26,7 +26,9 @@ type State = {|
 const LLOYD_MAX_STEPS = 50000
 const LLOYD_WAVE = 250
 const LLOYD_TO_MOVE = 0.25
-const COUNT_POINTS = 100
+const COUNT_POINTS = 75
+// WARNING!!!!!!! DONT SET IT LARGER! OR POINTS COUNT GROWS FAST!
+const DISTANCE_TO_DELETE = 1.2
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -48,14 +50,13 @@ const redraw = (oldState: State): State => {
   }
   // we copy only { x, y, generation } from cells! or they grow recursively very fast!!!
   let points = state.voronoi.cells.map(({ x, y, generation }) => ({ x, y, generation }))
+  const hSize = state.size / 2
+  points = points.filter(p => U.distance(p, { x: hSize, y: hSize }) <= DISTANCE_TO_DELETE * hSize)
   // add some dynamic madness
   if (state.step % LLOYD_WAVE === (LLOYD_WAVE - 1)) {
     state.generation += 1
     points = [...points, ...randomPoints(COUNT_POINTS, state.size, state.generation)]
-    points = R.filter(p => {
-      return p.generation >= (state.generation - 2)
-    }, points)
-    console.log('STEP', state.generation, points.length)
+    console.log('STEP', state.generation, 'COUNT POINTS', points.length)
   }
   state.base_container.removeChildren()
   const voronoi = generate(points, state.size, state.size, 1, LLOYD_TO_MOVE)
