@@ -38,7 +38,7 @@ const initGraphics = (oldState: DrawerState): State => {
   return state
 }
 
-const redraw = (oldState: DrawerState): DrawerState => {
+const redraw = (oldState: State): State => {
   const state = { ...oldState }
   if (state.step > LLOYD_MAX_STEPS) {
     return state
@@ -112,7 +112,7 @@ const rotateGraphics = (state: State): State => {
 }
 
 const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
-  { id: 'step', text: 'lloyd relaxation step (0.1)', value: state.step },
+  { text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
