@@ -31,10 +31,8 @@ export const calcSinglePoint = (
   const cosP = Math.cos(precession)
   const sinN = Math.sin(nutation)
   const cosN = Math.cos(nutation)
-  const cosNsinR = cosN * sinR
-  const cosNcosR = cosN * cosR
-  const x = x1 * (cosP * cosR - sinP * cosNsinR) + y1 * (-cosP * sinR - sinP * cosNcosR) + z1 * (sinP * sinN)
-  const y = x1 * (sinP * cosR + cosP * cosNsinR) + y1 * (-sinP * sinR + cosP * cosNcosR) + z1 * (-cosP * sinN)
+  const x = x1 * (cosP * cosR - sinP * cosN * sinR) + y1 * (-cosP * sinR - sinP * cosN * cosR) + z1 * (sinP * sinN)
+  const y = x1 * (sinP * cosR + cosP * cosN * sinR) + y1 * (-sinP * sinR + cosP * cosN * cosR) + z1 * (-cosP * sinN)
   const z = x1 * (sinN * sinR) + y1 * (sinN * cosR) + z1 * cosN
   return { x, y, z }
 }
