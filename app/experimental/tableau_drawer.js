@@ -1,6 +1,6 @@
 // @flow
 import Util from 'common/util'
-import Color from 'common/color'
+import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import { initDrawer } from 'experimental/drawer'
 

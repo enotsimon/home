@@ -1,7 +1,7 @@
 import Util from 'common/util'
 import { game } from 'planets/game'
 import StellarBody from 'planets/stellar_body'
-import Color from 'common/color'
+import * as Color from 'common/color'
 
 export default class StarSystem {
   constructor() {

@@ -1,5 +1,5 @@
 // @flow
-import Color from 'common/color'
+import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
 export type DrawerRegime = 'square' | 'circle'
