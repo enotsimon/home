@@ -76,10 +76,10 @@ const wbConfig: Array<SamplePreviewConfig> = [
 const colorConfig: Array<SamplePreviewConfig> = [
   {
     name: 'lloyd relaxation',
-    description: 'example of lloyd relaxation on voronoi diagram',
+    description: 'basic example of lloyd relaxation on voronoi diagram',
     sample_url: './voronoi_lloyd',
-    img_path: './thumbnails/moving_arrows.png',
-    status: 'almost_ready',
+    img_path: './thumbnails/lloyd_basic.png',
+    status: 'ready',
   },
   {
     name: 'lloyd waves center',

@@ -10,13 +10,14 @@ import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
+import type { ChannelMatrix } from 'common/color'
 
 type State = {|
   ...DrawerState,
   step: number,
-  rotation: number,
   voronoi: VoronoiDiagram,
   voronoiGraphics: Object,
+  colorMatrix: ChannelMatrix,
 |}
 
 const LLOYD_MAX_STEPS = 1000
@@ -30,36 +31,36 @@ const initGraphics = (oldState: DrawerState): State => {
   random.use(seedrandom(seed))
   const points = U.randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
   state.step = 0
-  state.rotation = 0
   state.voronoi = generate(points, state.size, state.size, 0)
+  state.colorMatrix = Color.allChannelMatrixes(1).sort(() => random.float(-1, 1))[0]
   return state
 }
 
 const redraw = (state: State): State => {
   // add some dynamic lloyd relaxation
   if (state.step >= LLOYD_MAX_STEPS) {
-    return rotateGraphics(state)
+    return state
   }
   state.base_container.removeChildren()
   // $FlowIgnore FIXME
   const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, LLOYD_TO_MOVE)
-  return rotateGraphics({
+  return {
     ...state,
     voronoi,
     step: state.step + 1,
-    voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size),
-  })
+    voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size, state.colorMatrix),
+  }
 }
 
-const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number): Object => {
+const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrix): Object => {
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
-  addCircleMask(graphics, parentContainer, size)
   voronoi.cells.forEach(cell => {
-    // 125 is max 'lightness', 25 is min
-    const c = 125 - 100 * U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2)
-    graphics.beginFill(Color.to_pixi([c, c, c]), 1)
+    // TODO its a copy-paste from lloyd_waves_center
+    const { r, g, b } = colorMatrix
+    const c = U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2) / 1.4142135623730951
+    graphics.beginFill(Color.to_pixi([r - c * r * 4 / 5, g - c * g * 4 / 5, b - c * b * 4 / 5]), 1)
     cell.nodes.forEach((node, i) => {
       /* eslint-disable-next-line no-unused-expressions */
       i === 0 ? graphics.moveTo(node.x, node.y) : graphics.lineTo(node.x, node.y)
@@ -67,32 +68,6 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
     graphics.closePath()
   })
   return graphics
-}
-
-const addCircleMask = (graphics: Object, parentContainer: Object, size: number): void => {
-  const mask = new PIXI.Graphics()
-  mask.beginFill(Color.to_pixi([255, 255, 255]))
-  // FIXME pass coords
-  mask.drawCircle(size / 2, size / 2, size / 2)
-  mask.endFill()
-  /* eslint-disable-next-line no-param-reassign */
-  graphics.mask = mask
-  parentContainer.addChild(mask)
-  const contour = new PIXI.Graphics()
-  const contourWidth = size / 200
-  contour.lineStyle(contourWidth, Color.to_pixi([255, 255, 255]))
-  contour.drawCircle(size / 2, size / 2, size / 2 - contourWidth / 2)
-  parentContainer.addChild(contour)
-}
-
-const rotateGraphics = (state: State): State => {
-  const rotation = state.rotation + Math.PI / 180 / 6
-  const voronoiGraphics = state.voronoiGraphics
-  voronoiGraphics.pivot = { x: state.voronoi.width / 2, y: state.voronoi.height / 2 }
-  voronoiGraphics.x = state.voronoi.width / 2
-  voronoiGraphics.y = state.voronoi.height / 2
-  voronoiGraphics.rotation = rotation
-  return { ...state, rotation }
 }
 
 const updateDebugInfo = (state: State) => [
