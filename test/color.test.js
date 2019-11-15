@@ -3,7 +3,7 @@
 import { describe, it } from 'mocha'
 import { assert } from 'chai'
 
-import Color from '../app/common/color'
+import Color from 'common/color'
 
 describe('allChannelMatrixes', () => {
   it('0 case', () => {
