@@ -12,6 +12,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/moving_arrows.png',
     status: 'almost_ready',
   },
+  /*
   {
     name: 'planets focus',
     description: `star system emulation, where we
@@ -21,6 +22,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/planets_focus.jpg',
     status: 'draft',
   },
+  */
   {
     name: 'basic random tableau',
     description: 'random start configuration, pixels change their colors with edgy jump from white to black',
@@ -28,6 +30,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/basic_tableau.jpg',
     status: 'ready',
   },
+  /*
   {
     name: 'smooth random tableau',
     description: 'random start configuration, pixels change their colors smoothly -- black to white and backward',
@@ -35,6 +38,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/smooth_tableau.jpg',
     status: 'ready',
   },
+  */
   {
     name: 'rule 30',
     description: 'cellular automaton evolution of rule 30 introduced by stephen wolfram in 1983',
@@ -50,6 +54,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/vichniac_vote.jpg',
     status: 'ready',
   },
+  /*
   {
     name: 'orbits',
     description: 'experiment with 3d polar functions',
@@ -57,6 +62,7 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/orbits.jpg',
     status: 'draft',
   },
+  */
   {
     name: 'luna',
     description: 'its like moon -- planet with craters on surface',
