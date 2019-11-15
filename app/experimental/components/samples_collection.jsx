@@ -4,7 +4,7 @@ import React from 'react'
 
 import type { SamplePreviewConfig } from 'experimental/components/sample_preview'
 
-const config: Array<SamplePreviewConfig> = [
+const wbConfig: Array<SamplePreviewConfig> = [
   {
     name: 'moving arrows',
     description: 'schizophreniac arrows moving all around',
@@ -73,17 +73,47 @@ const config: Array<SamplePreviewConfig> = [
   },
 ]
 
+const colorConfig: Array<SamplePreviewConfig> = [
+  {
+    name: 'lloyd relaxation',
+    description: 'example of lloyd relaxation on voronoi diagram',
+    sample_url: './voronoi_lloyd',
+    img_path: './thumbnails/moving_arrows.png',
+    status: 'almost_ready',
+  },
+  {
+    name: 'lloyd waves center',
+    description: 'new points from the center of circle wave by vawe',
+    sample_url: './voronoi_lloyd_vawes',
+    img_path: './thumbnails/lloyd_waves_center_2.png',
+    status: 'ready',
+  },
+]
+
 const SamplesCollecton = () => (
   <div style={{ margin: '20px' }}>
     <div className="col-md-8 col-md-offset-2">
+      <div>
+        <h3>
+          a collection of funny graphics samples
+        </h3>
+      </div>
       <div className="panel panel-success">
         <div className="panel-heading">
           <h4 className="panel-title">
-            a collection of funny graphics samples
+            w/b
           </h4>
         </div>
         <div className="panel-body">
-          {config.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
+          {wbConfig.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
+        </div>
+        <div className="panel-heading">
+          <h4 className="panel-title">
+            color
+          </h4>
+        </div>
+        <div className="panel-body">
+          {colorConfig.map(e => React.createElement(SamplePreview, { ...e, key: e.name }))}
         </div>
       </div>
     </div>
