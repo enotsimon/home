@@ -54,9 +54,8 @@ const forRGB = ([r, g, b], func) => [func(r), func(g), func(b)]
 const randomChannel = (base, step, count) => {
   const rand = step * Util.rand(-count, count)
   const res = base + rand
-  /* eslint-disable-next-line no-nested-ternary */
-  return res > 255 ? 255 : res < 0 ? 0 : res
+  // return res > 255 ? 255 : res < 0 ? 0 : res
+  return Math.min(255, Math.max(0, res))
 }
 
-/* eslint-disable-next-line no-bitwise */
-const randomByFloor = (floor: number, step: number): number => floor - step * Util.rand(0, floor / step | 0)
+const randomByFloor = (floor: number, step: number): number => floor - step * Util.rand(0, Math.floor(floor / step))
