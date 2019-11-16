@@ -77,14 +77,15 @@ const randomPoints = (count: number, size: number, generation: number) =>
   U.randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
 
 const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrixes): Object => {
+  const center = { x: size / 2, y: size / 2 }
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
-  addCircleMask(graphics, size)
+  addCircleMask(graphics, size / 2, center)
   voronoi.cells.forEach(cell => {
     // $FlowIgnore will fix voronoi soon
     const { r, g, b } = colorMatrixes[cell.generation % colorMatrixes.length]
-    const c = U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2)
+    const c = U.distance(cell, center) / (size / 2)
     graphics.beginFill(Color.to_pixi([r - c * r * 4 / 5, g - c * g * 4 / 5, b - c * b * 4 / 5]), 1)
     cell.nodes.forEach((node, i) => {
       /* eslint-disable-next-line no-unused-expressions */

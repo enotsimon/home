@@ -9,17 +9,17 @@ import * as PIXI from 'pixi.js'
 import type { XYPoint } from 'common/utils'
 
 // a ring that works like a drawing mask -- nothing outside it is drawing
-export const addCircleMask = (graphics: Object, size: number): void => {
+export const addCircleMask = (graphics: Object, radius: number, center: XYPoint = { x: 0, y: 0 }): void => {
   const mask = new PIXI.Graphics()
   mask.beginFill(Color.to_pixi([255, 255, 255]))
   // FIXME pass coords
-  mask.drawCircle(size / 2, size / 2, size / 2)
+  mask.drawCircle(center.x, center.y, radius)
   mask.endFill()
   graphics.mask = mask
   const contour = new PIXI.Graphics()
-  const contourWidth = size / 200
+  const contourWidth = radius / 100
   contour.lineStyle(contourWidth, Color.to_pixi([255, 255, 255]))
-  contour.drawCircle(size / 2, size / 2, size / 2 - contourWidth / 2)
+  contour.drawCircle(center.x, center.y, radius - contourWidth / 2)
   // TODO z-index?
   graphics.addChild(contour)
   // to graphics?
