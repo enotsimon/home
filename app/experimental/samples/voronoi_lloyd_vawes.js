@@ -7,7 +7,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
-import { addCircleMask } from 'experimental/drawing_functions'
+import { addCircleMask, rotateGraphics } from 'experimental/drawing_functions'
 
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
@@ -30,6 +30,7 @@ const LLOYD_TO_MOVE = 0.25
 const COUNT_POINTS = 75
 // WARNING!!!!!!! DONT SET IT LARGER! OR POINTS COUNT GROWS FAST!
 const DISTANCE_TO_DELETE = 1.2
+const ROTATION_ANGLE = Math.PI / 180 / 6
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -45,7 +46,7 @@ const initGraphics = (oldState: DrawerState): State => {
 }
 
 const redraw = (oldState: State): State => {
-  const state = { ...oldState }
+  let state = { ...oldState }
   if (state.step > LLOYD_MAX_STEPS) {
     return state
   }
@@ -61,12 +62,15 @@ const redraw = (oldState: State): State => {
   }
   state.base_container.removeChildren()
   const voronoi = generate(points, state.size, state.size, 1, LLOYD_TO_MOVE)
-  return rotateGraphics({
+  state = {
     ...state,
     voronoi,
+    rotation: state.rotation + ROTATION_ANGLE,
     step: state.step + 1,
     voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size, state.colorMatrixes),
-  })
+  }
+  rotateGraphics(state.voronoiGraphics, state.rotation, { x: state.size / 2, y: state.size / 2 })
+  return state
 }
 
 const randomPoints = (count: number, size: number, generation: number) =>
@@ -89,16 +93,6 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
     graphics.closePath()
   })
   return graphics
-}
-
-const rotateGraphics = (state: State): State => {
-  const rotation = state.rotation + Math.PI / 180 / 6
-  const voronoiGraphics = state.voronoiGraphics
-  voronoiGraphics.pivot = { x: state.voronoi.width / 2, y: state.voronoi.height / 2 }
-  voronoiGraphics.x = state.voronoi.width / 2
-  voronoiGraphics.y = state.voronoi.height / 2
-  voronoiGraphics.rotation = rotation
-  return { ...state, rotation }
 }
 
 const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
