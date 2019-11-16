@@ -5,9 +5,10 @@ import * as PIXI from 'pixi.js'
 import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
-
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
+import { addCircleMask } from 'experimental/drawing_functions'
+
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
@@ -92,22 +93,6 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
     graphics.closePath()
   })
   return graphics
-}
-
-const addCircleMask = (graphics: Object, parentContainer: Object, size: number): void => {
-  const mask = new PIXI.Graphics()
-  mask.beginFill(Color.to_pixi([255, 255, 255]))
-  // FIXME pass coords
-  mask.drawCircle(size / 2, size / 2, size / 2)
-  mask.endFill()
-  /* eslint-disable-next-line no-param-reassign */
-  graphics.mask = mask
-  parentContainer.addChild(mask)
-  const contour = new PIXI.Graphics()
-  const contourWidth = size / 200
-  contour.lineStyle(contourWidth, Color.to_pixi([255, 255, 255]))
-  contour.drawCircle(size / 2, size / 2, size / 2 - contourWidth / 2)
-  parentContainer.addChild(contour)
 }
 
 const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
