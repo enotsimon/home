@@ -89,10 +89,17 @@ const colorConfig: Array<SamplePreviewConfig> = [
   },
   {
     name: 'lloyd waves center',
-    description: 'new points from the center of circle wave by vawe',
+    description: 'new points from the center of circle wave by vawe. and all scene is rotating',
     sample_url: './voronoi_lloyd_vawes',
     img_path: './thumbnails/lloyd_waves_center_2.png',
     status: 'ready',
+  },
+  {
+    name: 'lloyd waves random',
+    description: 'new points burst in random places. no scene rotation',
+    sample_url: './voronoi_lloyd_vawes_rand',
+    img_path: './thumbnails/lloyd_waves_rand.png',
+    status: 'almost_ready',
   },
 ]
 

@@ -203,6 +203,9 @@ export const randomPointsInSquare = (count: number, scale: number = 1): Array<XY
   return { x: random.float(0, scale), y: random.float(0, scale) }
 })(R.range(0, count))
 
+export const randomPointPolar = (radius: number = 1): PolarPoint =>
+  ({ angle: 2 * Math.PI * random.float(), radius: radius * Math.sqrt(random.float()) })
+
 
 /*
 FROM trees_util
