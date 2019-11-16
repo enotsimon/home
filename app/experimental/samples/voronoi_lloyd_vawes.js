@@ -80,7 +80,7 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
-  addCircleMask(graphics, parentContainer, size)
+  addCircleMask(graphics, size)
   voronoi.cells.forEach(cell => {
     // $FlowIgnore will fix voronoi soon
     const { r, g, b } = colorMatrixes[cell.generation % colorMatrixes.length]
