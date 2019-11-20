@@ -38,7 +38,7 @@ const page404 = () => (<h1>its like a 404 page</h1>)
 
 ReactDOM.render((
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.PUBLIC_URL}>
       <main>
         <Switch>
           <Route exact path="/" component={SamplesCollecton} />
