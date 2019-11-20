@@ -1,5 +1,6 @@
 // @flow
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 import type { DrawerDebugInfoUnit, DrawerOnTickCallback } from 'experimental/drawer'
 
@@ -39,10 +40,12 @@ export class Sample extends React.Component<Props> {
           <div className="panel panel-success">
             <div className="panel-body">
               <div className="" id="back_link">
-                <button type="button" className="btn btn-success btn" onClick={this.goBack}>
-                  <span className="glyphicon glyphicon-triangle-left" aria-hidden="true" />
-                  &nbsp;back to collection
-                </button>
+                <Link to="./samples_collection">
+                  <button type="button" className="btn btn-success btn" onClick={this.goBack}>
+                    <span className="glyphicon glyphicon-triangle-left" aria-hidden="true" />
+                    &nbsp;back to collection
+                  </button>
+                </Link>
               </div>
             </div>
           </div>

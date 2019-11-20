@@ -1,7 +1,7 @@
 // @flow
 import ReactDOM from 'react-dom'
 import React from 'react'
-import { BrowserRouter, Switch, Route } from 'react-router-dom'
+import { HashRouter, Switch, Route } from 'react-router-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 
@@ -38,7 +38,7 @@ const page404 = () => (<h1>its like a 404 page</h1>)
 
 ReactDOM.render((
   <Provider store={store}>
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <HashRouter>
       <main>
         <Switch>
           <Route exact path="/" component={SamplesCollecton} />
@@ -62,7 +62,7 @@ ReactDOM.render((
           <Route path="/" render={page404} />
         </Switch>
       </main>
-    </BrowserRouter>
+    </HashRouter>
   </Provider>
   // $FlowIgnore
 ), document.body.appendChild(document.createElement('div')))
