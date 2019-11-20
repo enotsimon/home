@@ -24,6 +24,7 @@ import { init as initVoronoyLloyd } from 'experimental/samples/voronoi_lloyd'
 import { init as initVoronoyLloydVawes } from 'experimental/samples/voronoi_lloyd_vawes'
 import { init as initVoronoyLloydVawesRand } from 'experimental/samples/voronoi_lloyd_vawes_rand'
 import { init as initGravitation } from 'experimental/samples/gravitation'
+import { init as initCoulombAndRing } from 'experimental/samples/coulomb_and_ring'
 
 // const store = createStore(reducers, window.__REDUX_DEVTOOL1S_EXTENSION__(), applyMiddleware(thunk)
 // const store = createStore(reducers, window.__REDUX_DEVTOOLS_1EXTENSION__())
@@ -56,6 +57,7 @@ ReactDOM.render((
           <Route path="/voronoi_lloyd_vawes" render={() => createDrawer(initVoronoyLloydVawes)} />
           <Route path="/voronoi_lloyd_vawes_rand" render={() => createDrawer(initVoronoyLloydVawesRand)} />
           <Route path="/gravitation" render={() => createDrawer(initGravitation)} />
+          <Route path="/coulomb_and_ring" render={() => createDrawer(initCoulombAndRing)} />
           {/* dont work. 404 routed from dev server itself */}
           <Route path="/" render={page404} />
         </Switch>
