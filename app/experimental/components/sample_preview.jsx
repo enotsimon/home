@@ -16,7 +16,6 @@ export type SamplePreviewConfig = {
 const SamplePreview = (props: SamplePreviewConfig) => {
   const statusText = props.status.replace(/_/g, ' ')
   const statusClass = `status_${props.status}`
-  console.log('SA', props.sample_url)
   return (
     <div className="sample_preview">
       <div className="panel panel-success" style={{ width: 220 }}>

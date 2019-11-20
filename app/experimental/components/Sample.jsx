@@ -22,12 +22,6 @@ export class Sample extends React.Component<Props> {
   componentDidUpdate() {
   }
 
-  // bad. but i dont care for now
-  // TODO fix to Link
-  goBack() {
-    window.location.href = '/samples_collection'
-  }
-
   onMouseMove(event: SyntheticMouseEvent<any>) {
     this.props.dispatchActionMouseMove(event.nativeEvent)
   }
@@ -41,7 +35,7 @@ export class Sample extends React.Component<Props> {
             <div className="panel-body">
               <div className="" id="back_link">
                 <Link to="./samples_collection">
-                  <button type="button" className="btn btn-success btn" onClick={this.goBack}>
+                  <button type="button" className="btn btn-success btn">
                     <span className="glyphicon glyphicon-triangle-left" aria-hidden="true" />
                     &nbsp;back to collection
                   </button>
