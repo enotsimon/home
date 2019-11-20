@@ -76,6 +76,7 @@ const redraw = (oldState: State): State => {
 const randomPoints = (count: number, size: number, generation: number) =>
   U.randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
 
+// TODO remove copy-paste
 const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrixes): Object => {
   const center = { x: size / 2, y: size / 2 }
   const graphics = new PIXI.Graphics()

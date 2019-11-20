@@ -52,14 +52,16 @@ const redraw = (state: State): State => {
   }
 }
 
+// TODO remove copy-paste
 const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrix): Object => {
+  const center = { x: size / 2, y: size / 2 }
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
   parentContainer.addChild(graphics)
   voronoi.cells.forEach(cell => {
     // TODO its a copy-paste from lloyd_waves_center
     const { r, g, b } = colorMatrix
-    const c = U.distance(cell, { x: size / 2, y: size / 2 }) / (size / 2) / 1.4142135623730951
+    const c = U.distance(cell, center) / (size / 2) / 1.4142135623730951
     graphics.beginFill(Color.to_pixi([r - c * r * 4 / 5, g - c * g * 4 / 5, b - c * b * 4 / 5]), 1)
     cell.nodes.forEach((node, i) => {
       /* eslint-disable-next-line no-unused-expressions */
