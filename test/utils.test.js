@@ -4,7 +4,7 @@ import { describe, it } from 'mocha'
 import { assert } from 'chai'
 import * as R from 'ramda'
 
-import { angleBy3Points, randomPointPolar, fromPolarCoords } from '../app/common/utils'
+import * as U from '../app/common/utils'
 
 describe('angleBy3Points', () => {
   const samples = [
@@ -17,7 +17,7 @@ describe('angleBy3Points', () => {
 
   it('calc angles by given samples', () => {
     samples.forEach(sample => {
-      const result = angleBy3Points(sample.a, sample.b, sample.c)
+      const result = U.angleBy3Points(sample.a, sample.b, sample.c)
       assert.equal(result, sample.expect)
     })
   })
@@ -27,8 +27,8 @@ describe('randomPointPolar', () => {
   it('should generate points at least in specific range', () => {
     const maxRadius = 100
     const points = R.map(() => {
-      const { angle, radius } = randomPointPolar(maxRadius)
-      return fromPolarCoords(angle, radius)
+      const { angle, radius } = U.randomPointPolar(maxRadius)
+      return U.fromPolarCoords(angle, radius)
     })(R.range(1, 500))
     points.forEach(({ x, y }) => {
       assert.isAtMost(x, maxRadius, 'x > radius !!')
@@ -36,5 +36,23 @@ describe('randomPointPolar', () => {
       assert.isAtMost(y, maxRadius, 'y > radius !!')
       assert.isAtLeast(y, -maxRadius, 'y < -radius !!')
     })
+  })
+})
+
+describe('findNearestNode', () => {
+  it('should find nearest point negative values', () => {
+    const result = U.findNearestPoint({ x: 2, y: 2 }, [{ x: -1, y: -1 }, { x: 10, y: 10 }])
+    const expect = { x: -1, y: -1 }
+    assert.deepEqual(result, expect)
+  })
+  it('should find nearest point exact values', () => {
+    const result = U.findNearestPoint({ x: 2, y: 2 }, [{ x: 2, y: 2 }, { x: 10, y: 10 }])
+    const expect = { x: 2, y: 2 }
+    assert.deepEqual(result, expect)
+  })
+  it('should find nearest point zero values', () => {
+    const result = U.findNearestPoint({ x: 0, y: 0 }, [{ x: 2, y: 2 }, { x: 10, y: 10 }])
+    const expect = { x: 2, y: 2 }
+    assert.deepEqual(result, expect)
   })
 })

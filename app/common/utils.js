@@ -189,6 +189,14 @@ export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
   // return (int) floor(alpha * 180. / pi + 0.5);
 }
 
+export const findNearestPoint = (target: XYPoint, points: Array<XYPoint>): XYPoint => {
+  if (points.length === 0) {
+    throw ('empty points array')
+  }
+  const maped = R.map(p => [p, distance(p, target)])(points)
+  return R.reduce(([aN, aD], [cN, cD]) => (cD < aD ? [cN, cD] : [aN, aD]), maped[0], maped)[0]
+}
+
 
 //
 // random points
