@@ -130,6 +130,7 @@ export const anglesDiff = (a: Radians, b: Radians): Radians => {
   return Math.min(diff, 2 * Math.PI - diff)
 }
 
+// length -- usually from 0 to 1
 export const moveByVector = (from: XYPoint, to: XYPoint, length: number): XYPoint => {
   // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
   return { x: from.x + (to.x - from.x) * length, y: from.y + (to.y - from.y) * length }

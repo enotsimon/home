@@ -7,9 +7,15 @@ import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
 import type { XYPoint } from 'common/utils'
+import type { RGBArray } from 'common/color'
 
 // a ring that works like a drawing mask -- nothing outside it is drawing
-export const addCircleMask = (graphics: Object, radius: number, center: XYPoint = { x: 0, y: 0 }): void => {
+export const addCircleMask = (
+  graphics: Object,
+  radius: number,
+  center: XYPoint = { x: 0, y: 0 },
+  fillColor: RGBArray = [255, 255, 255]
+): void => {
   const mask = new PIXI.Graphics()
   mask.beginFill(Color.to_pixi([255, 255, 255]))
   // FIXME pass coords
@@ -18,7 +24,7 @@ export const addCircleMask = (graphics: Object, radius: number, center: XYPoint 
   graphics.mask = mask
   const contour = new PIXI.Graphics()
   const contourWidth = radius / 100
-  contour.lineStyle(contourWidth, Color.to_pixi([255, 255, 255]))
+  contour.lineStyle(contourWidth, Color.to_pixi(fillColor))
   contour.drawCircle(center.x, center.y, radius - contourWidth / 2)
   // TODO z-index?
   graphics.addChild(contour)
