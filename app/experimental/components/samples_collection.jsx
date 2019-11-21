@@ -101,6 +101,13 @@ const colorConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/lloyd_waves_rand.png',
     status: 'almost_ready',
   },
+  {
+    name: 'rrt diagram',
+    description: 'well i\'m not sure it is rrt diagram, but something like that',
+    sample_url: './rrt_basic',
+    img_path: './thumbnails/rrt_basic.png',
+    status: 'draft',
+  },
 ]
 
 const SamplesCollecton = () => (
