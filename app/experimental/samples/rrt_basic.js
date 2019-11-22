@@ -13,7 +13,7 @@ import type { XYPoint } from 'common/utils'
 type Point = {
   ...XYPoint,
   generation: number,
-  tick: number,
+  index: number,
 }
 type State = {|
   ...DrawerState,
@@ -34,7 +34,7 @@ const initGraphics = (state: DrawerState): State => {
   return {
     ...state,
     zeroTick: 100 + state.ticks,
-    points: [{ x: 0, y: state.size / 2, generation: 0, tick: 0 }],
+    points: [{ x: 0, y: state.size / 2, generation: 0, index: 0 }],
     graphics,
   }
 }
@@ -47,9 +47,9 @@ const redraw = (oldState: State): State => {
     // console.log('seems we cannot add any new point', 'maxGeneration', maxGeneration, 'tick', state.ticks)
     return initGraphics(state)
   }
-  const pointColor = Math.max(50, 255 - (point.tick / 3))
+  const pointColor = Math.max(50, 255 - (point.index / 3))
   const lineColor = Math.max(10, pointColor / 2)
-  const lineWidth = Math.max(0.5, 2 - (point.tick / 250))
+  const lineWidth = Math.max(0.5, 2 - (point.index / 250))
   state.graphics.beginFill(Color.to_pixi([pointColor, 0, 0]), 1)
   state.graphics.drawCircle(point.x, point.y, 0.5)
   state.graphics.endFill()
@@ -60,7 +60,7 @@ const redraw = (oldState: State): State => {
 }
 
 type Pair = { point: ?Point, nearest: ?Point }
-const getNewPoint = (tick: number, radius: number, points: Array<Point>, counter: number = 0): Pair => {
+const getNewPoint = (index: number, radius: number, points: Array<Point>, counter: number = 0): Pair => {
   if (counter > 1000) {
     return { point: null, nearest: null }
   }
@@ -69,7 +69,7 @@ const getNewPoint = (tick: number, radius: number, points: Array<Point>, counter
   // $FlowIgnore
   const nearest = U.findNearestPoint(newPoint, points)
   if (U.distance(newPoint, nearest) < STEP) {
-    return getNewPoint(tick, radius, points, counter + 1)
+    return getNewPoint(index, radius, points, counter + 1)
   }
   const theta = Math.atan2(newPoint.y - nearest.y, newPoint.x - nearest.x)
   const pp = {
@@ -77,7 +77,7 @@ const getNewPoint = (tick: number, radius: number, points: Array<Point>, counter
     y: nearest.y + STEP * Math.sin(theta),
     // $FlowIgnore
     generation: nearest.generation + 1,
-    tick,
+    index,
   }
   // $FlowIgnore
   return { point: pp, nearest }
