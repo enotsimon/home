@@ -19,7 +19,6 @@ type State = {|
   ...DrawerState,
   points: Array<Point>,
   graphics: Object,
-  zeroTick: number,
 |}
 
 const STEP = 5
@@ -33,7 +32,6 @@ const initGraphics = (state: DrawerState): State => {
   addCircleMask(graphics, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
   return {
     ...state,
-    zeroTick: 100 + state.ticks,
     points: [{ x: 0, y: state.size / 2, generation: 0, index: 0 }],
     graphics,
   }
@@ -41,7 +39,7 @@ const initGraphics = (state: DrawerState): State => {
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
-  const { point, nearest } = getNewPoint(state.ticks - state.zeroTick, state.size / 2, state.points)
+  const { point, nearest } = getNewPoint(state.points.length, state.size / 2, state.points)
   if (!point || !nearest) {
     // const maxGeneration = R.reduce((ag, p) => Math.max(p.generation, ag), 0, state.points)
     // console.log('seems we cannot add any new point', 'maxGeneration', maxGeneration, 'tick', state.ticks)
