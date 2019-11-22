@@ -28,20 +28,18 @@ const initGraphics = (state: State): State => {
   const graphics = new PIXI.Graphics()
   state.base_container.addChild(graphics)
   addCircleMask(graphics, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
-  const rrt = generate(
-    STEP,
-    () => {
-      const newPointPolar = U.randomPointPolar(state.size / 2)
-      return U.fromPolarCoords(newPointPolar.angle, newPointPolar.radius)
-    },
-    { x: 0, y: state.size / 2 }
-  )
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: state.size / 2 })
   return {
     ...state,
     graphics,
     rrt,
     curIndex: 1, // 1 because we dont draw root point! be careful! _we dont draw root point_!!!
   }
+}
+
+const randomPointFunc = (radius: number) => () => {
+  const newPointPolar = U.randomPointPolar(radius)
+  return U.fromPolarCoords(newPointPolar.angle, newPointPolar.radius)
 }
 
 const redraw = (state: State): State => {
