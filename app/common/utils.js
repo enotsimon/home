@@ -54,36 +54,6 @@ export const normalizeValue = (
   return (value - min) * (normal_max - normal_min) / (max - min) + normal_min
 }
 
-// dont use it!!!
-/*
-export const findMinAndMax = <T>(array: Array<T>, valueFunc: T => ?number): ?({ min: number, max: number }) => {
-  if (!array.length) return null
-  const ret = { min: null, max: null, min_element: null, max_element: null }
-  array.forEach(e => {
-    const res = valueFunc(e)
-    if (res === null) {
-      return null
-    }
-    if (ret.min == null || ret.max == null) {
-      ret.min = res
-      ret.max = res
-      ret.min_element = e
-      ret.max_element = e
-      return
-    }
-    if (res < ret.min) {
-      ret.min = res
-      ret.min_element = e
-    }
-    if (res > ret.max) {
-      ret.max = res
-      ret.max_element = e
-    }
-  })
-  return ret
-}
-*/
-
 // ??? experimental. some standard routine for cyclic openList processing
 /*
 export const doWhileNotEmpty = (openList: Array<any>, func): boolean => {
