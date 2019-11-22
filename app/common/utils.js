@@ -54,23 +54,6 @@ export const normalizeValue = (
   return (value - min) * (normal_max - normal_min) / (max - min) + normal_min
 }
 
-// ??? experimental. some standard routine for cyclic openList processing
-/*
-export const doWhileNotEmpty = (openList: Array<any>, func): boolean => {
-  let length_before
-  let step = 0
-  do {
-    length_before = openList.length
-    openList = openList.filter(element => !func(element, step++))
-    if (length_before == openList.length) {
-      console.log('do_while_not_empty() openList length not chenged, bailing out', length_before, openList)
-      return false
-    }
-  } while (openList.length)
-  return true
-}
-*/
-
 // ////////////////////////////////////////
 // geometry
 // ////////////////////////////////////////
@@ -182,6 +165,23 @@ export const randomPointPolar = (radius: number = 1): PolarPoint =>
 
 export const randomPointInSquare = (scale: number = 1): XYPoint =>
   ({ x: random.float(0, scale), y: random.float(0, scale) })
+
+// ??? experimental. some standard routine for cyclic openList processing
+/*
+export const doWhileNotEmpty = (openList: Array<any>, func): boolean => {
+  let length_before
+  let step = 0
+  do {
+    length_before = openList.length
+    openList = openList.filter(element => !func(element, step++))
+    if (length_before == openList.length) {
+      console.log('do_while_not_empty() openList length not chenged, bailing out', length_before, openList)
+      return false
+    }
+  } while (openList.length)
+  return true
+}
+*/
 
 /*
 FROM trees_util
