@@ -48,8 +48,8 @@ const redraw = (state: State): State => {
     // end of diagram
     return initGraphics(state)
   }
-  if (!point.parent) {
-    console.log('call to drawing root point which is not allowed!')
+  if (point.parent === null || point.parent === undefined) {
+    console.log('WARNING! call to drawing root point which is not allowed!', point)
     return { ...state, curIndex: state.curIndex + 1 }
   }
   const parent = state.rrt[point.parent]
