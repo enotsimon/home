@@ -10,11 +10,11 @@ import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 
-type Point = {
+type Point = {|
   ...XYPoint,
   generation: number,
   index: number,
-}
+|}
 type State = {|
   ...DrawerState,
   points: Array<Point>,
@@ -64,7 +64,6 @@ const getNewPoint = (index: number, radius: number, points: Array<Point>, counte
   }
   const newPointPolar = U.randomPointPolar(radius)
   const newPoint = U.fromPolarCoords(newPointPolar.angle, newPointPolar.radius)
-  // $FlowIgnore
   const nearest = U.findNearestPoint(newPoint, points)
   if (U.distance(newPoint, nearest) < STEP) {
     return getNewPoint(index, radius, points, counter + 1)
@@ -73,11 +72,9 @@ const getNewPoint = (index: number, radius: number, points: Array<Point>, counte
   const pp = {
     x: nearest.x + STEP * Math.cos(theta),
     y: nearest.y + STEP * Math.sin(theta),
-    // $FlowIgnore
     generation: nearest.generation + 1,
     index,
   }
-  // $FlowIgnore
   return { point: pp, nearest }
 }
 

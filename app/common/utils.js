@@ -14,15 +14,10 @@ export type PolarPoint = {
   radius: number,
 }
 
-export type XYPoint = {
+export type XYPoint = {|
   x: number,
   y: number,
-}
-
-// type XYZPoint = XYPoint & {
-//   z: number,
-// }
-
+|}
 
 // dont use it!!!
 export const execInCycleWithDelay = (
@@ -167,7 +162,7 @@ export const convexPolygonSquare = (points: Array<XYPoint>): number => {
   return square
 }
 
-export const distance = (p1: XYPoint, p2: XYPoint): number => {
+export const distance = <T: { ...XYPoint }>(p1: T, p2: T): number => {
   /* eslint-disable-next-line no-restricted-properties */
   return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
 }
@@ -190,7 +185,7 @@ export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
   // return (int) floor(alpha * 180. / pi + 0.5);
 }
 
-export const findNearestPoint = (target: XYPoint, points: Array<XYPoint>): XYPoint => {
+export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target: T1, points: Array<T2>): T2 => {
   if (points.length === 0) {
     throw ('empty points array')
   }
