@@ -57,12 +57,15 @@ export const normalizeValue = (
 // ////////////////////////////////////////
 // geometry
 // ////////////////////////////////////////
+
+// TODO rewrite to XYPoint
 export const toPolarCoords = (x: number, y: number): PolarPoint => {
   const radius = Math.sqrt(x * x + y * y)
   const angle = Math.atan2(y, x)
   return { angle, radius }
 }
 
+// TODO rewrite to PolarPoint
 export const fromPolarCoords = (angle: number, radius: number): XYPoint => {
   const x = radius * Math.cos(angle)
   const y = radius * Math.sin(angle)
