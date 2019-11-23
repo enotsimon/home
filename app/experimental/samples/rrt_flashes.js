@@ -66,9 +66,15 @@ const redraw = (state: State): State => {
     return { ...state, curGeneration: maxGeneration }
   }
   state.flashes.clear()
-  const curGenPoints = state.pointsByGenerations[state.curGeneration]
-  curGenPoints.forEach(p => {
-    drawFlash(state.flashes, p, maxGeneration)
+  // TODO naive drawing of flashes trace, do normal!
+  R.range(0, 5).forEach(i => {
+    const curGenPoints = state.pointsByGenerations[state.curGeneration - i] || []
+    curGenPoints.forEach(p => {
+      if (p.parent !== null && p.parent !== undefined) {
+        drawFlashLine(state.flashes, p, state.rrt[p.parent], maxGeneration)
+      }
+      drawFlash(state.flashes, p, maxGeneration)
+    })
   })
   return { ...state, curGeneration: state.curGeneration - 1 }
 }
@@ -93,11 +99,20 @@ const drawTreeContour = (
 const drawFlash = (graphics: PIXIContainer, point: RRTPoint, maxGeneration: number): void => {
   const rC = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 255, 0, 75)
   const oCs = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 200, 0, 100)
-  const radius = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 1, 0, 0.25)
+  const radius = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 1.5, 0, 0.5)
   // graphics.lineStyle(0, Color.to_pixi([0, 0, 0]))
   graphics.beginFill(Color.to_pixi([rC, oCs, oCs])) // 0.75 ?
   graphics.drawCircle(point.x, point.y, radius)
   graphics.endFill()
+}
+
+const drawFlashLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, maxGeneration: number): void => {
+  const rC = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 255, 0, 75)
+  const oCs = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 200, 0, 100)
+  const lineWidth = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 1, 0, 0.25)
+  graphics.lineStyle(lineWidth, Color.to_pixi([rC, oCs, oCs]))
+  graphics.moveTo(parent.x, parent.y)
+  graphics.lineTo(point.x, point.y)
 }
 
 const drawCircle = (graphics: PIXIContainer, point: RRTPoint, maxGeneration: number): void => {
