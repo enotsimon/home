@@ -1,4 +1,6 @@
 // @flow
+import * as R from 'ramda'
+
 import * as U from 'common/utils'
 
 import type { XYPoint } from 'common/utils'
@@ -15,6 +17,13 @@ export type RRTDiagram = Array<RRTPoint>
 
 
 const REJECT_LIMIT = 500
+
+// gathers array which index is generation and value -- array of points of that generation
+// Array<Array<RRTPoint>> actually is Array<RRTDiagram> but i cant call it so (((
+export const pointsByGenerations = (rrt: RRTDiagram): Array<Array<RRTPoint>> => {
+  const generations = R.sort((e1, e2) => e1 - e2, R.uniq(R.map(p => p.generation, rrt)))
+  return R.map(g => R.filter(p => p.generation === g, rrt))(generations)
+}
 
 export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: ?XYPoint = null): RRTDiagram => {
   const firstPoint = {
