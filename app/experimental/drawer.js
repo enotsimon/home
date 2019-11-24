@@ -94,7 +94,7 @@ export const initDrawer = <T: Object>(
 
   // creating screenshots from pixi.stage
   // $FlowIgnore
-  document.addEventListener('keypress', e => {
+  document.addEventListener('keydown', e => {
     // Ctrl + q
     if (e.code === 'KeyQ') {
       const filename = R.last(window.location.href.split('/'))
