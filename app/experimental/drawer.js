@@ -80,6 +80,11 @@ export const initDrawer = <T: Object>(
 
   pixi.ticker.add(delta => {
     state.ticks += 1
+    // we left the page with sample, so destroy pixi app
+    if (!document.getElementById('view') || document.getElementById('view') !== pixi.view) {
+      pixi.destroy()
+      return
+    }
     // $FlowIgnore FIXME dont understand whats wrong
     onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     state.tick_delta = delta
