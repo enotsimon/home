@@ -29,8 +29,6 @@ export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<Dr
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
 export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
-const BASIC_TICK_THROTTLE = 10
-
 export const initDrawer = <T: Object>(
   regime: DrawerRegime,
   updateDebugInfo: DrawerDebugInfoCallback<T>,
@@ -82,10 +80,8 @@ export const initDrawer = <T: Object>(
 
   pixi.ticker.add(delta => {
     state.ticks += 1
-    if (state.ticks % BASIC_TICK_THROTTLE === 0) {
-      // $FlowIgnore FIXME dont understand whats wrong
-      onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
-    }
+    // $FlowIgnore FIXME dont understand whats wrong
+    onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     state.tick_delta = delta
     state.tickTime += delta
     // $FlowIgnore FIXME dont understand whats wrong
