@@ -1,46 +1,49 @@
 // @flow
 import Util from 'common/util'
-import Color from 'common/color'
+import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
-import { createDrawer } from 'experimental/drawer'
+import { initDrawer } from 'experimental/drawer'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
-export type TableauCell = {
-  throttle: number,
-  cyclesLimit: number,
+export type TableauCell = {|
   x: number,
   y: number,
   color: number,
   new_color: number,
   graphics: Object, // PIXI
-}
+|}
 export type TableauData = Array<Array<TableauCell>>
-export type TableauState = DrawerState & {
+export type TableauState = {|
+  ...DrawerState,
   x_size: number,
   y_size: number,
   color_change_per_tick: number,
   data: TableauData,
-}
+  throttle: number,
+  cyclesLimit: number,
+|}
 export type TableauElementMutator = (TableauCell, TableauState) => TableauCell
 
 export const getElementColor = (x: number, y: number, state: TableauState, outOfBorderFunc: () => number): number => {
   return state.data[y] && state.data[y][x] ? state.data[y][x].color : outOfBorderFunc()
 }
 
-export const createTableauDrawer = (
+export const initTableauDrawer = (
   initElementState: TableauElementMutator,
   mutateElementState: TableauElementMutator,
+  onTickCallback: DrawerOnTickCallback,
   throttle: number = 1,
   cyclesLimit: number = 0,
   x_size: number = 100,
   y_size: number = 100,
 ) => {
-  createDrawer(
+  initDrawer(
     'square',
     () => [], // ???
     state => initGraphics(state, initElementState, throttle, cyclesLimit, x_size, y_size),
-    state => redraw(state, mutateElementState, initElementState)
+    state => redraw(state, mutateElementState, initElementState),
+    onTickCallback,
   )
 }
 
@@ -93,7 +96,7 @@ const forAllElements = (func: Function, state: TableauState): TableauState => {
 }
 
 const initState = (state: TableauState, initElementState): TableauState => {
-  return forAllElements(element => initElementState(element, state.color_change_per_tick), state)
+  return forAllElements(element => initElementState(element, state), state)
 }
 
 const mutateState = (oldState: TableauState, mutateElementState, initElementState): TableauState => {

@@ -1,5 +1,7 @@
 // @flow
 import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import { Link } from 'react-router-dom'
 
 export type SamplePreviewStatus = 'draft' | 'in_progress' | 'almost_ready' | 'ready'
 
@@ -22,14 +24,14 @@ const SamplePreview = (props: SamplePreviewConfig) => {
           <div className="panel-title">
             {props.name}
           </div>
-          <span className={`label label-primary ${statusClass}`}>
+          <span className={`label ${statusClass}`}>
             {statusText}
           </span>
         </div>
         <div className="panel-body">
-          <a href={props.sample_url} className="thumbnail">
+          <Link to={props.sample_url} className="thumbnail">
             <img alt="sample preview" width="200" height="200" src={props.img_path} />
-          </a>
+          </Link>
           <div>
             <p>{props.description}</p>
           </div>

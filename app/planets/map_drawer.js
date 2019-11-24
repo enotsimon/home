@@ -1,6 +1,6 @@
 
 import Util from 'common/util'
-import Color from 'common/color'
+import * as Color from 'common/color'
 import { game } from 'planets/game'
 
 export default class MapDrawer {

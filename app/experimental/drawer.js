@@ -1,14 +1,11 @@
 // @flow
-import Color from 'common/color'
-import * as d3 from 'd3'
-import App from 'experimental/components/app'
-import ReactDOM from 'react-dom'
-import React from 'react'
+import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
+import * as R from 'ramda'
 
 export type DrawerRegime = 'square' | 'circle'
 
-export type DrawerState = {
+export type DrawerState = {|
   ticks: number,
   tickTime: number,
   size: number,
@@ -16,21 +13,30 @@ export type DrawerState = {
   base_container: Object, // TODO
   // TODO split callbacks state and drawer state
   [string]: any,
-}
+|}
 
-export type DrawerDebugInfoUnit = {
-  id: string,
+export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
+
+// TODO remove id
+export type DrawerDebugInfoUnit = {|
   text: string,
   value: string | number,
-}
+|}
 
-export type DrawerNewStateCallback = (DrawerState) => DrawerState
+export type DrawerOnTickCallback = (fps: number, delta: number, debugInfo: Array<DrawerDebugInfoUnit>) => void
 
-const initDrawer = (
+export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<DrawerDebugInfoUnit>
+export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
+export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
+
+const BASIC_TICK_THROTTLE = 10
+
+export const initDrawer = <T: Object>(
   regime: DrawerRegime,
-  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
-  initGraphics: DrawerNewStateCallback,
-  redraw: DrawerNewStateCallback,
+  updateDebugInfo: DrawerDebugInfoCallback<T>,
+  initGraphics: DrawerInitCallback<T>,
+  redraw: DrawerRedrawCallback<T>,
+  onTickCallback: DrawerOnTickCallback,
 ): void => {
   let state = {
     ticks: 0,
@@ -43,10 +49,16 @@ const initDrawer = (
   const pixi = new PIXI.Application(realSize, realSize, {
     backgroundColor: Color.to_pixi([0, 0, 0]),
     antialias: true,
-    view: document.getElementById('view'), // TODO create it
+    view: document.getElementById('view'), // TODO looks bad
   })
   pixi.stage.interactive = true // ??
   console.log('renderer', pixi.renderer)
+
+  // const bg = new PIXI.Graphics()
+  // bg.beginFill(Color.to_pixi([0, 0, 0]))
+  // bg.drawRect(0, 0, realSize, realSize)
+  // bg.endFill()
+  // pixi.stage.addChild(bg)
 
   if (regime === 'square') {
     // square map is 100x100 size
@@ -64,55 +76,77 @@ const initDrawer = (
     throw (`unknown regime: ${regime}`)
   }
 
-  const mouse_move_handler = event => {
-    if (event.target !== pixi.view) {
-      return false
-    }
-    const mouse_coords = { x: event.offsetX, y: event.offsetY }
-    d3.select('#mouse_pos').html(`{x: ${mouse_coords.x}, y: ${mouse_coords.y}}`)
-  }
-
   pixi.stage.addChild(state.base_container)
-  // $FlowIgnore
-  document.getElementById('view_container').appendChild(pixi.view)
-  // $FlowIgnore
-  document.addEventListener('mousemove', mouse_move_handler.bind(this), false)
 
   state = initGraphics(state)
 
   pixi.ticker.add(delta => {
     state.ticks += 1
-    if (state.ticks % 10 === 0) {
-      d3.select('#fps_counter').html(pixi.ticker.FPS || 0)
-      updateDebugInfo(state).forEach(e => {
-        if (document.getElementById(e.id)) {
-          // $FlowIgnore
-          document.getElementById(e.id).innerHTML = `${e.value}`
-        } else {
-          console.log(`no element by id ${e.id}`)
-        }
-      })
+    if (state.ticks % BASIC_TICK_THROTTLE === 0) {
+      // $FlowIgnore FIXME dont understand whats wrong
+      onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     }
     state.tick_delta = delta
     state.tickTime += delta
+    // $FlowIgnore FIXME dont understand whats wrong
     state = redraw(state)
   })
 
-  // it was, but not sure if needed
-  // const clear_all = () => state.base_container.removeChildren()
-}
+  // creating screenshots from pixi.stage
+  // $FlowIgnore
+  document.addEventListener('keypress', e => {
+    // Ctrl + q
+    if (e.code === 'KeyQ') {
+      const filename = R.last(window.location.href.split('/'))
+      console.log('take screenshot', filename)
+      const screenshot = new PIXI.Container()
+      const bg = new PIXI.Graphics()
+      bg.beginFill(Color.to_pixi([0, 0, 0]))
+      bg.drawRect(0, 0, realSize, realSize)
+      bg.endFill()
+      screenshot.addChild(bg)
+      // i tried this simple way -- it works, but resulting image quality is very, very bad, so i tried another way
+      // screenshot.width = 200
+      // screenshot.height = 200
+      // screenshot.scale = state.base_container.scale
+      screenshot.addChild(state.base_container)
+      const img = pixi.renderer.plugins.extract.image(screenshot)
+      pixi.stage.addChild(state.base_container)
 
-export const createDrawer = (
-  regime: DrawerRegime,
-  updateDebugInfo: DrawerState => Array<DrawerDebugInfoUnit>,
-  initGraphics: DrawerNewStateCallback,
-  redraw: DrawerNewStateCallback,
-): void => {
-  ReactDOM.render(
-    // $FlowIgnore no state here but we dont care
-    <div style={{ maxWidth: '1280px' }}><App additional={updateDebugInfo({})} /></div>,
-    // $FlowIgnore
-    document.body.appendChild(document.createElement('div'))
-  )
-  initDrawer(regime, updateDebugInfo, initGraphics, redraw)
+      // resize img to 200 px. taken from https://stackoverflow.com/a/39637827
+      const width = 200
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        const oc = document.createElement('canvas')
+        const octx = oc.getContext('2d')
+        canvas.width = width // destination canvas size
+        canvas.height = canvas.width * img.height / img.width
+        let cur = {
+          width: Math.floor(img.width * 0.5),
+          height: Math.floor(img.height * 0.5)
+        }
+        oc.width = cur.width
+        oc.height = cur.height
+        octx.drawImage(img, 0, 0, cur.width, cur.height)
+        while (cur.width * 0.5 > width) {
+          cur = {
+            width: Math.floor(cur.width * 0.5),
+            height: Math.floor(cur.height * 0.5)
+          }
+          octx.drawImage(oc, 0, 0, cur.width * 2, cur.height * 2, 0, 0, cur.width, cur.height)
+        }
+        ctx.drawImage(oc, 0, 0, cur.width, cur.height, 0, 0, canvas.width, canvas.height)
+
+        const a = document.createElement('a')
+        // $FlowIgnore
+        document.body.append(a)
+        a.download = filename
+        a.href = canvas.toDataURL('image/png')
+        a.click()
+        a.remove()
+        screenshot.destroy()
+      }
+    }
+  })
 }

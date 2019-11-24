@@ -14,5 +14,6 @@ module.name_mapper='^common' ->'<PROJECT_ROOT>/app/common'
 module.name_mapper='^experimental' ->'<PROJECT_ROOT>/app/experimental'
 module.name_mapper='^geo' ->'<PROJECT_ROOT>/app/geo'
 module.name_mapper='^planets' ->'<PROJECT_ROOT>/app/planets'
+module.name_mapper='^assets' ->'<PROJECT_ROOT>/app/assets'
 
 esproposal.decorators=ignore
