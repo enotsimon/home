@@ -108,6 +108,13 @@ const colorConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/rrt_basic.png',
     status: 'draft',
   },
+  {
+    name: 'rrt flashes',
+    description: 'node ordered flashes from leafs to root',
+    sample_url: './rrt_flashes',
+    img_path: './thumbnails/rrt_flashes.png',
+    status: 'draft',
+  },
 ]
 
 const SamplesCollecton = () => (
