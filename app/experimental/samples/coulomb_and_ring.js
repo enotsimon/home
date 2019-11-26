@@ -97,7 +97,7 @@ const calcCircleBorderForceAcceleration = (points: Array<Point>, circleRadius: n
     // console.log('POINT IS OUT OF BORDER', p)
   }
   // const radiusVector = 0.5 * 1 / (distToBorder ** 3)
-  const radiusVector = 0.5 * 1 / Math.exp(distToBorder)
+  const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / 20)
   const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
   return { ...p, speed: crossSumm(p.speed, accVector) }
 })(points)
