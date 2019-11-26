@@ -15,12 +15,12 @@ describe('pointsByGenerations', () => {
       { x: 1, y: 3, generation: 3, index: 4, parent: 2 },
     ]
     const expect = [
-      [rrt[0]],
-      [rrt[1], rrt[2]],
-      [rrt[3]],
-      [rrt[4]],
+      [rrt[0].index],
+      [rrt[1].index, rrt[2].index],
+      [rrt[3].index],
+      [rrt[4].index],
     ]
-    const result = RRT.pointsByGenerations(rrt)
+    const result = RRT.pointsByGenerationsIndex(rrt)
     assert.deepEqual(result, expect)
   })
 })

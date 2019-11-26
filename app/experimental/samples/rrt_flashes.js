@@ -8,10 +8,10 @@ import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
-import { generate, pointsByGenerations } from 'common/rrt_diagram'
+import { generate, pointsByGenerationsIndex } from 'common/rrt_diagram'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
-import type { RRTDiagram, RRTPoint } from 'common/rrt_diagram'
+import type { RRTDiagram, RRTPoint, RRTGenerationsIndex } from 'common/rrt_diagram'
 
 const STEP = 5
 const BASIC_THROTTLE = 3
@@ -24,19 +24,19 @@ type State = {|
   flashes: PIXIContainer,
   treeContour: PIXIContainer,
   curGeneration: number,
-  pointsByGenerations: Array<Array<RRTPoint>>,
+  pointsByGenerationsIndex: RRTGenerationsIndex,
 |}
 
 const initGraphics = (state: State): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: state.size / 2 })
-  const pbg = pointsByGenerations(rrt)
+  const pbgIndex = pointsByGenerationsIndex(rrt)
   state.base_container.removeChildren()
   const graphics = new PIXI.Graphics()
   state.base_container.addChild(graphics)
   addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
-  const treeContour = drawTreeContour(rrt, pbg, graphics)
+  const treeContour = drawTreeContour(rrt, pbgIndex, graphics)
   // after treeContour for z-index!
   const flashes = new PIXI.Graphics()
   graphics.addChild(flashes)
@@ -46,8 +46,8 @@ const initGraphics = (state: State): State => {
     flashes,
     treeContour,
     rrt,
-    curGeneration: R.length(pbg) - 1,
-    pointsByGenerations: pbg,
+    curGeneration: R.length(pbgIndex) - 1,
+    pointsByGenerationsIndex: pbgIndex,
   }
 }
 
@@ -57,7 +57,7 @@ const redraw = (state: State): State => {
   if (state.ticks % BASIC_THROTTLE !== 0) {
     return state
   }
-  const maxGeneration = R.length(state.pointsByGenerations) - 1
+  const maxGeneration = R.length(state.pointsByGenerationsIndex) - 1
   if (state.curGeneration === -1) {
     console.log('new circle')
     return { ...state, curGeneration: maxGeneration }
@@ -65,8 +65,9 @@ const redraw = (state: State): State => {
   state.flashes.clear()
   // TODO naive drawing of flashes trace, do normal!
   R.range(0, 5).forEach(i => {
-    const curGenPoints = state.pointsByGenerations[state.curGeneration - i] || []
-    curGenPoints.forEach(p => {
+    const curGenPoints = state.pointsByGenerationsIndex[state.curGeneration - i] || []
+    curGenPoints.forEach(index => {
+      const p = state.rrt[index]
       if (p.parent !== null && p.parent !== undefined) {
         drawFlashLine(state.flashes, p, state.rrt[p.parent], maxGeneration)
       }
@@ -78,12 +79,13 @@ const redraw = (state: State): State => {
 
 const drawTreeContour = (
   rrt: RRTDiagram,
-  pbg: Array<Array<RRTPoint>>,
+  pbgIndex: RRTGenerationsIndex,
   baseContainer: PIXIContainer
 ): PIXIContainer => {
-  const maxGeneration = R.length(pbg) - 1
+  const maxGeneration = R.length(pbgIndex) - 1
   const treeContour = new PIXI.Graphics()
-  pbg.forEach(gen => gen.forEach(p => {
+  pbgIndex.forEach(gen => gen.forEach(index => {
+    const p = rrt[index]
     if (p.parent !== null && p.parent !== undefined) {
       drawLine(treeContour, p, rrt[p.parent], maxGeneration)
     }
