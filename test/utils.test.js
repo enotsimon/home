@@ -56,3 +56,12 @@ describe('findNearestNode', () => {
     assert.deepEqual(result, expect)
   })
 })
+
+describe('distance', () => {
+  it('should correctly calc distance between xy-points', () => {
+    assert.equal(U.distance({ x: 0, y: 0 }, { x: 0, y: 0 }), 0)
+    assert.equal(U.distance({ x: -2, y: -3 }, { x: -2, y: -3 }), 0)
+    assert.equal(U.distance({ x: -1, y: 0 }, { x: 0, y: 0 }), 1)
+    assert.equal(U.distance({ x: 0, y: 0 }, { x: 1, y: 1 }), Math.sqrt(2))
+  })
+})

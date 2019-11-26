@@ -119,8 +119,7 @@ export const convexPolygonSquare = (points: Array<XYPoint>): number => {
 }
 
 export const distance = <T: { ...XYPoint }>(p1: T, p2: T): number => {
-  /* eslint-disable-next-line no-restricted-properties */
-  return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2))
+  return Math.sqrt(((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2))
 }
 
 export const gaussFunction = (x: number, sigma: number, mu: number): number => {
