@@ -30,7 +30,8 @@ export const pointsByGenerationsIndex = (rrt: RRTDiagram): RRTGenerationsIndex =
 export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: ?XYPoint = null): RRTDiagram => {
   const firstPoint = {
     ...(rootPoint || randPointFunc()),
-    // FIXME generation: 1, index: 1
+    // index = 0 cause we should be able to access rrt array of point by array index!
+    // generation = 0 well... because index = 0 mean generation = 0
     generation: 0,
     index: 0,
     parent: null,
