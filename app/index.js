@@ -27,6 +27,7 @@ import { init as initGravitation } from 'experimental/samples/gravitation'
 import { init as initCoulombAndRing } from 'experimental/samples/coulomb_and_ring'
 import { init as initRRTBasic } from 'experimental/samples/rrt_basic'
 import { init as initRRTFlashes } from 'experimental/samples/rrt_flashes'
+import { init as initSpringForce } from 'experimental/samples/spring_force'
 
 // const store = createStore(reducers, window.__REDUX_DEVTOOL1S_EXTENSION__(), applyMiddleware(thunk)
 // const store = createStore(reducers, window.__REDUX_DEVTOOLS_1EXTENSION__())
@@ -62,6 +63,7 @@ ReactDOM.render((
           <Route path="/coulomb_and_ring" render={() => createDrawer(initCoulombAndRing)} />
           <Route path="/rrt_basic" render={() => createDrawer(initRRTBasic)} />
           <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
+          <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
           {/* dont work. 404 routed from dev server itself */}
           <Route path="/" render={page404} />
         </Switch>
