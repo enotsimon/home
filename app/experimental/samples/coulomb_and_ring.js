@@ -91,14 +91,14 @@ const calcForceAcceleration = (points: Array<Point>): Array<Point> => R.map(p =>
 })(points)
 
 const calcCircleBorderForceAcceleration = (points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
-  const { angle, radius } = U.toPolarCoords(p.x, p.y)
+  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
   const distToBorder = circleRadius - radius
   if (distToBorder < 0) {
     // console.log('POINT IS OUT OF BORDER', p)
   }
   // const radiusVector = 0.5 * 1 / (distToBorder ** 3)
   const radiusVector = 0.5 * 1 / Math.exp(distToBorder)
-  const accVector = U.fromPolarCoords(angle + Math.PI, radiusVector)
+  const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
   return { ...p, speed: crossSumm(p.speed, accVector) }
 })(points)
 
