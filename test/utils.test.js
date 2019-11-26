@@ -27,8 +27,7 @@ describe('randomPointPolar', () => {
   it('should generate points at least in specific range', () => {
     const maxRadius = 100
     const points = R.map(() => {
-      const { angle, radius } = U.randomPointPolar(maxRadius)
-      return U.fromPolarCoords(angle, radius)
+      return U.fromPolarCoords(U.randomPointPolar(maxRadius))
     })(R.range(1, 500))
     points.forEach(({ x, y }) => {
       assert.isAtMost(x, maxRadius, 'x > radius !!')
@@ -63,5 +62,23 @@ describe('distance', () => {
     assert.equal(U.distance({ x: -2, y: -3 }, { x: -2, y: -3 }), 0)
     assert.equal(U.distance({ x: -1, y: 0 }, { x: 0, y: 0 }), 1)
     assert.equal(U.distance({ x: 0, y: 0 }, { x: 1, y: 1 }), Math.sqrt(2))
+  })
+})
+
+describe('toPolarCoords', () => {
+  it('should convert xy-point to polar coords', () => {
+    assert.deepEqual(U.toPolarCoords({ x: 0, y: -1 }), { angle: -Math.PI / 2, radius: 1 })
+    assert.deepEqual(U.toPolarCoords({ x: 0, y: 1 }), { angle: Math.PI / 2, radius: 1 })
+    assert.deepEqual(U.toPolarCoords({ x: 1, y: 0 }), { angle: 0, radius: 1 })
+    assert.deepEqual(U.toPolarCoords({ x: -1, y: 0 }), { angle: Math.PI, radius: 1 })
+    assert.deepEqual(U.toPolarCoords({ x: 0, y: 0 }), { angle: 0, radius: 0 })
+  })
+})
+
+describe('fromPolarCoords', () => {
+  it('should convert polar coords to xy-point', () => {
+    // i cannot add other simple cases because of computational error
+    assert.deepEqual(U.fromPolarCoords({ angle: 0, radius: 1 }), { x: 1, y: 0 })
+    assert.deepEqual(U.fromPolarCoords({ angle: 0, radius: 0 }), { x: 0, y: 0 })
   })
 })

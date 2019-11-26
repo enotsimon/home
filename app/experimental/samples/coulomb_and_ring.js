@@ -56,9 +56,9 @@ const redraw = (oldState: State): State => {
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   // naive circle border -- just return point back if they out of circle
   state.points = state.points.map(p => {
-    const { angle, radius } = U.toPolarCoords(p.x, p.y)
+    const { angle, radius } = U.toPolarCoords(p)
     if (radius > state.size / 2) {
-      const { x, y } = U.fromPolarCoords(angle, state.size / 2)
+      const { x, y } = U.fromPolarCoords({ angle, radius: state.size / 2 })
       return { ...p, x, y }
     }
     return p

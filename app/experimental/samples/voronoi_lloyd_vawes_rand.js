@@ -71,8 +71,7 @@ const redraw = (oldState: State): State => {
 }
 
 const randomPoints = (count: number, size: number, generation: number) => {
-  const { angle, radius } = U.randomPointPolar(size / 2)
-  const { x: xc, y: yc } = U.fromPolarCoords(angle, radius)
+  const { x: xc, y: yc } = U.fromPolarCoords(U.randomPointPolar(size / 2))
   return U.randomPointsInSquare(count).map(e => ({ x: e.x + xc + size / 2, y: e.y + yc + size / 2, generation }))
 }
 

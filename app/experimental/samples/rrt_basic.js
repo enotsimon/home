@@ -37,10 +37,7 @@ const initGraphics = (state: State): State => {
   }
 }
 
-const randomPointFunc = (radius: number) => () => {
-  const newPointPolar = U.randomPointPolar(radius)
-  return U.fromPolarCoords(newPointPolar.angle, newPointPolar.radius)
-}
+const randomPointFunc = (radius: number) => () => U.fromPolarCoords(U.randomPointPolar(radius))
 
 const redraw = (state: State): State => {
   const point = state.rrt[state.curIndex]

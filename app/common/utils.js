@@ -9,10 +9,10 @@ import * as R from 'ramda'
 type Radians = number
 type Degrees = number
 
-export type PolarPoint = {
+export type PolarPoint = {|
   angle: number,
   radius: number,
-}
+|}
 
 export type XYPoint = {|
   x: number,
@@ -59,14 +59,14 @@ export const normalizeValue = (
 // ////////////////////////////////////////
 
 // TODO rewrite to XYPoint
-export const toPolarCoords = (x: number, y: number): PolarPoint => {
+export const toPolarCoords = <T: { ...XYPoint }>({ x, y }: T): PolarPoint => {
   const radius = Math.sqrt(x * x + y * y)
   const angle = Math.atan2(y, x)
   return { angle, radius }
 }
 
 // TODO rewrite to PolarPoint
-export const fromPolarCoords = (angle: number, radius: number): XYPoint => {
+export const fromPolarCoords = <T: { ...PolarPoint }>({ angle, radius }: T): XYPoint => {
   const x = radius * Math.cos(angle)
   const y = radius * Math.sin(angle)
   return { x, y }

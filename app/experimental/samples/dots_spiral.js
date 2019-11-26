@@ -68,7 +68,7 @@ const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: numbe
   // TODO stupid way, but -- dont care
   const x = random.int(-scale, scale)
   const y = random.int(-scale, scale)
-  const { angle, radius } = U.toPolarCoords(x, y)
+  const { angle, radius } = U.toPolarCoords({ x, y })
   // theVeryDistanceLimit i added because of circle contour
   if (radius > (scale - theVeryDistanceLimit)) {
     return recursiveAddDots(scale, limit, dots, cycles)
