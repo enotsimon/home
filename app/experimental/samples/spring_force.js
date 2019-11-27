@@ -36,12 +36,17 @@ const initGraphics = (oldState: DrawerState): State => {
     const { x, y } = U.fromPolarCoords(U.randomPointPolar(state.size / 2))
     return { id, x, y, mass: random.int(1, 1) }
   })(R.range(0, COUNT_POINTS))
+  // state.points = [
+  //   { id: 1, mass: 1, x: 0, y: 0 },
+  //   { id: 2, mass: 1, x: 20, y: 0 },
+  //   { id: 3, mass: 1, x: -20, y: 0.01 },
+  // ]
   return state
 }
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
-  state.points = calcForceMovement(state.points)
+  state.points = calcForceMovement(state, state.points, state.size / 2)
   // state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
   // state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   // naive circle border -- just return point back if they out of circle
@@ -59,7 +64,7 @@ const redraw = (oldState: State): State => {
   state.points.forEach(p => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-    graphics.drawCircle(0, 0, 2 * p.mass)
+    graphics.drawCircle(0, 0, p.mass)
     graphics.endFill()
     graphics.x = p.x
     graphics.y = p.y
@@ -69,23 +74,22 @@ const redraw = (oldState: State): State => {
   return state
 }
 
-const calcForceMovement = (points: Array<Point>): Array<Point> => R.map(p => {
+const calcForceMovement = (state, points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
   const springForceVector = R.reduce((vector, p2) => {
     if (p === p2) {
       return vector
     }
-    // const move = -FORCE_STRENGTH * p2.mass / (U.distance(p, p2) ** 2)
     const distance = U.distance(p, p2)
-    const zeroDistance = forceZeroDistance(p.mass)
-    const maxDistance = forceMaxDistance(p.mass)
-    let toMove = 0
-    if (distance < zeroDistance) {
-      // linear TODO try quad, and anyway its wrong!
-      toMove = -(zeroDistance - distance) / zeroDistance / 100
-    } else if (distance < maxDistance) {
-      // toMove = (maxDistance - (zeroDistance - distance)) / zeroDistance / 100
-      toMove = 0
-    }
+    const zeroDistance = forceZeroDistance(p.mass + p2.mass, circleRadius)
+    let toMove = 0.0001 * ((distance - zeroDistance) ** 3)
+    // its like Worlds The Very Movement Speed Limit, ie speed of light )))))
+    const MOVE_MAX = 0.001
+    toMove = R.pipe(R.min(MOVE_MAX), R.max(-MOVE_MAX))(toMove)
+    // its like spring has broked and works no more
+    toMove = distance > (2 * zeroDistance) ? 0 : toMove
+    // if (state.ticks % 10 === 0) {
+    //   console.log(toMove, zeroDistance, distance)
+    // }
     const newVector = { x: toMove * (p2.x - p.x), y: toMove * (p2.y - p.y) }
     return crossSumm(vector, newVector)
   }, { x: 0, y: 0 }, points)
@@ -93,9 +97,7 @@ const calcForceMovement = (points: Array<Point>): Array<Point> => R.map(p => {
   return { ...p, x, y }
 })(points)
 
-const forceZeroDistance = (mass: number): number => 50 * mass
-const forceMaxDistance = (mass: number): number => 2 * forceZeroDistance(mass)
-// const forceMinDistance = (): number => 0
+const forceZeroDistance = (massFactor: number, circleRadius: number): number => circleRadius * massFactor / 10
 
 /*
 const calcCircleBorderForceAcceleration = (points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
