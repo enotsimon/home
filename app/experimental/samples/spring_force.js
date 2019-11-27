@@ -64,7 +64,7 @@ const redraw = (oldState: State): State => {
   state.points.forEach(p => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-    graphics.drawCircle(0, 0, p.mass)
+    graphics.drawCircle(0, 0, 1.5 * p.mass)
     graphics.endFill()
     graphics.x = p.x
     graphics.y = p.y
@@ -75,18 +75,23 @@ const redraw = (oldState: State): State => {
 }
 
 const calcForceMovement = (state, points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
+  // const FORCE_STRENGTH = 0.0001 // funny -- they stick togehter
+  const FORCE_STRENGTH = -0.0001
+  const FORCE_POW = 2
+  const FORCE_MAX_DISTANCE_MUL = 2
+  const MOVE_MAX = 0.01
   const springForceVector = R.reduce((vector, p2) => {
     if (p === p2) {
       return vector
     }
     const distance = U.distance(p, p2)
     const zeroDistance = forceZeroDistance(p.mass + p2.mass, circleRadius)
-    let toMove = 0.0001 * ((distance - zeroDistance) ** 3)
+    // TODO -- division alwais stronger than sticking?
+    let toMove = FORCE_STRENGTH * ((distance - zeroDistance) ** FORCE_POW)
     // its like Worlds The Very Movement Speed Limit, ie speed of light )))))
-    const MOVE_MAX = 0.001
     toMove = R.pipe(R.min(MOVE_MAX), R.max(-MOVE_MAX))(toMove)
     // its like spring has broked and works no more
-    toMove = distance > (2 * zeroDistance) ? 0 : toMove
+    toMove = distance > (FORCE_MAX_DISTANCE_MUL * zeroDistance) ? 0 : toMove
     // if (state.ticks % 10 === 0) {
     //   console.log(toMove, zeroDistance, distance)
     // }
