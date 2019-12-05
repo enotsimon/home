@@ -5,21 +5,17 @@ import * as R from 'ramda'
 import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
+import { addCircleMask } from 'experimental/drawing_functions'
+import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
-import type { XYPoint } from 'common/utils'
+import type { MassSpeedPoint } from 'experimental/circle_border'
 
-type Vector = XYPoint
-
-type Point = {
+type Point = {|
+  ...MassSpeedPoint,
   id: number,
-  x: number,
-  y: number,
-  mass: number,
-  speed: Vector,
-  // acc: Vector,
-}
+|}
 
 type State = {|
   ...DrawerState,
@@ -36,20 +32,20 @@ const initGraphics = (oldState: DrawerState): State => {
   state.step = 0
   state.points = [{
     id: 1,
-    x: 50,
-    y: 40,
+    x: 0,
+    y: -75,
     mass: 1,
     speed: { x: 0, y: 0 },
   }, {
     id: 2,
-    x: 50,
-    y: 60,
+    x: 0,
+    y: 0,
     mass: 2,
     speed: { x: 0, y: 0 },
   }, {
     id: 3,
-    x: 40,
-    y: 50,
+    x: -10,
+    y: 75,
     mass: 3,
     speed: { x: 0, y: 0 },
   }]
@@ -63,18 +59,22 @@ const redraw = (oldState: State): State => {
     // return state
   }
   state.points = calcGravityAcceleration(state.points)
+  state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2, state.size / 5)
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
+  state.points = returnPointsToCircle(state.points, state.size / 2)
+
   state.base_container.removeChildren()
   state.points.forEach(p => {
     // console.log('PIONT', p)
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-    graphics.drawCircle(0, 0, p.mass / 2)
+    graphics.drawCircle(0, 0, p.mass ** 0.5)
     graphics.endFill()
     graphics.x = p.x
     graphics.y = p.y
     state.base_container.addChild(graphics)
   })
+  addCircleMask(state.base_container, state.size / 2)
   return state
 }
 
@@ -104,7 +104,7 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
 ]
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'square',
+  'circle',
   updateDebugInfo,
   initGraphics,
   redraw,

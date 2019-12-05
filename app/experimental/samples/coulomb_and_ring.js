@@ -7,22 +7,16 @@ import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
+import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
-import type { XYPoint } from 'common/utils'
+import type { MassSpeedPoint } from 'experimental/circle_border'
 
-// TODO reduce all copy-paste from gravity
 
-type Vector = XYPoint
-
-type Point = {
+type Point = {|
+  ...MassSpeedPoint,
   id: number,
-  x: number,
-  y: number,
-  mass: number, // or charge
-  speed: Vector,
-  // acc: Vector,
-}
+|}
 
 type State = {|
   ...DrawerState,
@@ -30,7 +24,7 @@ type State = {|
   points: Array<Point>,
 |}
 
-const FORCE_STRENGTH = 0.05
+const FORCE_STRENGTH = 0.01
 const COUNT_POINTS = 30
 
 const initGraphics = (oldState: DrawerState): State => {
@@ -52,23 +46,15 @@ const redraw = (oldState: State): State => {
     // return state
   }
   state.points = calcForceAcceleration(state.points)
-  state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
+  state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2, state.size / 5)
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
-  // naive circle border -- just return point back if they out of circle
-  state.points = state.points.map(p => {
-    const { angle, radius } = U.toPolarCoords(p)
-    if (radius > state.size / 2) {
-      const { x, y } = U.fromPolarCoords({ angle, radius: state.size / 2 })
-      return { ...p, x, y }
-    }
-    return p
-  })
+  state.points = returnPointsToCircle(state.points, state.size / 2)
 
   state.base_container.removeChildren()
   state.points.forEach(p => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-    graphics.drawCircle(0, 0, 2 * p.mass)
+    graphics.drawCircle(0, 0, p.mass ** 0.5)
     graphics.endFill()
     graphics.x = p.x
     graphics.y = p.y
@@ -88,18 +74,6 @@ const calcForceAcceleration = (points: Array<Point>): Array<Point> => R.map(p =>
     return crossSumm(accSpeed, accVector)
   }, { x: 0, y: 0 }, points)
   return { ...p, speed: crossSumm(p.speed, accelerationSum) }
-})(points)
-
-const calcCircleBorderForceAcceleration = (points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
-  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-  const distToBorder = circleRadius - radius
-  if (distToBorder < 0) {
-    // console.log('POINT IS OUT OF BORDER', p)
-  }
-  // const radiusVector = 0.5 * 1 / (distToBorder ** 3)
-  const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / 20)
-  const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-  return { ...p, speed: crossSumm(p.speed, accVector) }
 })(points)
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
