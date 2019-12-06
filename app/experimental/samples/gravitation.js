@@ -23,34 +23,53 @@ type State = {|
   points: Array<Point>,
 |}
 
-const GRAVITY_STRENGTH = 0.01
+const COUNT_POINTS = 50
+const MULTIPLIER = 200
+const GRAVITY_STRENGTH = 0.00005 * MULTIPLIER
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.step = 0
-  state.points = [{
-    id: 1,
-    x: 0,
-    y: -75,
-    mass: 1,
-    speed: { x: 0, y: 0 },
-  }, {
-    id: 2,
-    x: 0,
-    y: 0,
-    mass: 2,
-    speed: { x: 0, y: 0 },
-  }, {
-    id: 3,
-    x: -10,
-    y: 75,
-    mass: 3,
-    speed: { x: 0, y: 0 },
-  }]
+  // state.points = threePoints(state.size / 2)
+  // - state.size / 5 thats cause of circle border force
+  state.points = bunchOfSpinningPoints(state.size / 2 - state.size / 5, COUNT_POINTS)
   return state
 }
+
+/* eslint-disable-next-line no-unused-vars */
+const threePoints = (maxRadius: number): Array<Point> => [{
+  id: 1,
+  x: 0,
+  y: -3 * maxRadius / 4,
+  mass: 1,
+  speed: { x: 0, y: 0 },
+}, {
+  id: 2,
+  x: 0,
+  y: 0,
+  mass: 2,
+  speed: { x: 0, y: 0 },
+}, {
+  id: 3,
+  x: -maxRadius / 10,
+  y: 3 * maxRadius / 4,
+  mass: 3,
+  speed: { x: 0, y: 0 },
+}]
+
+const bunchOfSpinningPoints = (maxRadius: number, count: number): Array<Point> => R.map(id => {
+  const polarPoint = U.randomPointPolar(maxRadius)
+  const speedVectorAngle = polarPoint.angle - Math.PI / 4 // perpendicular to right
+  return {
+    ...U.fromPolarCoords(polarPoint),
+    id,
+    mass: 1,
+    speed: U.fromPolarCoords({ angle: speedVectorAngle, radius: maxRadius / MULTIPLIER })
+  }
+})(R.range(1, count + 1))
+
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
