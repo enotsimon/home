@@ -25,7 +25,7 @@ type State = {|
 |}
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 30
+const COUNT_POINTS = 20
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -76,10 +76,11 @@ const redraw = (oldState: State): State => {
 
 const calcForceMovement = (state, points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
   // const FORCE_STRENGTH = 0.0001 // funny -- they stick togehter
-  const FORCE_STRENGTH = -0.0001
+  // const MOVE_MAX = 0.01
+  const FORCE_STRENGTH = -0.001
   const FORCE_POW = 2
   const FORCE_MAX_DISTANCE_MUL = 2
-  const MOVE_MAX = 0.01
+  const MOVE_MAX = 0.001
   const springForceVector = R.reduce((vector, p2) => {
     if (p === p2) {
       return vector
