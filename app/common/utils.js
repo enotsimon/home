@@ -19,6 +19,8 @@ export type XYPoint = {|
   y: number,
 |}
 
+export type LineFormula = { a: number, b: number, c: number }
+
 // dont use it!!!
 export const execInCycleWithDelay = (
   index: number,
@@ -148,6 +150,30 @@ export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target:
   return R.reduce(([aN, aD], [cN, cD]) => (cD < aD ? [cN, cD] : [aN, aD]), maped[0], maped)[0]
 }
 
+// take two points and find formula of line between them in (ax + by + c = 0) style
+// TODO TEST
+export const lineFormula = <T: { ...XYPoint }>(p1: T, p2: T): LineFormula => {
+  // (y1 - y2) * x + (x2 - x1) * y + (x1*y2 -x2*y1) = 0 ((ax + by + c = 0))
+  const a = p1.y - p2.y
+  const b = p2.x - p1.x
+  const c = p1.x * p2.y - p2.x * p1.y
+  // resulting line is the same. we do that for comparing formulae
+  return (a >= 0) ? { a, b, c } : { a: -a, b: -b, c: -c }
+}
+
+// calculates two lines cross point lines taken by their a,b,c coef in (ax + by + c = 0) style
+// TODO TEST
+export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
+  // console.log('F', f1, f2);
+  const tmp = (f1.a * f2.b - f2.a * f1.b)
+  // they are parallel
+  if (tmp === 0) {
+    return null
+  }
+  const x = -(f1.c * f2.b - f2.c * f1.b) / tmp
+  const y = -(f1.a * f2.c - f2.a * f1.c) / tmp
+  return { x, y }
+}
 
 //
 // random points
@@ -234,29 +260,6 @@ perpendicular_bisector_formula(p1, p2) {
     b: p2.y - p1.y,
     c: (Math.pow(p1.x, 2) - Math.pow(p2.x, 2) + Math.pow(p1.y, 2) - Math.pow(p2.y, 2))/2
   };
-}
-
-// take two points and find formula of line between them in (ax + by + c = 0) style
-line_formula(p1, p2) {
-  // (y1 - y2) * x + (x2 - x1) * y + (x1*y2 -x2*y1) = 0 ((ax + by + c = 0))
-  let a = p1.y - p2.y;
-  let b = p2.x - p1.x;
-  let c = p1.x * p2.y - p2.x * p1.y;
-  // resulting line is the same. we do that for comparing formulae
-  return (a >= 0) ? {a: a, b: b, c: c} : {a: -a, b: -b, c: -c};
-}
-
-// calculates two lines cross point lines taken by their a,b,c coef in (ax + by + c = 0) style
-lines_cross_point(f1, f2) {
-  //console.log('F', f1, f2);
-  let tmp = (f1.a*f2.b - f2.a*f1.b);
-  // they are parallel
-  if (tmp == 0) {
-    return false;
-  }
-  let x = -(f1.c*f2.b - f2.c*f1.b) / tmp;
-  let y = -(f1.a*f2.c - f2.a*f1.c) / tmp;
-  return {x: x, y: y};
 }
 
 plane_formula(x1, y1, z1, x2, y2, z2, x3, y3, z3) {
