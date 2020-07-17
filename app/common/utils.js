@@ -151,7 +151,6 @@ export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target:
 }
 
 // take two points and find formula of line between them in (ax + by + c = 0) style
-// TODO TEST
 export const lineFormula = <T: { ...XYPoint }>(p1: T, p2: T): LineFormula => {
   // (y1 - y2) * x + (x2 - x1) * y + (x1*y2 -x2*y1) = 0 ((ax + by + c = 0))
   const a = p1.y - p2.y
@@ -162,7 +161,6 @@ export const lineFormula = <T: { ...XYPoint }>(p1: T, p2: T): LineFormula => {
 }
 
 // calculates two lines cross point lines taken by their a,b,c coef in (ax + by + c = 0) style
-// TODO TEST
 export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
   // console.log('F', f1, f2);
   const tmp = (f1.a * f2.b - f2.a * f1.b)
