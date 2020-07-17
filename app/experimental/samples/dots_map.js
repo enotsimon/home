@@ -11,7 +11,7 @@ import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type DotsState = {|
   ...DrawerState,
-  dots: Array<Dot>,
+  dots: Dots,
   links: Array<Link>,
   // note they are separated from 'buisness' objects
   dotsGraphics: Array<Object>, // PIXI graphics
@@ -26,6 +26,7 @@ type Dot = {
   x: number,
   y: number,
 }
+type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
 const initGraphics = (oldState: DrawerState): DotsState => {
@@ -48,7 +49,7 @@ const redraw = (state: DotsState): DotsState => {
 }
 
 // TODO move it to utils like random-points-generator
-const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: number = 0): Array<Dot> => {
+const recursiveAddDots = (scale: number, limit: number, dots = {}, cycles: number = 0): Dots => {
   const theVeryDistanceLimit = 0.02 * scale
   if (limit === 0) {
     return dots
@@ -69,13 +70,11 @@ const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: numbe
     return recursiveAddDots(scale, limit, dots, cycles + 1)
   }
   const dot = { id: limit, angle, radius, x, y }
-  return recursiveAddDots(scale, limit - 1, [...dots, dot], 0)
+  return recursiveAddDots(scale, limit - 1, { ...dots, [limit]: dot }, 0)
 }
 
-const connectDots = (dots: Array<Dot>): Array<Dot> => {
-  if (R.length(dots) === 0) {
-    return dots
-  }
+/* eslint-disable-next-line no-unused-vars */
+const connectDots = (dots: Dots): Array<Link> => {
   return []
 }
 
@@ -84,7 +83,7 @@ const drawLines = (dots: Array<Dot>, links: Array<Link>, container: Object): voi
 }
 
 const drawDots = (dots: Array<Dot>, container: Object): Array<Object> => {
-  return dots.map(dot => {
+  return R.map(dot => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
     graphics.drawCircle(0, 0, 1)
@@ -93,7 +92,7 @@ const drawDots = (dots: Array<Dot>, container: Object): Array<Object> => {
     graphics.y = dot.y
     container.addChild(graphics)
     return graphics
-  })
+  })(dots)
 }
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
