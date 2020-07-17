@@ -155,7 +155,7 @@ export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target:
 export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
   const angle = random.float(0, 2 * Math.PI)
   const radius = random.float(0, scale)
-  return fromPolarCoords(angle, radius)
+  return fromPolarCoords({ angle, radius })
 })(R.range(0, count))
 
 export const randomPointsInSquare = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
