@@ -82,3 +82,32 @@ describe('fromPolarCoords', () => {
     assert.deepEqual(U.fromPolarCoords({ angle: 0, radius: 0 }), { x: 0, y: 0 })
   })
 })
+
+describe('lineFormula', () => {
+  const samples = [
+    { p1: { x: 1, y: 1 }, p2: { x: 3, y: 1 }, expect: { a: 0, b: 2, c: -2 } },
+    { p1: { x: 3, y: 1 }, p2: { x: 1, y: 1 }, expect: { a: 0, b: -2, c: 2 } },
+    { p1: { x: -1, y: 1 }, p2: { x: 3, y: 1 }, expect: { a: 0, b: 4, c: -4 } },
+    { p1: { x: 0, y: 2 }, p2: { x: 0, y: 1 }, expect: { a: 1, b: 0, c: 0 } },
+    // not sure if it is correct
+    { p1: { x: 0, y: 1 }, p2: { x: 0, y: 2 }, expect: { a: 1, b: -0, c: -0 } },
+    { p1: { x: 0, y: 0 }, p2: { x: 1, y: 1 }, expect: { a: 1, b: -1, c: -0 } },
+  ]
+  samples.forEach(e => {
+    it(`should calc line formula for (${e.p1.x}, ${e.p1.y}) and (${e.p2.x}, ${e.p2.y})`, () => {
+      assert.deepEqual(U.lineFormula(e.p1, e.p2), e.expect)
+    })
+  })
+})
+
+describe('linesCrossPoint', () => {
+  const samples = [
+    { x1: { x: 0, y: 1 }, x2: { x: 2, y: 1 }, y1: { x: 1, y: 0 }, y2: { x: 1, y: 2 }, expect: { x: 1, y: 1 } },
+    { x1: { x: 0, y: 1 }, x2: { x: 1, y: 1 }, y1: { x: 0, y: 0 }, y2: { x: 0, y: 0 }, expect: null },
+  ]
+  samples.forEach((e, i) => {
+    it(`should calc lines crossing point for case ${i}`, () => {
+      assert.deepEqual(U.linesCrossPoint(U.lineFormula(e.x1, e.x2), U.lineFormula(e.y1, e.y2)), e.expect)
+    })
+  })
+})
