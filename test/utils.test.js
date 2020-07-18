@@ -137,24 +137,41 @@ describe('isSquaresIntersect', () => {
   })
 })
 
-describe('intervalsCrossPoint', () => {
+describe('intervalsCrossPoint & intervalsCrossPointNoEdge', () => {
   const samples = [
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 0 }, { x: 1, y: 2 }, { x: 1, y: 1 }],
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2, y: 1 }, { x: 2, y: 1 }],
-    [{ x: -5, y: -3 }, { x: 2, y: -3 }, { x: -3, y: 1 }, { x: -3, y: -9 }, { x: -3, y: -3 }],
-    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: 1, y: 1 }, { x: 3, y: 3 }, null],
-    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: 1.5, y: 1.5 }, { x: 3.5, y: 3.5 }, null],
-    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: -3, y: 2 }, { x: -1, y: 0 }, null],
+    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 1, y: 0 }, { x: 1, y: 2 }, { x: 1, y: 1 }, { x: 1, y: 1 }],
+    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2, y: 1 }, { x: 2, y: 1 }, null],
+    [{ x: -5, y: -3 }, { x: 2, y: -3 }, { x: -3, y: 1 }, { x: -3, y: -9 }, { x: -3, y: -3 }, { x: -3, y: -3 }],
+    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: 1, y: 1 }, { x: 3, y: 3 }, null, null],
+    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: 1.5, y: 1.5 }, { x: 3.5, y: 3.5 }, null, null],
+    [{ x: 0, y: 0 }, { x: 2, y: 2 }, { x: -3, y: 2 }, { x: -1, y: 0 }, null, null],
     // this demonstrate float rounding error
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2.000000000000001, y: 1 }, null],
-    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2.0000000000000001, y: 1 }, { x: 2, y: 1 }],
-    [{ x: 0, y: 1 }, { x: 9999, y: 1 }, { x: 6, y: 6 }, { x: 9999.000000000001, y: 1 }, null],
-    [{ x: 0, y: 1 }, { x: 9999, y: 1 }, { x: 6, y: 6 }, { x: 9999.0000000000001, y: 1 }, { x: 9999, y: 1 }],
+    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2.000000000000001, y: 1 }, null, null],
+    [{ x: 0, y: 1 }, { x: 2, y: 1 }, { x: 6, y: 6 }, { x: 2.0000000000000001, y: 1 }, { x: 2, y: 1 }, null],
+    [{ x: 0, y: 1 }, { x: 9999, y: 1 }, { x: 6, y: 6 }, { x: 9999.000000000001, y: 1 }, null, null],
+    [{ x: 0, y: 1 }, { x: 9999, y: 1 }, { x: 6, y: 6 }, { x: 9999.0000000000001, y: 1 }, { x: 9999, y: 1 }, null],
   ]
   samples.forEach(([a1, a2, b1, b2, expect], i) => {
-    it(`should tell if squares intersect for case ${i}`, () => {
+    it(`intervalsCrossPoint should tell if squares intersect for case ${i}`, () => {
       assert.deepEqual(U.intervalsCrossPoint(a1, a2, b1, b2), expect)
     })
+  })
+  samples.forEach(([a1, a2, b1, b2,, expect], i) => {
+    it(`intervalsCrossPointNoEdge should tell if squares intersect for case ${i}`, () => {
+      assert.deepEqual(U.intervalsCrossPointNoEdge(a1, a2, b1, b2), expect)
+    })
+  })
+  it('intervalsCrossPoint should throw exception if a1 === a2', () => {
+    assert.throws(
+      () => U.intervalsCrossPoint({ x: 2, y: 6 }, { y: 6, x: 2 }, { x: 0, y: 0 }, { x: 1, y: 1 }),
+      'a1 === a2 or b1 === b2 which is not allowed'
+    )
+  })
+  it('intervalsCrossPoint should throw exception if b1 === b2', () => {
+    assert.throws(
+      () => U.intervalsCrossPoint({ x: 0, y: 0 }, { x: 1, y: 1 }, { x: 2, y: 6 }, { y: 6, x: 2 }),
+      'a1 === a2 or b1 === b2 which is not allowed'
+    )
   })
 })
 

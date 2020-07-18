@@ -177,6 +177,9 @@ export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
 }
 
 export const intervalsCrossPoint = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): ?XYPoint => {
+  if (R.equals(a1, a2) || R.equals(b1, b2)) {
+    throw new Error('a1 === a2 or b1 === b2 which is not allowed')
+  }
   if (!isSquaresIntersect(a1, a2, b1, b2)) {
     return null
   }
@@ -188,6 +191,13 @@ export const intervalsCrossPoint = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: X
     return c
   }
   return null
+}
+
+export const intervalsCrossPointNoEdge = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): ?XYPoint => {
+  if (R.equals(a1, b1) || R.equals(a1, b2) || R.equals(a2, b1) || R.equals(a2, b2)) {
+    return null
+  }
+  return intervalsCrossPoint(a1, a2, b1, b2)
 }
 
 export const isSquaresIntersect = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): boolean => {
