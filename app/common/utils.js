@@ -162,7 +162,6 @@ export const lineFormula = <T: { ...XYPoint }>(p1: T, p2: T): LineFormula => {
 
 // calculates two lines cross point lines taken by their a,b,c coef in (ax + by + c = 0) style
 export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
-  // console.log('F', f1, f2);
   const tmp = (f1.a * f2.b - f2.a * f1.b)
   // they are parallel
   if (tmp === 0) {
@@ -172,6 +171,35 @@ export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
   const y = -(f1.a * f2.c - f2.a * f1.c) / tmp
   return { x, y }
 }
+
+export const intervalsCrossPoint = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): ?XYPoint => {
+  if (!isSquaresIntersect(a1, a2, b1, b2)) {
+    return null
+  }
+  const c = linesCrossPoint(lineFormula(a1, a2), lineFormula(b1, b2))
+  if (!c) {
+    return null
+  }
+  if (between(c.x, a1.x, a2.x) && between(c.y, a1.y, a2.y) && between(c.x, b1.x, b2.x) && between(c.y, b1.y, b2.y)) {
+    return c
+  }
+  return null
+}
+
+export const isSquaresIntersect = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): boolean => {
+  const [axmin, axmax] = minmax(a1.x, a2.x)
+  const [aymin, aymax] = minmax(a1.y, a2.y)
+  const [bxmin, bxmax] = minmax(b1.x, b2.x)
+  const [bymin, bymax] = minmax(b1.y, b2.y)
+  return (Math.min(axmax, bxmax) >= Math.max(axmin, bxmin)) && (Math.min(aymax, bymax) >= Math.max(aymin, bymin))
+}
+
+const between = (target: number, n1: number, n2: number): boolean => {
+  const [min, max] = minmax(n1, n2)
+  return (min <= target) && (target <= max)
+}
+
+const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1] : [n1, n2])
 
 //
 // random points
