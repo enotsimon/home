@@ -20,5 +20,3 @@ export const randomPointPolar = (radius: number = 1): PolarPoint =>
 
 export const randomPointInSquare = (scale: number = 1): XYPoint =>
   ({ x: random.float(0, scale), y: random.float(0, scale) })
-
-// import { randomPointInSquare } from 'experimental/random_points'
