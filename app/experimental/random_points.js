@@ -32,7 +32,7 @@ export const randomPointPolar = (radius: number = 1): PolarPoint =>
 export const randomPointInSquare = (scale: number = 1): XYPoint =>
   ({ x: random.float(0, scale), y: random.float(0, scale) })
 
-export const recursiveAddDotsIntoCircleWithMinDistance = (
+export const addDotsIntoCircleWithMinDistance = (
   scale: number,
   minDistance: number,
   limit: number,
@@ -51,12 +51,12 @@ export const recursiveAddDotsIntoCircleWithMinDistance = (
   const { angle, radius } = U.toPolarCoords({ x, y })
   // minDistance i added because of circle contour
   if (radius > (scale - minDistance)) {
-    return recursiveAddDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles)
+    return addDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles)
   }
   const tooCloseToAnotherDot = R.find(d => U.distance(d, { x, y }) <= minDistance)(R.values(dots))
   if (tooCloseToAnotherDot) {
-    return recursiveAddDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles + 1)
+    return addDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles + 1)
   }
   const dot = { id: limit, angle, radius, x, y }
-  return recursiveAddDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [limit]: dot }, 0)
+  return addDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [limit]: dot }, 0)
 }
