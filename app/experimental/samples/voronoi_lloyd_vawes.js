@@ -8,6 +8,7 @@ import seedrandom from 'seedrandom'
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import { addCircleMask, rotateGraphics } from 'experimental/drawing_functions'
+import { randomPointsInSquare } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
@@ -74,7 +75,7 @@ const redraw = (oldState: State): State => {
 }
 
 const randomPoints = (count: number, size: number, generation: number) =>
-  U.randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
+  randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
 
 // TODO remove copy-paste
 const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrixes): Object => {

@@ -8,6 +8,7 @@ import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { generate } from 'common/rrt_diagram'
+import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { RRTDiagram, RRTPoint } from 'common/rrt_diagram'
@@ -37,7 +38,7 @@ const initGraphics = (state: State): State => {
   }
 }
 
-const randomPointFunc = (radius: number) => () => U.fromPolarCoords(U.randomPointPolar(radius))
+const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
 const redraw = (state: State): State => {
   const point = state.rrt[state.curIndex]

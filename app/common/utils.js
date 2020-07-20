@@ -217,25 +217,6 @@ const between = (target: number, n1: number, n2: number): boolean => {
 
 const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1] : [n1, n2])
 
-//
-// random points
-//
-export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
-  const angle = random.float(0, 2 * Math.PI)
-  const radius = random.float(0, scale)
-  return fromPolarCoords({ angle, radius })
-})(R.range(0, count))
-
-export const randomPointsInSquare = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
-  return { x: random.float(0, scale), y: random.float(0, scale) }
-})(R.range(0, count))
-
-export const randomPointPolar = (radius: number = 1): PolarPoint =>
-  ({ angle: 2 * Math.PI * random.float(), radius: radius * Math.sqrt(random.float()) })
-
-export const randomPointInSquare = (scale: number = 1): XYPoint =>
-  ({ x: random.float(0, scale), y: random.float(0, scale) })
-
 // ??? experimental. some standard routine for cyclic openList processing
 /*
 export const doWhileNotEmpty = (openList: Array<any>, func): boolean => {

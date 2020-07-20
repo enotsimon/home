@@ -8,6 +8,7 @@ import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
+import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
@@ -91,7 +92,7 @@ const addChildCell = (cells: Array<Cell>, parent: Cell, checkFunc: CheckFunc, co
   if (counter >= REJECT_LIMIT) {
     return null
   }
-  const { x, y } = U.fromPolarCoords(U.randomPointPolar(STEP))
+  const { x, y } = U.fromPolarCoords(randomPointPolar(STEP))
   const newXYPoint = { x: x + parent.x, y: y + parent.y }
   // or STEP / 2 ?
   if (R.find(c => U.distance(c, newXYPoint) < STEP)) {

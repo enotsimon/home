@@ -8,6 +8,7 @@ import seedrandom from 'seedrandom'
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import { addCircleMask } from 'experimental/drawing_functions'
+import { randomPointPolar, randomPointsInSquare } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
@@ -71,8 +72,8 @@ const redraw = (oldState: State): State => {
 }
 
 const randomPoints = (count: number, size: number, generation: number) => {
-  const { x: xc, y: yc } = U.fromPolarCoords(U.randomPointPolar(size / 2))
-  return U.randomPointsInSquare(count).map(e => ({ x: e.x + xc + size / 2, y: e.y + yc + size / 2, generation }))
+  const { x: xc, y: yc } = U.fromPolarCoords(randomPointPolar(size / 2))
+  return randomPointsInSquare(count).map(e => ({ x: e.x + xc + size / 2, y: e.y + yc + size / 2, generation }))
 }
 
 // TODO remove copy-paste
