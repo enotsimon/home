@@ -13,11 +13,13 @@ export type PolarPoint = {|
   angle: number,
   radius: number,
 |}
+export type PolarPInex = { ...PolarPoint }
 
 export type XYPoint = {|
   x: number,
   y: number,
 |}
+export type XYPInex = { ...XYPoint }
 
 export type LineFormula = { a: number, b: number, c: number }
 
@@ -65,14 +67,14 @@ export const normalizeValue = (
 // ////////////////////////////////////////
 
 // TODO rewrite to XYPoint
-export const toPolarCoords = <T: { ...XYPoint }>({ x, y }: T): PolarPoint => {
+export const toPolarCoords = ({ x, y }: XYPInex): PolarPoint => {
   const radius = Math.sqrt(x * x + y * y)
   const angle = Math.atan2(y, x)
   return { angle, radius }
 }
 
 // TODO rewrite to PolarPoint
-export const fromPolarCoords = <T: { ...PolarPoint }>({ angle, radius }: T): XYPoint => {
+export const fromPolarCoords = ({ angle, radius }: PolarPInex): XYPoint => {
   const x = radius * Math.cos(angle)
   const y = radius * Math.sin(angle)
   return { x, y }
@@ -88,13 +90,13 @@ export const anglesDiff = (a: Radians, b: Radians): Radians => {
 }
 
 // length -- usually from 0 to 1
-export const moveByVector = (from: XYPoint, to: XYPoint, length: number): XYPoint => {
+export const moveByVector = (from: XYPInex, to: XYPInex, length: number): XYPoint => {
   // why i wrote j_max + 1? thats for last gradient area -- otherwise it will be just a single dot
   return { x: from.x + (to.x - from.x) * length, y: from.y + (to.y - from.y) * length }
 }
 
 
-export const convexPolygonCentroid = (points: Array<XYPoint>): XYPoint => {
+export const convexPolygonCentroid = (points: Array<XYPInex>): XYPoint => {
   const p1 = points[0]
   let square_sum = 0
   let xc = 0; let
@@ -113,7 +115,7 @@ export const convexPolygonCentroid = (points: Array<XYPoint>): XYPoint => {
 /**
  * square of convex polygon. points should be sorted by angle to center!!!
  */
-export const convexPolygonSquare = (points: Array<XYPoint>): number => {
+export const convexPolygonSquare = (points: Array<XYPInex>): number => {
   const p1 = points[0]
   let square = 0
   for (let i = 1; i < points.length - 1; i + 1) {
@@ -124,7 +126,7 @@ export const convexPolygonSquare = (points: Array<XYPoint>): number => {
   return square
 }
 
-export const distance = <T: { ...XYPoint }>(p1: T, p2: T): number => {
+export const distance = (p1: XYPInex, p2: XYPInex): number => {
   return Math.sqrt(((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2))
 }
 
@@ -136,7 +138,7 @@ export const gaussFunction = (x: number, sigma: number, mu: number): number => {
 /**
  * angle between three points where b is apex (middle point)
  */
-export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
+export const angleBy3Points = (a: XYPInex, b: XYPInex, c: XYPInex): Radians => {
   const ab = { x: b.x - a.x, y: b.y - a.y }
   const cb = { x: b.x - c.x, y: b.y - c.y }
   const dot = (ab.x * cb.x + ab.y * cb.y) // dot product
@@ -146,7 +148,7 @@ export const angleBy3Points = (a: XYPoint, b: XYPoint, c: XYPoint): Radians => {
   // return (int) floor(alpha * 180. / pi + 0.5);
 }
 
-export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target: T1, points: Array<T2>): T2 => {
+export const findNearestPoint = <T: XYPInex>(target: XYPInex, points: Array<T>): T => {
   if (points.length === 0) {
     throw ('empty points array')
   }
@@ -155,7 +157,7 @@ export const findNearestPoint = <T1: { ...XYPoint }, T2: { ...XYPoint }>(target:
 }
 
 // take two points and find formula of line between them in (ax + by + c = 0) style
-export const lineFormula = <T: { ...XYPoint }>(p1: T, p2: T): LineFormula => {
+export const lineFormula = (p1: XYPInex, p2: XYPInex): LineFormula => {
   // (y1 - y2) * x + (x2 - x1) * y + (x1*y2 -x2*y1) = 0 ((ax + by + c = 0))
   const a = p1.y - p2.y
   const b = p2.x - p1.x
@@ -176,7 +178,7 @@ export const linesCrossPoint = (f1: LineFormula, f2: LineFormula): ?XYPoint => {
   return { x, y }
 }
 
-export const intervalsCrossPoint = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): ?XYPoint => {
+export const intervalsCrossPoint = (a1: XYPInex, a2: XYPInex, b1: XYPInex, b2: XYPInex): ?XYPoint => {
   if (R.equals(a1, a2) || R.equals(b1, b2)) {
     throw new Error('a1 === a2 or b1 === b2 which is not allowed')
   }
@@ -193,14 +195,14 @@ export const intervalsCrossPoint = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: X
   return null
 }
 
-export const intervalsCrossPointNoEdge = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): ?XYPoint => {
+export const intervalsCrossPointNoEdge = (a1: XYPInex, a2: XYPInex, b1: XYPInex, b2: XYPInex): ?XYPoint => {
   if (R.equals(a1, b1) || R.equals(a1, b2) || R.equals(a2, b1) || R.equals(a2, b2)) {
     return null
   }
   return intervalsCrossPoint(a1, a2, b1, b2)
 }
 
-export const isSquaresIntersect = (a1: XYPoint, a2: XYPoint, b1: XYPoint, b2: XYPoint): boolean => {
+export const isSquaresIntersect = (a1: XYPInex, a2: XYPInex, b1: XYPInex, b2: XYPInex): boolean => {
   const [axmin, axmax] = minmax(a1.x, a2.x)
   const [aymin, aymax] = minmax(a1.y, a2.y)
   const [bxmin, bxmax] = minmax(b1.x, b2.x)
