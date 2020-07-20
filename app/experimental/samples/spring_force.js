@@ -7,6 +7,7 @@ import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
+import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
@@ -33,7 +34,7 @@ const initGraphics = (oldState: DrawerState): State => {
   random.use(seedrandom(seed))
   state.step = 0
   state.points = R.map(id => {
-    const { x, y } = U.fromPolarCoords(U.randomPointPolar(state.size / 2))
+    const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
     return { id, x, y, mass: random.int(1, 1) }
   })(R.range(0, COUNT_POINTS))
   // state.points = [

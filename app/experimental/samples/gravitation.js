@@ -7,6 +7,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
+import { randomPointPolar } from 'experimental/random_points'
 
 import { initDrawer } from 'experimental/drawer'
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
@@ -60,7 +61,7 @@ const threePoints = (maxRadius: number): Array<Point> => [{
 }]
 
 const bunchOfSpinningPoints = (maxRadius: number, count: number): Array<Point> => R.map(id => {
-  const polarPoint = U.randomPointPolar(maxRadius)
+  const polarPoint = randomPointPolar(maxRadius)
   const speedVectorAngle = polarPoint.angle - Math.PI / 4 // perpendicular to right
   return {
     ...U.fromPolarCoords(polarPoint),

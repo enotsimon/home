@@ -8,6 +8,8 @@ import seedrandom from 'seedrandom'
 
 import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
+import { randomPointsInSquare } from 'experimental/random_points'
+
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
@@ -29,7 +31,7 @@ const initGraphics = (oldState: DrawerState): State => {
   const totalDots = DOTS_TOTAL
   const seed = Date.now()
   random.use(seedrandom(seed))
-  const points = U.randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
+  const points = randomPointsInSquare(totalDots).map(e => ({ x: e.x + state.size / 2, y: e.y + state.size / 2 }))
   state.step = 0
   state.voronoi = generate(points, state.size, state.size, 0)
   state.colorMatrix = Color.allChannelMatrixes(1).sort(() => random.float(-1, 1))[0]

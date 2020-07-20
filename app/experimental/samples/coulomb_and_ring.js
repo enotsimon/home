@@ -8,6 +8,7 @@ import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
+import { randomPointInSquare } from 'experimental/random_points'
 
 import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
@@ -33,7 +34,7 @@ const initGraphics = (oldState: DrawerState): State => {
   random.use(seedrandom(seed))
   state.step = 0
   state.points = R.map(id => {
-    const { x, y } = U.randomPointInSquare(state.size / 2)
+    const { x, y } = randomPointInSquare(state.size / 2)
     return { id, x: x - state.size / 4, y: y - state.size / 4, mass: 1, speed: { x: 0, y: 0 } }
   })(R.range(0, COUNT_POINTS))
   return state
