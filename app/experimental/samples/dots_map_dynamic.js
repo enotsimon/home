@@ -104,9 +104,9 @@ const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): b
 }
 
 const removeLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Dots => {
-  const dotsToRemovePre = R.difference(R.keys(dots), R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links))
-  const dotsToRemove = R.filter(id => dots[id].counter < counter + 2 * LINKS_AFTER_TICKS)(dotsToRemovePre)
-  return R.omit(R.keys(dotsToRemove), dots)
+  const dotsToRemovePre = R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots))
+  const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - 2 * LINKS_AFTER_TICKS))(dotsToRemovePre)
+  return R.omit(dotIdsToRemove, dots)
 }
 
 const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R.forEach(([d1, d2]) => {
