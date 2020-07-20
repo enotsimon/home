@@ -12,6 +12,8 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
+import { recursiveAddDotsIntoCircleWithMinDistance } from 'experimental/random_points'
+import type { Dots, DotId } from 'experimental/random_points'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type DotsState = {|
@@ -22,16 +24,6 @@ type DotsState = {|
   dotsGraphics: Array<Object>, // PIXI graphics
 |}
 
-type DotId = number
-type Dot = {
-  id: DotId,
-  angle: number,
-  radius: number,
-  // store them cause too ofter we need to convert from polar
-  x: number,
-  y: number,
-}
-type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
 // const PAIRS_PART_BASIC = 0.25
@@ -47,7 +39,7 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   // TODO min distance between
-  state.dots = recursiveAddDots(state.size / 2, DOTS_COUNT)
+  state.dots = recursiveAddDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, DOTS_COUNT)
   // state.links = connectDotsBasic(state.dots, PAIRS_PART_BASIC)
   // state.links = connectDotsRemoveMostDistant(state.dots, PAIRS_PART_RMD, RMD_PERCENTILE)
   state.links = connectDotsRemoveMostConnected(state.dots, PAIRS_PART_RMC, RMC_PERCENTILE)
@@ -61,31 +53,6 @@ const initGraphics = (oldState: DrawerState): DotsState => {
 
 const redraw = (state: DotsState): DotsState => {
   return state
-}
-
-// TODO move it to utils like random-points-generator
-const recursiveAddDots = (scale: number, limit: number, dots = {}, cycles: number = 0): Dots => {
-  const theVeryDistanceLimit = DISTANCE_LIMIT_MUL * scale
-  if (limit === 0) {
-    return dots
-  }
-  if (cycles === 1000) {
-    throw new Error('too many cycles')
-  }
-  // TODO stupid way, but -- dont care
-  const x = random.int(-scale, scale)
-  const y = random.int(-scale, scale)
-  const { angle, radius } = U.toPolarCoords({ x, y })
-  // theVeryDistanceLimit i added because of circle contour
-  if (radius > (scale - theVeryDistanceLimit)) {
-    return recursiveAddDots(scale, limit, dots, cycles)
-  }
-  const tooCloseToBorder = R.find(d => U.distance(d, { x, y }) <= theVeryDistanceLimit)(R.values(dots))
-  if (tooCloseToBorder) {
-    return recursiveAddDots(scale, limit, dots, cycles + 1)
-  }
-  const dot = { id: limit, angle, radius, x, y }
-  return recursiveAddDots(scale, limit - 1, { ...dots, [limit]: dot }, 0)
 }
 
 const connectDotsBasic = (dots: Dots, pairsPart: number): Array<Link> => {

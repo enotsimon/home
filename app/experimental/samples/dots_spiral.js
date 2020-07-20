@@ -7,6 +7,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
+import { recursiveAddDotsIntoCircleWithMinDistance } from 'experimental/random_points'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
 type DotsState = {|
@@ -28,13 +29,16 @@ type Dot = {
   children: Array<DotId>,
 }
 
+const DISTANCE_LIMIT_MUL = 0.02
+
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
   const totalDots = 250
   const seed = Date.now()
   random.use(seedrandom(seed))
   // TODO min distance between
-  state.dots = recursiveAddDots(state.size / 2, totalDots)
+  const dotsObj = recursiveAddDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, totalDots)
+  state.dots = R.map(d => ({ ...d, parent: null, children: [] }))(R.values(dotsObj))
   state.dots = connectDotsToSpiral(state.dots)
   state.dotsGraphics = state.dots.map(dot => {
     const graphics = new PIXI.Graphics()
@@ -54,31 +58,6 @@ const initGraphics = (oldState: DrawerState): DotsState => {
 
 const redraw = (state: DotsState): DotsState => {
   return state
-}
-
-// TODO move it to utils like random-points-generator
-const recursiveAddDots = (scale: number, limit: number, dots = [], cycles: number = 0): Array<Dot> => {
-  const theVeryDistanceLimit = 0.02 * scale
-  if (limit === 0) {
-    return dots
-  }
-  if (cycles === 1000) {
-    throw new Error('too many cycles')
-  }
-  // TODO stupid way, but -- dont care
-  const x = random.int(-scale, scale)
-  const y = random.int(-scale, scale)
-  const { angle, radius } = U.toPolarCoords({ x, y })
-  // theVeryDistanceLimit i added because of circle contour
-  if (radius > (scale - theVeryDistanceLimit)) {
-    return recursiveAddDots(scale, limit, dots, cycles)
-  }
-  const tooClose = R.find(d => U.distance(d, { x, y }) <= theVeryDistanceLimit)(dots)
-  if (tooClose) {
-    return recursiveAddDots(scale, limit, dots, cycles + 1)
-  }
-  const dot = { id: limit, angle, radius, x, y, parent: null, children: [] }
-  return recursiveAddDots(scale, limit - 1, [...dots, dot], 0)
 }
 
 const connectDotsToSpiral = (dots: Array<Dot>): Array<Dot> => {
