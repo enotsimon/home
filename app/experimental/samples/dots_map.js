@@ -30,8 +30,10 @@ type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
 // const PAIRS_PART_BASIC = 0.25
-const PAIRS_PART_RMD = 0.5
-const RMD_PERCENTILE = 0.6
+// const PAIRS_PART_RMD = 0.5
+// const RMD_PERCENTILE = 0.6
+const PAIRS_PART_RMC = 0.8
+const RMC_PERCENTILE = 0.85
 const DISTANCE_LIMIT_MUL = 0.05
 const DOTS_COUNT = 100
 
@@ -42,7 +44,8 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   // TODO min distance between
   state.dots = recursiveAddDots(state.size / 2, DOTS_COUNT)
   // state.links = connectDotsBasic(state.dots, PAIRS_PART_BASIC)
-  state.links = connectDotsRemoveMostDistant(state.dots, PAIRS_PART_RMD)
+  // state.links = connectDotsRemoveMostDistant(state.dots, PAIRS_PART_RMD, RMD_PERCENTILE)
+  state.links = connectDotsRemoveMostConnected(state.dots, PAIRS_PART_RMC, RMC_PERCENTILE)
   console.log('DOTS COUNT', R.keys(state.dots).length, 'LINKS COUNT', state.links.length)
   state.dotsGraphics = drawDots(state.dots, state.base_container)
   // TODO add this crap to state
@@ -94,17 +97,30 @@ const connectDotsBasic = (dots: Dots, pairsPart: number): Array<Link> => {
   return links
 }
 
-const connectDotsRemoveMostDistant = (dots: Dots, pairsPart: number): Array<Link> => {
+/* eslint-disable-next-line no-unused-vars */
+const connectDotsRemoveMostDistant = (dots: Dots, pairsPart: number, percentile: number): Array<Link> => {
   const links = connectDotsBasic(dots, pairsPart)
   const lwd = links.map(([d1, d2]) => [d1, d2, U.distance(dots[d1], dots[d2])])
   const limit = R.pipe(
     R.map(([,, d]) => d),
     R.uniq,
     R.sort((e1, e2) => e1 - e2),
-    list => R.nth(Math.ceil(RMD_PERCENTILE * list.length))(list)
+    list => R.nth(Math.ceil(percentile * list.length))(list)
   )(lwd)
   console.log('CUT LINKS LONGER THAN', limit)
   return lwd.filter(([,, dis]) => dis < limit).map(([d1, d2]) => [d1, d2])
+}
+
+const connectDotsRemoveMostConnected = (dots: Dots, pairsPart: number, percentile: number): Array<Link> => {
+  const links = connectDotsBasic(dots, pairsPart)
+  const counters = links.reduce((acc, [d1, d2]) => ({ ...acc, [d1]: (acc[d1] || 0) + 1, [d2]: (acc[d2] || 0) + 1 }), {})
+  const limit = R.pipe(
+    R.values,
+    R.sort((e1, e2) => e1 - e2),
+    list => R.nth(Math.ceil(percentile * list.length))(list)
+  )(counters)
+  console.log('CUT LINKS CONNECTED TO MORE THAN', limit)
+  return links.filter(([d1, d2]) => counters[d1] < limit && counters[d2] < limit)
 }
 
 const drawLines = (dots: Array<Dot>, links: Array<Link>, container: Object): void => {
