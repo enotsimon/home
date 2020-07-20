@@ -12,7 +12,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
-import { recursiveAddDotsIntoCircleWithMinDistance } from 'experimental/random_points'
+import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
 import type { Dots, DotId } from 'experimental/random_points'
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 
@@ -39,7 +39,7 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   // TODO min distance between
-  state.dots = recursiveAddDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, DOTS_COUNT)
+  state.dots = addDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, DOTS_COUNT)
   // state.links = connectDotsBasic(state.dots, PAIRS_PART_BASIC)
   // state.links = connectDotsRemoveMostDistant(state.dots, PAIRS_PART_RMD, RMD_PERCENTILE)
   state.links = connectDotsRemoveMostConnected(state.dots, PAIRS_PART_RMC, RMC_PERCENTILE)
