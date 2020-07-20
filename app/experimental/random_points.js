@@ -6,14 +6,14 @@ import * as R from 'ramda'
 import type { XYPoint, PolarPoint } from 'common/utils'
 
 export type DotId = number
-export type Dot = {
+export type Dot = {|
   id: DotId,
   angle: number,
   radius: number,
   // store them cause too ofter we need to convert from polar
   x: number,
   y: number,
-}
+|}
 export type Dots = {[DotId]: Dot}
 
 export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
@@ -36,7 +36,7 @@ export const addDotsIntoCircleWithMinDistance = (
   scale: number,
   minDistance: number,
   limit: number,
-  dots: Dots = {},
+  dots: { ...Dots } = {},
   cycles: number = 0
 ): Dots => {
   if (limit === 0) {
