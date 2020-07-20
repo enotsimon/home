@@ -11,6 +11,7 @@ import { initDrawer } from 'experimental/drawer'
 
 import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
+import type { RRTPoint } from 'common/rrt_diagram'
 
 const STEP = 5
 const REJECT_LIMIT = 100
@@ -115,6 +116,7 @@ const redraw = (state: State): State => {
   return state
 }
 
+/* eslint-disable-next-line no-unused-vars */
 const drawCircle = (graphics: PIXIContainer, point: RRTPoint, maxGeneration: number): void => {
   const color = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 255, 0, 75)
   // graphics.lineStyle(0, Color.to_pixi([0, 0, 0]))
@@ -123,6 +125,7 @@ const drawCircle = (graphics: PIXIContainer, point: RRTPoint, maxGeneration: num
   graphics.endFill()
 }
 
+/* eslint-disable-next-line no-unused-vars */
 const drawLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, maxGeneration: number): void => {
   const color = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 125, 0, 50)
   const lineWidth = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 2, 0, 0.25)
