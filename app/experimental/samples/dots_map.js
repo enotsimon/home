@@ -80,7 +80,6 @@ const recursiveAddDots = (scale: number, limit: number, dots = {}, cycles: numbe
   return recursiveAddDots(scale, limit - 1, { ...dots, [limit]: dot }, 0)
 }
 
-/* eslint-disable-next-line no-unused-vars */
 const connectDotsBasic = (dots: Dots, pairsPart: number): Array<Link> => {
   // note -shuffle them at once
   const allPairs = U.shuffle(R.filter(([d1, d2]) => d1 !== d2, U.pairs(R.keys(dots))))
@@ -108,7 +107,6 @@ const connectDotsRemoveMostDistant = (dots: Dots, pairsPart: number): Array<Link
   return lwd.filter(([,, dis]) => dis < limit).map(([d1, d2]) => [d1, d2])
 }
 
-/* eslint-disable-next-line no-unused-vars */
 const drawLines = (dots: Array<Dot>, links: Array<Link>, container: Object): void => {
   links.forEach(([d1, d2]) => {
     const graphics = new PIXI.Graphics()
