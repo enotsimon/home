@@ -57,6 +57,8 @@ export const addDotsIntoCircleWithMinDistance = (
   if (tooCloseToAnotherDot) {
     return addDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles + 1)
   }
-  const dot = { id: limit, angle, radius, x, y }
-  return addDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [limit]: dot }, 0)
+  const allIds = R.keys(dots)
+  const id = (allIds.length ? R.reduce((max, cur) => Math.max(max, cur), allIds[0], allIds) : 0) + 1
+  const dot = { id, angle, radius, x, y }
+  return addDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [dot.id]: dot }, 0)
 }
