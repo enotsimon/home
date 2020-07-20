@@ -29,6 +29,7 @@ import { init as initRRTBasic } from 'experimental/samples/rrt_basic'
 import { init as initRRTFlashes } from 'experimental/samples/rrt_flashes'
 import { init as initSpringForce } from 'experimental/samples/spring_force'
 import { init as initDotsMap } from 'experimental/samples/dots_map'
+import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
 
 // const store = createStore(reducers, window.__REDUX_DEVTOOL1S_EXTENSION__(), applyMiddleware(thunk)
 // const store = createStore(reducers, window.__REDUX_DEVTOOLS_1EXTENSION__())
@@ -66,6 +67,7 @@ ReactDOM.render((
           <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
           <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
           <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
+          <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
           {/* dont work. 404 routed from dev server itself */}
           <Route path="/" render={page404} />
         </Switch>
