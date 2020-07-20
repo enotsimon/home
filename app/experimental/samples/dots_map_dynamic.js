@@ -29,11 +29,11 @@ type Dot = {| ...OrigDot, counter: number |}
 type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
-const THROTTLE = 10
+const THROTTLE = 5
 const LINKS_AFTER_TICKS = 5
 const DISTANCE_LIMIT_MUL = 0.05
 const DOTS_LIMIT = 100
-const LINK_LENGTH_LIMIT = 0.5
+const LINK_LENGTH_LIMIT = 0.1
 const LINKS_COUNT_LIMIT = 2 // meant not all, but links built _from_ dot
 const LINKS_MAX_RETRY = 10
 
