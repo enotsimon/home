@@ -77,6 +77,13 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/wavy_planet.jpg',
     status: 'ready',
   },
+  {
+    name: 'dots map',
+    description: 'random dots connected to something looks like an islands map',
+    sample_url: './dots_map_dynamic',
+    img_path: './thumbnails/dots_map_dynamic.png',
+    status: 'in_progress',
+  },
 ]
 
 const colorConfig: Array<SamplePreviewConfig> = [
