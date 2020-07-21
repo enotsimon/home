@@ -10,7 +10,7 @@ import { generate } from 'common/voronoi'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointsInSquare } from 'experimental/random_points'
 
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
 
@@ -78,11 +78,10 @@ const updateDebugInfo = (state: State) => [
   { text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
+export const init = () => initDrawer(
   // thats because d3.voronoi cant handle negative values!
   'square',
   updateDebugInfo,
   initGraphics,
-  redraw,
-  drawerOnTickCallback,
+  redraw
 )

@@ -20,6 +20,7 @@ import { initOrbits } from 'experimental/samples/orbits'
 import { initLuna } from 'experimental/samples/luna'
 import { initWavyPlanet } from 'experimental/samples/wavy_planet'
 import { initDotsSpiral } from 'experimental/samples/dots_spiral'
+import { init as initMyceliumGrowth } from 'experimental/samples/mycelium_growth'
 import { init as initVoronoyLloyd } from 'experimental/samples/voronoi_lloyd'
 import { init as initVoronoyLloydVawes } from 'experimental/samples/voronoi_lloyd_vawes'
 import { init as initVoronoyLloydVawesRand } from 'experimental/samples/voronoi_lloyd_vawes_rand'
@@ -68,6 +69,7 @@ ReactDOM.render((
           <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
           <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
           <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
+          <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
           {/* dont work. 404 routed from dev server itself */}
           <Route path="/" render={page404} />
         </Switch>

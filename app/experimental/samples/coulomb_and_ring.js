@@ -10,7 +10,7 @@ import { initDrawer } from 'experimental/drawer'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 import { randomPointInSquare } from 'experimental/random_points'
 
-import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
 
 
@@ -83,10 +83,4 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
   { text: 'tick', value: state.tick },
 ]
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  updateDebugInfo,
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+export const init = () => initDrawer('circle', updateDebugInfo, initGraphics, redraw)

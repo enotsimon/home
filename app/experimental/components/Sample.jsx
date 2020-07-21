@@ -10,13 +10,13 @@ type Props = {
   fps: number,
   mousePos: { x: number, y: number },
   additional: Array<DrawerDebugInfoUnit>,
-  init: (DrawerOnTickCallback) => void,
+  init: () => (DrawerOnTickCallback) => void,
 }
 
 export class Sample extends React.Component<Props> {
   componentDidMount() {
     // we just pass dispatchActionTick to init()
-    this.props.init(this.props.dispatchActionTick)
+    this.props.init()(this.props.dispatchActionTick)
   }
 
   componentDidUpdate() {

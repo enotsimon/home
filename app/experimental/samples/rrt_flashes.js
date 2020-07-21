@@ -11,7 +11,7 @@ import { initDrawer } from 'experimental/drawer'
 import { generate, pointsByGenerationsIndex } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { RRTDiagram, RRTPoint, RRTGenerationsIndex } from 'common/rrt_diagram'
 
 const STEP = 5
@@ -131,10 +131,4 @@ const drawLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, ma
   graphics.lineTo(point.x, point.y)
 }
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  () => [],
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+export const init = () => initDrawer('circle', () => [], initGraphics, redraw)

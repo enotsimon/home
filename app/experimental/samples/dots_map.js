@@ -14,7 +14,7 @@ import seedrandom from 'seedrandom'
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
 import type { Dots, DotId } from 'experimental/random_points'
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 type DotsState = {|
   ...DrawerState,
@@ -152,10 +152,4 @@ const initPairsGenerator = <T: any>(arr: Array<T>): () => ?[T, T] => {
 }
 */
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  () => [],
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+export const init = () => initDrawer('circle', () => [], initGraphics, redraw)

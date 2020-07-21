@@ -13,7 +13,7 @@ import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { Dot as OrigDot, DotId } from 'experimental/random_points'
 
 type DotsState = {|
@@ -157,13 +157,9 @@ const drawDots = (dots: Dots, deletedDotIds: Array<DotId>, container: Object): v
   })
 }
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  state => [
-    { text: 'calcLinkMaxLength', value: calcLinkMaxLength(state.size, R.keys(state.dots).length) },
-    { text: `count dots (max ${DOTS_LIMIT})`, value: R.keys(state.dots).length },
-  ],
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+const debugInfo = state => [
+  { text: 'calcLinkMaxLength', value: calcLinkMaxLength(state.size, R.keys(state.dots).length) },
+  { text: `count dots (max ${DOTS_LIMIT})`, value: R.keys(state.dots).length },
+]
+
+export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)

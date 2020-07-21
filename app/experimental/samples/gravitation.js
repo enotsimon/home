@@ -10,7 +10,7 @@ import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experim
 import { randomPointPolar } from 'experimental/random_points'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState, DrawerOnTickCallback, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
 
 type Point = {|
@@ -123,10 +123,4 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
   { text: 'distance', value: U.distance(state.points[0], state.points[1]) },
 ]
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  updateDebugInfo,
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+export const init = () => initDrawer('circle', updateDebugInfo, initGraphics, redraw)

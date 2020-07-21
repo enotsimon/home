@@ -2,8 +2,6 @@
 import Util from 'common/util'
 import { initTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
 
-import type { DrawerOnTickCallback } from 'experimental/drawer'
-
 /**
  * https://en.wikipedia.org/wiki/Rule_30
  */
@@ -54,9 +52,4 @@ const elementStateRule = (l, r, s) => {
   }
 }
 
-export const initRule30 = (onTickCallback: DrawerOnTickCallback) => initTableauDrawer(
-  initElementState,
-  mutateElementState,
-  onTickCallback,
-  3
-)
+export const initRule30 = () => initTableauDrawer(initElementState, mutateElementState, 3)
