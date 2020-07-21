@@ -29,12 +29,12 @@ type Dot = {| ...OrigDot, counter: number |}
 type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
-const THROTTLE = 5
+const THROTTLE = 1
 const LINKS_AFTER_TICKS = 5
-const DISTANCE_LIMIT_MUL = 0.05
-const DOTS_LIMIT = 100
-const LINK_LENGTH_LIMIT = 0.1
-const LINKS_COUNT_LIMIT = 2 // meant not all, but links built _from_ dot
+const DISTANCE_LIMIT_MUL = 0.01
+const DOTS_LIMIT = 1000
+const LINK_LENGTH_MUL = 0.06
+const LINKS_COUNT_LIMIT = 5 // meant not all, but links built _from_ dot
 const LINKS_MAX_RETRY = 10
 
 const initGraphics = (oldState: DrawerState): DotsState => {
@@ -75,7 +75,7 @@ const redraw = (oldState: DotsState): DotsState => {
 const addRandomLinksToOneDot = (dot: Dot, links: Array<Link>, dots: Dots, mapSize: number): Array<Link> => {
   const possibleDots = R.pipe(
     R.values,
-    R.filter(d => d.id !== dot.id && U.distance(d, dot) < LINK_LENGTH_LIMIT * mapSize),
+    R.filter(d => d.id !== dot.id && U.distance(d, dot) < calcLinkMaxLength(mapSize, R.keys(dots).length)),
     U.shuffle
   )(dots)
   return addLinks(dot, possibleDots, links, dots, LINKS_COUNT_LIMIT, LINKS_MAX_RETRY)
@@ -109,6 +109,10 @@ const removeLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Dots
   return R.omit(dotIdsToRemove, dots)
 }
 
+const calcLinkMaxLength = (mapSize: number, countDots: number): number => {
+  return mapSize * (-1 * LINK_LENGTH_MUL / DOTS_LIMIT * countDots + LINK_LENGTH_MUL)
+}
+
 const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R.forEach(([d1, d2]) => {
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(0.25, Color.to_pixi([255, 255, 255]))
@@ -130,7 +134,10 @@ const drawDots = (dots: Dots, container: Object): void => R.forEach(dot => {
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   'circle',
-  () => [],
+  state => [
+    { text: 'calcLinkMaxLength', value: calcLinkMaxLength(state.size, R.keys(state.dots).length) },
+    { text: `count dots (max ${DOTS_LIMIT})`, value: R.keys(state.dots).length },
+  ],
   initGraphics,
   redraw,
   drawerOnTickCallback,
