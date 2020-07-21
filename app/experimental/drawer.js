@@ -29,7 +29,7 @@ export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<Dr
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
 export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
-export const initDrawer = <T: Object>(
+export const startDrawer = <T: Object>(
   regime: DrawerRegime,
   updateDebugInfo: DrawerDebugInfoCallback<T>,
   initGraphics: DrawerInitCallback<T>,
@@ -151,3 +151,5 @@ export const initDrawer = <T: Object>(
     }
   })
 }
+
+export const initDrawer = R.curry(startDrawer)

@@ -9,7 +9,7 @@ import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 
-import type { DrawerState, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 
 // type Vector = XYPoint
@@ -121,10 +121,4 @@ const calcCircleBorderForceAcceleration = (points: Array<Point>, circleRadius: n
 */
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
-export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
-  'circle',
-  () => [],
-  initGraphics,
-  redraw,
-  drawerOnTickCallback,
-)
+export const init = () => initDrawer('circle', () => [], initGraphics, redraw)

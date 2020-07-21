@@ -5,7 +5,7 @@ import * as PIXI from 'pixi.js'
 
 import { initDrawer } from 'experimental/drawer'
 
-import type { DrawerState, DrawerDebugInfoUnit, DrawerOnTickCallback } from 'experimental/drawer'
+import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 
 export type PlanetXYZPoint = { x: number, y: number, z: number }
 export type PlanetSpherePoint = { phi: number, theta: number }
@@ -49,14 +49,12 @@ export const calcSinglePoint = (
 
 export const initPlanetDrawer = (
   sphereMap: SphereMapBuilder = defaultSphereMap,
-  onTickCallback: DrawerOnTickCallback,
   mapTransparency: number = 0.25,
 ): void => initDrawer(
   'circle',
   updateDebugInfo,
   state => initGraphics(state, sphereMap, mapTransparency),
-  redraw,
-  onTickCallback,
+  redraw
 )
 
 const updateDebugInfo = (state: DrawerState): Array<DrawerDebugInfoUnit> => [

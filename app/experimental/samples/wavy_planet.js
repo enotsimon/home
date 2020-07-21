@@ -2,7 +2,6 @@
 import Util from 'common/util'
 import { initPlanetDrawer } from 'experimental/planet_drawer'
 
-import type { DrawerOnTickCallback } from 'experimental/drawer'
 import type { SphereMapBuilder } from 'experimental/planet_drawer'
 
 const sinRing = (amplitude, altitude, countWaves) => {
@@ -28,4 +27,4 @@ const sphereMap: SphereMapBuilder = () => {
   return map
 }
 
-export const initWavyPlanet = (onTickCallback: DrawerOnTickCallback) => initPlanetDrawer(sphereMap, onTickCallback, 0)
+export const initWavyPlanet = () => initPlanetDrawer(sphereMap, 0)
