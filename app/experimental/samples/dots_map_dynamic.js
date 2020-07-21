@@ -30,12 +30,13 @@ type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
 const THROTTLE = 1
-const LINKS_AFTER_TICKS = 5
+const LINKS_AFTER_TICKS = 2 // from 0 to ~20. 20 -- many small islands, 0 -- few big islands and empty space
+const DOT_DIE_MUL = 2 // from 1 to ~5
 const DISTANCE_LIMIT_MUL = 0.01
 const DOTS_LIMIT = 1000
 const LINK_LENGTH_MUL = 0.06
 const LINKS_COUNT_LIMIT = 5 // meant not all, but links built _from_ dot
-const LINKS_MAX_RETRY = 10
+const LINKS_MAX_RETRY = 5
 
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
@@ -105,7 +106,7 @@ const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): b
 
 const removeLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Dots => {
   const dotsToRemovePre = R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots))
-  const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - 2 * LINKS_AFTER_TICKS))(dotsToRemovePre)
+  const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - DOT_DIE_MUL * LINKS_AFTER_TICKS))(dotsToRemovePre)
   return R.omit(dotIdsToRemove, dots)
 }
 
