@@ -18,6 +18,7 @@ import type { Dot as OrigDot, DotId } from 'experimental/random_points'
 
 type DotsState = {|
   ...DrawerState,
+  stage: 'dots' | 'sleep',
   dots: Dots,
   links: Array<Link>,
   // note they are separated from 'buisness' objects
@@ -30,18 +31,20 @@ type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
 const THROTTLE = 1
-const LINKS_AFTER_TICKS = 2 // from 0 to ~20. 20 -- many small islands, 0 -- few big islands and empty space
+const LINKS_AFTER_TICKS = 1 // from 0 to ~20. 20 -- many small islands, 0 -- few big islands and empty space
 const DOT_DIE_MUL = 2 // from 1 to ~5
 const DISTANCE_LIMIT_MUL = 0.01
-const DOTS_LIMIT = 1000
+const DOTS_LIMIT = 900
 const LINK_LENGTH_MUL = 0.06
 const LINKS_COUNT_LIMIT = 5 // meant not all, but links built _from_ dot
 const LINKS_MAX_RETRY = 5
+const NEW_POINTS_MUL = 5 // in the end we add such num of dots per gen cycle (alwais 1 in the beginning)
 
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
+  state.stage = 'dots'
   state.counter = 0
   state.dots = {}
   state.links = []
@@ -56,8 +59,12 @@ const redraw = (oldState: DotsState): DotsState => {
   }
   const state = { ...oldState }
   state.counter += 1
-  if (R.keys(state.dots).length < DOTS_LIMIT) {
-    const dots = addDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, 1, state.dots)
+  if (R.keys(state.dots).length >= DOTS_LIMIT) {
+    state.stage = 'sleep'
+  }
+  if (state.stage === 'dots') {
+    const cnt = Math.ceil(NEW_POINTS_MUL * (R.keys(state.dots).length + 1) / DOTS_LIMIT)
+    const dots = addDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, cnt, state.dots)
     state.dots = R.map(d => ({ ...d, counter: d.counter || state.counter }))(dots)
   }
   const dotsToAddLinks = R.filter(d => state.counter - d.counter === LINKS_AFTER_TICKS)(R.values(state.dots))
@@ -67,9 +74,12 @@ const redraw = (oldState: DotsState): DotsState => {
     dotsToAddLinks
   )
   state.dots = removeLonelyDots(state.dots, state.links, state.counter)
-  state.graphics.removeChildren()
-  drawDots(state.dots, state.graphics)
-  drawLines(state.dots, state.links, state.graphics)
+  if (state.stage === 'dots') {
+    // TODO no need to redraw all links all the time, should draw only new
+    state.graphics.removeChildren()
+    drawDots(state.dots, state.graphics)
+    drawLines(state.dots, state.links, state.graphics)
+  }
   return state
 }
 
@@ -111,7 +121,7 @@ const removeLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Dots
 }
 
 const calcLinkMaxLength = (mapSize: number, countDots: number): number => {
-  return mapSize * (-1 * LINK_LENGTH_MUL / DOTS_LIMIT * countDots + LINK_LENGTH_MUL)
+  return mapSize * (-1 * (LINK_LENGTH_MUL - 1.15 * DISTANCE_LIMIT_MUL) / DOTS_LIMIT * countDots + LINK_LENGTH_MUL)
 }
 
 const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R.forEach(([d1, d2]) => {
@@ -125,7 +135,7 @@ const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R
 const drawDots = (dots: Dots, container: Object): void => R.forEach(dot => {
   const graphics = new PIXI.Graphics()
   graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-  graphics.drawCircle(0, 0, 1)
+  graphics.drawCircle(0, 0, 0.75)
   graphics.endFill()
   graphics.x = dot.x
   graphics.y = dot.y
