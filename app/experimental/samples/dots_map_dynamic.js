@@ -24,6 +24,7 @@ type DotsState = {|
   // note they are separated from 'buisness' objects
   graphics: Object, // PIXI graphics
   counter: number,
+  counterDeepSlip: number,
 |}
 
 type Dot = {| ...OrigDot, counter: number |}
@@ -36,7 +37,7 @@ const DOT_DIE_MUL = 2 // from 1 to ~5
 const DISTANCE_LIMIT_MUL = 0.01
 const DOTS_LIMIT = 900
 const LINK_LENGTH_MUL = 0.06
-const LINKS_COUNT_LIMIT = 5 // meant not all, but links built _from_ dot
+const LINKS_COUNT_LIMIT = 2 // meant not all, but links built _from_ dot
 const LINKS_MAX_RETRY = 5
 const NEW_POINTS_MUL = 5 // in the end we add such num of dots per gen cycle (alwais 1 in the beginning)
 
@@ -46,6 +47,7 @@ const initGraphics = (oldState: DrawerState): DotsState => {
   random.use(seedrandom(seed))
   state.stage = 'dots'
   state.counter = 0
+  state.counterDeepSlip = 0
   state.dots = {}
   state.links = []
   state.graphics = new PIXI.Graphics()
@@ -59,6 +61,7 @@ const redraw = (oldState: DotsState): DotsState => {
   }
   const state = { ...oldState }
   state.counter += 1
+  state.counterDeepSlip += state.stage === 'sleep' ? 1 : 0
   if (R.keys(state.dots).length >= DOTS_LIMIT) {
     state.stage = 'sleep'
   }
@@ -73,11 +76,10 @@ const redraw = (oldState: DotsState): DotsState => {
     state.links,
     dotsToAddLinks
   )
-  state.dots = removeLonelyDots(state.dots, state.links, state.counter)
-  if (state.stage === 'dots') {
-    // TODO no need to redraw all links all the time, should draw only new
-    state.graphics.removeChildren()
-    drawDots(state.dots, state.graphics)
+  const dotIdsToRemove = getLonelyDots(state.dots, state.links, state.counter)
+  state.dots = R.omit(dotIdsToRemove, state.dots)
+  if (state.stage === 'dots' || state.counterDeepSlip <= LINKS_AFTER_TICKS * DOT_DIE_MUL) {
+    drawDots(state.dots, dotIdsToRemove, state.graphics)
     drawLines(state.dots, state.links, state.graphics)
   }
   return state
@@ -114,10 +116,10 @@ const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): b
   return !!R.find(([ed1, ed2]) => U.intervalsCrossPointNoEdge(dotFrom, dotTo, dots[ed1], dots[ed2]))(links)
 }
 
-const removeLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Dots => {
+const getLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Array<DotId> => {
   const dotsToRemovePre = R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots))
   const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - DOT_DIE_MUL * LINKS_AFTER_TICKS))(dotsToRemovePre)
-  return R.omit(dotIdsToRemove, dots)
+  return dotIdsToRemove
 }
 
 const calcLinkMaxLength = (mapSize: number, countDots: number): number => {
@@ -125,23 +127,35 @@ const calcLinkMaxLength = (mapSize: number, countDots: number): number => {
 }
 
 const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R.forEach(([d1, d2]) => {
+  if (container.getChildByName(`l-${d1}-${d2}`)) {
+    return
+  }
   const graphics = new PIXI.Graphics()
+  graphics.name = `l-${d1}-${d2}`
   graphics.lineStyle(0.25, Color.to_pixi([255, 255, 255]))
   graphics.moveTo(dots[d1].x, dots[d1].y)
   graphics.lineTo(dots[d2].x, dots[d2].y)
   container.addChild(graphics)
 })(links)
 
-const drawDots = (dots: Dots, container: Object): void => R.forEach(dot => {
-  const graphics = new PIXI.Graphics()
-  graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-  graphics.drawCircle(0, 0, 0.75)
-  graphics.endFill()
-  graphics.x = dot.x
-  graphics.y = dot.y
-  container.addChild(graphics)
-  return graphics
-})(R.values(dots))
+const drawDots = (dots: Dots, deletedDotIds: Array<DotId>, container: Object): void => {
+  R.values(dots).forEach(dot => {
+    if (container.getChildByName(`d-${dot.id}`)) {
+      return
+    }
+    const graphics = new PIXI.Graphics()
+    graphics.name = `d-${dot.id}`
+    graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
+    graphics.drawCircle(0, 0, 0.75)
+    graphics.endFill()
+    graphics.x = dot.x
+    graphics.y = dot.y
+    container.addChild(graphics)
+  })
+  deletedDotIds.forEach(id => {
+    container.removeChild(container.getChildByName(`d-${id}`))
+  })
+}
 
 export const init = (drawerOnTickCallback: DrawerOnTickCallback) => initDrawer(
   'circle',
