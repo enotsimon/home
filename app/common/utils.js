@@ -130,6 +130,10 @@ export const distance = (p1: XYPInex, p2: XYPInex): number => {
   return Math.sqrt(((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2))
 }
 
+export const compareDistance = (p1: XYPInex, p2: XYPInex, target: number): number => {
+  return Math.sign((((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2)) - (target ** 2))
+}
+
 export const gaussFunction = (x: number, sigma: number, mu: number): number => {
   /* eslint-disable-next-line no-restricted-properties */
   return 1 / (sigma * Math.sqrt(2 * Math.PI)) * Math.pow(Math.E, -(Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2))))
