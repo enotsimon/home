@@ -89,17 +89,17 @@ const redraw = (oldState: DotsState): DotsState => {
 }
 
 const addRandomLinksToOneDot = (dot: Dot, links: Array<Link>, dots: Dots, mapSize: number): Array<Link> => {
-  const possibleDots = R.pipe(
-    R.values,
-    R.filter(d => d.id !== dot.id && U.distance(d, dot) < calcLinkMaxLength(mapSize, R.keys(dots).length)),
-    U.shuffle
-  )(dots)
-  return addLinks(dot, possibleDots, links, dots, LINKS_COUNT_LIMIT, LINKS_MAX_RETRY)
+  const maxLength = calcLinkMaxLength(mapSize, R.keys(dots).length)
+  const retry = LINKS_MAX_RETRY
+  const dotsArr = U.shuffle(R.values(dots))
+  return addLinks(dot, dotsArr, links, dots, maxLength, LINKS_COUNT_LIMIT, retry)
 }
 
 // ? should we set retry = LINKS_MAX_RETRY on every success link? no for now
 // TODO retry must be part of all cur links, for example Math.ceil(retry * links.length)
-const addLinks = (dotFrom, [dotTo, ...rest], links, dots, limit, retry) => {
+// this func get ~40% of all frame user-time. isCrossing seems like most of it
+// its hard to profile it cause it recursive and call stack is very deep because of it
+const addLinks = (dotFrom, [dotTo, ...rest], links, dots, maxLength, limit, retry) => {
   if (!dotTo) {
     return links
   }
@@ -109,13 +109,21 @@ const addLinks = (dotFrom, [dotTo, ...rest], links, dots, limit, retry) => {
   if (retry === 0) {
     return links
   }
-  if (isCrossing(dotFrom, dotTo, links, dots)) {
-    return addLinks(dotFrom, rest, links, dots, limit, retry - 1)
+  if (dotFrom.id === dotTo.id) {
+    return addLinks(dotFrom, rest, links, dots, maxLength, limit, retry)
   }
-  return addLinks(dotFrom, rest, [...links, [dotFrom.id, dotTo.id]], dots, limit - 1, retry)
+  if (U.compareDistance(dotFrom, dotTo, maxLength) > 0) {
+    // NOTE! we did not decrease retry here! maybe should try to
+    return addLinks(dotFrom, rest, links, dots, maxLength, limit, retry)
+  }
+  if (isCrossing(dotFrom, dotTo, links, dots)) {
+    return addLinks(dotFrom, rest, links, dots, maxLength, limit, retry - 1)
+  }
+  return addLinks(dotFrom, rest, [...links, [dotFrom.id, dotTo.id]], dots, maxLength, limit - 1, retry)
 }
 
 const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): boolean => {
+  // TODO seems like R.find + curried works not very fast
   return !!R.find(([ed1, ed2]) => U.intervalsCrossPointNoEdge(dotFrom, dotTo, dots[ed1], dots[ed2]))(links)
 }
 
