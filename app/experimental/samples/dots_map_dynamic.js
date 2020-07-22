@@ -18,6 +18,7 @@ import type { Dot as OrigDot, DotId } from 'experimental/random_points'
 
 type DotsState = {|
   ...DrawerState,
+  seed: number,
   stage: 'dots' | 'sleep',
   dots: Dots,
   links: Array<Link>,
@@ -31,6 +32,7 @@ type Dot = {| ...OrigDot, counter: number |}
 type Dots = {[DotId]: Dot}
 type Link = [DotId, DotId]
 
+// TODO write all coefs to seed and restore them from seed
 const THROTTLE = 1
 const LINKS_AFTER_TICKS = 1 // from 0 to ~20. 20 -- many small islands, 0 -- few big islands and empty space
 const DOT_DIE_MUL = 2 // from 1 to ~5
@@ -43,8 +45,12 @@ const NEW_POINTS_MUL = 5 // in the end we add such num of dots per gen cycle (al
 
 const initGraphics = (oldState: DrawerState): DotsState => {
   const state = { ...oldState }
-  const seed = Date.now()
-  random.use(seedrandom(seed))
+  // 1595362496472 three close islands
+  // 1595362810928 another 3 islands -- not close
+  // 1595362713604 big inland sea
+  // 1595363272402 scattered ground
+  state.seed = Date.now()
+  random.use(seedrandom(state))
   state.stage = 'dots'
   state.counter = 0
   state.counterDeepSlip = 0
@@ -160,6 +166,7 @@ const drawDots = (dots: Dots, deletedDotIds: Array<DotId>, container: Object): v
 const debugInfo = state => [
   { text: 'calcLinkMaxLength', value: calcLinkMaxLength(state.size, R.keys(state.dots).length) },
   { text: `count dots (max ${DOTS_LIMIT})`, value: R.keys(state.dots).length },
+  { text: 'seed', value: state.seed },
 ]
 
 export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)
