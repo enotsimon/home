@@ -50,6 +50,15 @@ describe('distance', () => {
   })
 })
 
+describe('compareDistance', () => {
+  it('should correctly compare distance between xy-points and given value', () => {
+    assert.equal(U.compareDistance({ x: 0, y: 0 }, { x: 2, y: 0 }, 1), 1)
+    assert.equal(U.compareDistance({ x: 0, y: 0 }, { x: -2, y: 0 }, 1), 1)
+    assert.equal(U.compareDistance({ x: 0, y: 0 }, { x: 2, y: 0 }, 3), -1)
+    assert.equal(U.compareDistance({ x: 0, y: 0 }, { x: 2, y: 0 }, 2), 0)
+  })
+})
+
 describe('toPolarCoords', () => {
   it('should convert xy-point to polar coords', () => {
     assert.deepEqual(U.toPolarCoords({ x: 0, y: -1 }), { angle: -Math.PI / 2, radius: 1 })
