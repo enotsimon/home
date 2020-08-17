@@ -1,4 +1,11 @@
 // @flow
+/**
+ * это корочи как d3.force -- пружинки между точками и точки должны разворачиваться под действием
+ * силы пружинок
+ * TODO
+ * - сейчас нет ни скорости ни ускорения, вычисляется сдвиг координат, поэтому нет инерции, надо добавить
+ * - нужна сила которая отталкивает точки др от др чтобы они разворачивались в максимально не пересекающийся граф
+ */
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
 import random from 'random'
@@ -33,7 +40,8 @@ type State = {|
 |}
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 50
+const COUNT_POINTS = 25
+const THROTTLE = 2
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -53,15 +61,17 @@ const initGraphics = (oldState: DrawerState): State => {
     }
     const targetPoint = U.randElement(possibleTargetPoints)
     // FIXME length: 10 its first simple way
-    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: 10 }]
+    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: 25 }]
   }, [], state.points)
+  console.log('LINKS', state.links)
   initDrawings(state.base_container, state.points)
   addCircleMask(state.base_container, state.size / 2)
   return state
 }
 
 const removeSelfAndBackLinks = (points, links, point): Array<Point> => {
-  const badIds = R.uniq(R.chain(R.map(l => (l.p1 === point.id || l.p2 === point.id ? [l.p1, l.p2] : []), links)))
+  const badIdsFromLinks = R.chain(l => ((l.p1 === point.id || l.p2 === point.id) ? [l.p1, l.p2] : []), links)
+  const badIds = R.uniq([...badIdsFromLinks, point.id])
   return R.filter(p => !R.contains(p.id, badIds), points)
 }
 
@@ -91,6 +101,9 @@ const createPointGraphics = point => {
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
+  if (state.ticks % THROTTLE !== 0) {
+    return state
+  }
   state.points = calcForceMovement(state.points, state.links, state.size / 2)
   // state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
   // state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
@@ -131,7 +144,7 @@ const getLinkPoints = (link, points) => {
 }
 
 const calcForceMovement = (points: Array<Point>, links: Array<Link>, size: number): Array<Point> => {
-  const FORCE_MUL = 0.0000005 * size
+  const FORCE_MUL = 0.0001 * size
   const vectors = R.chain(link => {
     const [p1, p2] = getLinkPoints(link, points)
     const distance = U.distance(p1, p2)
@@ -139,13 +152,12 @@ const calcForceMovement = (points: Array<Point>, links: Array<Link>, size: numbe
     const positionDiff = FORCE_MUL * (link.length - distance) / distance
     const pseudoPoint = { x: (p1.x - p2.x) * positionDiff, y: (p1.y - p2.y) * positionDiff }
     // console.log('DUI', distance, link.length, pseudoPoint)
-    const p1Vector = { point: p1.id, x: p1.x + pseudoPoint.x, y: p1.y + pseudoPoint.y }
-    // p1 is not a mistake
-    const p2Vector = { point: p2.id, x: p1.x - pseudoPoint.x, y: p1.y - pseudoPoint.y }
+    const p1Vector = { point: p1.id, x: pseudoPoint.x, y: pseudoPoint.y }
+    const p2Vector = { point: p2.id, x: -pseudoPoint.x, y: -pseudoPoint.y }
+    // console.log('PP', pseudoPoint, positionDiff)
     return [p1Vector, p2Vector]
   }, links)
-  // console.log('VE', vectors)
-  // throw 'siu'
+  // console.log('vectors', vectors)
   const vectorsByIds = R.reduce((acc, v) => {
     return { ...acc, [v.point]: [...(acc[v.point] || []), v] }
   }, {}, vectors)
@@ -155,12 +167,11 @@ const calcForceMovement = (points: Array<Point>, links: Array<Link>, size: numbe
       console.log(`strange but seems like point ${point.id} has no links`)
       return point
     }
-    return R.reduce((p, vector) => ({ ...p, x: p.x + vector.x, y: p.y + vector.y }), point, myVectors)
+    return R.reduce((p, vector) => {
+      // console.log(`point (${p.x}, ${p.y}) my vector (${vector.x}, ${vector.y})`)
+      return { ...p, x: p.x + vector.x, y: p.y + vector.y }
+    }, point, myVectors)
   }, points)
 }
-
-const forceZeroDistance = (massFactor: number, circleRadius: number): number => circleRadius * massFactor / 10
-
-const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
 export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
