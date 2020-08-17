@@ -12,7 +12,7 @@ export type MassSpeedPoint = {|
 |}
 
 // naive circle border -- just return point back if they out of circle
-export const returnPointsToCircle = <T: { ...MassSpeedPoint }>(points: Array<T>, circleRadius: number): Array<T> => {
+export const returnPointsToCircle = <T: { ...XYPoint }>(points: Array<T>, circleRadius: number): Array<T> => {
   return points.map(p => {
     const { angle, radius } = U.toPolarCoords(p)
     if (radius > circleRadius) {
