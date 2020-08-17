@@ -33,7 +33,7 @@ type State = {|
 |}
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 10
+const COUNT_POINTS = 50
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -91,7 +91,7 @@ const createPointGraphics = point => {
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
-  // state.points = calcForceMovement(state, state.points, state.size / 2)
+  state.points = calcForceMovement(state.points, state.links, state.size / 2)
   // state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
   // state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   // naive circle border -- just return point back if they out of circle
@@ -112,8 +112,7 @@ const redrawGraphics = (container, points, links) => {
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
   links.forEach(l => {
-    const p1 = R.find(p => p.id === l.p1, points)
-    const p2 = R.find(p => p.id === l.p2, points)
+    const [p1, p2] = getLinkPoints(l, points)
     const graphics = new PIXI.Graphics()
     graphics.lineStyle(0.5, Color.to_pixi([255, 255, 255]))
     graphics.moveTo(p1.x, p1.y)
@@ -122,34 +121,43 @@ const redrawGraphics = (container, points, links) => {
   })
 }
 
-const calcForceMovement = (state, points: Array<Point>, circleRadius: number): Array<Point> => R.map(p => {
-  // const FORCE_STRENGTH = 0.0001 // funny -- they stick togehter
-  // const MOVE_MAX = 0.01
-  const FORCE_STRENGTH = -0.001
-  const FORCE_POW = 2
-  const FORCE_MAX_DISTANCE_MUL = 2
-  const MOVE_MAX = 0.001
-  const springForceVector = R.reduce((vector, p2) => {
-    if (p === p2) {
-      return vector
+const getLinkPoints = (link, points) => {
+  const p1 = R.find(p => p.id === link.p1, points)
+  const p2 = R.find(p => p.id === link.p2, points)
+  if (!p1 || !p2) {
+    throw new Error(`point not found by id ${p1 ? link.p2 : link.p1}`)
+  }
+  return [p1, p2]
+}
+
+const calcForceMovement = (points: Array<Point>, links: Array<Link>, size: number): Array<Point> => {
+  const FORCE_MUL = 0.0000005 * size
+  const vectors = R.chain(link => {
+    const [p1, p2] = getLinkPoints(link, points)
+    const distance = U.distance(p1, p2)
+    // let it be linear for now
+    const positionDiff = FORCE_MUL * (link.length - distance) / distance
+    const pseudoPoint = { x: (p1.x - p2.x) * positionDiff, y: (p1.y - p2.y) * positionDiff }
+    // console.log('DUI', distance, link.length, pseudoPoint)
+    const p1Vector = { point: p1.id, x: p1.x + pseudoPoint.x, y: p1.y + pseudoPoint.y }
+    // p1 is not a mistake
+    const p2Vector = { point: p2.id, x: p1.x - pseudoPoint.x, y: p1.y - pseudoPoint.y }
+    return [p1Vector, p2Vector]
+  }, links)
+  // console.log('VE', vectors)
+  // throw 'siu'
+  const vectorsByIds = R.reduce((acc, v) => {
+    return { ...acc, [v.point]: [...(acc[v.point] || []), v] }
+  }, {}, vectors)
+  return R.map(point => {
+    const myVectors = vectorsByIds[point.id]
+    if (!myVectors) {
+      console.log(`strange but seems like point ${point.id} has no links`)
+      return point
     }
-    const distance = U.distance(p, p2)
-    const zeroDistance = forceZeroDistance(p.mass + p2.mass, circleRadius)
-    // TODO -- division alwais stronger than sticking?
-    let toMove = FORCE_STRENGTH * ((distance - zeroDistance) ** FORCE_POW)
-    // its like Worlds The Very Movement Speed Limit, ie speed of light )))))
-    toMove = R.pipe(R.min(MOVE_MAX), R.max(-MOVE_MAX))(toMove)
-    // its like spring has broked and works no more
-    toMove = distance > (FORCE_MAX_DISTANCE_MUL * zeroDistance) ? 0 : toMove
-    // if (state.ticks % 10 === 0) {
-    //   console.log(toMove, zeroDistance, distance)
-    // }
-    const newVector = { x: toMove * (p2.x - p.x), y: toMove * (p2.y - p.y) }
-    return crossSumm(vector, newVector)
-  }, { x: 0, y: 0 }, points)
-  const { x, y } = crossSumm(p, springForceVector)
-  return { ...p, x, y }
-})(points)
+    return R.reduce((p, vector) => ({ ...p, x: p.x + vector.x, y: p.y + vector.y }), point, myVectors)
+  }, points)
+}
 
 const forceZeroDistance = (massFactor: number, circleRadius: number): number => circleRadius * massFactor / 10
 
