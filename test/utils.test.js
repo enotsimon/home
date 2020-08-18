@@ -174,3 +174,18 @@ describe('pairs', () => {
     assert.deepEqual(U.pairs([1, 2, 3]), [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [2, 3], [3, 1], [3, 2], [3, 3]])
   })
 })
+describe('noSameValuesPairs', () => {
+  it('should return all no same value pairs for 1, 2, 3', () => {
+    assert.deepEqual(U.noSameValuesPairs([1, 2, 3]), [[1, 2], [1, 3], [2, 1], [2, 3], [3, 1], [3, 2]])
+  })
+})
+describe('noOrderPairs', () => {
+  it('should return all non-depending of elements order pairs for 1, 2, 3', () => {
+    assert.deepEqual(U.noOrderPairs([1, 2, 3]), [[1, 1], [1, 2], [1, 3], [2, 2], [2, 3], [3, 3]])
+  })
+})
+describe('noOrderNoSameValuesPairs', () => {
+  it('should return all non-depending of elements order pairs for 1, 2, 3', () => {
+    assert.deepEqual(U.noOrderNoSameValuesPairs([1, 2, 3]), [[1, 2], [1, 3], [2, 3]])
+  })
+})

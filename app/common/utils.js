@@ -44,7 +44,15 @@ export const randElement = (arr: Array<any>) => {
   return arr[random.int(0, arr.length - 1)]
 }
 
+const filterSame = list => R.filter(([v1, v2]) => !R.equals(v1, v2), list)
 export const pairs = <T>(list: Array<T>): Array<[T, T]> => R.chain(e1 => R.map(e2 => [e1, e2], list), list)
+export const noOrderPairs = <T>(list: Array<T>): Array<[T, T]> => R.pipe(
+  ps => pairs(ps),
+  R.map(pair => pair.sort()),
+  R.uniq
+)(list)
+export const noSameValuesPairs = <T>(list: Array<T>): Array<[T, T]> => filterSame(pairs(list))
+export const noOrderNoSameValuesPairs = <T>(list: Array<T>): Array<[T, T]> => filterSame(noOrderPairs(list))
 
 export const shuffle = <T: any>(arr: Array<T>): Array<T> => arr.sort(() => random.int(0, 2) - 1)
 
