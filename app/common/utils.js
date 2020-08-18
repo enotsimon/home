@@ -39,8 +39,10 @@ export const execInCycleWithDelay = (
   setTimeout(() => { execInCycleWithDelay(index + 1, limit, delay, func, final_func) }, delay)
 }
 
-export const randElement = (arr: Array<any>) => {
-  if (arr.length === 0) return false
+export const randElement = <T>(arr: Array<T>): T => {
+  if (arr.length === 0) {
+    throw new Error('randElement input array cannot be empty')
+  }
   return arr[random.int(0, arr.length - 1)]
 }
 
