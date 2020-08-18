@@ -3,8 +3,11 @@
  * это корочи как d3.force -- пружинки между точками и точки должны разворачиваться под действием
  * силы пружинок
  * TODO
- * - сейчас нет ни скорости ни ускорения, вычисляется сдвиг координат, поэтому нет инерции, надо добавить
- * - сила отталкивания от кольца calcCircleBorderForceAcceleration
+ * - все коэффициэнты сил очень взаимосвязаны -- меняещь один и все идет раком, надо выразить их все через
+ * отношения др-др и к какому-то базовому
+ * - динамическое добавление и удаление точек
+ * - оптимизация distance в allRepulsingForce() и springForce() и может быть circleBorderForceLinear()
+ * - избавиться от returnPointsToCircle, втащить это в circleBorderForceLinear()
  */
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
@@ -15,7 +18,7 @@ import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
-import { returnPointsToCircle } from 'experimental/circle_border'
+import { returnPointsToCircle, circleBorderForceLinear } from 'experimental/circle_border'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
@@ -49,11 +52,12 @@ type State = {|
 type FroceFunc = (Point, Point, Link) => number
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 25
+const COUNT_POINTS = 35
 const LINKS_LENGTH = 10
 const FORCE_MUL = 0.025
 const REPULSING_FORCE_MUL = 0.05
 const SLOWDOWN_MUL = 0.8
+const CB_FORCE_MUL = 0.0025
 const THROTTLE = 0
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
@@ -118,7 +122,7 @@ const redraw = (oldState: State): State => {
   }
   state.points = calcAllRepulsingForce(state.points, state.pairs)
   state.points = calcSpringForceMovement(state.points, state.links)
-  // state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
+  state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   // speed slowdown -- its like resistance of the environment
   state.points = state.points.map(p => ({
