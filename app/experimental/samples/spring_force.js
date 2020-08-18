@@ -33,15 +33,24 @@ type Link = {
   length: number,
 }
 
+type Vector = {|
+  ...XYPoint,
+  point: PointId,
+|}
+
 type State = {|
   ...DrawerState,
   points: Array<Point>,
   links: Array<Link>,
+  pairs: Array<Link>,
 |}
+
+type FroceFunc = (Point, Point, Link, number) => number
 
 // const FORCE_STRENGTH = 0.05
 const COUNT_POINTS = 25
-const THROTTLE = 2
+const LINKS_LENGTH = 10
+const THROTTLE = 0
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -61,8 +70,14 @@ const initGraphics = (oldState: DrawerState): State => {
     }
     const targetPoint = U.randElement(possibleTargetPoints)
     // FIXME length: 10 its first simple way
-    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: 25 }]
+    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH }]
   }, [], state.points)
+  // list of all point pairs for repulsing force -- save it in state for saving calculations
+  state.pairs = R.map(
+    // its a fake link, just to make funcs types simplier
+    ([id1, id2]) => ({ p1: id1, p2: id2, length: 0 }),
+    U.noOrderNoSameValuesPairs(R.map(p => p.id, state.points))
+  )
   console.log('LINKS', state.links)
   initDrawings(state.base_container, state.points)
   addCircleMask(state.base_container, state.size / 2)
@@ -101,13 +116,13 @@ const createPointGraphics = point => {
 
 const redraw = (oldState: State): State => {
   const state = { ...oldState }
-  if (state.ticks % THROTTLE !== 0) {
+  if (THROTTLE && state.ticks % THROTTLE !== 0) {
     return state
   }
-  state.points = calcForceMovement(state.points, state.links, state.size / 2)
+  state.points = calcAllRepulsingForce(state.points, state.pairs, state.size / 2)
+  state.points = calcSpringForceMovement(state.points, state.links, state.size / 2)
   // state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2)
   // state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
-  // naive circle border -- just return point back if they out of circle
   state.points = returnPointsToCircle(state.points, state.size / 2)
   redrawGraphics(state.base_container, state.points, state.links)
   return state
@@ -143,30 +158,50 @@ const getLinkPoints = (link, points) => {
   return [p1, p2]
 }
 
-const calcForceMovement = (points: Array<Point>, links: Array<Link>, size: number): Array<Point> => {
-  const FORCE_MUL = 0.0001 * size
-  const vectors = R.chain(link => {
+const calcAllRepulsingForce = (points, pairs) => {
+  const vectors = vectorsByLinks(points, pairs, allRepulsingForce, 0)
+  return movePointsByVectors(points, vectors)
+}
+
+const calcSpringForceMovement = (points: Array<Point>, links: Array<Link>, size: number): Array<Point> => {
+  const vectors = vectorsByLinks(points, links, springForce, size)
+  // console.log('vectors', vectors)
+  return movePointsByVectors(points, vectors)
+}
+
+const allRepulsingForce = (p1, p2) => {
+  const REPULSING_FORCE_MUL = 10
+  const distance = U.distance(p1, p2)
+  return REPULSING_FORCE_MUL * LINKS_LENGTH / (distance ** 3)
+}
+
+const springForce = (p1, p2, link, size) => {
+  // let it be linear for now
+  const FORCE_MUL = 0.0005 * size
+  const distance = U.distance(p1, p2)
+  return FORCE_MUL * (link.length - distance) / distance
+}
+
+const vectorsByLinks = (points: Array<Point>, links: Array<Link>, forceFunc: FroceFunc, size: number): Array<Vector> =>
+  R.chain(link => {
     const [p1, p2] = getLinkPoints(link, points)
-    const distance = U.distance(p1, p2)
-    // let it be linear for now
-    const positionDiff = FORCE_MUL * (link.length - distance) / distance
-    const pseudoPoint = { x: (p1.x - p2.x) * positionDiff, y: (p1.y - p2.y) * positionDiff }
+    const forceScalar = forceFunc(p1, p2, link, size)
+    const pseudoPoint = { x: (p1.x - p2.x) * forceScalar, y: (p1.y - p2.y) * forceScalar }
     // console.log('DUI', distance, link.length, pseudoPoint)
     const p1Vector = { point: p1.id, x: pseudoPoint.x, y: pseudoPoint.y }
     const p2Vector = { point: p2.id, x: -pseudoPoint.x, y: -pseudoPoint.y }
     // console.log('PP', pseudoPoint, positionDiff)
     return [p1Vector, p2Vector]
   }, links)
-  // console.log('vectors', vectors)
-  const vectorsByIds = R.reduce((acc, v) => {
-    return { ...acc, [v.point]: [...(acc[v.point] || []), v] }
-  }, {}, vectors)
+
+const aggregateVectorsByIds = vectors => R.reduce((acc, v) => {
+  return { ...acc, [v.point]: [...(acc[v.point] || []), v] }
+}, {}, vectors)
+
+const movePointsByVectors = (points: Array<Point>, vectors: Array<Vector>): Array<Point> => {
+  const vectorsByIds = aggregateVectorsByIds(vectors)
   return R.map(point => {
-    const myVectors = vectorsByIds[point.id]
-    if (!myVectors) {
-      console.log(`strange but seems like point ${point.id} has no links`)
-      return point
-    }
+    const myVectors = vectorsByIds[point.id] || []
     return R.reduce((p, vector) => {
       // console.log(`point (${p.x}, ${p.y}) my vector (${vector.x}, ${vector.y})`)
       return { ...p, x: p.x + vector.x, y: p.y + vector.y }
