@@ -107,7 +107,7 @@ const drawerPointId = point => `p-${point.id}`
 const createPointGraphics = point => {
   const graphics = new PIXI.Graphics()
   graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-  graphics.drawCircle(0, 0, 2)
+  graphics.drawCircle(0, 0, 1.5)
   graphics.endFill()
   graphics.x = point.x
   graphics.y = point.y
@@ -170,14 +170,14 @@ const calcSpringForceMovement = (points: Array<Point>, links: Array<Link>, size:
 }
 
 const allRepulsingForce = (p1, p2) => {
-  const REPULSING_FORCE_MUL = 10
+  const REPULSING_FORCE_MUL = 0.05
   const distance = U.distance(p1, p2)
-  return REPULSING_FORCE_MUL * LINKS_LENGTH / (distance ** 3)
+  return REPULSING_FORCE_MUL * LINKS_LENGTH / (distance ** 2)
 }
 
 const springForce = (p1, p2, link, size) => {
   // let it be linear for now
-  const FORCE_MUL = 0.0005 * size
+  const FORCE_MUL = 0.0025 * size
   const distance = U.distance(p1, p2)
   return FORCE_MUL * (link.length - distance) / distance
 }
