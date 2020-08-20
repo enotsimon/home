@@ -96,8 +96,11 @@ export const startDrawer = <T: Object>(
     // $FlowIgnore FIXME dont understand whats wrong
     state = redraw(state)
     const finishTS = (new Date()).getTime()
-    // $FlowIgnore FIXME dont understand whats wrong
-    onTickCallback(pixi.ticker.FPS, finishTS - startTS, delta, updateDebugInfo(state))
+    // its a hellish hack actially cause its called on*Tick*callback() but as soon as we use it for debug info
+    // no need to update it too often
+    if (state.ticks % 10 === 0) {
+      onTickCallback(pixi.ticker.FPS, finishTS - startTS, delta, updateDebugInfo(state))
+    }
   })
 
   // creating screenshots from pixi.stage
