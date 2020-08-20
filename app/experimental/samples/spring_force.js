@@ -54,7 +54,7 @@ type FroceFunc = (Point, Point, Link) => number
 // const FORCE_STRENGTH = 0.05
 const COUNT_POINTS = 35
 const LINKS_LENGTH = 10
-const FORCE_MUL = 0.025
+const FORCE_MUL = 0.5
 const REPULSING_FORCE_MUL = 0.05
 const SLOWDOWN_MUL = 0.8
 const CB_FORCE_MUL = 0.0025
@@ -188,7 +188,7 @@ const allRepulsingForce = (p1, p2) => {
 const springForce = (p1, p2, link) => {
   // let it be linear for now
   const distance = U.distance(p1, p2)
-  return FORCE_MUL * (link.length - distance) / distance
+  return FORCE_MUL * (link.length - distance) / (distance ** 2)
 }
 
 const vectorsByLinks = (points: Array<Point>, links: Array<Link>, forceFunc: FroceFunc): Array<Vector> =>
