@@ -38,19 +38,22 @@ export const calcCircleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
 export const circleBorderForceHyperbole = <T: { ...MassSpeedPoint }>(
   points: Array<T>,
   circleRadius: number,
-  forceMul: number
-): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, hyperboleFunc)
+  forceMul: number,
+  returnPoints: boolean = true,
+): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, returnPoints, hyperboleFunc)
 
 export const circleBorderForceLinear = <T: { ...MassSpeedPoint }>(
   points: Array<T>,
   circleRadius: number,
-  forceMul: number
-): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, linearFunc)
+  forceMul: number,
+  returnPoints: boolean = true,
+): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, returnPoints, linearFunc)
 
 const circleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
   points: Array<T>,
   circleRadius: number,
   forceMul: number,
+  returnPoints: boolean,
   forceFunc: (number, number, number) => number,
 ): Array<T> => R.map(p => {
     const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
@@ -59,13 +62,17 @@ const circleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
     // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
     const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
     // TODO add check if point is beyond circle and return it back?
-    return { ...p, speed: crossSumm(p.speed, accVector) }
+    const speed = crossSumm(p.speed, accVector)
+    if (returnPoints && radius > circleRadius) {
+      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed }
+    }
+    return { ...p, speed }
   })(points)
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
 const hyperboleFunc = (distToBorder, circleRadius, forceMul) =>
-  Math.max(0, forceMul / (distToBorder || 1) / circleRadius - 10) // FIXME 10!!!
+  Math.max(0, forceMul / (distToBorder / circleRadius - 10)) // FIXME 10!!!
 
 const linearFunc = (distToBorder, circleRadius, forceMul) =>
-  forceMul * ((circleRadius - distToBorder) || 1)
+  forceMul * (circleRadius - distToBorder)

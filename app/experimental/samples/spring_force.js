@@ -18,7 +18,7 @@ import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
-import { returnPointsToCircle, circleBorderForceLinear } from 'experimental/circle_border'
+import { circleBorderForceLinear } from 'experimental/circle_border'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
@@ -129,7 +129,6 @@ const redraw = (oldState: State): State => {
     ...p,
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
   }))
-  state.points = returnPointsToCircle(state.points, state.size / 2)
   redrawGraphics(state.base_container, state.points, state.links)
   return state
 }

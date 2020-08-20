@@ -99,6 +99,7 @@ export const startDrawer = <T: Object>(
     // its a hellish hack actially cause its called on*Tick*callback() but as soon as we use it for debug info
     // no need to update it too often
     if (state.ticks % 10 === 0) {
+      // TODO merge all to updateDebugInfo() result
       onTickCallback(pixi.ticker.FPS, finishTS - startTS, delta, updateDebugInfo(state))
     }
   })
