@@ -27,6 +27,7 @@ type State = {
   fps: number,
   tickTime: number,
   tick_delta: number,
+  redrawTime: number,
   debugInfo: Array<DrawerDebugInfoUnit>,
   mousePos: { x: number, y: number },
 }
@@ -35,16 +36,18 @@ const defaultState = {
   fps: 0,
   tickTime: 0,
   tick_delta: 0,
+  redrawTime: 0,
   debugInfo: [],
   mousePos: { x: 0, y: 0 },
 }
 
 export const reducers = createReducerFromMap(defaultState, {
-  actionTick: (state, { fps, delta, debugInfo }) => ({
+  actionTick: (state, { fps, delta, redrawTime, debugInfo }) => ({
     ...state,
     fps,
     tick_delta: delta,
     tickTime: state.tickTime + delta,
+    redrawTime,
     debugInfo,
   }),
   actionMouseMove: (state, { event }) => ({

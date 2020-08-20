@@ -23,7 +23,12 @@ export type DrawerDebugInfoUnit = {|
   value: string | number,
 |}
 
-export type DrawerOnTickCallback = (fps: number, delta: number, debugInfo: Array<DrawerDebugInfoUnit>) => void
+export type DrawerOnTickCallback = (
+  fps: number,
+  delta: number,
+  redrawTime: number,
+  debugInfo: Array<DrawerDebugInfoUnit>
+) => void
 
 export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<DrawerDebugInfoUnit>
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
@@ -85,12 +90,14 @@ export const startDrawer = <T: Object>(
       pixi.destroy()
       return
     }
-    // $FlowIgnore FIXME dont understand whats wrong
-    onTickCallback(pixi.ticker.FPS, delta, updateDebugInfo(state))
     state.tick_delta = delta
     state.tickTime += delta
+    const startTS = (new Date()).getTime()
     // $FlowIgnore FIXME dont understand whats wrong
     state = redraw(state)
+    const finishTS = (new Date()).getTime()
+    // $FlowIgnore FIXME dont understand whats wrong
+    onTickCallback(pixi.ticker.FPS, finishTS - startTS, delta, updateDebugInfo(state))
   })
 
   // creating screenshots from pixi.stage

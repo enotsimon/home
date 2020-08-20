@@ -8,9 +8,10 @@ const mergeProps = (state, { dispatch }, ownProps) => {
   return {
     ...ownProps,
     fps: state.fps,
+    redrawTime: state.redrawTime,
     mousePos: state.mousePos,
     additional: state.debugInfo,
-    dispatchActionTick: (fps, delta, debugInfo) => dispatch(actionTick(fps, delta, debugInfo)),
+    dispatchActionTick: (fps, delta, redrawTime, debugInfo) => dispatch(actionTick(fps, delta, redrawTime, debugInfo)),
     dispatchActionMouseMove: (event) => dispatch(actionMouseMove(event)),
   }
 }
