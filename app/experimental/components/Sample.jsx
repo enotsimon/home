@@ -8,6 +8,7 @@ type Props = {
   dispatchActionTick: DrawerOnTickCallback,
   dispatchActionMouseMove: (event: Event) => void,
   fps: number,
+  redrawTime: number,
   mousePos: { x: number, y: number },
   additional: Array<DrawerDebugInfoUnit>,
   init: () => (DrawerOnTickCallback) => void,
@@ -58,6 +59,10 @@ export class Sample extends React.Component<Props> {
                 <div>
                   FPS:&nbsp;
                   <span>{this.props.fps}</span>
+                </div>
+                <div>
+                  redraw time:&nbsp;
+                  <span>{this.props.redrawTime}</span>
                 </div>
                 <div>
                   mouse position:
