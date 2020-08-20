@@ -71,6 +71,7 @@ export const calcCircleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
     return { ...p, speed: crossSumm(p.speed, accVector) }
   })(points)
 
+// TODO spread syntax?
 export const circleBorderForceHyperbole = <T: { ...MassSpeedPoint }>(
   points: Array<T>,
   circleRadius: number,
