@@ -10,6 +10,42 @@ export type MassSpeedPoint = {|
   mass: number,
   speed: Vector,
 |}
+export type CircleBorderForceFunction = <T: { ...MassSpeedPoint }>(
+  points: Array<T>,
+  circleRadius: number,
+  forceMul: number,
+  returnPoints: boolean,
+) => Array<T>
+type ForceFunc = (distToBorder: number, circleRadius: number, forceMul: number) => number
+
+
+const circleBorderForceAcceleration = (forceFunc: ForceFunc) => <T: { ...MassSpeedPoint }>(
+  points: Array<T>,
+  circleRadius: number,
+  forceMul: number,
+  returnPoints: boolean,
+): Array<T> => R.map(p => {
+    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
+    const distToBorder = circleRadius - radius
+    const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
+    // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
+    const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
+    // TODO add check if point is beyond circle and return it back?
+    const speed = crossSumm(p.speed, accVector)
+    if (returnPoints && radius > circleRadius) {
+      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
+    }
+    return { ...p, speed }
+  })(points)
+
+const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
+
+const hyperboleFunc = (distToBorder, circleRadius, forceMul) =>
+  Math.max(0, forceMul / (distToBorder / circleRadius - 10)) // FIXME 10!!!
+
+const linearFunc = (distToBorder, circleRadius, forceMul) =>
+  forceMul * (circleRadius - distToBorder)
+
 
 // naive circle border -- just return point back if they out of circle
 export const returnPointsToCircle = <T: { ...XYPoint }>(points: Array<T>, circleRadius: number): Array<T> => {
@@ -40,39 +76,11 @@ export const circleBorderForceHyperbole = <T: { ...MassSpeedPoint }>(
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, returnPoints, hyperboleFunc)
+): Array<T> => circleBorderForceAcceleration(hyperboleFunc)(points, circleRadius, forceMul, returnPoints)
 
 export const circleBorderForceLinear = <T: { ...MassSpeedPoint }>(
   points: Array<T>,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): Array<T> => circleBorderForceAcceleration(points, circleRadius, forceMul, returnPoints, linearFunc)
-
-const circleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
-  circleRadius: number,
-  forceMul: number,
-  returnPoints: boolean,
-  forceFunc: (number, number, number) => number,
-): Array<T> => R.map(p => {
-    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-    const distToBorder = circleRadius - radius
-    const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
-    // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-    const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
-    // TODO add check if point is beyond circle and return it back?
-    const speed = crossSumm(p.speed, accVector)
-    if (returnPoints && radius > circleRadius) {
-      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
-    }
-    return { ...p, speed }
-  })(points)
-
-const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
-
-const hyperboleFunc = (distToBorder, circleRadius, forceMul) =>
-  Math.max(0, forceMul / (distToBorder / circleRadius - 10)) // FIXME 10!!!
-
-const linearFunc = (distToBorder, circleRadius, forceMul) =>
-  forceMul * (circleRadius - distToBorder)
+): Array<T> => circleBorderForceAcceleration(linearFunc)(points, circleRadius, forceMul, returnPoints)
