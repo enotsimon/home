@@ -64,7 +64,7 @@ const circleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
     // TODO add check if point is beyond circle and return it back?
     const speed = crossSumm(p.speed, accVector)
     if (returnPoints && radius > circleRadius) {
-      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed }
+      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
     }
     return { ...p, speed }
   })(points)
