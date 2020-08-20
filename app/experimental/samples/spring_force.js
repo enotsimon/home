@@ -49,7 +49,7 @@ type State = {|
   pairs: Array<Link>,
 |}
 
-type FroceFunc = (Point, Point, Link) => number
+type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
 const COUNT_POINTS = 35
@@ -180,21 +180,20 @@ const calcSpringForceMovement = (points: Array<Point>, links: Array<Link>): Arra
   return addVectorsToPointsSpeed(points, vectors)
 }
 
-const allRepulsingForce = (p1, p2) => {
-  const distance = U.distance(p1, p2)
-  return REPULSING_FORCE_MUL * LINKS_LENGTH / (distance ** 2)
+const allRepulsingForce = (p1, p2, quadDistance) => {
+  return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
 }
 
-const springForce = (p1, p2, link) => {
+const springForce = (p1, p2, quadDistance, link) => {
   // let it be linear for now
-  const distance = U.distance(p1, p2)
-  return FORCE_MUL * ((link.length ** 2) - (distance ** 2)) / (distance ** 2)
+  return FORCE_MUL * ((link.length ** 2) - quadDistance) / quadDistance
 }
 
 const vectorsByLinks = (points: Array<Point>, links: Array<Link>, forceFunc: FroceFunc): Array<Vector> =>
   R.chain(link => {
     const [p1, p2] = getLinkPoints(link, points)
-    const forceScalar = forceFunc(p1, p2, link)
+    const quadDistance = ((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2)
+    const forceScalar = forceFunc(p1, p2, quadDistance, link)
     const pseudoPoint = { x: (p1.x - p2.x) * forceScalar, y: (p1.y - p2.y) * forceScalar }
     // console.log('DUI', distance, link.length, pseudoPoint)
     const p1Vector = { point: p1.id, x: pseudoPoint.x, y: pseudoPoint.y }
