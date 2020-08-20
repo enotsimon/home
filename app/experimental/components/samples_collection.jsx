@@ -84,6 +84,13 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/dots_map_dynamic.png',
     status: 'in_progress',
   },
+  {
+    name: 'spring force',
+    description: 'like springs between points. for now not very optimal by CPU usage',
+    sample_url: './spring_force',
+    img_path: './thumbnails/spring_force.png',
+    status: 'in_progress',
+  },
 ]
 
 const colorConfig: Array<SamplePreviewConfig> = [
