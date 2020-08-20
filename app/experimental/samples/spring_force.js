@@ -47,6 +47,9 @@ type State = {|
   points: Array<Point>,
   links: Array<Link>,
   pairs: Array<Link>,
+  debugInfo: {
+
+  },
 |}
 
 type FroceFunc = (Point, Point, number, Link) => number
@@ -120,16 +123,37 @@ const redraw = (oldState: State): State => {
   if (THROTTLE && state.ticks % THROTTLE !== 0) {
     return state
   }
+  let startTS
+  startTS = (new Date()).getTime()
   state.points = calcAllRepulsingForce(state.points, state.pairs)
+  const repulsingForceTime = (new Date()).getTime() - startTS
+  startTS = (new Date()).getTime()
   state.points = calcSpringForceMovement(state.points, state.links)
+  const springForceTime = (new Date()).getTime() - startTS
+  startTS = (new Date()).getTime()
   state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
+  const circleBorderForceTime = (new Date()).getTime() - startTS
+  startTS = (new Date()).getTime()
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
+  const applySpeedTime = (new Date()).getTime() - startTS
   // speed slowdown -- its like resistance of the environment
+  startTS = (new Date()).getTime()
   state.points = state.points.map(p => ({
     ...p,
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
   }))
+  const slowdownTime = (new Date()).getTime() - startTS
+  startTS = (new Date()).getTime()
   redrawGraphics(state.base_container, state.points, state.links)
+  const redrawGraphicsTime = (new Date()).getTime() - startTS
+  state.debugInfo = {
+    repulsingForceTime,
+    springForceTime,
+    circleBorderForceTime,
+    applySpeedTime,
+    slowdownTime,
+    redrawGraphicsTime,
+  }
   return state
 }
 
@@ -217,4 +241,13 @@ const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): 
   }, points)
 }
 
-export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
+const debugInfo = state => [
+  { text: 'repulsingForceTime', value: state.debugInfo.repulsingForceTime },
+  { text: 'springForceTime', value: state.debugInfo.springForceTime },
+  { text: 'circleBorderForceTime', value: state.debugInfo.circleBorderForceTime },
+  { text: 'applySpeedTime', value: state.debugInfo.applySpeedTime },
+  { text: 'slowdownTime', value: state.debugInfo.slowdownTime },
+  { text: 'redrawGraphicsTime', value: state.debugInfo.redrawGraphicsTime },
+]
+
+export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)
