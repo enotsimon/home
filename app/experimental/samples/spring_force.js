@@ -54,7 +54,7 @@ type FroceFunc = (Point, Point, number, Link) => number
 // const FORCE_STRENGTH = 0.05
 const COUNT_POINTS = 35
 const LINKS_LENGTH = 10
-const FORCE_MUL = 0.025
+const FORCE_MUL = 0.01
 const REPULSING_FORCE_MUL = 0.05
 const SLOWDOWN_MUL = 0.8
 const CB_FORCE_MUL = 0.0025
