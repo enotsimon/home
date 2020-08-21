@@ -125,11 +125,12 @@ const redraw = (oldState: State): State => {
   }
   let startTS
   startTS = (new Date()).getTime()
-  state.points = calcAllRepulsingForce(state.points, state.pairs)
+  const rfVectors = calcAllRepulsingForce(state.points, state.pairs)
   const repulsingForceTime = (new Date()).getTime() - startTS
   startTS = (new Date()).getTime()
-  state.points = calcSpringForceMovement(state.points, state.links)
+  const sfVectors = calcSpringForceMovement(state.points, state.links)
   const springForceTime = (new Date()).getTime() - startTS
+  state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
   startTS = (new Date()).getTime()
   state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
   const circleBorderForceTime = (new Date()).getTime() - startTS
@@ -193,16 +194,10 @@ const getLinkPoints = (link, points) => {
   return [p1, p2]
 }
 
-const calcAllRepulsingForce = (points, pairs) => {
-  const vectors = vectorsByLinks(points, pairs, allRepulsingForce)
-  return addVectorsToPointsSpeed(points, vectors)
-}
+const calcAllRepulsingForce = (points, pairs) => vectorsByLinks(points, pairs, allRepulsingForce)
 
-const calcSpringForceMovement = (points: Array<Point>, links: Array<Link>): Array<Point> => {
-  const vectors = vectorsByLinks(points, links, springForce)
-  // console.log('vectors', vectors)
-  return addVectorsToPointsSpeed(points, vectors)
-}
+const calcSpringForceMovement = (points, links) => vectorsByLinks(points, links, springForce)
+
 
 const allRepulsingForce = (p1, p2, quadDistance) => {
   return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
