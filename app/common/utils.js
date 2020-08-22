@@ -47,14 +47,30 @@ export const randElement = <T>(arr: Array<T>): T => {
 }
 
 const filterSame = list => R.filter(([v1, v2]) => !R.equals(v1, v2), list)
+const noOrderPairsFilterSame = <T>(list: Array<T>, filter: boolean): Array<[T, T]> => {
+  return pairs(list).reduce(([acc, closeList], [e1, e2]) => {
+    // $FlowIgnore
+    const p1 = `${e1.toString()}|${e2.toString()}`
+    // $FlowIgnore
+    const p2 = `${e2.toString()}|${e1.toString()}`
+    if (filter && p1 === p2) {
+      return [acc, closeList]
+    }
+    if (!closeList[p1] && !closeList[p2]) {
+      acc.push([e1, e2])
+    }
+    // clone closeList all the time is very expensive, have to reassing input args
+    /* eslint-disable-next-line no-param-reassign */
+    closeList[p1] = 1
+    /* eslint-disable-next-line no-param-reassign */
+    closeList[p2] = 1
+    return [acc, closeList]
+  }, [[], {}])[0]
+}
 export const pairs = <T>(list: Array<T>): Array<[T, T]> => R.chain(e1 => R.map(e2 => [e1, e2], list), list)
-export const noOrderPairs = <T>(list: Array<T>): Array<[T, T]> => R.pipe(
-  ps => pairs(ps),
-  R.map(pair => pair.sort()),
-  R.uniq
-)(list)
 export const noSameValuesPairs = <T>(list: Array<T>): Array<[T, T]> => filterSame(pairs(list))
-export const noOrderNoSameValuesPairs = <T>(list: Array<T>): Array<[T, T]> => filterSame(noOrderPairs(list))
+export const noOrderPairs = <T>(list: Array<T>): Array<[T, T]> => noOrderPairsFilterSame(list, false)
+export const noOrderNoSameValuesPairs = <T>(list: Array<T>): Array<[T, T]> => noOrderPairsFilterSame(list, true)
 
 export const shuffle = <T: any>(arr: Array<T>): Array<T> => arr.sort(() => random.int(0, 2) - 1)
 
