@@ -55,10 +55,11 @@ type State = {|
 type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 35
+const COUNT_POINTS = 50
 const LINKS_LENGTH = 10
 const FORCE_MUL = 0.01
 const REPULSING_FORCE_MUL = 0.05
+const REPULSING_FORCE_MAX_DIST_MUL = 1
 const SLOWDOWN_MUL = 0.8
 const CB_FORCE_MUL = 0.0025
 const THROTTLE = 0
@@ -125,10 +126,10 @@ const redraw = (oldState: State): State => {
   }
   let startTS
   startTS = (new Date()).getTime()
-  const rfVectors = calcAllRepulsingForce(state.points, state.pairs)
+  const rfVectors = calcAllRepulsingForce(state.points, state.pairs, (REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2)
   const repulsingForceTime = (new Date()).getTime() - startTS
   startTS = (new Date()).getTime()
-  const sfVectors = calcSpringForceMovement(state.points, state.links)
+  const sfVectors = calcSpringForce(state.points, state.links)
   const springForceTime = (new Date()).getTime() - startTS
   state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
   startTS = (new Date()).getTime()
@@ -194,10 +195,8 @@ const getLinkPoints = (link, points) => {
   return [p1, p2]
 }
 
-const calcAllRepulsingForce = (points, pairs) => vectorsByLinks(points, pairs, allRepulsingForce)
-
-const calcSpringForceMovement = (points, links) => vectorsByLinks(points, links, springForce)
-
+const calcAllRepulsingForce = (points, pairs, dlQuad) => vectorsByLinks(points, pairs, allRepulsingForce, dlQuad)
+const calcSpringForce = (points, links) => vectorsByLinks(points, links, springForce)
 
 const allRepulsingForce = (p1, p2, quadDistance) => {
   return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
@@ -208,10 +207,18 @@ const springForce = (p1, p2, quadDistance, link) => {
   return FORCE_MUL * ((link.length ** 2) - quadDistance) / quadDistance
 }
 
-const vectorsByLinks = (points: Array<Point>, links: Array<Link>, forceFunc: FroceFunc): Array<Vector> =>
+const vectorsByLinks = (
+  points: Array<Point>,
+  links: Array<Link>,
+  forceFunc: FroceFunc,
+  distanceLimitQuad: number = 0
+): Array<Vector> =>
   R.chain(link => {
     const [p1, p2] = getLinkPoints(link, points)
     const quadDistance = ((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2)
+    if (distanceLimitQuad && (quadDistance > distanceLimitQuad)) {
+      return []
+    }
     const forceScalar = forceFunc(p1, p2, quadDistance, link)
     const pseudoPoint = { x: (p1.x - p2.x) * forceScalar, y: (p1.y - p2.y) * forceScalar }
     // console.log('DUI', distance, link.length, pseudoPoint)
