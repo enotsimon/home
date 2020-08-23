@@ -230,7 +230,12 @@ const vectorsByLinks = (
   }, links)
 
 const aggregateVectorsByIds = vectors => R.reduce((acc, v) => {
-  return { ...acc, [v.point]: [...(acc[v.point] || []), v] }
+  // this code speed is critical, so thats why modify input args and push()
+  if (!acc[v.point]) {
+    acc[v.point] = []
+  }
+  acc[v.point].push(v)
+  return acc
 }, {}, vectors)
 
 const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): Array<Point> => {
