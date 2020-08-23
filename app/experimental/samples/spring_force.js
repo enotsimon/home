@@ -62,6 +62,7 @@ const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 1
 const SLOWDOWN_MUL = 0.8
 const CB_FORCE_MUL = 0.0025
+// const MAX_SPEED_QUAD_TRIGGER = 0.001
 const THROTTLE = 0
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
@@ -237,11 +238,13 @@ const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): 
   return R.map(point => {
     const myVectors = vectorsByIds[point.id] || []
     return R.reduce((p, vector) => {
-      // console.log(`point (${p.x}, ${p.y}) my vector (${vector.x}, ${vector.y})`)
       return { ...p, speed: { x: p.speed.x + vector.x, y: p.speed.y + vector.y } }
     }, point, myVectors)
   }, points)
 }
+
+const maxSpeedQuad = points =>
+  R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), points))
 
 const debugInfo = state => [
   { text: 'repulsingForceTime', value: state.debugInfo.repulsingForceTime },
@@ -250,6 +253,7 @@ const debugInfo = state => [
   { text: 'applySpeedTime', value: state.debugInfo.applySpeedTime },
   { text: 'slowdownTime', value: state.debugInfo.slowdownTime },
   { text: 'redrawGraphicsTime', value: state.debugInfo.redrawGraphicsTime },
+  { text: 'max point speed quad', value: maxSpeedQuad(state.points) },
 ]
 
 export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)
