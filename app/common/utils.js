@@ -50,9 +50,9 @@ const filterSame = list => R.filter(([v1, v2]) => !R.equals(v1, v2), list)
 const noOrderPairsFilterSame = <T>(list: Array<T>, filter: boolean): Array<[T, T]> => {
   return pairs(list).reduce(([acc, closeList], [e1, e2]) => {
     // $FlowIgnore
-    const p1 = `${e1.toString()}|${e2.toString()}`
+    const p1 = `${JSON.stringify(e1)}|${JSON.stringify(e2)}`
     // $FlowIgnore
-    const p2 = `${e2.toString()}|${e1.toString()}`
+    const p2 = `${JSON.stringify(e2)}|${JSON.stringify(e1)}`
     if (filter && p1 === p2) {
       return [acc, closeList]
     }
