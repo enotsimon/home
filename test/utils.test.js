@@ -188,4 +188,11 @@ describe('noOrderNoSameValuesPairs', () => {
   it('should return all non-depending of elements order pairs for 1, 2, 3', () => {
     assert.deepEqual(U.noOrderNoSameValuesPairs([1, 2, 3]), [[1, 2], [1, 3], [2, 3]])
   })
+  it('should return all non-depending of elements order pairs for 3 objects', () => {
+    const sample = [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 1 }]
+    assert.deepEqual(
+      U.noOrderNoSameValuesPairs(sample),
+      [[sample[0], sample[1]], [sample[0], sample[2]], [sample[1], sample[2]]]
+    )
+  })
 })
