@@ -55,8 +55,6 @@
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "auto-reload-brunch": "^2",
-    "babel-brunch": "~6.0",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
@@ -72,10 +70,8 @@
     "babel-preset-latest": "^6",
     "babel-preset-react": "^6.24.1",
     "babel-preset-react-optimize": "^1.0.1",
-    "brunch": "^2",
     "chai": "^4.1.2",
     "chai-string": "^1.4.0",
-    "clean-css-brunch": "^2",
     "eslint": "5.13.0",
     "eslint-config-airbnb": "17.1.0",
     "eslint-plugin-flowtype": "^4.7.0",
@@ -95,7 +91,6 @@
     "react-hot-loader": "^4.2.0",
     "stylelint": "^9.3.0",
     "stylelint-config-standard": "^18.2.0",
-    "uglify-js-brunch": "^2",
     "webpack": "^4.4.1",
     "webpack-cli": "^3.1.1",
     "webpack-dev-server": "^3.1.1"
