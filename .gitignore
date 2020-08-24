@@ -7,3 +7,5 @@ public/
 
 dist/
 yarn-error.log
+
+.vscode/
