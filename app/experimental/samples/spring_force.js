@@ -57,12 +57,12 @@ const LINKS_LENGTH = 500 / COUNT_POINTS
 const FORCE_MUL = 0.01
 const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 1
-const SLOWDOWN_MUL = 0.8
+const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
-const MAX_SPEED_QUAD_TRIGGER = 0.005 // 0.001
+const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
-const FIND_CROSSING_THROTTLE = 250
-const HANDLE_CROSSING_POWER = 0.1
+const FIND_CROSSING_THROTTLE = 50
+const HANDLE_CROSSING_POWER = 2
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -140,7 +140,7 @@ const redraw = (oldState: State): State => {
     if (crossingLinks.length) {
       console.log('handleCrossingLinks', crossingLinks.length)
     }
-    state.points = handleCrossingLinks(crossingLinks, state.points, state.size)
+    state.points = handleCrossingLinks(crossingLinks, state.points)
   }
   return state
 }
@@ -178,16 +178,12 @@ const findCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Link
   U.noOrderNoSameValuesPairs(links)
 )
 
-const handleCrossingLinks = (links: Array<Link>, points: Array<Point>, worldSize: number): Array<Link> => {
-  const targetPoints = R.uniq(R.chain(l => [l.p1, l.p2], links))
-  return R.map(p => {
-    if (R.includes(p.id, targetPoints)) {
-      const radius = HANDLE_CROSSING_POWER * worldSize
-      const speed = U.fromPolarCoords({ radius, angle: random.float(0, 2 * Math.PI) })
-      return { ...p, speed }
-    }
-    return p
-  }, points)
+const handleCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Point> => {
+  const vectors = R.map(l => {
+    const [p1, p2] = getLinkPoints(l, points)
+    return { point: p1.id, x: HANDLE_CROSSING_POWER * (p2.x - p1.x), y: HANDLE_CROSSING_POWER * (p2.y - p1.y) }
+  }, links)
+  return addVectorsToPointsSpeed(points, vectors)
 }
 
 const removeSelfAndBackLinks = (points, links, point): Array<Point> => {
