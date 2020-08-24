@@ -181,7 +181,7 @@ const findCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Link
 const handleCrossingLinks = (links: Array<Link>, points: Array<Point>, worldSize: number): Array<Link> => {
   const targetPoints = R.uniq(R.chain(l => [l.p1, l.p2], links))
   return R.map(p => {
-    if (R.contains(p.id, targetPoints)) {
+    if (R.includes(p.id, targetPoints)) {
       const radius = HANDLE_CROSSING_POWER * worldSize
       const speed = U.fromPolarCoords({ radius, angle: random.float(0, 2 * Math.PI) })
       return { ...p, speed }
@@ -193,7 +193,7 @@ const handleCrossingLinks = (links: Array<Link>, points: Array<Point>, worldSize
 const removeSelfAndBackLinks = (points, links, point): Array<Point> => {
   const badIdsFromLinks = R.chain(l => ((l.p1 === point.id || l.p2 === point.id) ? [l.p1, l.p2] : []), links)
   const badIds = R.uniq([...badIdsFromLinks, point.id])
-  return R.filter(p => !R.contains(p.id, badIds), points)
+  return R.filter(p => !R.includes(p.id, badIds), points)
 }
 
 const getLinkPoints = (link, points) => {
