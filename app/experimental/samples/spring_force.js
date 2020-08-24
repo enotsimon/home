@@ -62,8 +62,10 @@ const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 1
 const SLOWDOWN_MUL = 0.8
 const CB_FORCE_MUL = 0.0025
-// const MAX_SPEED_QUAD_TRIGGER = 0.001
+const MAX_SPEED_QUAD_TRIGGER = 0.005 // 0.001
 const THROTTLE = 0
+const FIND_CROSSING_THROTTLE = 250
+const HANDLE_CROSSING_POWER = 0.1
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -149,6 +151,13 @@ const redraw = (oldState: State): State => {
   startTS = (new Date()).getTime()
   redrawGraphics(state.base_container, state.points, state.links)
   const redrawGraphicsTime = (new Date()).getTime() - startTS
+  if (state.ticks % FIND_CROSSING_THROTTLE === 0 && maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
+    const crossingLinks = findCrossingLinks(state.links, state.points)
+    if (crossingLinks.length) {
+      console.log('handleCrossingLinks', crossingLinks.length)
+    }
+    state.points = handleCrossingLinks(crossingLinks, state.points, state.size)
+  }
   state.debugInfo = {
     repulsingForceTime,
     springForceTime,
@@ -179,6 +188,30 @@ const redrawGraphics = (container, points, links) => {
     graphics.lineTo(p2.x, p2.y)
     linksContainer.addChild(graphics)
   })
+}
+
+const findCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Link> => R.chain(
+  ([l1, l2]) => {
+    if (l1.p1 === l2.p1 || l1.p1 === l2.p2 || l1.p2 === l2.p1 || l1.p2 === l2.p2) {
+      return []
+    }
+    const [p11, p12] = getLinkPoints(l1, points)
+    const [p21, p22] = getLinkPoints(l2, points)
+    return U.intervalsCrossPointNoEdge(p11, p12, p21, p22) ? [l1, l2] : []
+  },
+  U.noOrderNoSameValuesPairs(links)
+)
+
+const handleCrossingLinks = (links: Array<Link>, points: Array<Point>, worldSize: number): Array<Link> => {
+  const targetPoints = R.uniq(R.chain(l => [l.p1, l.p2], links))
+  return R.map(p => {
+    if (R.contains(p.id, targetPoints)) {
+      const radius = HANDLE_CROSSING_POWER * worldSize
+      const speed = U.fromPolarCoords({ radius, angle: random.float(0, 2 * Math.PI) })
+      return { ...p, speed }
+    }
+    return p
+  }, points)
 }
 
 const removeSelfAndBackLinks = (points, links, point): Array<Point> => {
