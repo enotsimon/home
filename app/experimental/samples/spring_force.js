@@ -47,9 +47,6 @@ type State = {|
   points: Array<Point>,
   links: Array<Link>,
   pairs: Array<Link>,
-  debugInfo: {
-
-  },
 |}
 
 type FroceFunc = (Point, Point, number, Link) => number
@@ -127,44 +124,23 @@ const redraw = (oldState: State): State => {
   if (THROTTLE && state.ticks % THROTTLE !== 0) {
     return state
   }
-  let startTS
-  startTS = (new Date()).getTime()
   const rfVectors = calcAllRepulsingForce(state.points, state.pairs, (REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2)
-  const repulsingForceTime = (new Date()).getTime() - startTS
-  startTS = (new Date()).getTime()
   const sfVectors = calcSpringForce(state.points, state.links)
-  const springForceTime = (new Date()).getTime() - startTS
   state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
-  startTS = (new Date()).getTime()
   state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
-  const circleBorderForceTime = (new Date()).getTime() - startTS
-  startTS = (new Date()).getTime()
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
-  const applySpeedTime = (new Date()).getTime() - startTS
   // speed slowdown -- its like resistance of the environment
-  startTS = (new Date()).getTime()
   state.points = state.points.map(p => ({
     ...p,
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
   }))
-  const slowdownTime = (new Date()).getTime() - startTS
-  startTS = (new Date()).getTime()
   redrawGraphics(state.base_container, state.points, state.links)
-  const redrawGraphicsTime = (new Date()).getTime() - startTS
   if (state.ticks % FIND_CROSSING_THROTTLE === 0 && maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
     const crossingLinks = findCrossingLinks(state.links, state.points)
     if (crossingLinks.length) {
       console.log('handleCrossingLinks', crossingLinks.length)
     }
     state.points = handleCrossingLinks(crossingLinks, state.points, state.size)
-  }
-  state.debugInfo = {
-    repulsingForceTime,
-    springForceTime,
-    circleBorderForceTime,
-    applySpeedTime,
-    slowdownTime,
-    redrawGraphicsTime,
   }
   return state
 }
@@ -284,14 +260,4 @@ const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): 
 const maxSpeedQuad = points =>
   R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), points))
 
-const debugInfo = state => [
-  { text: 'repulsingForceTime', value: state.debugInfo.repulsingForceTime },
-  { text: 'springForceTime', value: state.debugInfo.springForceTime },
-  { text: 'circleBorderForceTime', value: state.debugInfo.circleBorderForceTime },
-  { text: 'applySpeedTime', value: state.debugInfo.applySpeedTime },
-  { text: 'slowdownTime', value: state.debugInfo.slowdownTime },
-  { text: 'redrawGraphicsTime', value: state.debugInfo.redrawGraphicsTime },
-  { text: 'max point speed quad', value: maxSpeedQuad(state.points) },
-]
-
-export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)
+export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
