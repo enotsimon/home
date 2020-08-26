@@ -15,7 +15,7 @@ export type SpeedPoint = {|
   speed: Vector,
 |}
 export type SpeedPointIE = { ...SpeedPoint }
-export type ArrOrObjOfSpeedPointIE = Array<SpeedPointIE> | {[string]: SpeedPointIE}
+export type ArrOrObjOfSpeedPointIE = $ReadOnlyArray<SpeedPointIE> | $ReadOnly<{[string]: SpeedPointIE}>
 type ForceFunc = (distToBorder: number, circleRadius: number, forceMul: number) => number
 
 
