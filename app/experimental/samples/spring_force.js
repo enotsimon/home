@@ -21,14 +21,15 @@ import { circleBorderForceLinear } from 'experimental/circle_border'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
-import type { MassSpeedPoint } from 'experimental/circle_border'
+import type { SpeedPoint } from 'experimental/circle_border'
 
 // type Vector = XYPoint
-type PointId = number
+type PointId = string
 type Point = {|
-  ...MassSpeedPoint,
+  ...SpeedPoint,
   id: PointId,
 |}
+type Points = {[PointId]: Point}
 
 type Link = {
   p1: PointId,
@@ -43,7 +44,7 @@ type Vector = {|
 
 type State = {|
   ...DrawerState,
-  points: Array<Point>,
+  points: Points,
   links: Array<Link>,
   pairs: Array<Link>,
 |}
@@ -69,27 +70,28 @@ const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
-  state.points = R.map(id => {
+  state.points = R.indexBy(R.prop('id'), R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
-    return { id, x, y, mass: 0, speed: { x: 0, y: 0 } }
-  })(R.range(0, COUNT_POINTS))
+    return { id: `p${id}`, x, y, speed: { x: 0, y: 0 } }
+  }, R.range(0, COUNT_POINTS)))
   // each point has one link to ramdom another one
+  const pointsArray = R.values(state.points)
   state.links = R.reduce((accLinks, p) => {
-    const possibleTargetPoints = removeSelfAndBackLinks(state.points, accLinks, p)
+    const possibleTargetPoints = removeSelfAndBackLinks(pointsArray, accLinks, p)
     if (possibleTargetPoints.length === 0) {
       throw new Error('no possible target points')
     }
     const targetPoint = U.randElement(possibleTargetPoints)
     // FIXME length: 10 its first simple way
     return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH }]
-  }, [], state.points)
+  }, [], pointsArray)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
   state.pairs = R.map(
     // its a fake link, just to make funcs types simplier
     ([id1, id2]) => ({ p1: id1, p2: id2, length: 0 }),
-    U.noOrderNoSameValuesPairs(R.map(p => p.id, state.points))
+    U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
   )
-  initDrawings(state.base_container, state.points)
+  initDrawings(state.base_container, pointsArray)
   addCircleMask(state.base_container, state.size / 2)
   return state
 }
@@ -127,12 +129,12 @@ const redraw = (oldState: State): State => {
   const sfVectors = calcSpringForce(state.points, state.links)
   state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
   state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
-  state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
+  state.points = R.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }), state.points)
   // speed slowdown -- its like resistance of the environment
-  state.points = state.points.map(p => ({
+  state.points = R.map(p => ({
     ...p,
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
-  }))
+  }), state.points)
   redrawGraphics(state.base_container, state.points, state.links)
   if (state.ticks % FIND_CROSSING_THROTTLE === 0 && maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
     const crossingLinks = findCrossingLinks(state.links, state.points)
@@ -145,14 +147,14 @@ const redraw = (oldState: State): State => {
 }
 
 const redrawGraphics = (container, points, links) => {
-  points.forEach(p => {
+  R.forEach(p => {
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
     }
     graphics.x = p.x
     graphics.y = p.y
-  })
+  }, R.values(points))
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
   links.forEach(l => {
@@ -165,7 +167,7 @@ const redrawGraphics = (container, points, links) => {
   })
 }
 
-const findCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Link> => R.chain(
+const findCrossingLinks = (links: Array<Link>, points: Points): Array<Link> => R.chain(
   ([l1, l2]) => {
     if (l1.p1 === l2.p1 || l1.p1 === l2.p2 || l1.p2 === l2.p1 || l1.p2 === l2.p2) {
       return []
@@ -177,7 +179,7 @@ const findCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Link
   U.noOrderNoSameValuesPairs(links)
 )
 
-const handleCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Point> => {
+const handleCrossingLinks = (links: Array<Link>, points: Points): Points => {
   const vectors = R.map(l => {
     const [p1, p2] = getLinkPoints(l, points)
     return { point: p1.id, x: HANDLE_CROSSING_POWER * (p2.x - p1.x), y: HANDLE_CROSSING_POWER * (p2.y - p1.y) }
@@ -185,15 +187,15 @@ const handleCrossingLinks = (links: Array<Link>, points: Array<Point>): Array<Po
   return addVectorsToPointsSpeed(points, vectors)
 }
 
-const removeSelfAndBackLinks = (points, links, point): Array<Point> => {
+const removeSelfAndBackLinks = (points: Array<Point>, links, point): Array<Point> => {
   const badIdsFromLinks = R.chain(l => ((l.p1 === point.id || l.p2 === point.id) ? [l.p1, l.p2] : []), links)
   const badIds = R.uniq([...badIdsFromLinks, point.id])
   return R.filter(p => !R.includes(p.id, badIds), points)
 }
 
 const getLinkPoints = (link, points) => {
-  const p1 = R.find(p => p.id === link.p1, points)
-  const p2 = R.find(p => p.id === link.p2, points)
+  const p1 = points[link.p1]
+  const p2 = points[link.p2]
   if (!p1 || !p2) {
     throw new Error(`point not found by id ${p1 ? link.p2 : link.p1}`)
   }
@@ -213,7 +215,7 @@ const springForce = (p1, p2, quadDistance, link) => {
 }
 
 const vectorsByLinks = (
-  points: Array<Point>,
+  points: Points,
   links: Array<Link>,
   forceFunc: FroceFunc,
   distanceLimitQuad: number = 0
@@ -242,7 +244,7 @@ const aggregateVectorsByIds = vectors => R.reduce((acc, v) => {
   return acc
 }, {}, vectors)
 
-const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): Array<Point> => {
+const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points => {
   const vectorsByIds = aggregateVectorsByIds(vectors)
   return R.map(point => {
     const myVectors = vectorsByIds[point.id] || []
@@ -253,7 +255,7 @@ const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): 
   }, points)
 }
 
-const maxSpeedQuad = points =>
-  R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), points))
+const maxSpeedQuad = (points: Points) =>
+  R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), R.values(points)))
 
 export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
