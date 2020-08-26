@@ -52,7 +52,7 @@ type State = {|
 type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 120
+const COUNT_POINTS = 50
 const LINKS_LENGTH = 800 / COUNT_POINTS
 const FORCE_MUL = 0.05
 const REPULSING_FORCE_MUL = 0.05
