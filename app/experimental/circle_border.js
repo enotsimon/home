@@ -5,38 +5,38 @@ import * as U from 'common/utils'
 import type { XYPoint } from 'common/utils'
 
 export type Vector = XYPoint
+// TODO remove it from here
 export type MassSpeedPoint = {|
-  ...XYPoint,
+  ...SpeedPoint,
   mass: number,
+|}
+export type SpeedPoint = {|
+  ...XYPoint,
   speed: Vector,
 |}
-export type CircleBorderForceFunction = <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
-  circleRadius: number,
-  forceMul: number,
-  returnPoints: boolean,
-) => Array<T>
+export type SpeedPointIE = { ...SpeedPoint }
+export type ArrOrObjOfSpeedPointIE = Array<SpeedPointIE> | {[string]: SpeedPointIE}
 type ForceFunc = (distToBorder: number, circleRadius: number, forceMul: number) => number
 
 
-const circleBorderForceAcceleration = (forceFunc: ForceFunc) => <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
+const circleBorderForceAcceleration = (forceFunc: ForceFunc) => (
+  points: ArrOrObjOfSpeedPointIE,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean,
-): Array<T> => R.map(p => {
-    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-    const distToBorder = circleRadius - radius
-    const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
-    // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-    const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
-    // TODO add check if point is beyond circle and return it back?
-    const speed = crossSumm(p.speed, accVector)
-    if (returnPoints && radius > circleRadius) {
-      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
-    }
-    return { ...p, speed }
-  })(points)
+): ArrOrObjOfSpeedPointIE => R.map(p => {
+  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
+  const distToBorder = circleRadius - radius
+  const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
+  // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
+  const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
+  // TODO add check if point is beyond circle and return it back?
+  const speed = crossSumm(p.speed, accVector)
+  if (returnPoints && radius > circleRadius) {
+    return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
+  }
+  return { ...p, speed }
+})(points)
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
@@ -59,29 +59,29 @@ export const returnPointsToCircle = <T: { ...XYPoint }>(points: Array<T>, circle
   })
 }
 
-export const calcCircleBorderForceAcceleration = <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
+export const calcCircleBorderForceAcceleration = (
+  points: ArrOrObjOfSpeedPointIE,
   circleRadius: number,
   forceDistanse: number,
-): Array<T> => R.map(p => {
-    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-    const distToBorder = circleRadius - radius
-    const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / forceDistanse)
-    const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-    return { ...p, speed: crossSumm(p.speed, accVector) }
-  })(points)
+): ArrOrObjOfSpeedPointIE => R.map(p => {
+  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
+  const distToBorder = circleRadius - radius
+  const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / forceDistanse)
+  const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
+  return { ...p, speed: crossSumm(p.speed, accVector) }
+})(points)
 
 // TODO spread syntax?
-export const circleBorderForceHyperbole = <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
+export const circleBorderForceHyperbole = (
+  points: ArrOrObjOfSpeedPointIE,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): Array<T> => circleBorderForceAcceleration(hyperboleFunc)(points, circleRadius, forceMul, returnPoints)
+): ArrOrObjOfSpeedPointIE => circleBorderForceAcceleration(hyperboleFunc)(points, circleRadius, forceMul, returnPoints)
 
-export const circleBorderForceLinear = <T: { ...MassSpeedPoint }>(
-  points: Array<T>,
+export const circleBorderForceLinear = (
+  points: ArrOrObjOfSpeedPointIE,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): Array<T> => circleBorderForceAcceleration(linearFunc)(points, circleRadius, forceMul, returnPoints)
+): ArrOrObjOfSpeedPointIE => circleBorderForceAcceleration(linearFunc)(points, circleRadius, forceMul, returnPoints)
