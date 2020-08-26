@@ -1,13 +1,12 @@
 // @flow
 /**
- * это корочи как d3.force -- пружинки между точками и точки должны разворачиваться под действием
- * силы пружинок
+ * это как d3.force -- пружинки между точками и точки должны разворачиваться под действием силы пружинок
  * TODO
  * - все коэффициэнты сил очень взаимосвязаны -- меняещь один и все идет раком, надо выразить их все через
  * отношения др-др и к какому-то базовому
  * - динамическое добавление и удаление точек
- * - оптимизация distance в allRepulsingForce() и springForce() и может быть circleBorderForceLinear()
- * - избавиться от returnPointsToCircle, втащить это в circleBorderForceLinear()
+ * - механизм распутывания графа сейчас очевидно не очень. надо другой -- искать всю ветку и поворачивать ее
+ * - попробовать пересчитывать не все точки на тике, а хотя бы половину, можно на 3, на 4 части
  */
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
@@ -52,7 +51,7 @@ type State = {|
 type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 60
+const COUNT_POINTS = 120
 const LINKS_LENGTH = 800 / COUNT_POINTS
 const FORCE_MUL = 0.05
 const REPULSING_FORCE_MUL = 0.05
@@ -247,9 +246,10 @@ const addVectorsToPointsSpeed = (points: Array<Point>, vectors: Array<Vector>): 
   const vectorsByIds = aggregateVectorsByIds(vectors)
   return R.map(point => {
     const myVectors = vectorsByIds[point.id] || []
-    return R.reduce((p, vector) => {
-      return { ...p, speed: { x: p.speed.x + vector.x, y: p.speed.y + vector.y } }
-    }, point, myVectors)
+    // this code speed is critical, thats why forEach and reassign input args
+    /* eslint-disable-next-line no-param-reassign */
+    myVectors.forEach(v => { point.speed = { x: point.speed.x + v.x, y: point.speed.y + v.y } })
+    return point
   }, points)
 }
 
