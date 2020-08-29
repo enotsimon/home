@@ -61,7 +61,6 @@ const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
 const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
-const FIND_CROSSING_THROTTLE = 50
 const HANDLE_CROSSING_POWER = 2
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
@@ -136,8 +135,11 @@ const redraw = (oldState: State): State => {
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
   }), state.points)
   redrawGraphics(state.base_container, state.points, state.links)
-  if (state.ticks % FIND_CROSSING_THROTTLE === 0 && maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
-    const crossingLinks = findCrossingLinks(state.links, state.points)
+  if (maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
+    // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
+    const curLink = state.links[state.ticks % state.links.length]
+    // const crossingLinks = findCrossingLinks(state.links, state.points)
+    const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
     if (crossingLinks.length) {
       console.log('handleCrossingLinks', crossingLinks.length)
     }
@@ -167,17 +169,15 @@ const redrawGraphics = (container, points, links) => {
   })
 }
 
-const findCrossingLinks = (links: Array<Link>, points: Points): Array<Link> => R.chain(
-  ([l1, l2]) => {
-    if (l1.p1 === l2.p1 || l1.p1 === l2.p2 || l1.p2 === l2.p1 || l1.p2 === l2.p2) {
-      return []
-    }
-    const [p11, p12] = getLinkPoints(l1, points)
-    const [p21, p22] = getLinkPoints(l2, points)
-    return U.intervalsCrossPointNoEdge(p11, p12, p21, p22) ? [l1, l2] : []
-  },
-  U.noOrderNoSameValuesPairs(links)
-)
+const findCrossingLinks = (link: Link, links: Array<Link>, points: Points): Array<Link> => R.filter(l => {
+  if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
+    return false
+  }
+  const [p11, p12] = getLinkPoints(link, points)
+  const [p21, p22] = getLinkPoints(l, points)
+  // we checked edges upper
+  return U.intervalsCrossPoint(p11, p12, p21, p22)
+}, links)
 
 const handleCrossingLinks = (links: Array<Link>, points: Points): Points => {
   const vectors = R.map(l => {
