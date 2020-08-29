@@ -52,7 +52,7 @@ type State = {|
 type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 50
+const COUNT_POINTS = 100
 const LINKS_LENGTH = 800 / COUNT_POINTS
 const FORCE_MUL = 0.05
 const REPULSING_FORCE_MUL = 0.05
@@ -62,10 +62,11 @@ const CB_FORCE_MUL = 0.0025
 const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
 const HANDLE_CROSSING_POWER = 2
+const REBUILD_EVERY = 2000
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
-const initGraphics = (oldState: DrawerState): State => {
+const initGraphics = (oldState: DrawerState | State): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
@@ -96,6 +97,7 @@ const initGraphics = (oldState: DrawerState): State => {
 }
 
 const initDrawings = (container, points) => {
+  container.removeChildren()
   points.forEach(p => {
     const graphics = createPointGraphics(p)
     graphics.name = drawerPointId(p)
@@ -140,10 +142,11 @@ const redraw = (oldState: State): State => {
     const curLink = state.links[state.ticks % state.links.length]
     // const crossingLinks = findCrossingLinks(state.links, state.points)
     const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
-    if (crossingLinks.length) {
-      console.log('handleCrossingLinks', crossingLinks.length)
-    }
     state.points = handleCrossingLinks(crossingLinks, state.points)
+  }
+  // console.log(state.ticks)
+  if ((state.ticks + 1) % REBUILD_EVERY === 0) {
+    return initGraphics(state)
   }
   return state
 }
