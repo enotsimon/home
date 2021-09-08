@@ -28,6 +28,8 @@ import { init as initGravitation } from 'experimental/samples/gravitation'
 import { init as initCoulombAndRing } from 'experimental/samples/coulomb_and_ring'
 import { init as initRRTBasic } from 'experimental/samples/rrt_basic'
 import { init as initRRTFlashes } from 'experimental/samples/rrt_flashes'
+import { init as initRRTExp } from 'experimental/samples/rrt_exp'
+import { init as initRRTExp2 } from 'experimental/samples/rrt_exp_2'
 import { init as initSpringForce } from 'experimental/samples/spring_force'
 import { init as initDotsMap } from 'experimental/samples/dots_map'
 import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
@@ -67,6 +69,8 @@ ReactDOM.render((
           <Route path="/coulomb_and_ring" render={() => createDrawer(initCoulombAndRing)} />
           <Route path="/rrt_basic" render={() => createDrawer(initRRTBasic)} />
           <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
+          <Route path="/rrt_exp" render={() => createDrawer(initRRTExp)} />
+          <Route path="/rrt_exp_2" render={() => createDrawer(initRRTExp2)} />
           <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
           <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
           <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
