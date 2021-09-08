@@ -153,7 +153,11 @@ export const convexPolygonSquare = (points: Array<XYPInex>): number => {
 }
 
 export const distance = (p1: XYPInex, p2: XYPInex): number => {
-  return Math.sqrt(((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2))
+  return Math.sqrt(quadDistance(p1, p2))
+}
+
+export const quadDistance = (p1: XYPInex, p2: XYPInex): number => {
+  return ((p1.x - p2.x) ** 2) + ((p1.y - p2.y) ** 2)
 }
 
 export const compareDistance = (p1: XYPInex, p2: XYPInex, target: number): number => {
