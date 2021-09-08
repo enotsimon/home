@@ -8,7 +8,7 @@
  * - механизм распутывания графа сейчас очевидно не очень. надо другой -- искать всю ветку и поворачивать ее
  * - попробовать пересчитывать не все точки на тике, а хотя бы половину, можно на 3, на 4 части
  */
-import * as PIXI from 'pixi.js'
+import { Graphics } from 'pixi.js'
 import * as R from 'ramda'
 import random from 'random'
 import seedrandom from 'seedrandom'
@@ -28,14 +28,15 @@ type PointId = string
 type Point = {|
   ...SpeedPoint,
   id: PointId,
+  group: number,
 |}
-type Points = {[PointId]: Point}
+type Points = {| [PointId]: Point |}
 
-type Link = {
+type Link = {|
   p1: PointId,
   p2: PointId,
   length: number,
-}
+|}
 
 type Vector = {|
   ...XYPoint,
@@ -66,13 +67,14 @@ const REBUILD_EVERY = 2000
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
-const initGraphics = (oldState: DrawerState | State): State => {
+const initGraphics = (oldState: State): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.points = R.indexBy(R.prop('id'), R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
-    return { id: `p${id}`, x, y, speed: { x: 0, y: 0 } }
+    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0 }
+    return point
   }, R.range(0, COUNT_POINTS)))
   // each point has one link to ramdom another one
   const pointsArray = R.values(state.points)
@@ -103,7 +105,7 @@ const initDrawings = (container, points) => {
     graphics.name = drawerPointId(p)
     container.addChild(graphics)
   })
-  const linksContainer = new PIXI.Graphics()
+  const linksContainer = new Graphics()
   linksContainer.name = 'linksContainer'
   container.addChild(linksContainer)
 }
@@ -112,7 +114,7 @@ const drawerPointId = point => `p-${point.id}`
 // const drawerLinkId = link => `l-${link.p1}-${link.p2}`
 
 const createPointGraphics = point => {
-  const graphics = new PIXI.Graphics()
+  const graphics = new Graphics()
   graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
   graphics.drawCircle(0, 0, 1.5)
   graphics.endFill()
@@ -140,7 +142,6 @@ const redraw = (oldState: State): State => {
   if (maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
     // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
     const curLink = state.links[state.ticks % state.links.length]
-    // const crossingLinks = findCrossingLinks(state.links, state.points)
     const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
     state.points = handleCrossingLinks(crossingLinks, state.points)
   }
@@ -164,7 +165,7 @@ const redrawGraphics = (container, points, links) => {
   linksContainer.removeChildren()
   links.forEach(l => {
     const [p1, p2] = getLinkPoints(l, points)
-    const graphics = new PIXI.Graphics()
+    const graphics = new Graphics()
     graphics.lineStyle(0.5, Color.to_pixi([255, 255, 255]))
     graphics.moveTo(p1.x, p1.y)
     graphics.lineTo(p2.x, p2.y)
