@@ -80,6 +80,7 @@ const redraw = (oldState: State): State => {
   }
   state.points = calcGravityAcceleration(state.points)
   state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2, state.size / 5)
+  // $FlowIgnore
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   state.points = returnPointsToCircle(state.points, state.size / 2)
 

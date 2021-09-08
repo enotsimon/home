@@ -5,7 +5,7 @@
 import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
-import * as U from 'common/utils'
+// import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
@@ -68,7 +68,7 @@ const redraw = (oldState: TissueState): TissueState => {
   drawNewCells(newCells, state.cellRadius, state.cellsGraphics)
   return state
 }
-
+/*
 const cellsFission = (curCells: Cells, cellRadius: number, cellAngle: number): Cells => {
   const parents = R.filter(c => c.canFission)(R.values(curCells))
   const maxId = parents.reduce((max, e) => Math.max(max, e.id), 0)
@@ -88,7 +88,7 @@ const cellsFission = (curCells: Cells, cellRadius: number, cellAngle: number): C
     }
   }, {})
 }
-
+*/
 const drawNewCells = (cells: Cells, cellRadius: number, container: Object): void => R.forEach(cell => {
   console.log('CELL', cell)
   const lineWidth = 1

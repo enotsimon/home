@@ -95,7 +95,7 @@ const connectDotsRemoveMostConnected = (dots: Dots, pairsPart: number, percentil
   return links.filter(([d1, d2]) => counters[d1] < limit && counters[d2] < limit)
 }
 
-const drawLines = (dots: Array<Dot>, links: Array<Link>, container: Object): void => {
+const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => {
   links.forEach(([d1, d2]) => {
     const graphics = new PIXI.Graphics()
     graphics.lineStyle(0.25, Color.to_pixi([255, 255, 255]))
@@ -105,7 +105,7 @@ const drawLines = (dots: Array<Dot>, links: Array<Link>, container: Object): voi
   })
 }
 
-const drawDots = (dots: Array<Dot>, container: Object): Array<Object> => {
+const drawDots = (dots: Dots, container: Object): Array<Object> => {
   return R.map(dot => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
