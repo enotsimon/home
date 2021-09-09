@@ -10,7 +10,7 @@ import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 import type { Dot as OrigDot, DotId } from 'experimental/random_points'
 
 type DotsState = {|
@@ -70,7 +70,9 @@ const redraw = (oldState: DotsState): DotsState => {
   }
   if (state.stage === 'dots') {
     const cnt = Math.ceil(NEW_POINTS_MUL * (R.keys(state.dots).length + 1) / DOTS_LIMIT)
+    // $FlowIgnore
     const dots = addDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, cnt, state.dots)
+    // $FlowIgnore
     state.dots = R.map(d => ({ ...d, counter: d.counter || state.counter }))(dots)
   }
   const dotsToAddLinks = R.filter(d => state.counter - d.counter === LINKS_AFTER_TICKS)(R.values(state.dots))
@@ -80,6 +82,7 @@ const redraw = (oldState: DotsState): DotsState => {
     dotsToAddLinks
   )
   const dotIdsToRemove = getLonelyDots(state.dots, state.links, state.counter)
+  // $FlowIgnore
   state.dots = R.omit(dotIdsToRemove, state.dots)
   if (state.stage === 'dots' || state.counterDeepSlip <= LINKS_AFTER_TICKS * DOT_DIE_MUL) {
     drawDots(state.dots, dotIdsToRemove, state.graphics)
@@ -124,12 +127,14 @@ const addLinks = (dotFrom, [dotTo, ...rest], links, dots, maxLength, limit, retr
 
 const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): boolean => {
   // TODO seems like R.find + curried works not very fast
-  return !!R.find(([ed1, ed2]) => U.intervalsCrossPointNoEdge(dotFrom, dotTo, dots[ed1], dots[ed2]))(links)
+  return !!R.find(([ed1, ed2]) => !!U.intervalsCrossPointNoEdge(dotFrom, dotTo, dots[ed1], dots[ed2]))(links)
 }
 
 const getLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Array<DotId> => {
-  const dotsToRemovePre = R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots))
+  const dotsToRemovePre = (R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots)))
+  // $FlowIgnore
   const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - DOT_DIE_MUL * LINKS_AFTER_TICKS))(dotsToRemovePre)
+  // $FlowIgnore
   return dotIdsToRemove
 }
 
@@ -137,7 +142,7 @@ const calcLinkMaxLength = (mapSize: number, countDots: number): number => {
   return mapSize * (-1 * (LINK_LENGTH_MUL - 1.15 * DISTANCE_LIMIT_MUL) / DOTS_LIMIT * countDots + LINK_LENGTH_MUL)
 }
 
-const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => R.forEach(([d1, d2]) => {
+const drawLines = (dots: Dots, links: Array<Link>, container: Object) => R.forEach(([d1, d2]) => {
   if (container.getChildByName(`l-${d1}-${d2}`)) {
     return
   }
@@ -174,4 +179,4 @@ const debugInfo = state => [
   { text: 'seed', value: state.seed },
 ]
 
-export const init = () => initDrawer('circle', debugInfo, initGraphics, redraw)
+export const init = (): InitDrawer<DotsState> => initDrawer('circle', debugInfo, initGraphics, redraw)

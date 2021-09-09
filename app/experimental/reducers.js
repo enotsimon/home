@@ -41,6 +41,7 @@ const defaultState = {
   mousePos: { x: 0, y: 0 },
 }
 
+// $FlowIgnore
 export const reducers = createReducerFromMap(defaultState, {
   actionTick: (state, { fps, delta, redrawTime, debugInfo }) => ({
     ...state,

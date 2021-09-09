@@ -4,7 +4,7 @@ import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import { initDrawer } from 'experimental/drawer'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 
 export type TableauCell = {|
   x: number,
@@ -36,7 +36,7 @@ export const initTableauDrawer = (
   cyclesLimit: number = 0,
   x_size: number = 100,
   y_size: number = 100,
-): void => initDrawer(
+): InitDrawerResult => initDrawer(
   'square',
   () => [], // ???
   state => initGraphics(state, initElementState, throttle, cyclesLimit, x_size, y_size),

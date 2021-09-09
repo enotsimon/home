@@ -27,6 +27,7 @@ export class Sample extends React.Component<Props> {
     this.props.dispatchActionMouseMove(event.nativeEvent)
   }
 
+  // $FlowIgnore
   render() {
     return (
       <div style={{ maxWidth: '1280px' }}>

@@ -10,4 +10,4 @@ const mutateElementState = (element: TableauCell, state): TableauCell => {
   return { ...element, new_color: (element.color + (state.color_change_per_tick / 256)) % 1 }
 }
 
-export const initRandomTableau = () => initTableauDrawer(initElementState, mutateElementState)
+export const initRandomTableau = (): void => initTableauDrawer(initElementState, mutateElementState)

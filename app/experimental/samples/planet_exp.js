@@ -20,4 +20,4 @@ const sphereMap: SphereMapBuilder = () => {
   return map
 }
 
-export const initPlanetExp = () => initPlanetDrawer(sphereMap, 0)
+export const initPlanetExp = (): void => initPlanetDrawer(sphereMap, 0)

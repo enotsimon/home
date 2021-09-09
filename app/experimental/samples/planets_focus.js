@@ -6,7 +6,7 @@ import * as d3 from 'd3'
 import * as R from 'ramda'
 
 import { initDrawer } from 'experimental/drawer'
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 
 type StellarBody = {
   base_container: Object,
@@ -20,6 +20,14 @@ type StellarBody = {
   orbital_angle: number,
   angle: number,
 }
+
+type State = {|
+  ...DrawerState,
+  star: StellarBody,
+  planet1: StellarBody,
+  // TODO
+|}
+
 
 const initGraphics = (oldState: DrawerState): DrawerState => {
   let state = { ...oldState }
@@ -134,4 +142,4 @@ const setGraphicsTransformByStellarCoords = (origBody: StellarBody): StellarBody
   return body
 }
 
-export const initPlanetFocus = () => initDrawer('circle', () => [], initGraphics, redraw)
+export const initPlanetFocus = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)

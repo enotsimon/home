@@ -19,7 +19,7 @@ import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 import { circleBorderForceLinear } from 'experimental/circle_border'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
 
@@ -262,4 +262,4 @@ const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points
 const maxSpeedQuad = (points: Points) =>
   R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), R.values(points)))
 
-export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)

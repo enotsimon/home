@@ -59,6 +59,7 @@ export const returnPointsToCircle = <T: { ...XYPoint }>(points: Array<T>, circle
   })
 }
 
+// TODO flow
 export const calcCircleBorderForceAcceleration = (
   points: ArrOrObjOfSpeedPointIE,
   circleRadius: number,

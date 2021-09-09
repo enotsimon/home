@@ -15,5 +15,5 @@ const mergeProps = (state, { dispatch }, ownProps) => {
     dispatchActionMouseMove: (event) => dispatch(actionMouseMove(event)),
   }
 }
-
+// $FlowIgnore
 export const SampleContainer = connect(state => state, null, mergeProps)(Sample)

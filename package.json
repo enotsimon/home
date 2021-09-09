@@ -79,7 +79,7 @@
     "eslint-plugin-jsx-a11y": "6.2.1",
     "eslint-plugin-jsx-control-statements": "^2.2.0",
     "eslint-plugin-react": "7.12.4",
-    "flow-bin": "^0.105.0",
+    "flow-bin": "^0.142.0",
     "flow": "^0.2.3",
     "html-webpack-plugin": "^3.2.0",
     "ignore-styles": "^5.0.1",

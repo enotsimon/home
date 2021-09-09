@@ -27,4 +27,4 @@ const sphereMap: SphereMapBuilder = () => {
   return map
 }
 
-export const initWavyPlanet = () => initPlanetDrawer(sphereMap, 0)
+export const initWavyPlanet = (): void => initPlanetDrawer(sphereMap, 0)

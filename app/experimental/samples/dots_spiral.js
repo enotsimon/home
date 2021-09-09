@@ -8,7 +8,7 @@ import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 
 type DotsState = {|
   ...DrawerState,
@@ -123,4 +123,4 @@ const drawLines = (dots: Array<Dot>, container: Object): void => {
   })
 }
 
-export const initDotsSpiral = () => initDrawer('circle', () => [], initGraphics, redraw)
+export const initDotsSpiral = (): InitDrawer<DotsState> => initDrawer('circle', () => [], initGraphics, redraw)

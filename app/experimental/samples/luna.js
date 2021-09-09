@@ -60,4 +60,4 @@ const sphereAnglesDistance = (a: Crater, b: Crater): number => {
   return Math.acos(scalar / module)
 }
 
-export const initLuna = () => initPlanetDrawer(sphereMap)
+export const initLuna = (): void => initPlanetDrawer(sphereMap)

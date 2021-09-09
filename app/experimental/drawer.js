@@ -34,6 +34,8 @@ export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<Dr
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
 export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
+export type InitDrawerResult = (onTickCallback: DrawerOnTickCallback) => void
+
 export const startDrawer = <T: Object>(
   regime: DrawerRegime,
   updateDebugInfo: DrawerDebugInfoCallback<T>,
@@ -109,7 +111,7 @@ export const startDrawer = <T: Object>(
   document.addEventListener('keydown', e => {
     // Ctrl + q
     if (e.code === 'KeyQ') {
-      const filename = R.last(window.location.href.split('/'))
+      const filename: string = R.last(window.location.href.split('/')) || ''
       console.log('take screenshot', filename)
       const screenshot = new PIXI.Container()
       const bg = new PIXI.Graphics()
@@ -163,4 +165,15 @@ export const startDrawer = <T: Object>(
   })
 }
 
-export const initDrawer = R.curry(startDrawer)
+export const initDrawer = <T: Object>(
+  regime: DrawerRegime,
+  updateDebugInfo: DrawerDebugInfoCallback<T>,
+  initGraphics: DrawerInitCallback<T>,
+  redraw: DrawerRedrawCallback<T>,
+): InitDrawerResult => (onTickCallback: DrawerOnTickCallback): void => startDrawer(
+    regime,
+    updateDebugInfo,
+    initGraphics,
+    redraw,
+    onTickCallback
+  )

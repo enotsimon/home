@@ -5,6 +5,7 @@ import * as R from 'ramda'
 
 import type { XYPoint, PolarPoint } from 'common/utils'
 
+// @TODO DotId is string actually because number cannot be object key
 export type DotId = number
 export type Dot = {|
   id: DotId,
@@ -57,8 +58,8 @@ export const addDotsIntoCircleWithMinDistance = (
   if (tooCloseToAnotherDot) {
     return addDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles + 1)
   }
-  const allIds = R.keys(dots)
-  const id = ((allIds.length ? R.reduce((max, cur) => Math.max(max, cur), allIds[0], allIds) : 0) + 1).toString()
+  const allIds = R.keys(dots).map(e => Number(e))
+  const id = ((allIds.length ? R.reduce((max, cur) => Math.max(max, cur), allIds[0], allIds) : 0) + 1)
   const dot = { id, angle, radius, x, y }
   return addDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [dot.id]: dot }, 0)
 }

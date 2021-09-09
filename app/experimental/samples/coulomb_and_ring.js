@@ -10,7 +10,7 @@ import { initDrawer } from 'experimental/drawer'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 import { randomPointInSquare } from 'experimental/random_points'
 
-import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
 
 
@@ -47,6 +47,7 @@ const redraw = (oldState: State): State => {
     // return state
   }
   state.points = calcForceAcceleration(state.points)
+  // $FlowIgnore
   state.points = calcCircleBorderForceAcceleration(state.points, state.size / 2, state.size / 5)
   // $FlowIgnore
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
@@ -84,4 +85,4 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
   { text: 'tick', value: state.tick },
 ]
 
-export const init = () => initDrawer('circle', updateDebugInfo, initGraphics, redraw)
+export const init = (): InitDrawerResult => initDrawer('circle', updateDebugInfo, initGraphics, redraw)

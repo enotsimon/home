@@ -10,7 +10,7 @@ import { initDrawer } from 'experimental/drawer'
 import { addCircleMask, rotateGraphics } from 'experimental/drawing_functions'
 import { randomPointsInSquare } from 'experimental/random_points'
 
-import type { DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
 
@@ -52,6 +52,7 @@ const redraw = (oldState: State): State => {
     return state
   }
   // we copy only { x, y, generation } from cells! or they grow recursively very fast!!!
+  // $FlowIgnore
   let points = state.voronoi.cells.map(({ x, y, generation }) => ({ x, y, generation }))
   const hSize = state.size / 2
   points = points.filter(p => U.distance(p, { x: hSize, y: hSize }) <= DISTANCE_TO_DELETE * hSize)
@@ -102,7 +103,7 @@ const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
   { text: 'lloyd relaxation step (0.1)', value: state.step },
 ]
 
-export const init = () => initDrawer(
+export const init = (): InitDrawerResult => initDrawer(
   // thats because d3.voronoi cant handle negative values!
   'square',
   updateDebugInfo,

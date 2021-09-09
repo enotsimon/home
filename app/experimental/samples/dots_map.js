@@ -14,7 +14,7 @@ import seedrandom from 'seedrandom'
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
 import type { Dots, DotId } from 'experimental/random_points'
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 
 type DotsState = {|
   ...DrawerState,
@@ -61,8 +61,9 @@ const connectDotsBasic = (dots: Dots, pairsPart: number): Array<Link> => {
   const pairs = R.take(Math.ceil(pairsPart * allPairs.length), allPairs)
   let links = []
   pairs.forEach(([d1, d2]) => {
-    const cpLink = R.find(([ed1, ed2]) => U.intervalsCrossPointNoEdge(dots[d1], dots[d2], dots[ed1], dots[ed2]))(links)
-    if (!cpLink) {
+    // $FlowIgnore
+    const cpl = R.find(([ed1, ed2]) => !!U.intervalsCrossPointNoEdge(dots[d1], dots[d2], dots[ed1], dots[ed2]), links)
+    if (!cpl) {
       links = [...links, [d1, d2]]
     }
   })
@@ -106,6 +107,7 @@ const drawLines = (dots: Dots, links: Array<Link>, container: Object): void => {
 }
 
 const drawDots = (dots: Dots, container: Object): Array<Object> => {
+  // $FlowIgnore
   return R.map(dot => {
     const graphics = new PIXI.Graphics()
     graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
@@ -152,4 +154,4 @@ const initPairsGenerator = <T: any>(arr: Array<T>): () => ?[T, T] => {
 }
 */
 
-export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): InitDrawer<DotsState> => initDrawer('circle', () => [], initGraphics, redraw)

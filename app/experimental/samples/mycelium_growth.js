@@ -10,7 +10,7 @@ import { addCircleMask } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 
-import type { DrawerState } from 'experimental/drawer'
+import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { RRTPoint } from 'common/rrt_diagram'
 
@@ -135,4 +135,4 @@ const drawLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, ma
   graphics.lineTo(point.x, point.y)
 }
 
-export const init = () => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
