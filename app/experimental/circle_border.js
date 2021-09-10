@@ -14,29 +14,27 @@ export type SpeedPoint = {|
   ...XYPoint,
   speed: Vector,
 |}
-export type SpeedPointIE = { ...SpeedPoint }
-export type ArrOrObjOfSpeedPointIE = $ReadOnlyArray<SpeedPointIE> | $ReadOnly<{[string]: SpeedPointIE}>
+export type SpeedPointsRecord<T: { ...SpeedPoint}> = {| [string]: T |}
 type ForceFunc = (distToBorder: number, circleRadius: number, forceMul: number) => number
 
-
-const circleBorderForceAcceleration = (forceFunc: ForceFunc) => (
-  points: ArrOrObjOfSpeedPointIE,
+const circleBorderForceAcceleration = (forceFunc: ForceFunc) => <T: Object>(
+  points: SpeedPointsRecord<T>,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean,
-): ArrOrObjOfSpeedPointIE => R.map(p => {
-  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-  const distToBorder = circleRadius - radius
-  const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
-  // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-  const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
-  // TODO add check if point is beyond circle and return it back?
-  const speed = crossSumm(p.speed, accVector)
-  if (returnPoints && radius > circleRadius) {
-    return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
-  }
-  return { ...p, speed }
-})(points)
+): SpeedPointsRecord<T> => R.map(p => {
+    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
+    const distToBorder = circleRadius - radius
+    const radiusVector = forceFunc(distToBorder, circleRadius, forceMul)
+    // const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
+    const accVector = U.fromPolarCoords({ angle, radius: -radiusVector })
+    // TODO add check if point is beyond circle and return it back?
+    const speed = crossSumm(p.speed, accVector)
+    if (returnPoints && radius > circleRadius) {
+      return { ...p, ...U.fromPolarCoords({ angle, radius: circleRadius }), speed: accVector }
+    }
+    return { ...p, speed }
+  })(points)
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
@@ -60,29 +58,29 @@ export const returnPointsToCircle = <T: { ...XYPoint }>(points: Array<T>, circle
 }
 
 // TODO flow
-export const calcCircleBorderForceAcceleration = (
-  points: ArrOrObjOfSpeedPointIE,
+export const calcCircleBorderForceAcceleration = <T: { ...SpeedPoint}>(
+  points: Array<T>,
   circleRadius: number,
   forceDistanse: number,
-): ArrOrObjOfSpeedPointIE => R.map(p => {
-  const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
-  const distToBorder = circleRadius - radius
-  const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / forceDistanse)
-  const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
-  return { ...p, speed: crossSumm(p.speed, accVector) }
-})(points)
+): Array<T> => R.map(p => {
+    const { angle, radius } = U.toPolarCoords({ x: p.x, y: p.y })
+    const distToBorder = circleRadius - radius
+    const radiusVector = 0.5 * 1 / Math.exp(distToBorder - circleRadius / forceDistanse)
+    const accVector = U.fromPolarCoords({ angle: angle + Math.PI, radius: radiusVector })
+    return { ...p, speed: crossSumm(p.speed, accVector) }
+  })(points)
 
 // TODO spread syntax?
-export const circleBorderForceHyperbole = (
-  points: ArrOrObjOfSpeedPointIE,
+export const circleBorderForceHyperbole = <T>(
+  points: SpeedPointsRecord<T>,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): ArrOrObjOfSpeedPointIE => circleBorderForceAcceleration(hyperboleFunc)(points, circleRadius, forceMul, returnPoints)
+): SpeedPointsRecord<T> => circleBorderForceAcceleration(hyperboleFunc)(points, circleRadius, forceMul, returnPoints)
 
-export const circleBorderForceLinear = (
-  points: ArrOrObjOfSpeedPointIE,
+export const circleBorderForceLinear = <T>(
+  points: SpeedPointsRecord<T>,
   circleRadius: number,
   forceMul: number,
   returnPoints: boolean = true,
-): ArrOrObjOfSpeedPointIE => circleBorderForceAcceleration(linearFunc)(points, circleRadius, forceMul, returnPoints)
+): SpeedPointsRecord<T> => circleBorderForceAcceleration(linearFunc)(points, circleRadius, forceMul, returnPoints)

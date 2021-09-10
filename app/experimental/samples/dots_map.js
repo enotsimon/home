@@ -154,4 +154,4 @@ const initPairsGenerator = <T: any>(arr: Array<T>): () => ?[T, T] => {
 }
 */
 
-export const init = (): InitDrawer<DotsState> => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)

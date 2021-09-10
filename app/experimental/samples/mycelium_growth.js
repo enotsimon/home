@@ -64,7 +64,7 @@ const buildMycelium = (startXYPoint: XYPoint, checkFunc: CheckFunc): Array<Cell>
 const buildMyceliumRec = (cells: Array<Cell>, checkFunc: CheckFunc): Array<Cell> => {
   const parents = R.reduce((acc, c) => (c.parent && !R.includes(c.parent, acc) ? [...acc, c.parent] : acc), [], cells)
   // thats cause cell that is parent for some other is apical no more
-  const apicalCells = R.filter(p => !R.includes(p.index, parents))
+  const apicalCells = R.filter(p => !R.includes(p.index, parents), cells)
   const newCells = R.reduce((acc, apicalCell) => {
     let nCells = [...acc]
     // crap

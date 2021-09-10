@@ -30,7 +30,7 @@ type Point = {|
   id: PointId,
   group: number,
 |}
-type Points = {| [PointId]: Point |}
+type Points = {| [PointId]: Point |} // FIXME Record
 
 type Link = {|
   p1: PointId,
@@ -71,7 +71,7 @@ const initGraphics = (oldState: State): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
-  state.points = R.indexBy(R.prop('id'), R.map(id => {
+  state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
     const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0 }
     return point
@@ -124,7 +124,7 @@ const createPointGraphics = point => {
 }
 
 const redraw = (oldState: State): State => {
-  const state = { ...oldState }
+  const state: State = { ...oldState }
   if (THROTTLE && state.ticks % THROTTLE !== 0) {
     return state
   }
@@ -152,7 +152,7 @@ const redraw = (oldState: State): State => {
   return state
 }
 
-const redrawGraphics = (container, points, links) => {
+const redrawGraphics = (container, points: Points, links: Array<Link>) => {
   R.forEach(p => {
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
@@ -180,7 +180,7 @@ const findCrossingLinks = (link: Link, links: Array<Link>, points: Points): Arra
   const [p11, p12] = getLinkPoints(link, points)
   const [p21, p22] = getLinkPoints(l, points)
   // we checked edges upper
-  return U.intervalsCrossPoint(p11, p12, p21, p22)
+  return !!U.intervalsCrossPoint(p11, p12, p21, p22)
 }, links)
 
 const handleCrossingLinks = (links: Array<Link>, points: Points): Points => {
@@ -197,7 +197,7 @@ const removeSelfAndBackLinks = (points: Array<Point>, links, point): Array<Point
   return R.filter(p => !R.includes(p.id, badIds), points)
 }
 
-const getLinkPoints = (link, points) => {
+const getLinkPoints = (link: Link, points: Points) => {
   const p1 = points[link.p1]
   const p2 = points[link.p2]
   if (!p1 || !p2) {

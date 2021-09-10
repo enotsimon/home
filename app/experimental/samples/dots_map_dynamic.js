@@ -179,4 +179,4 @@ const debugInfo = state => [
   { text: 'seed', value: state.seed },
 ]
 
-export const init = (): InitDrawer<DotsState> => initDrawer('circle', debugInfo, initGraphics, redraw)
+export const init = (): InitDrawerResult => initDrawer('circle', debugInfo, initGraphics, redraw)

@@ -34,10 +34,9 @@ export const allChannelMatrixes = (order: number = 1, withMonochrome: boolean = 
     return [] // ???
   }
   const multis = [1, ...R.map(n => 256 / (2 ** n), R.reverse(R.range(0, order + 1)))]
-  // console.log('MUL', multis)
   const all = R.chain(
     r => R.chain(
-      g => R.chain(
+      g => R.map(
         b => ({ r: r - 1, g: g - 1, b: b - 1 })
       )(multis)
     )(multis)

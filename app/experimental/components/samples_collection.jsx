@@ -2,6 +2,7 @@
 import SamplePreview from 'experimental/components/sample_preview'
 import React from 'react'
 
+import type { Node } from 'react'
 import type { SamplePreviewConfig } from 'experimental/components/sample_preview'
 
 const wbConfig: Array<SamplePreviewConfig> = [
@@ -131,7 +132,7 @@ const colorConfig: Array<SamplePreviewConfig> = [
   },
 ]
 
-const SamplesCollecton = () => (
+const SamplesCollecton = (): Node => (
   <div style={{ margin: '20px' }}>
     <div className="col-md-8 col-md-offset-2">
       <div>

@@ -123,4 +123,4 @@ const drawLines = (dots: Array<Dot>, container: Object): void => {
   })
 }
 
-export const initDotsSpiral = (): InitDrawer<DotsState> => initDrawer('circle', () => [], initGraphics, redraw)
+export const initDotsSpiral = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)

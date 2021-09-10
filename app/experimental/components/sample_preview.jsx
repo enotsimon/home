@@ -3,6 +3,8 @@ import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Link } from 'react-router-dom'
 
+import type { Node } from 'react'
+
 export type SamplePreviewStatus = 'draft' | 'in_progress' | 'almost_ready' | 'ready'
 
 export type SamplePreviewConfig = {
@@ -13,7 +15,7 @@ export type SamplePreviewConfig = {
   status: SamplePreviewStatus,
 }
 
-const SamplePreview = (props: SamplePreviewConfig) => {
+const SamplePreview = (props: SamplePreviewConfig): Node => {
   const statusText = props.status.replace(/_/g, ' ')
   const statusClass = `status_${props.status}`
   return (

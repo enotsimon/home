@@ -46,7 +46,7 @@ export const randElement = <T>(arr: Array<T>): T => {
   return arr[random.int(0, arr.length - 1)]
 }
 
-const filterSame = list => R.filter(([v1, v2]) => !R.equals(v1, v2), list)
+const filterSame = <T>(list: Array<[T, T]>): Array<[T, T]> => R.filter(([v1, v2]) => !R.equals(v1, v2), list)
 const noOrderPairsFilterSame = <T>(list: Array<T>, filter: boolean): Array<[T, T]> => {
   return pairs(list).reduce(([acc, closeList], [e1, e2]) => {
     // $FlowIgnore
