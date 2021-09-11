@@ -36,6 +36,7 @@ type Link = {|
   p1: PointId,
   p2: PointId,
   length: number,
+  contract: number,
 |}
 
 type Vector = {|
@@ -54,7 +55,8 @@ type FroceFunc = (Point, Point, number, Link) => number
 
 // const FORCE_STRENGTH = 0.05
 const COUNT_POINTS = 100
-const LINKS_LENGTH = 800 / COUNT_POINTS
+const LINKS_LENGTH_MUL = 800
+const LINKS_LENGTH = LINKS_LENGTH_MUL / COUNT_POINTS
 const FORCE_MUL = 0.05
 const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 0.5
@@ -62,8 +64,8 @@ const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
 const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
-const HANDLE_CROSSING_POWER = 2
 const REBUILD_EVERY = 2000
+const CONTRACT_STEPS = 50
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -85,12 +87,12 @@ const initGraphics = (oldState: State): State => {
     }
     const targetPoint = U.randElement(possibleTargetPoints)
     // FIXME length: 10 its first simple way
-    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH }]
+    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH, contract: 0 }]
   }, [], pointsArray)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
   state.pairs = R.map(
     // its a fake link, just to make funcs types simplier
-    ([id1, id2]) => ({ p1: id1, p2: id2, length: 0 }),
+    ([id1, id2]) => ({ p1: id1, p2: id2, length: 0, contract: 0 }),
     U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
   )
   initDrawings(state.base_container, pointsArray)
@@ -138,13 +140,15 @@ const redraw = (oldState: State): State => {
     ...p,
     speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
   }), state.points)
-  redrawGraphics(state.base_container, state.points, state.links)
   if (maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
     // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
     const curLink = state.links[state.ticks % state.links.length]
-    const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
-    state.points = handleCrossingLinks(crossingLinks, state.points)
+    // const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
+    // state.points = handleCrossingLinks(crossingLinks, state.points)
+    state.links = findAndHandleCrossingLinks(curLink, state.links, state.points)
   }
+  state.links = handleContractedLinks(state.links)
+  redrawGraphics(state.base_container, state.points, state.links)
   // console.log(state.ticks)
   if ((state.ticks + 1) % REBUILD_EVERY === 0) {
     return initGraphics(state)
@@ -173,23 +177,33 @@ const redrawGraphics = (container, points: Points, links: Array<Link>) => {
   })
 }
 
-const findCrossingLinks = (link: Link, links: Array<Link>, points: Points): Array<Link> => R.filter(l => {
+const handleContractedLinks = (links: Array<Link>): Array<Link> => R.map(l => {
+  if (l.contract === 0) {
+    return l
+  }
+  const diff = 1 / CONTRACT_STEPS
+  if (l.contract > 2 * CONTRACT_STEPS) {
+    return { ...l, contract: 0, length: LINKS_LENGTH }
+  }
+  const toAddMul = l.contract > CONTRACT_STEPS ? diff : -diff
+  return { ...l, contract: l.contract + 1, length: l.length + toAddMul * LINKS_LENGTH }
+}, links)
+
+const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points): Array<Link> => R.map(l => {
+  if (l.contract) {
+    return l
+  }
   if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
-    return false
+    return l
   }
   const [p11, p12] = getLinkPoints(link, points)
   const [p21, p22] = getLinkPoints(l, points)
   // we checked edges upper
-  return !!U.intervalsCrossPoint(p11, p12, p21, p22)
+  if (U.intervalsCrossPoint(p11, p12, p21, p22)) {
+    return { ...l, contract: 1 }
+  }
+  return l
 }, links)
-
-const handleCrossingLinks = (links: Array<Link>, points: Points): Points => {
-  const vectors = R.map(l => {
-    const [p1, p2] = getLinkPoints(l, points)
-    return { point: p1.id, x: HANDLE_CROSSING_POWER * (p2.x - p1.x), y: HANDLE_CROSSING_POWER * (p2.y - p1.y) }
-  }, links)
-  return addVectorsToPointsSpeed(points, vectors)
-}
 
 const removeSelfAndBackLinks = (points: Array<Point>, links, point): Array<Point> => {
   const badIdsFromLinks = R.chain(l => ((l.p1 === point.id || l.p2 === point.id) ? [l.p1, l.p2] : []), links)
@@ -214,8 +228,9 @@ const allRepulsingForce = (p1, p2, quadDistance) => {
 }
 
 const springForce = (p1, p2, quadDistance, link) => {
+  const CONTRACT_MUL = link.contract ? 5 : 1
   // let it be linear for now
-  return FORCE_MUL * ((link.length ** 2) - quadDistance) / quadDistance
+  return CONTRACT_MUL * FORCE_MUL * ((link.length ** 2) - quadDistance) / quadDistance
 }
 
 const vectorsByLinks = (
