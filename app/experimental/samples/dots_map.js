@@ -13,9 +13,10 @@ import seedrandom from 'seedrandom'
 
 import { initDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { Dots, DotId } from 'experimental/random_points'
+import type { Dot, Dots as OrigDots, DotId } from 'experimental/random_points'
 import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 
+type Dots = OrigDots<Dot>
 type DotsState = {|
   ...DrawerState,
   dots: Dots,

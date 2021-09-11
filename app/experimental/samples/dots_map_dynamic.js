@@ -70,9 +70,7 @@ const redraw = (oldState: DotsState): DotsState => {
   }
   if (state.stage === 'dots') {
     const cnt = Math.ceil(NEW_POINTS_MUL * (R.keys(state.dots).length + 1) / DOTS_LIMIT)
-    // $FlowIgnore
     const dots = addDotsIntoCircleWithMinDistance(state.size / 2, DISTANCE_LIMIT_MUL * state.size, cnt, state.dots)
-    // $FlowIgnore
     state.dots = R.map(d => ({ ...d, counter: d.counter || state.counter }))(dots)
   }
   const dotsToAddLinks = R.filter(d => state.counter - d.counter === LINKS_AFTER_TICKS)(R.values(state.dots))
@@ -82,7 +80,6 @@ const redraw = (oldState: DotsState): DotsState => {
     dotsToAddLinks
   )
   const dotIdsToRemove = getLonelyDots(state.dots, state.links, state.counter)
-  // $FlowIgnore
   state.dots = R.omit(dotIdsToRemove, state.dots)
   if (state.stage === 'dots' || state.counterDeepSlip <= LINKS_AFTER_TICKS * DOT_DIE_MUL) {
     drawDots(state.dots, dotIdsToRemove, state.graphics)
@@ -132,9 +129,7 @@ const isCrossing = (dotFrom: Dot, dotTo: Dot, links: Array<Link>, dots: Dots): b
 
 const getLonelyDots = (dots: Dots, links: Array<Link>, counter: number): Array<DotId> => {
   const dotsToRemovePre = (R.without(R.uniq(R.reduce((acc, [d1, d2]) => [...acc, d1, d2], [], links)), R.keys(dots)))
-  // $FlowIgnore
   const dotIdsToRemove = R.filter(id => dots[id].counter < (counter - DOT_DIE_MUL * LINKS_AFTER_TICKS))(dotsToRemovePre)
-  // $FlowIgnore
   return dotIdsToRemove
 }
 

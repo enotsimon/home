@@ -5,8 +5,7 @@ import * as R from 'ramda'
 
 import type { XYPoint, PolarPoint } from 'common/utils'
 
-// @TODO DotId is string actually because number cannot be object key
-export type DotId = number
+export type DotId = string
 export type Dot = {|
   id: DotId,
   angle: number,
@@ -15,7 +14,7 @@ export type Dot = {|
   x: number,
   y: number,
 |}
-export type Dots = {[DotId]: Dot}
+export type Dots<T: { ...Dot }> = {| [string]: T |}
 
 export const randomPointsPolarNaive = (count: number, scale: number = 1): Array<XYPoint> => R.map(() => {
   const angle = random.float(0, 2 * Math.PI)
@@ -33,13 +32,13 @@ export const randomPointPolar = (radius: number = 1): PolarPoint =>
 export const randomPointInSquare = (scale: number = 1): XYPoint =>
   ({ x: random.float(0, scale), y: random.float(0, scale) })
 
-export const addDotsIntoCircleWithMinDistance = (
+export const addDotsIntoCircleWithMinDistance = <T: { ...Dot }>(
   scale: number,
   minDistance: number,
   limit: number,
-  dots: { ...Dots } = {},
+  dots: Dots<T> = {},
   cycles: number = 0
-): Dots => {
+): Dots<T> => {
   if (limit === 0) {
     return dots
   }
