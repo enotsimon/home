@@ -29,24 +29,28 @@ export const to_pixi = ([r, g, b]: RGBArray): number => {
   return (r << 16) + (g << 8) + b
 }
 
-export const allChannelMatrixes = (order: number = 1, withMonochrome: boolean = false): Array<ChannelMatrix> => {
+type Order = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8
+export const allChannelMatrixes = (order: Order = 1, withMonochrome: boolean = false): Array<ChannelMatrix> => {
   if (order < 0 || order > 8) {
-    return [] // ???
+    throw new Error('order shold be from 0 to 8')
   }
-  const multis = [1, ...R.map(n => 256 / (2 ** n), R.reverse(R.range(0, order + 1)))]
+  const multis = R.map(e => e - 1, [1, ...R.map(n => 256 / (2 ** n), R.reverse(R.range(0, order + 1)))])
+  return matrixesByValuesList(multis, withMonochrome)
+}
+
+export const matrixesByValuesList = (list: Array<number>, withMonochrome: boolean = false): Array<ChannelMatrix> => {
   const all = R.chain(
     r => R.chain(
       g => R.map(
-        b => ({ r: r - 1, g: g - 1, b: b - 1 })
-      )(multis)
-    )(multis)
-  )(multis)
+        b => ({ r, g, b })
+      )(list)
+    )(list)
+  )(list)
   if (withMonochrome) {
     return all
   }
   return R.filter(({ r, g, b }) => !(r === g && r === b && g === b), all)
 }
-
 
 const forRGB = ([r, g, b], func) => [func(r), func(g), func(b)]
 
