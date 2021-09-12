@@ -7,6 +7,8 @@ type Byte = number // 0 -- 255
 export type ChannelMatrix = { r: Byte, g: Byte, b: Byte }
 export type RGBArray = [Byte, Byte, Byte]
 
+export const matrixToRGB = ({ r, g, b }: ChannelMatrix): RGBArray => [r, g, b]
+export const matrixToPIXI = ({ r, g, b }: ChannelMatrix): number => to_pixi([r, g, b])
 
 export const random_near = ([r, g, b]: RGBArray, step: number = 10, count: number = 2): RGBArray => {
   return forRGB([r, g, b], e => randomChannel(e, step, count))
