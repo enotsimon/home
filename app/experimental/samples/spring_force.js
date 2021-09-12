@@ -30,6 +30,8 @@ type Point = {|
   id: PointId,
   group: number,
   contract: boolean,
+  // duplicates information in state.links
+  links: Array<PointId>,
 |}
 type Points = {| [PointId]: Point |} // FIXME Record
 
@@ -76,7 +78,7 @@ const initGraphics = (oldState: State): State => {
   random.use(seedrandom(seed))
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
-    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, contract: false }
+    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, contract: false, links: [] }
     return point
   }, R.range(0, COUNT_POINTS)))
   // each point has one link to ramdom another one
@@ -89,6 +91,12 @@ const initGraphics = (oldState: State): State => {
     const targetPoint = U.randElement(possibleTargetPoints)
     return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH, contract: 0 }]
   }, [], pointsArray)
+  state.points = R.reduce((acc, link) => {
+    const p1 = acc[link.p1]
+    const p2 = acc[link.p2]
+    return { ...acc, [p1.id]: { ...p1, links: [...p1.links, p2.id] }, [p2.id]: { ...p2, links: [...p2.links, p1.id] } }
+  }, state.points, state.links)
+  // R.map(p => console.log(p.id, p.links), state.points)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
   state.pairs = R.map(
     // its a fake link, just to make funcs types simplier
@@ -97,6 +105,7 @@ const initGraphics = (oldState: State): State => {
   )
   initDrawings(state.base_container, pointsArray)
   addCircleMask(state.base_container, state.size / 2)
+  console.log(Color.allChannelMatrixes())
   return state
 }
 
