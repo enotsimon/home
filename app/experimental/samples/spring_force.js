@@ -29,6 +29,7 @@ type Point = {|
   ...SpeedPoint,
   id: PointId,
   group: number,
+  contract: boolean,
 |}
 type Points = {| [PointId]: Point |} // FIXME Record
 
@@ -75,7 +76,7 @@ const initGraphics = (oldState: State): State => {
   random.use(seedrandom(seed))
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
-    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0 }
+    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, contract: false }
     return point
   }, R.range(0, COUNT_POINTS)))
   // each point has one link to ramdom another one
@@ -86,7 +87,6 @@ const initGraphics = (oldState: State): State => {
       throw new Error('no possible target points')
     }
     const targetPoint = U.randElement(possibleTargetPoints)
-    // FIXME length: 10 its first simple way
     return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH, contract: 0 }]
   }, [], pointsArray)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
@@ -117,9 +117,7 @@ const drawerPointId = point => `p-${point.id}`
 
 const createPointGraphics = point => {
   const graphics = new Graphics()
-  graphics.beginFill(Color.to_pixi([255, 255, 255]), 1)
-  graphics.drawCircle(0, 0, 1.5)
-  graphics.endFill()
+  drawPoint(graphics, [255, 255, 255])
   graphics.x = point.x
   graphics.y = point.y
   return graphics
@@ -148,12 +146,23 @@ const redraw = (oldState: State): State => {
     state.links = findAndHandleCrossingLinks(curLink, state.links, state.points)
   }
   state.links = handleContractedLinks(state.links)
+  const pointsFromContractedLinks = R.indexBy(e => e, R.uniq(R.flatten(R.map(({ p1, p2, contract }) => {
+    return contract ? [p1, p2] : []
+  }, state.links))))
+  state.points = R.map(p => ({ ...p, contract: !!pointsFromContractedLinks[p.id] }), state.points)
   redrawGraphics(state.base_container, state.points, state.links)
   // console.log(state.ticks)
   if ((state.ticks + 1) % REBUILD_EVERY === 0) {
     return initGraphics(state)
   }
   return state
+}
+
+const drawPoint = (graphics, color) => {
+  graphics.clear()
+  graphics.beginFill(Color.to_pixi(color), 1)
+  graphics.drawCircle(0, 0, 1.5)
+  graphics.endFill()
 }
 
 const redrawGraphics = (container, points: Points, links: Array<Link>) => {
@@ -164,6 +173,7 @@ const redrawGraphics = (container, points: Points, links: Array<Link>) => {
     }
     graphics.x = p.x
     graphics.y = p.y
+    drawPoint(graphics, p.contract ? [255, 0, 0] : [255, 255, 255])
   }, R.values(points))
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
@@ -182,10 +192,10 @@ const handleContractedLinks = (links: Array<Link>): Array<Link> => R.map(l => {
     return l
   }
   const diff = 1 / CONTRACT_STEPS
-  if (l.contract > 2 * CONTRACT_STEPS) {
+  if (l.length > LINKS_LENGTH) {
     return { ...l, contract: 0, length: LINKS_LENGTH }
   }
-  const toAddMul = l.contract > CONTRACT_STEPS ? diff : -diff
+  const toAddMul = l.contract > CONTRACT_STEPS ? diff : -0.025 * diff
   return { ...l, contract: l.contract + 1, length: l.length + toAddMul * LINKS_LENGTH }
 }, links)
 
@@ -224,6 +234,9 @@ const calcAllRepulsingForce = (points, pairs, dlQuad) => vectorsByLinks(points, 
 const calcSpringForce = (points, links) => vectorsByLinks(points, links, springForce)
 
 const allRepulsingForce = (p1, p2, quadDistance) => {
+  if (p1.contract || p2.contract) {
+    return 0
+  }
   return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
 }
 
