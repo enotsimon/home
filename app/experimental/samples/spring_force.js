@@ -22,6 +22,7 @@ import { circleBorderForceLinear } from 'experimental/circle_border'
 import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
+import type { RGBArray } from 'common/color'
 
 // type Vector = XYPoint
 type PointId = string
@@ -52,6 +53,8 @@ type State = {|
   points: Points,
   links: Array<Link>,
   pairs: Array<Link>,
+  colors: Array<RGBArray>,
+  colorStep: number,
 |}
 
 type FroceFunc = (Point, Point, number, Link) => number
@@ -69,6 +72,7 @@ const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
 const REBUILD_EVERY = 2000
 const CONTRACT_STEPS = 50
+const COLOR_BRIGHTEN_MAX = 120
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -76,6 +80,8 @@ const initGraphics = (oldState: State): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
+  state.colorStep = COLOR_BRIGHTEN_MAX / (state.size / 2)
+  state.colors = U.shuffle(R.map(e => Color.matrixToRGB(e), Color.matrixesByValuesList([30, 60])))
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
     const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, contract: false, links: [] }
@@ -104,8 +110,7 @@ const initGraphics = (oldState: State): State => {
     U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
   )
   initDrawings(state.base_container, pointsArray)
-  addCircleMask(state.base_container, state.size / 2)
-  console.log(Color.allChannelMatrixes())
+  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, state.colors[0])
   return state
 }
 
@@ -159,7 +164,7 @@ const redraw = (oldState: State): State => {
     return contract ? [p1, p2] : []
   }, state.links))))
   state.points = R.map(p => ({ ...p, contract: !!pointsFromContractedLinks[p.id] }), state.points)
-  redrawGraphics(state.base_container, state.points, state.links)
+  redrawGraphics(state.base_container, state.points, state.links, state.colors, state.colorStep)
   // console.log(state.ticks)
   if ((state.ticks + 1) % REBUILD_EVERY === 0) {
     return initGraphics(state)
@@ -174,22 +179,30 @@ const drawPoint = (graphics, color) => {
   graphics.endFill()
 }
 
-const redrawGraphics = (container, points: Points, links: Array<Link>) => {
-  R.forEach(p => {
+// calc color channel
+const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
+
+const redrawGraphics = (container, points: Points, links: Array<Link>, colors: Array<RGBArray>, colorStep: number) => {
+  const pointDist = R.map(p => {
+    const { radius } = U.toPolarCoords(p)
+    const colorDiff = COLOR_BRIGHTEN_MAX - radius * colorStep
+    const color = [ccc(colors[0][0], colorDiff), ccc(colors[0][1], colorDiff), ccc(colors[0][2], colorDiff)]
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
     }
     graphics.x = p.x
     graphics.y = p.y
-    drawPoint(graphics, p.contract ? [255, 0, 0] : [255, 255, 255])
-  }, R.values(points))
+    drawPoint(graphics, p.contract ? [255, 0, 0] : color)
+    return { radius, color }
+  }, points)
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
   links.forEach(l => {
     const [p1, p2] = getLinkPoints(l, points)
     const graphics = new Graphics()
-    graphics.lineStyle(0.5, Color.to_pixi([255, 255, 255]))
+    const color = pointDist[l.p1].radius > pointDist[l.p2].radius ? pointDist[l.p1].color : pointDist[l.p2].color
+    graphics.lineStyle(0.5, Color.to_pixi(color))
     graphics.moveTo(p1.x, p1.y)
     graphics.lineTo(p2.x, p2.y)
     linksContainer.addChild(graphics)
