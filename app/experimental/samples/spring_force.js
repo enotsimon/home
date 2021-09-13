@@ -68,7 +68,7 @@ const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 0.5
 const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
-const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
+const MAX_SPEED_QUAD_TRIGGER = 0.15 // 0.001
 const THROTTLE = 0
 const REBUILD_EVERY = 2000
 const CONTRACT_STEPS = 50
@@ -223,9 +223,10 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
     }
+    // TODO zIndex. PIXI zIndex doesnot work, despite of sortableChildren = true. dunno why
     graphics.x = p.x
     graphics.y = p.y
-    drawPoint(graphics, p.contract ? [255, 0, 0] : color)
+    drawPoint(graphics, p.contract ? [150, 0, 0] : color)
     return { radius, color }
   }, points)
   const linksContainer = container.getChildByName('linksContainer')
@@ -264,6 +265,7 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   const [p21, p22] = getLinkPoints(l, points)
   // we checked edges upper
   if (U.intervalsCrossPoint(p11, p12, p21, p22)) {
+    // console.log(`${link.p1}-${link.p2} -- ${l.p1}-${l.p2}`)
     return { ...l, contract: 1 }
   }
   return l
