@@ -22,14 +22,14 @@ import { circleBorderForceLinear } from 'experimental/circle_border'
 import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
-import type { RGBArray } from 'common/color'
+import type { ChannelMatrix } from 'common/color'
 
 // type Vector = XYPoint
 type PointId = string
 type Point = {|
   ...SpeedPoint,
   id: PointId,
-  group: number,
+  group: number, // color group
   contract: boolean,
   // duplicates information in state.links
   links: Array<PointId>,
@@ -53,7 +53,7 @@ type State = {|
   points: Points,
   links: Array<Link>,
   pairs: Array<Link>,
-  colors: Array<RGBArray>,
+  colors: Array<ChannelMatrix>,
   colorStep: number,
 |}
 
@@ -72,7 +72,9 @@ const MAX_SPEED_QUAD_TRIGGER = 0.05 // 0.001
 const THROTTLE = 0
 const REBUILD_EVERY = 2000
 const CONTRACT_STEPS = 50
-const COLOR_BRIGHTEN_MAX = 120
+const COLOR_BRIGHTEN_MAX = 100
+const COLOR_VALUES_LIST = [0, 50, 100]
+const CIRCLE_MASK_COLOR = [0, 0, 100]
 // const LENGTH_MAX_MUL = 0.3
 // const LENGTH_MIN_MUL = 0.1
 
@@ -81,7 +83,8 @@ const initGraphics = (oldState: State): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.colorStep = COLOR_BRIGHTEN_MAX / (state.size / 2)
-  state.colors = U.shuffle(R.map(e => Color.matrixToRGB(e), Color.matrixesByValuesList([30, 60])))
+  state.colors = U.shuffle(Color.matrixesByValuesList(COLOR_VALUES_LIST))
+  // console.log('color matrixes', state.colors)
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
     const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, contract: false, links: [] }
@@ -97,11 +100,10 @@ const initGraphics = (oldState: State): State => {
     const targetPoint = U.randElement(possibleTargetPoints)
     return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH, contract: 0 }]
   }, [], pointsArray)
-  state.points = R.reduce((acc, link) => {
-    const p1 = acc[link.p1]
-    const p2 = acc[link.p2]
-    return { ...acc, [p1.id]: { ...p1, links: [...p1.links, p2.id] }, [p2.id]: { ...p2, links: [...p2.links, p1.id] } }
-  }, state.points, state.links)
+  // copy links data to points
+  state.points = gatherPointLinks(state.points, state.links)
+  state.points = gatherPointGroups(1, state.points)
+  // calc points groups
   // R.map(p => console.log(p.id, p.links), state.points)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
   state.pairs = R.map(
@@ -110,8 +112,39 @@ const initGraphics = (oldState: State): State => {
     U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
   )
   initDrawings(state.base_container, pointsArray)
-  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, state.colors[0])
+  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, CIRCLE_MASK_COLOR)
   return state
+}
+
+const gatherPointLinks = (points: Points, links: Array<Link>): Points => R.reduce((acc, link) => {
+  const p1 = acc[link.p1]
+  const p2 = acc[link.p2]
+  return { ...acc, [p1.id]: { ...p1, links: [...p1.links, p2.id] }, [p2.id]: { ...p2, links: [...p2.links, p1.id] } }
+}, points, links)
+
+export const gatherPointGroups = (curGroup: number, points: Points): Points => {
+  const pointsArray = R.values(points)
+  const noGroupPoints = R.filter(p => p.group === 0, pointsArray)
+  if (R.length(noGroupPoints) === 0) {
+    return points
+  }
+  const curGroupPoints = R.filter(p => p.group === curGroup, pointsArray)
+  if (R.length(curGroupPoints) === 0) {
+    const p = noGroupPoints[0]
+    return gatherPointGroups(curGroup, { ...points, [p.id]: { ...p, group: curGroup } })
+  }
+  const curPointLinks = R.chain(p => p.links, curGroupPoints)
+  const pointIdsToSet = R.indexBy(e => e, R.filter(pid => points[pid].group === 0, curPointLinks))
+  if (R.equals(pointIdsToSet, {})) {
+    return gatherPointGroups(curGroup + 1, points)
+  }
+  const newPoints = R.map(p => {
+    if (pointIdsToSet[p.id]) {
+      return { ...p, group: curGroup }
+    }
+    return p
+  }, points)
+  return gatherPointGroups(curGroup, newPoints)
 }
 
 const initDrawings = (container, points) => {
@@ -155,8 +188,6 @@ const redraw = (oldState: State): State => {
   if (maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
     // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
     const curLink = state.links[state.ticks % state.links.length]
-    // const crossingLinks = findCrossingLinks(curLink, state.links, state.points)
-    // state.points = handleCrossingLinks(crossingLinks, state.points)
     state.links = findAndHandleCrossingLinks(curLink, state.links, state.points)
   }
   state.links = handleContractedLinks(state.links)
@@ -182,11 +213,12 @@ const drawPoint = (graphics, color) => {
 // calc color channel
 const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
 
-const redrawGraphics = (container, points: Points, links: Array<Link>, colors: Array<RGBArray>, colorStep: number) => {
+const redrawGraphics = (container, points: Points, links: Array<Link>, colors: Array<ChannelMatrix>, colorStep) => {
   const pointDist = R.map(p => {
     const { radius } = U.toPolarCoords(p)
     const colorDiff = COLOR_BRIGHTEN_MAX - radius * colorStep
-    const color = [ccc(colors[0][0], colorDiff), ccc(colors[0][1], colorDiff), ccc(colors[0][2], colorDiff)]
+    const ci = p.group % R.length(colors)
+    const color = [ccc(colors[ci].r, colorDiff), ccc(colors[ci].g, colorDiff), ccc(colors[ci].b, colorDiff)]
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
