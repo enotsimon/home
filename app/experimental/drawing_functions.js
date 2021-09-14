@@ -4,7 +4,7 @@
 /* eslint-disable no-param-reassign */
 
 import * as Color from 'common/color'
-import * as PIXI from 'pixi.js'
+import { Graphics } from 'pixi.js'
 
 import type { XYPoint } from 'common/utils'
 import type { RGBArray } from 'common/color'
@@ -16,13 +16,13 @@ export const addCircleMask = (
   center: XYPoint = { x: 0, y: 0 },
   fillColor: RGBArray = [255, 255, 255]
 ): void => {
-  const mask = new PIXI.Graphics()
+  const mask = new Graphics()
   mask.beginFill(Color.to_pixi([255, 255, 255]))
   // FIXME pass coords
   mask.drawCircle(center.x, center.y, radius)
   mask.endFill()
   graphics.mask = mask
-  const contour = new PIXI.Graphics()
+  const contour = new Graphics()
   const contourWidth = radius / 100
   contour.lineStyle(contourWidth, Color.to_pixi(fillColor))
   contour.drawCircle(center.x, center.y, radius - contourWidth / 2)
@@ -38,4 +38,22 @@ export const rotateGraphics = (graphics: Object, angle: number, anchor: XYPoint)
   graphics.x = anchor.x
   graphics.y = anchor.y
   graphics.rotation = angle
+}
+
+export const drawDottedPoint = (graphics: Object, color: RGBArray, width: number): void => {
+  graphics.clear()
+  graphics.beginFill(Color.to_pixi(color), 1)
+  graphics.drawCircle(0, 0, width)
+  graphics.endFill()
+  graphics.beginFill(Color.to_pixi([0, 0, 0]), 1)
+  graphics.drawCircle(0, 0, width / 2)
+  graphics.endFill()
+}
+
+export const drawLine = <T: { ...XYPoint }>(container: Object, color: RGBArray, width: number, p1: T, p2: T): void => {
+  const graphics = new Graphics()
+  graphics.lineStyle(width, Color.to_pixi(color))
+  graphics.moveTo(p1.x, p1.y)
+  graphics.lineTo(p2.x, p2.y)
+  container.addChild(graphics)
 }

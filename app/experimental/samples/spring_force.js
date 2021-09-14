@@ -14,7 +14,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 import * as Color from 'common/color'
 import * as U from 'common/utils'
-import { addCircleMask } from 'experimental/drawing_functions'
+import { addCircleMask, drawDottedPoint, drawLine } from 'experimental/drawing_functions'
 import { initDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 import { circleBorderForceLinear } from 'experimental/circle_border'
@@ -154,7 +154,7 @@ const initDrawings = (container, points) => {
   container.addChild(linksContainer)
   // points after links! emulation of zIndex. PIXI zIndex doesnot work, despite of sortableChildren = true. dunno why
   points.forEach(p => {
-    const graphics = createPointGraphics(p)
+    const graphics = new Graphics()
     graphics.name = drawerPointId(p)
     container.addChild(graphics)
   })
@@ -162,14 +162,6 @@ const initDrawings = (container, points) => {
 
 const drawerPointId = point => `p-${point.id}`
 // const drawerLinkId = link => `l-${link.p1}-${link.p2}`
-
-const createPointGraphics = point => {
-  const graphics = new Graphics()
-  drawPoint(graphics, [255, 255, 255])
-  graphics.x = point.x
-  graphics.y = point.y
-  return graphics
-}
 
 const redraw = (oldState: State): State => {
   const state: State = { ...oldState }
@@ -204,13 +196,6 @@ const redraw = (oldState: State): State => {
   return state
 }
 
-const drawPoint = (graphics, color) => {
-  graphics.clear()
-  graphics.beginFill(Color.to_pixi(color), 1)
-  graphics.drawCircle(0, 0, 1.5)
-  graphics.endFill()
-}
-
 // calc color channel
 const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
 
@@ -226,19 +211,15 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     }
     graphics.x = p.x
     graphics.y = p.y
-    drawPoint(graphics, p.contract ? [150, 0, 0] : color)
+    drawDottedPoint(graphics, p.contract ? [150, 0, 0] : color, 1.5)
     return { radius, color }
   }, points)
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
   links.forEach(l => {
     const [p1, p2] = getLinkPoints(l, points)
-    const graphics = new Graphics()
     const color = pointDist[l.p1].radius > pointDist[l.p2].radius ? pointDist[l.p1].color : pointDist[l.p2].color
-    graphics.lineStyle(0.5, Color.to_pixi(color))
-    graphics.moveTo(p1.x, p1.y)
-    graphics.lineTo(p2.x, p2.y)
-    linksContainer.addChild(graphics)
+    drawLine(linksContainer, color, 0.75, p1, p2)
   })
 }
 
