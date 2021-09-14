@@ -85,13 +85,6 @@ const wbConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/dots_map_dynamic.png',
     status: 'in_progress',
   },
-  {
-    name: 'spring force',
-    description: 'like springs between points. for now not very optimal by CPU usage',
-    sample_url: './spring_force',
-    img_path: './thumbnails/spring_force.png',
-    status: 'in_progress',
-  },
 ]
 
 const colorConfig: Array<SamplePreviewConfig> = [
@@ -115,6 +108,13 @@ const colorConfig: Array<SamplePreviewConfig> = [
     sample_url: './voronoi_lloyd_vawes_rand',
     img_path: './thumbnails/lloyd_waves_rand.png',
     status: 'almost_ready',
+  },
+  {
+    name: 'spring force',
+    description: 'like springs between points',
+    sample_url: './spring_force',
+    img_path: './thumbnails/spring_force.png',
+    status: 'in_progress',
   },
   {
     name: 'rrt diagram',
