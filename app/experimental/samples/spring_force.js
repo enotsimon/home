@@ -149,14 +149,15 @@ export const gatherPointGroups = (curGroup: number, points: Points): Points => {
 
 const initDrawings = (container, points) => {
   container.removeChildren()
+  const linksContainer = new Graphics()
+  linksContainer.name = 'linksContainer'
+  container.addChild(linksContainer)
+  // points after links! emulation of zIndex. PIXI zIndex doesnot work, despite of sortableChildren = true. dunno why
   points.forEach(p => {
     const graphics = createPointGraphics(p)
     graphics.name = drawerPointId(p)
     container.addChild(graphics)
   })
-  const linksContainer = new Graphics()
-  linksContainer.name = 'linksContainer'
-  container.addChild(linksContainer)
 }
 
 const drawerPointId = point => `p-${point.id}`
@@ -223,7 +224,6 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
     }
-    // TODO zIndex. PIXI zIndex doesnot work, despite of sortableChildren = true. dunno why
     graphics.x = p.x
     graphics.y = p.y
     drawPoint(graphics, p.contract ? [150, 0, 0] : color)
