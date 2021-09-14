@@ -58,7 +58,7 @@ export const addDotsIntoCircleWithMinDistance = <T: { ...Dot }>(
     return addDotsIntoCircleWithMinDistance(scale, minDistance, limit, dots, cycles + 1)
   }
   const allIds = R.keys(dots).map(e => Number(e))
-  const id = ((allIds.length ? R.reduce((max, cur) => Math.max(max, cur), allIds[0], allIds) : 0) + 1)
+  const id = ((allIds.length ? R.reduce((max, cur) => Math.max(max, cur), allIds[0], allIds) : 0) + 1).toString()
   const dot = { id, angle, radius, x, y }
   return addDotsIntoCircleWithMinDistance(scale, minDistance, limit - 1, { ...dots, [dot.id]: dot }, 0)
 }
