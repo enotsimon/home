@@ -82,9 +82,6 @@ const REBUILD_EVERY = 2000
 const CONTRACT_STEPS = 50
 const COLOR_BRIGHTEN_MAX = 100
 const COLOR_VALUES_LIST = [0, 50, 100]
-const CIRCLE_MASK_COLOR = [0, 0, 100]
-// const LENGTH_MAX_MUL = 0.3
-// const LENGTH_MIN_MUL = 0.1
 
 const initGraphics = (oldState: State): State => {
   const state = { ...oldState }
@@ -122,7 +119,7 @@ const initGraphics = (oldState: State): State => {
     U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
   )
   initDrawings(state.base_container, pointsArray)
-  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, CIRCLE_MASK_COLOR)
+  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, Color.matrixToRGB(state.colors[1]))
   return state
 }
 
