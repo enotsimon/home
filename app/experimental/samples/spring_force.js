@@ -92,6 +92,8 @@ const initGraphics = (oldState: State): State => {
   random.use(seedrandom(seed))
   state.colorStep = COLOR_BRIGHTEN_MAX / (state.size / 2)
   state.colors = U.shuffle(Color.matrixesByValuesList(COLOR_VALUES_LIST))
+  // dont like blue colors -- they are hard to discern
+  state.colors = R.filter(({ r, g }) => r > 0 || g > 0, state.colors)
   // console.log('color matrixes', state.colors)
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
