@@ -12,8 +12,6 @@
  * не помогает то больно смотреть на его мучения
  * надо задействовать не одну связь из пересекающихся а обе
  * можно попробовать обе точки связи кидать в одном рандомном направлении (а обе другой связи в другом)
- * - попробовать пересчитывать не все точки на тике, а хотя бы половину, можно на 3, на 4 части
- * - круг разных цветов
  * - как-то изобразить градиент сил
  */
 import { Graphics } from 'pixi.js'
@@ -77,7 +75,6 @@ const REPULSING_FORCE_MAX_DIST_MUL = 0.5
 const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
 const MAX_SPEED_QUAD_TRIGGER = 0.15 // TODO increasing speed tru time
-const THROTTLE = 0
 const REBUILD_EVERY = 2000
 const CONTRACT_STEPS = 50
 const COLOR_BRIGHTEN_MAX = 100
@@ -172,9 +169,6 @@ const drawerPointId = point => `p-${point.id}`
 
 const redraw = (oldState: State): State => {
   const state: State = { ...oldState }
-  if (THROTTLE && state.ticks % THROTTLE !== 0) {
-    return state
-  }
   const rfVectors = calcAllRepulsingForce(state.points, state.pairs, (REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2)
   const sfVectors = calcSpringForce(state.points, state.links)
   state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
