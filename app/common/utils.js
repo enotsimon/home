@@ -275,38 +275,28 @@ const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1]
 type GraphEdgeId = string
 type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
 type Graph<T: { ...GraphEdge }> = { [string]: T }
-// type EdgeChains = Array<Array<GraphEdgeId>>
-type EdgeMutator<T: { ...GraphEdge }> = (T) => T
-type EdgesCloseList = {| [GraphEdgeId]: any |}
+type EdgesList = {| [GraphEdgeId]: GraphEdgeId |}
 
 // both-sided links!
-export const doByLinks = <T: { ...GraphEdge }>(
+export const findByLinks = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId> | GraphEdgeId,
   graph: Graph<T>,
-  func: EdgeMutator<T>,
-  filter: (GraphEdge) => boolean = () => true
-): Graph<T> => doByLinksRec(curEdges instanceof Array ? curEdges : [curEdges], { ...graph }, func, filter, {})
-
-// all builded on vars reassign for speed
-const doByLinksRec = <T: { ...GraphEdge }>(
-  curEdges: Array<GraphEdgeId>,
-  graph: Graph<T>,
-  func: EdgeMutator<T>,
-  filter: (GraphEdge) => boolean,
-  closeList: EdgesCloseList
-): Graph<T> => {
+  filter: (GraphEdge) => boolean = () => true,
+  closeList: EdgesList = {}
+): EdgesList => {
+  if (typeof curEdges === 'string') {
+    return findByLinks([curEdges], graph, filter, closeList)
+  }
   const curEdgesFiltered = R.indexBy(e => e, R.filter(id => !closeList[id] && filter(graph[id]), curEdges))
   if (R.equals(curEdgesFiltered, {})) {
-    return graph
+    return closeList
   }
   const newEdgesA = []
   /* eslint-disable-next-line array-callback-return */
   R.map(edge => {
     if (curEdgesFiltered[edge.id] !== undefined) {
       /* eslint-disable-next-line no-param-reassign */
-      graph[edge.id] = func(edge)
-      /* eslint-disable-next-line no-param-reassign */
-      closeList[edge.id] = true
+      closeList[edge.id] = edge.id
       newEdgesA.push(edge.links)
     }
   }, graph)
@@ -314,7 +304,7 @@ const doByLinksRec = <T: { ...GraphEdge }>(
   const newEdges: Array<GraphEdgeId> = R.uniq(R.flatten(newEdgesA))
   // console.log('newEdges', JSON.stringify(newEdges, null, 2))
   // console.log('closeList', JSON.stringify(closeList, null, 2))
-  return doByLinksRec(newEdges, graph, func, filter, closeList)
+  return findByLinks(newEdges, graph, filter, closeList)
 }
 
 // ??? experimental. some standard routine for cyclic openList processing

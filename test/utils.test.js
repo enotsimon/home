@@ -217,7 +217,7 @@ describe('forSublist', () => {
 })
 
 // GRAPH
-describe('doByLinks', () => {
+describe('findByLinks', () => {
   const graph = {
     // group 1
     p1: { id: 'p1', n: 1, links: ['p2'] },
@@ -234,23 +234,20 @@ describe('doByLinks', () => {
   }
 
   it('no filter', () => {
-    const mutator = e => ({ ...e, n: e.n + 1 })
-    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'], mutator)
-    const actual = U.doByLinks('p1', graph, mutator)
+    const expect = R.indexBy(e => e, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'])
+    const actual = U.findByLinks('p1', graph)
     assert.deepEqual(expect, actual)
   })
 
   it('1-point filter on cycle graph', () => {
-    const mutator = e => ({ ...e, n: e.n + 1 })
-    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p6', 'p7'], mutator)
-    const actual = U.doByLinks('p1', graph, mutator, e => e.id !== 'p5')
+    const expect = R.indexBy(e => e, ['p1', 'p2', 'p3', 'p4', 'p6', 'p7'])
+    const actual = U.findByLinks('p1', graph, e => e.id !== 'p5')
     assert.deepEqual(expect, actual)
   })
 
   it('2-point filter on cycle graph cutting in behalf', () => {
-    const mutator = e => ({ ...e, n: e.n + 1 })
-    const expect = U.forSublist(graph, ['p1', 'p2', 'p4'], mutator)
-    const actual = U.doByLinks('p4', graph, mutator, e => e.id !== 'p5' && e.id !== 'p3')
+    const expect = R.indexBy(e => e, ['p1', 'p2', 'p4'])
+    const actual = U.findByLinks('p4', graph, e => e.id !== 'p5' && e.id !== 'p3')
     assert.deepEqual(expect, actual)
   })
 })
