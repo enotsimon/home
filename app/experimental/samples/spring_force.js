@@ -205,7 +205,7 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     const { radius } = U.toPolarCoords(p)
     const colorDiff = COLOR_BRIGHTEN_MAX - radius * colorStep
     const ci = p.group % R.length(colors)
-    const color = [ccc(colors[ci].r, colorDiff), ccc(colors[ci].g, colorDiff), ccc(colors[ci].b, colorDiff)]
+    const color = Color.forRGB(Color.matrixToRGB(colors[ci]), e => ccc(e, colorDiff))
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)

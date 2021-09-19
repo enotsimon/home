@@ -54,7 +54,7 @@ export const matrixesByValuesList = (list: Array<number>, withMonochrome: boolea
   return R.filter(({ r, g, b }) => !(r === g && r === b && g === b), all)
 }
 
-const forRGB = ([r, g, b], func) => [func(r), func(g), func(b)]
+export const forRGB = ([r, g, b]: RGBArray, func: (number) => number): RGBArray => [func(r), func(g), func(b)]
 
 const randomChannel = (base, step, count) => {
   const rand = step * Util.rand(-count, count)
