@@ -269,6 +269,53 @@ const between = (target: number, n1: number, n2: number): boolean => {
 
 const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1] : [n1, n2])
 
+// ////////////////////////////////////////
+// graph
+// ////////////////////////////////////////
+type GraphEdgeId = string
+type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
+type Graph<T: { ...GraphEdge }> = { [string]: T }
+// type EdgeChains = Array<Array<GraphEdgeId>>
+type EdgeMutator<T: { ...GraphEdge }> = (T) => T
+type EdgesCloseList = {| [GraphEdgeId]: any |}
+
+// both-sided links!
+export const doByLinks = <T: { ...GraphEdge }>(
+  curEdges: Array<GraphEdgeId> | GraphEdgeId,
+  graph: Graph<T>,
+  func: EdgeMutator<T>,
+  closeList: EdgesCloseList = {}
+): Graph<T> => doByLinksRec(curEdges instanceof Array ? curEdges : [curEdges], { ...graph }, func, closeList)
+
+// all builded on vars reassign for speed
+const doByLinksRec = <T: { ...GraphEdge }>(
+  curEdges: Array<GraphEdgeId>,
+  graph: Graph<T>,
+  func: EdgeMutator<T>,
+  closeList: EdgesCloseList
+): Graph<T> => {
+  const curEdgesFiltered = R.indexBy(e => e, R.filter(e => !closeList[e], curEdges))
+  if (R.equals(curEdgesFiltered, {})) {
+    return graph
+  }
+  const newEdgesA = []
+  /* eslint-disable-next-line array-callback-return */
+  R.map(edge => {
+    if (curEdgesFiltered[edge.id] !== undefined) {
+      /* eslint-disable-next-line no-param-reassign */
+      graph[edge.id] = func(edge)
+      /* eslint-disable-next-line no-param-reassign */
+      closeList[edge.id] = true
+      newEdgesA.push(edge.links)
+    }
+  }, graph)
+  // $FlowIgnore
+  const newEdges: Array<GraphEdgeId> = R.uniq(R.flatten(newEdgesA))
+  // console.log('newEdges', JSON.stringify(newEdges, null, 2))
+  // console.log('closeList', JSON.stringify(closeList, null, 2))
+  return doByLinksRec(newEdges, graph, func, closeList)
+}
+
 // ??? experimental. some standard routine for cyclic openList processing
 /*
 export const doWhileNotEmpty = (openList: Array<any>, func): boolean => {

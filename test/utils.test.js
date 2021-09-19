@@ -215,3 +215,26 @@ describe('forSublist', () => {
     assert.deepEqual(expect, actual)
   })
 })
+
+// GRAPH
+describe('doByLinks', () => {
+  const graph = {
+    // group 1
+    p1: { id: 'p1', n: 1, links: ['p2'] },
+    p2: { id: 'p2', n: 1, links: ['p3', 'p4', 'p1'] },
+    p3: { id: 'p3', n: 1, links: ['p2'] },
+    p4: { id: 'p4', n: 1, links: ['p5', 'p2'] },
+    p5: { id: 'p5', n: 1, links: ['p4'] },
+    // group 2
+    p6: { id: 'p6', n: 1, links: ['p7', 'p8'] },
+    p7: { id: 'p7', n: 1, links: ['p6', 'p8'] },
+    p8: { id: 'p8', n: 1, links: ['p7', 'p6'] },
+  }
+
+  it('should call given func for graph edges by edge links', () => {
+    const mutator = e => ({ ...e, n: e.n + 1 })
+    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p5'], mutator)
+    const actual = U.doByLinks('p1', graph, mutator)
+    assert.deepEqual(expect, actual)
+  })
+})
