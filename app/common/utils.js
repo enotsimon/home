@@ -284,17 +284,18 @@ export const doByLinks = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId> | GraphEdgeId,
   graph: Graph<T>,
   func: EdgeMutator<T>,
-  closeList: EdgesCloseList = {}
-): Graph<T> => doByLinksRec(curEdges instanceof Array ? curEdges : [curEdges], { ...graph }, func, closeList)
+  filter: (GraphEdge) => boolean = () => true
+): Graph<T> => doByLinksRec(curEdges instanceof Array ? curEdges : [curEdges], { ...graph }, func, filter, {})
 
 // all builded on vars reassign for speed
 const doByLinksRec = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId>,
   graph: Graph<T>,
   func: EdgeMutator<T>,
+  filter: (GraphEdge) => boolean,
   closeList: EdgesCloseList
 ): Graph<T> => {
-  const curEdgesFiltered = R.indexBy(e => e, R.filter(e => !closeList[e], curEdges))
+  const curEdgesFiltered = R.indexBy(e => e, R.filter(id => !closeList[id] && filter(graph[id]), curEdges))
   if (R.equals(curEdgesFiltered, {})) {
     return graph
   }
@@ -313,7 +314,7 @@ const doByLinksRec = <T: { ...GraphEdge }>(
   const newEdges: Array<GraphEdgeId> = R.uniq(R.flatten(newEdgesA))
   // console.log('newEdges', JSON.stringify(newEdges, null, 2))
   // console.log('closeList', JSON.stringify(closeList, null, 2))
-  return doByLinksRec(newEdges, graph, func, closeList)
+  return doByLinksRec(newEdges, graph, func, filter, closeList)
 }
 
 // ??? experimental. some standard routine for cyclic openList processing

@@ -4,8 +4,8 @@ import { describe, it } from 'mocha'
 import { assert } from 'chai'
 // import * as R from 'ramda'
 
-import * as U from '../app/common/utils'
 import * as R from 'ramda'
+import * as U from '../app/common/utils'
 
 describe('angleBy3Points', () => {
   const samples = [
@@ -222,19 +222,35 @@ describe('doByLinks', () => {
     // group 1
     p1: { id: 'p1', n: 1, links: ['p2'] },
     p2: { id: 'p2', n: 1, links: ['p3', 'p4', 'p1'] },
-    p3: { id: 'p3', n: 1, links: ['p2'] },
+    p3: { id: 'p3', n: 1, links: ['p2', 'p7'] },
     p4: { id: 'p4', n: 1, links: ['p5', 'p2'] },
-    p5: { id: 'p5', n: 1, links: ['p4'] },
+    p5: { id: 'p5', n: 1, links: ['p6', 'p4'] },
+    p6: { id: 'p6', n: 1, links: ['p7', 'p5'] },
+    p7: { id: 'p7', n: 1, links: ['p3', 'p6'] },
     // group 2
-    p6: { id: 'p6', n: 1, links: ['p7', 'p8'] },
-    p7: { id: 'p7', n: 1, links: ['p6', 'p8'] },
-    p8: { id: 'p8', n: 1, links: ['p7', 'p6'] },
+    p11: { id: 'p11', n: 1, links: ['p7', 'p8'] },
+    p12: { id: 'p12', n: 1, links: ['p6', 'p8'] },
+    p13: { id: 'p13', n: 1, links: ['p7', 'p6'] },
   }
 
-  it('should call given func for graph edges by edge links', () => {
+  it('no filter', () => {
     const mutator = e => ({ ...e, n: e.n + 1 })
-    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p5'], mutator)
+    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'], mutator)
     const actual = U.doByLinks('p1', graph, mutator)
+    assert.deepEqual(expect, actual)
+  })
+
+  it('1-point filter on cycle graph', () => {
+    const mutator = e => ({ ...e, n: e.n + 1 })
+    const expect = U.forSublist(graph, ['p1', 'p2', 'p3', 'p4', 'p6', 'p7'], mutator)
+    const actual = U.doByLinks('p1', graph, mutator, e => e.id !== 'p5')
+    assert.deepEqual(expect, actual)
+  })
+
+  it('2-point filter on cycle graph cutting in behalf', () => {
+    const mutator = e => ({ ...e, n: e.n + 1 })
+    const expect = U.forSublist(graph, ['p1', 'p2', 'p4'], mutator)
+    const actual = U.doByLinks('p1', graph, mutator, e => e.id !== 'p5' && e.id !== 'p3')
     assert.deepEqual(expect, actual)
   })
 })
