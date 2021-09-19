@@ -5,6 +5,7 @@ import { assert } from 'chai'
 // import * as R from 'ramda'
 
 import * as U from '../app/common/utils'
+import * as R from 'ramda'
 
 describe('angleBy3Points', () => {
   const samples = [
@@ -194,5 +195,23 @@ describe('noOrderNoSameValuesPairs', () => {
       U.noOrderNoSameValuesPairs(sample),
       [[sample[0], sample[1]], [sample[0], sample[2]], [sample[1], sample[2]]]
     )
+  })
+})
+
+describe('forSublist', () => {
+  const sample = [{ id: 1, n: 1 }, { id: 2, n: 2 }, { id: 3, n: 3 }, { id: 4, n: 4 }, { id: 5, n: 5 }]
+  const mutator = e => ({ ...e, n: e.n + 2 })
+  const index = list => R.indexBy(e => e.id.toString(), list)
+
+  it('should call given func for list of ids in given array', () => {
+    const actual = U.forSublist(sample, [1, 2], mutator, 'id')
+    const expect = [{ id: 1, n: 3 }, { id: 2, n: 4 }, { id: 3, n: 3 }, { id: 4, n: 4 }, { id: 5, n: 5 }]
+    assert.deepEqual(expect, actual)
+  })
+
+  it('should call given func for list of ids in given object', () => {
+    const actual = U.forSublist(index(sample), [1, 2], mutator, 'id')
+    const expect = index([{ id: 1, n: 3 }, { id: 2, n: 4 }, { id: 3, n: 3 }, { id: 4, n: 4 }, { id: 5, n: 5 }])
+    assert.deepEqual(expect, actual)
   })
 })

@@ -23,6 +23,8 @@ export type XYPInex = { ...XYPoint }
 
 export type LineFormula = { a: number, b: number, c: number }
 
+export type ArrOrObj<T, Id: string | number> = Array<T> | {| [Id]: T |}
+
 // dont use it!!!
 export const execInCycleWithDelay = (
   index: number,
@@ -86,6 +88,22 @@ export const normalizeValue = (
     throw ('value out of range')
   }
   return (value - min) * (normal_max - normal_min) / (max - min) + normal_min
+}
+
+export const forSublist = <T, Id: string | number>(
+  data: ArrOrObj<T, Id>,
+  sublist: Array<string | number>, // Array<Id> but flow error
+  func: (T) => T,
+  prop: string = 'id'
+): ArrOrObj<T, Id> => {
+  const sublistInd = R.indexBy(e => e.toString(), sublist)
+  // $FlowIgnore
+  return R.map(e => {
+    if (sublistInd[e[prop]]) {
+      return func(e)
+    }
+    return e
+  }, data)
 }
 
 // ////////////////////////////////////////
