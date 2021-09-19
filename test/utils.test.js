@@ -250,7 +250,7 @@ describe('doByLinks', () => {
   it('2-point filter on cycle graph cutting in behalf', () => {
     const mutator = e => ({ ...e, n: e.n + 1 })
     const expect = U.forSublist(graph, ['p1', 'p2', 'p4'], mutator)
-    const actual = U.doByLinks('p1', graph, mutator, e => e.id !== 'p5' && e.id !== 'p3')
+    const actual = U.doByLinks('p4', graph, mutator, e => e.id !== 'p5' && e.id !== 'p3')
     assert.deepEqual(expect, actual)
   })
 })
