@@ -278,25 +278,36 @@ type Graph<T: { ...GraphEdge }> = { [string]: T }
 type EdgeIdsIndexed = {| [GraphEdgeId]: GraphEdgeId |}
 type EdgeChains = Array<EdgeIdsIndexed>
 
+// @FIXME эта функция очень специфична и нужна только в spring_force.js
+// я положил ее здесь только для теста потому что на spring_force.js тест нельзя написать из-за PIXI
+// @TODO возможно anchorEdges сразу стоит передавать в виде объекта
 /* both-sided links! */
 export const findEdgesChains = <T: { ...GraphEdge }>(anchorEdges: Array<GraphEdgeId>, graph: Graph<T>): EdgeChains =>
-  findEdgesChainsRec(anchorEdges, graph, R.indexBy(e => e, anchorEdges))
+  findEdgesChainsRec(R.indexBy(e => e, anchorEdges), graph, R.values(graph))
 
 export const findEdgesChainsRec = <T: { ...GraphEdge }>(
-  anchorEdges: Array<GraphEdgeId>,
+  anchorEdgesIndexed: EdgeIdsIndexed,
   graph: Graph<T>,
-  anchorEdgesOrig: EdgeIdsIndexed,
+  graphAsList: Array<T>,
   edgeChains: EdgeChains = [],
-  edgeChainsFlatten: EdgeIdsIndexed = {}
+  closeList: EdgeIdsIndexed = {}
 ): EdgeChains => {
-  if (R.equals(anchorEdges, [])) {
+  const curEdge = R.find(e => !anchorEdgesIndexed[e.id] && !closeList[e.id], graphAsList)
+  if (!curEdge) {
     return edgeChains
   }
-  const [curEdge, ...restEdges] = anchorEdges
-  const restAnchorEdges = R.omit([curEdge], anchorEdgesOrig)
-  const sublist = findByLinks(curEdge, graph, e => !restAnchorEdges[e.id] && !edgeChainsFlatten[e.id])
-  const newEdgeChainsFlatten = { ...edgeChainsFlatten, ...sublist }
-  return findEdgesChainsRec(restEdges, graph, anchorEdgesOrig, [...edgeChains, sublist], newEdgeChainsFlatten)
+  const sublist = findByLinks(curEdge.id, graph, e => !anchorEdgesIndexed[e.id])
+  const anchorEdgesInSublist = R.chain(e => R.filter(el => !!anchorEdgesIndexed[el], graph[e].links), R.values(sublist))
+  // на графе возможны замкнутые подграфы которые нигде не соприкасаются с anchorEdgesIndexed
+  // такие подграфы надо исключить из результата
+  if (anchorEdgesInSublist.length === 0) {
+    const newCloseList = R.mergeRight(closeList, sublist)
+    return findEdgesChainsRec(anchorEdgesIndexed, graph, graphAsList, edgeChains, newCloseList)
+  }
+  const aeFiltered = R.filter(e => !closeList[e], anchorEdgesInSublist)
+  const edgesChain = R.mergeRight(sublist, R.indexBy(e => e, aeFiltered))
+  const newCloseList = R.mergeRight(closeList, edgesChain)
+  return findEdgesChainsRec(anchorEdgesIndexed, graph, graphAsList, [...edgeChains, edgesChain], newCloseList)
 }
 
 /* both-sided links! */
