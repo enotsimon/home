@@ -262,7 +262,7 @@ describe('findEdgesChains', () => {
       indexed(['p5', 'p6', 'p7']),
       indexed(['p11', 'p12', 'p13']),
     ]
-    const actual = U.findEdgesChains(['p4', 'p3', 'p11'], graph)
+    const actual = U.findEdgesChains(indexed(['p4', 'p3', 'p11']), graph)
     assert.deepEqual(expect, actual)
   })
 
@@ -271,7 +271,7 @@ describe('findEdgesChains', () => {
       indexed(['p1', 'p2', 'p3', 'p4']),
       indexed(['p5', 'p6', 'p7']),
     ]
-    const actual = U.findEdgesChains(['p4', 'p5', 'p3', 'p7'], graph)
+    const actual = U.findEdgesChains(indexed(['p4', 'p5', 'p3', 'p7']), graph)
     assert.deepEqual(expect, actual)
   })
 })
