@@ -276,6 +276,28 @@ type GraphEdgeId = string
 type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
 type Graph<T: { ...GraphEdge }> = { [string]: T }
 type EdgeIdsIndexed = {| [GraphEdgeId]: GraphEdgeId |}
+type EdgeChains = Array<EdgeIdsIndexed>
+
+/* both-sided links! */
+export const findEdgesChains = <T: { ...GraphEdge }>(anchorEdges: Array<GraphEdgeId>, graph: Graph<T>): EdgeChains =>
+  findEdgesChainsRec(anchorEdges, graph, R.indexBy(e => e, anchorEdges))
+
+export const findEdgesChainsRec = <T: { ...GraphEdge }>(
+  anchorEdges: Array<GraphEdgeId>,
+  graph: Graph<T>,
+  anchorEdgesOrig: EdgeIdsIndexed,
+  edgeChains: EdgeChains = [],
+  edgeChainsFlatten: EdgeIdsIndexed = {}
+): EdgeChains => {
+  if (R.equals(anchorEdges, [])) {
+    return edgeChains
+  }
+  const [curEdge, ...restEdges] = anchorEdges
+  const restAnchorEdges = R.omit([curEdge], anchorEdgesOrig)
+  const sublist = findByLinks(curEdge, graph, e => !restAnchorEdges[e.id] && !edgeChainsFlatten[e.id])
+  const newEdgeChainsFlatten = { ...edgeChainsFlatten, ...sublist }
+  return findEdgesChainsRec(restEdges, graph, anchorEdgesOrig, [...edgeChains, sublist], newEdgeChainsFlatten)
+}
 
 /* both-sided links! */
 export const findByLinks = <T: { ...GraphEdge }>(

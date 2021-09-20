@@ -254,3 +254,26 @@ describe('findByLinks', () => {
     assert.deepEqual(expect, actual)
   })
 })
+
+describe('findEdgesChains', () => {
+  it('basic', () => {
+    const expect = [
+      indexed(['p1', 'p2', 'p4', 'p5', 'p6', 'p7']),
+      indexed(['p3']),
+      indexed(['p11', 'p12', 'p13']),
+    ]
+    const actual = U.findEdgesChains(['p4', 'p3', 'p11'], graph)
+    assert.deepEqual(expect, actual)
+  })
+
+  it('4-points', () => {
+    const expect = [
+      indexed(['p1', 'p2', 'p4']),
+      indexed(['p5', 'p6']),
+      indexed(['p3']),
+      indexed(['p7']),
+    ]
+    const actual = U.findEdgesChains(['p4', 'p5', 'p3', 'p7'], graph)
+    assert.deepEqual(expect, actual)
+  })
+})
