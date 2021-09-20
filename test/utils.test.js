@@ -216,37 +216,40 @@ describe('forSublist', () => {
   })
 })
 
-// GRAPH
-describe('findByLinks', () => {
-  const graph = {
-    // group 1
-    p1: { id: 'p1', n: 1, links: ['p2'] },
-    p2: { id: 'p2', n: 1, links: ['p3', 'p4', 'p1'] },
-    p3: { id: 'p3', n: 1, links: ['p2', 'p7'] },
-    p4: { id: 'p4', n: 1, links: ['p5', 'p2'] },
-    p5: { id: 'p5', n: 1, links: ['p6', 'p4'] },
-    p6: { id: 'p6', n: 1, links: ['p7', 'p5'] },
-    p7: { id: 'p7', n: 1, links: ['p3', 'p6'] },
-    // group 2
-    p11: { id: 'p11', n: 1, links: ['p7', 'p8'] },
-    p12: { id: 'p12', n: 1, links: ['p6', 'p8'] },
-    p13: { id: 'p13', n: 1, links: ['p7', 'p6'] },
-  }
+/**
+ * GRAPH
+ */
+const graph = {
+  // group 1
+  p1: { id: 'p1', n: 1, links: ['p2'] },
+  p2: { id: 'p2', n: 1, links: ['p3', 'p4', 'p1'] },
+  p3: { id: 'p3', n: 1, links: ['p2', 'p7'] },
+  p4: { id: 'p4', n: 1, links: ['p5', 'p2'] },
+  p5: { id: 'p5', n: 1, links: ['p6', 'p4'] },
+  p6: { id: 'p6', n: 1, links: ['p7', 'p5'] },
+  p7: { id: 'p7', n: 1, links: ['p3', 'p6'] },
+  // group 2
+  p11: { id: 'p11', n: 1, links: ['p12', 'p13'] },
+  p12: { id: 'p12', n: 1, links: ['p11', 'p13'] },
+  p13: { id: 'p13', n: 1, links: ['p11', 'p12'] },
+}
+const indexed = R.indexBy(e => e.toString())
 
+describe('findByLinks', () => {
   it('no filter', () => {
-    const expect = R.indexBy(e => e, ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'])
+    const expect = indexed(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'])
     const actual = U.findByLinks('p1', graph)
     assert.deepEqual(expect, actual)
   })
 
   it('1-point filter on cycle graph', () => {
-    const expect = R.indexBy(e => e, ['p1', 'p2', 'p3', 'p4', 'p6', 'p7'])
+    const expect = indexed(['p1', 'p2', 'p3', 'p4', 'p6', 'p7'])
     const actual = U.findByLinks('p1', graph, e => e.id !== 'p5')
     assert.deepEqual(expect, actual)
   })
 
   it('2-point filter on cycle graph cutting in behalf', () => {
-    const expect = R.indexBy(e => e, ['p1', 'p2', 'p4'])
+    const expect = indexed(['p1', 'p2', 'p4'])
     const actual = U.findByLinks('p4', graph, e => e.id !== 'p5' && e.id !== 'p3')
     assert.deepEqual(expect, actual)
   })

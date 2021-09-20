@@ -275,18 +275,23 @@ const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1]
 type GraphEdgeId = string
 type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
 type Graph<T: { ...GraphEdge }> = { [string]: T }
-type EdgesList = {| [GraphEdgeId]: GraphEdgeId |}
+type EdgeIdsIndexed = {| [GraphEdgeId]: GraphEdgeId |}
 
-// both-sided links!
+/* both-sided links! */
 export const findByLinks = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId> | GraphEdgeId,
   graph: Graph<T>,
   filter: (GraphEdge) => boolean = () => true,
-  closeList: EdgesList = {}
-): EdgesList => {
+  closeList: EdgeIdsIndexed = {}
+): EdgeIdsIndexed => {
   if (typeof curEdges === 'string') {
     return findByLinks([curEdges], graph, filter, closeList)
   }
+  curEdges.forEach(id => {
+    if (!graph[id]) {
+      throw new Error(`id ${id} not found in graph`)
+    }
+  })
   const curEdgesFiltered = R.indexBy(e => e, R.filter(id => !closeList[id] && filter(graph[id]), curEdges))
   if (R.equals(curEdgesFiltered, {})) {
     return closeList
