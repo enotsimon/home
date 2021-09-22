@@ -207,7 +207,8 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     }
     graphics.x = p.x
     graphics.y = p.y
-    drawDottedPoint(graphics, p.cg ? [150, 0, 0] : color, 1.5)
+    const dotColor = p.cg ? [150, 0, 0] : color
+    drawDottedPoint(graphics, dotColor, 1.5)
     return { radius, color }
   }, points)
   const linksContainer = container.getChildByName('linksContainer')
@@ -242,12 +243,12 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   const [shortestPointChains] = R.reduce(([ae, al], [e, l]) => {
     return l < al ? [e, l] : [ae, al]
   }, R.values(pointChainsFuck[0]), pointChainsFuck)
-  return R.map(p => (shortestPointChains[p.id] ? { ...p, cg: 1 } : p), points)
+  return R.map(p => (shortestPointChains[p.id] ? { ...p, cg: random.int(1, 3) * CG_STEPS } : p), points)
 }
 
 const handleCGPoints = (points: Points): Points => R.map(p => {
   if (p.cg) {
-    return { ...p, cg: p.cg > CG_STEPS ? 0 : p.cg + 1 }
+    return { ...p, cg: p.cg > 0 ? p.cg - 1 : 0 }
   }
   return p
 }, points)
