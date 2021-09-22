@@ -69,13 +69,13 @@ type FroceFunc = (Point, Point, number, Link) => number
 const COUNT_POINTS = 100
 const LINKS_LENGTH_MUL = 800
 const LINKS_LENGTH = LINKS_LENGTH_MUL / COUNT_POINTS
-const FORCE_MUL = 0.05
+const FORCE_MUL = 0.075
 const REPULSING_FORCE_MUL = 0.05
 const REPULSING_FORCE_MAX_DIST_MUL = 0.5
 const SLOWDOWN_MUL = 0.9 // backward -- less value -- more slowdown
 const CB_FORCE_MUL = 0.0025
-const MAX_SPEED_QUAD_TRIGGER = 0.15 // TODO increasing speed tru time
-const REBUILD_EVERY = 2000
+const MAX_SPEED_QUAD_TRIGGER = 0.08 // TODO increasing speed tru time
+const REBUILD_EVERY = 2500
 const CG_STEPS = 50
 const COLOR_BRIGHTEN_MAX = 100
 const COLOR_VALUES_LIST = [0, 50, 100]
@@ -239,6 +239,7 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   }
   const crossingLinksAll = [...crossingLinks, link]
   const pointsFromCrossingLinks = gatherPointIdsFromLinks(crossingLinksAll)
+  // TODO test these 2 lines cause work incorrect on cycles in graph
   const pointsCopyNoCL = U.removeLinks(points, crossingLinksAll)
   const pointChains = R.map(p => U.findByLinks(p, pointsCopyNoCL), pointsFromCrossingLinks)
   // its a fuckin speed optimization
