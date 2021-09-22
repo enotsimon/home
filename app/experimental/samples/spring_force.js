@@ -39,6 +39,7 @@ type Point = {|
   // duplicates information in state.links
   links: Array<PointId>,
   cg: number,
+  clp: number, // crossing links point
 |}
 type Points = {| [PointId]: Point |} // FIXME Record
 
@@ -90,7 +91,7 @@ const initGraphics = (oldState: State): State => {
   // console.log('color matrixes', state.colors)
   state.points = R.indexBy(e => e.id, R.map(id => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
-    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, links: [], cg: 0 }
+    const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, links: [], cg: 0, clp: 0 }
     return point
   }, R.range(0, COUNT_POINTS)))
   // each point has one link to ramdom another one
@@ -183,7 +184,7 @@ const redraw = (oldState: State): State => {
     const curLink = state.links[state.ticks % state.links.length]
     state.points = findAndHandleCrossingLinks(curLink, state.links, state.points)
   }
-  state.points = handleCGPoints(state.points)
+  state.points = handleCGAndCLPPoints(state.points)
   redrawGraphics(state.base_container, state.points, state.links, state.colors, state.colorStep)
   // console.log(state.ticks)
   if ((state.ticks + 1) % REBUILD_EVERY === 0) {
@@ -207,7 +208,8 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     }
     graphics.x = p.x
     graphics.y = p.y
-    const dotColor = p.cg ? [150, 0, 0] : color
+    let dotColor = p.cg ? [150, 0, 150] : color
+    dotColor = p.clp ? [150, 0, 0] : dotColor
     drawDottedPoint(graphics, dotColor, 1.5)
     return { radius, color }
   }, points)
@@ -236,19 +238,29 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
     return points
   }
   const crossingLinksAll = [...crossingLinks, link]
+  const pointsFromCrossingLinks = gatherPointIdsFromLinks(crossingLinksAll)
   const pointsCopyNoCL = U.removeLinks(points, crossingLinksAll)
-  const pointChains = R.map(p => U.findByLinks(p, pointsCopyNoCL), gatherPointIdsFromLinks(crossingLinksAll))
+  const pointChains = R.map(p => U.findByLinks(p, pointsCopyNoCL), pointsFromCrossingLinks)
   // its a fuckin speed optimization
   const pointChainsFuck = R.map(e => ([e, R.keys(e).length]), pointChains)
   const [shortestPointChains] = R.reduce(([ae, al], [e, l]) => {
     return l < al ? [e, l] : [ae, al]
   }, R.values(pointChainsFuck[0]), pointChainsFuck)
-  return R.map(p => (shortestPointChains[p.id] ? { ...p, cg: random.int(1, 3) * CG_STEPS } : p), points)
+  const pointsFromCrossingLinksInd = R.indexBy(e => e, pointsFromCrossingLinks)
+  return R.map(p => {
+    if (shortestPointChains[p.id]) {
+      return { ...p, cg: CG_STEPS }
+    }
+    if (pointsFromCrossingLinksInd[p.id]) {
+      return { ...p, clp: CG_STEPS }
+    }
+    return p
+  }, points)
 }
 
-const handleCGPoints = (points: Points): Points => R.map(p => {
-  if (p.cg) {
-    return { ...p, cg: p.cg > 0 ? p.cg - 1 : 0 }
+const handleCGAndCLPPoints = (points: Points): Points => R.map(p => {
+  if (p.cg || p.clp) {
+    return { ...p, cg: p.cg > 0 ? p.cg - 1 : 0, clp: p.clp > 0 ? p.clp - 1 : 0 }
   }
   return p
 }, points)
