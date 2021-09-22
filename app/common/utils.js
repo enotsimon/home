@@ -274,13 +274,29 @@ const minmax = (n1: number, n2: number): [number, number] => (n1 > n2 ? [n2, n1]
 // ////////////////////////////////////////
 type GraphEdgeId = string
 type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
+type GraphLink = { p1: GraphEdgeId, p2: GraphEdgeId }
 type Graph<T: { ...GraphEdge }> = { [string]: T }
 type EdgeIdsIndexed = {| [GraphEdgeId]: GraphEdgeId |}
 type EdgeChains = Array<EdgeIdsIndexed>
 
+/* bi-directional links! */
+export const removeLink = <T: { ...GraphEdge }>(graph: Graph<T>, p1: GraphEdgeId, p2: GraphEdgeId): Graph<T> => {
+  return removeLinks(graph, [{ p1, p2 }])
+}
+
+/* bi-directional links! */
+export const removeLinks = <T: { ...GraphEdge }>(graph: Graph<T>, links: Array<GraphLink>): Graph<T> => {
+  const copy = { ...graph }
+  R.forEach(({ p1, p2 }) => {
+    copy[p1].links = R.without([p2], copy[p1].links)
+    copy[p2].links = R.without([p1], copy[p2].links)
+  }, links)
+  return copy
+}
+
 // @FIXME эта функция очень специфична и нужна только в spring_force.js
 // я положил ее здесь только для теста потому что на spring_force.js тест нельзя написать из-за PIXI
-/* both-sided links! */
+/* bi-directional links! */
 export const findEdgesChains = <T: { ...GraphEdge }>(anchorEdges: EdgeIdsIndexed, graph: Graph<T>): EdgeChains =>
   findEdgesChainsRec(anchorEdges, graph, R.values(graph))
 
@@ -309,7 +325,7 @@ export const findEdgesChainsRec = <T: { ...GraphEdge }>(
   return findEdgesChainsRec(anchorEdges, graph, graphAsList, [...edgeChains, edgesChain], newCloseList)
 }
 
-/* both-sided links! */
+/* bi-directional links! */
 export const findByLinks = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId> | GraphEdgeId,
   graph: Graph<T>,

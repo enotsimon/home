@@ -274,6 +274,45 @@ describe('findByLinks', () => {
   })
 })
 
+const g = R.indexBy(e => e.id, [
+  { id: 'p1', links: ['p2', 'p3'] },
+  { id: 'p2', links: ['p1', 'p4'] },
+  { id: 'p3', links: ['p1'] },
+  { id: 'p4', links: ['p2'] },
+])
+
+describe('removeLink', () => {
+  it('should remove given bi-directional link', () => {
+    const expect = R.indexBy(e => e.id, [
+      { id: 'p1', links: ['p2'] },
+      { id: 'p2', links: ['p1', 'p4'] },
+      { id: 'p3', links: [] },
+      { id: 'p4', links: ['p2'] },
+    ])
+    const actual1 = U.removeLink(g, 'p1', 'p3')
+    assert.deepEqual(expect, actual1)
+    const actual2 = U.removeLink(g, 'p1', 'p3')
+    assert.deepEqual(expect, actual2)
+    const actual3 = U.removeLink(g, 'p2', 'p3')
+    assert.deepEqual(expect, actual3)
+  })
+})
+
+describe('removeLinks', () => {
+  it('should remove given bi-directional link', () => {
+    const expect = R.indexBy(e => e.id, [
+      { id: 'p1', links: ['p2'] },
+      { id: 'p2', links: ['p1', 'p4'] },
+      { id: 'p3', links: [] },
+      { id: 'p4', links: ['p2'] },
+    ])
+    const actual1 = U.removeLinks(g, [{ p1: 'p1', p2: 'p3' }, { p2: 'p2', p1: 'p3' }])
+    assert.deepEqual(expect, actual1)
+    const actual2 = U.removeLinks(g, [{ p1: 'p1', p2: 'p3' }])
+    assert.deepEqual(expect, actual2)
+  })
+})
+
 describe('findEdgesChains', () => {
   it('basic', () => {
     const expect = [
