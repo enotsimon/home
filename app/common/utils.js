@@ -277,7 +277,6 @@ type GraphEdge = {| id: GraphEdgeId, links: Array<GraphEdgeId> |}
 type GraphLink = { p1: GraphEdgeId, p2: GraphEdgeId }
 type Graph<T: { ...GraphEdge }> = { [string]: T }
 type EdgeIdsIndexed = {| [GraphEdgeId]: GraphEdgeId |}
-type EdgeChains = Array<EdgeIdsIndexed>
 
 /* bi-directional links! */
 export const removeLink = <T: { ...GraphEdge }>(graph: Graph<T>, p1: GraphEdgeId, p2: GraphEdgeId): Graph<T> => {
@@ -292,37 +291,6 @@ export const removeLinks = <T: { ...GraphEdge }>(graph: Graph<T>, links: Array<G
     copy[p2].links = R.without([p1], copy[p2].links)
   }, links)
   return copy
-}
-
-// @FIXME эта функция очень специфична и нужна только в spring_force.js
-// я положил ее здесь только для теста потому что на spring_force.js тест нельзя написать из-за PIXI
-/* bi-directional links! */
-export const findEdgesChains = <T: { ...GraphEdge }>(anchorEdges: EdgeIdsIndexed, graph: Graph<T>): EdgeChains =>
-  findEdgesChainsRec(anchorEdges, graph, R.values(graph))
-
-export const findEdgesChainsRec = <T: { ...GraphEdge }>(
-  anchorEdges: EdgeIdsIndexed,
-  graph: Graph<T>,
-  graphAsList: Array<T>,
-  edgeChains: EdgeChains = [],
-  closeList: EdgeIdsIndexed = {}
-): EdgeChains => {
-  const curEdge = R.find(e => !anchorEdges[e.id] && !closeList[e.id], graphAsList)
-  if (!curEdge) {
-    return edgeChains
-  }
-  const sublist = findByLinks(curEdge.id, graph, e => !anchorEdges[e.id])
-  const anchorEdgesInSublist = R.chain(e => R.filter(el => !!anchorEdges[el], graph[e].links), R.values(sublist))
-  // на графе возможны замкнутые подграфы которые нигде не соприкасаются с anchorEdges
-  // такие подграфы надо исключить из результата
-  if (anchorEdgesInSublist.length === 0) {
-    const newCloseList = R.mergeRight(closeList, sublist)
-    return findEdgesChainsRec(anchorEdges, graph, graphAsList, edgeChains, newCloseList)
-  }
-  const aeFiltered = R.filter(e => !closeList[e], anchorEdgesInSublist)
-  const edgesChain = R.mergeRight(sublist, R.indexBy(e => e, aeFiltered))
-  const newCloseList = R.mergeRight(closeList, edgesChain)
-  return findEdgesChainsRec(anchorEdges, graph, graphAsList, [...edgeChains, edgesChain], newCloseList)
 }
 
 /* bi-directional links! */

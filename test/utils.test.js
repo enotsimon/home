@@ -312,36 +312,3 @@ describe('removeLinks', () => {
     assert.deepEqual(expect, actual2)
   })
 })
-
-describe('findEdgesChains', () => {
-  it('basic', () => {
-    const expect = [
-      indexed(['p1', 'p2', 'p3', 'p4']),
-      indexed(['p5', 'p6', 'p7']),
-      indexed(['p11', 'p12', 'p13']),
-    ]
-    const actual = U.findEdgesChains(indexed(['p4', 'p3', 'p11']), graph)
-    assert.deepEqual(expect, actual)
-  })
-
-  it('4-points', () => {
-    const expect = [
-      indexed(['p1', 'p2', 'p3', 'p4']),
-      indexed(['p5', 'p6', 'p7']),
-    ]
-    const actual = U.findEdgesChains(indexed(['p4', 'p5', 'p3', 'p7']), graph)
-    assert.deepEqual(expect, actual)
-  })
-
-  it('g2 2-points', () => {
-    const expect = [
-      // indexed(['p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']),
-      indexed(['p2', 'p3']),
-      indexed(['p4']),
-      indexed(['p5', 'p6', 'p7', 'p8']),
-      indexed(['p1', 'p11', 'p12']),
-    ]
-    const actual = U.findEdgesChains(indexed(['p1', 'p2']), g2)
-    assert.deepEqual(expect, actual)
-  })
-})
