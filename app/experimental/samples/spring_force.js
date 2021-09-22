@@ -242,14 +242,11 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   // TODO test these 2 lines cause work incorrect on cycles in graph
   const pointsCopyNoCL = U.removeLinks(points, crossingLinksAll)
   const pointChains = R.map(p => U.findByLinks(p, pointsCopyNoCL), pointsFromCrossingLinks)
-  // its a fuckin speed optimization
-  const pointChainsFuck = R.map(e => ([e, R.keys(e).length]), pointChains)
-  const [shortestPointChains] = R.reduce(([ae, al], [e, l]) => {
-    return l < al ? [e, l] : [ae, al]
-  }, R.values(pointChainsFuck[0]), pointChainsFuck)
+  // logic says we should choose shortest chain but random works better including fact that upper 2 lines work incorrect
+  const cgPointChains = U.randElement(pointChains)
   const pointsFromCrossingLinksInd = R.indexBy(e => e, pointsFromCrossingLinks)
   return R.map(p => {
-    if (shortestPointChains[p.id]) {
+    if (cgPointChains[p.id]) {
       return { ...p, cg: CG_STEPS }
     }
     if (pointsFromCrossingLinksInd[p.id]) {
