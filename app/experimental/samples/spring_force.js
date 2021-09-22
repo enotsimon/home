@@ -219,7 +219,7 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
   })
 }
 
-const gatherPointIdsFromLinks = links => R.indexBy(e => e, R.chain(({ p1, p2 }) => [p1, p2], links))
+const gatherPointIdsFromLinks = links => R.uniq(R.chain(({ p1, p2 }) => [p1, p2], links))
 
 const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points): Points => {
   const crossingLinks = R.filter(l => {
@@ -234,14 +234,14 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   if (crossingLinks.length === 0) {
     return points
   }
-  const crossingLinksPoints = gatherPointIdsFromLinks([...crossingLinks, link])
-  const pointChains = U.findEdgesChains(crossingLinksPoints, points)
+  const crossingLinksAll = [...crossingLinks, link]
+  const pointsCopyNoCL = U.removeLinks(points, crossingLinksAll)
+  const pointChains = R.map(p => U.findByLinks(p, pointsCopyNoCL), gatherPointIdsFromLinks(crossingLinksAll))
   // its a fuckin speed optimization
   const pointChainsFuck = R.map(e => ([e, R.keys(e).length]), pointChains)
   const [shortestPointChains] = R.reduce(([ae, al], [e, l]) => {
     return l < al ? [e, l] : [ae, al]
   }, R.values(pointChainsFuck[0]), pointChainsFuck)
-  // console.log('spclength', spclength)
   return R.map(p => (shortestPointChains[p.id] ? { ...p, cg: 1 } : p), points)
 }
 
