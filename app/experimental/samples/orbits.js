@@ -3,8 +3,8 @@ import Util from 'common/util'
 import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { initDrawer } from 'experimental/drawer'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 type Figure = {
   id: number,
@@ -20,12 +20,6 @@ type State = {|
   count_figures: number,
   figures: Array<Figure>,
 |}
-
-const updateDebugInfo = (state) => [
-  { text: 'precession', value: state.figures ? state.figures[0].precession_coef : '' },
-  { text: 'nutation', value: state.figures ? state.figures[0].nutation_coef : '' },
-  { text: 'angle state.acceleration', value: state.acceleration },
-]
 
 const initGraphics = (oldState: DrawerState): State => {
   const state = { ...oldState }
@@ -80,4 +74,4 @@ const calcSinglePoint = (radius, angle, precession, nutation) => {
   return { x: nx, y: ny }
 }
 
-export const initOrbits = (): InitDrawerResult => initDrawer('circle', updateDebugInfo, initGraphics, redraw)
+export const initOrbits = (): void => startDrawer('circle', initGraphics, redraw)

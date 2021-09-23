@@ -6,11 +6,11 @@ import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
 import { generate } from 'common/voronoi'
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { randomPointPolar, randomPointsInSquare } from 'experimental/random_points'
 
-import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { VoronoiDiagram } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
 
@@ -98,14 +98,9 @@ const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: num
   return graphics
 }
 
-const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
-  { text: 'lloyd relaxation step (0.1)', value: state.step },
-]
-
-export const init = (): InitDrawerResult => initDrawer(
+export const init = (): void => startDrawer(
   // thats because d3.voronoi cant handle negative values!
   'square',
-  updateDebugInfo,
   initGraphics,
   redraw
 )

@@ -17,31 +17,13 @@ export type DrawerState = {|
 
 export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
 
-// TODO remove id
-export type DrawerDebugInfoUnit = {|
-  text: string,
-  value: string | number,
-|}
-
-export type DrawerOnTickCallback = (
-  fps: number,
-  delta: number,
-  redrawTime: number,
-  debugInfo: Array<DrawerDebugInfoUnit>
-) => void
-
-export type DrawerDebugInfoCallback<T: Object> = (ExtDrawerState<T>) => Array<DrawerDebugInfoUnit>
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
 export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
-export type InitDrawerResult = (onTickCallback: DrawerOnTickCallback) => void
-
 export const startDrawer = <T: Object>(
   regime: DrawerRegime,
-  updateDebugInfo: DrawerDebugInfoCallback<T>,
   initGraphics: DrawerInitCallback<T>,
-  redraw: DrawerRedrawCallback<T>,
-  onTickCallback: DrawerOnTickCallback,
+  redraw: DrawerRedrawCallback<T>
 ): void => {
   let state = {
     ticks: 0,
@@ -94,16 +76,7 @@ export const startDrawer = <T: Object>(
     }
     state.tick_delta = delta
     state.tickTime += delta
-    const startTS = (new Date()).getTime()
-    // $FlowIgnore FIXME dont understand whats wrong
     state = redraw(state)
-    const finishTS = (new Date()).getTime()
-    // its a hellish hack actially cause its called on*Tick*callback() but as soon as we use it for debug info
-    // no need to update it too often
-    if (state.ticks % 10 === 0) {
-      // TODO merge all to updateDebugInfo() result
-      onTickCallback(pixi.ticker.FPS, finishTS - startTS, delta, updateDebugInfo(state))
-    }
   })
 
   // creating screenshots from pixi.stage
@@ -164,16 +137,3 @@ export const startDrawer = <T: Object>(
     }
   })
 }
-
-export const initDrawer = <T: Object>(
-  regime: DrawerRegime,
-  updateDebugInfo: DrawerDebugInfoCallback<T>,
-  initGraphics: DrawerInitCallback<T>,
-  redraw: DrawerRedrawCallback<T>,
-): InitDrawerResult => (onTickCallback: DrawerOnTickCallback): void => startDrawer(
-    regime,
-    updateDebugInfo,
-    initGraphics,
-    redraw,
-    onTickCallback
-  )

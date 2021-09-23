@@ -8,9 +8,9 @@ import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { Dot as OrigDot, DotId } from 'experimental/random_points'
 
 type DotsState = {|
@@ -168,10 +168,4 @@ const drawDots = (dots: Dots, deletedDotIds: Array<DotId>, container: Object): v
   })
 }
 
-const debugInfo = state => [
-  { text: 'calcLinkMaxLength', value: calcLinkMaxLength(state.size, R.keys(state.dots).length) },
-  { text: `count dots (max ${DOTS_LIMIT})`, value: R.keys(state.dots).length },
-  { text: 'seed', value: state.seed },
-]
-
-export const init = (): InitDrawerResult => initDrawer('circle', debugInfo, initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

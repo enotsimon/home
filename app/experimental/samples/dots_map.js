@@ -11,10 +11,10 @@ import * as U from 'common/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
 import type { Dot, Dots as OrigDots, DotId } from 'experimental/random_points'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 type Dots = OrigDots<Dot>
 type DotsState = {|
@@ -155,4 +155,4 @@ const initPairsGenerator = <T: any>(arr: Array<T>): () => ?[T, T] => {
 }
 */
 
-export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

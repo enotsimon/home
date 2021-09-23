@@ -5,8 +5,8 @@ import * as PIXI from 'pixi.js'
 import * as d3 from 'd3'
 import * as R from 'ramda'
 
-import { initDrawer } from 'experimental/drawer'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 type StellarBody = {
   base_container: Object,
@@ -29,7 +29,7 @@ type State = {|
 |}
 
 
-const initGraphics = (oldState: DrawerState): DrawerState => {
+const initGraphics = (oldState: State): State => {
   let state = { ...oldState }
   state.matrix = new PIXI.Container()
   state.base_container.addChild(state.matrix)
@@ -142,4 +142,4 @@ const setGraphicsTransformByStellarCoords = (origBody: StellarBody): StellarBody
   return body
 }
 
-export const initPlanetFocus = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
+export const initPlanetFocus = (): void => startDrawer('circle', initGraphics, redraw)

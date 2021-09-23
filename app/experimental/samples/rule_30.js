@@ -2,12 +2,7 @@
 import Util from 'common/util'
 import { initTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
 
-import type { InitDrawerResult } from 'experimental/drawer'
-
-/**
- * https://en.wikipedia.org/wiki/Rule_30
- */
-
+// https://en.wikipedia.org/wiki/Rule_30
 
 // color = (element.y == this.y_size - 1) && (element.x == this.x_size / 2 | 0) ? 1 : 0;
 const initElementState = (element) => ({ ...element, color: 0 })
@@ -54,4 +49,4 @@ const elementStateRule = (l, r, s) => {
   }
 }
 
-export const initRule30 = (): InitDrawerResult => initTableauDrawer(initElementState, mutateElementState, 3)
+export const initRule30 = (): void => initTableauDrawer(initElementState, mutateElementState, 3)

@@ -3,9 +3,9 @@ import Util from 'common/util'
 import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 
-import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 export type PlanetXYZPoint = { x: number, y: number, z: number }
 export type PlanetSpherePoint = { phi: number, theta: number }
@@ -50,19 +50,7 @@ export const calcSinglePoint = (
 export const initPlanetDrawer = (
   sphereMap: SphereMapBuilder = defaultSphereMap,
   mapTransparency: number = 0.25,
-): InitDrawerResult => initDrawer(
-  'circle',
-  updateDebugInfo,
-  state => initGraphics(state, sphereMap, mapTransparency),
-  redraw
-)
-
-const updateDebugInfo = (state: DrawerState): Array<DrawerDebugInfoUnit> => [
-  { text: 'precession', value: Math.round(Util.degrees(state.precession)) },
-  { text: 'nutation', value: Math.round(Util.degrees(state.nutation)) },
-  { text: 'rotation', value: Math.round(Util.degrees(state.rotation)) },
-  { text: 'count points', value: state.points ? state.points.length : 0 },
-]
+): void => startDrawer('circle', state => initGraphics(state, sphereMap, mapTransparency), redraw)
 
 // TODO -- move it out from here or just delete
 const defaultSphereMap: SphereMapBuilder = () => {

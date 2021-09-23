@@ -21,11 +21,11 @@ import seedrandom from 'seedrandom'
 import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask, drawDottedPoint, drawLine } from 'experimental/drawing_functions'
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 import { circleBorderForceLinear } from 'experimental/circle_border'
 
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
 import type { ChannelMatrix } from 'common/color'
@@ -126,6 +126,7 @@ const gatherPointLinks = (points: Points, links: Array<Link>): Points => R.reduc
   return { ...acc, [p1.id]: { ...p1, links: [...p1.links, p2.id] }, [p2.id]: { ...p2, links: [...p2.links, p1.id] } }
 }, points, links)
 
+// @TODO move to utils
 export const gatherPointGroups = (curGroup: number, points: Points): Points => {
   const pointsArray = R.values(points)
   const noGroupPoints = R.filter(p => p.group === 0, pointsArray)
@@ -338,4 +339,4 @@ const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points
 const maxSpeedQuad = (points: Points) =>
   R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), R.values(points)))
 
-export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

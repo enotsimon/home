@@ -9,9 +9,9 @@ import * as R from 'ramda'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 // import { addDotsIntoCircleWithMinDistance } from 'experimental/random_points'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 type TissueState = {|
   ...DrawerState,
@@ -105,9 +105,4 @@ const drawNewCells = (cells: Cells, cellRadius: number, container: Object) => R.
   container.addChild(graphics)
 }, R.values(cells))
 
-const debugInfo = state => [
-  { text: 'count cells', value: R.keys(state.cells).length },
-  { text: 'seed', value: state.seed },
-]
-
-export const init = (): InitDrawerResult => initDrawer('circle', debugInfo, initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

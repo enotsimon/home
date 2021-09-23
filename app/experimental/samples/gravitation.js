@@ -9,8 +9,8 @@ import { addCircleMask } from 'experimental/drawing_functions'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 import { randomPointPolar } from 'experimental/random_points'
 
-import { initDrawer } from 'experimental/drawer'
-import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
 
 type Point = {|
@@ -120,9 +120,4 @@ const calcGravityAcceleration = (points: Array<Point>): Array<Point> => R.map(p 
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
-const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
-  { text: 'step', value: state.step },
-  { text: 'distance', value: U.distance(state.points[0], state.points[1]) },
-]
-
-export const init = (): InitDrawerResult => initDrawer('circle', updateDebugInfo, initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

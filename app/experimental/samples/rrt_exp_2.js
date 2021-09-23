@@ -16,11 +16,11 @@ import * as Color from 'common/color'
 import * as U from 'common/utils'
 import * as R from 'ramda'
 // import { addCircleMask } from 'experimental/drawing_functions'
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { generate } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 // import type { RRTDiagram, RRTPoint } from 'common/rrt_diagram'
 
 import type { XYPoint } from 'common/utils'
@@ -123,4 +123,4 @@ const drawLinks = (links, points, graphics, curPoints = [], curColor = null) => 
 
 const randColorChannel = () => 10 * random.int(0, 15)
 
-export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

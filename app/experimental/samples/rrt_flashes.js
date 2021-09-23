@@ -7,11 +7,11 @@ import * as R from 'ramda'
 import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { generate, pointsByGenerationsIndex } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { RRTDiagram, RRTPoint, RRTGenerationsIndex } from 'common/rrt_diagram'
 
 const STEP = 5
@@ -131,4 +131,4 @@ const drawLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, ma
   graphics.lineTo(point.x, point.y)
 }
 
-export const init = (): InitDrawerResult => initDrawer('circle', () => [], initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

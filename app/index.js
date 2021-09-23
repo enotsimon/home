@@ -2,14 +2,11 @@
 import ReactDOM from 'react-dom'
 import React from 'react'
 import { HashRouter, Switch, Route } from 'react-router-dom'
-import { createStore } from 'redux'
-import { Provider } from 'react-redux'
 
-import { reducers } from 'experimental/reducers'
 import SamplesCollecton from 'experimental/components/samples_collection'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'assets/css/main.css'
-import { SampleContainer } from 'experimental/components/containers/SampleContainer'
+import { Sample } from 'experimental/components/Sample'
 import { initMovingArrows } from 'experimental/samples/moving_arrows'
 import { initPlanetFocus } from 'experimental/samples/planets_focus'
 import { initRandomTableau } from 'experimental/samples/basic_random_tableau'
@@ -35,52 +32,45 @@ import { init as initDotsMap } from 'experimental/samples/dots_map'
 import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
 import { init as initTissue } from 'experimental/samples/tissue'
 
-// const store = createStore(reducers, window.__REDUX_DEVTOOL1S_EXTENSION__(), applyMiddleware(thunk)
-// const store = createStore(reducers, window.__REDUX_DEVTOOLS_1EXTENSION__())
-// FIXME dunno why but window.__REDUX_DEVTOOLS_1EXTENSION__() doesnt exists
-const store = createStore(reducers)
-
 // TODO fix updateDebugInfo()
-const createDrawer = init => <SampleContainer init={init} />
+const createDrawer = init => <Sample init={init} />
 
 const page404 = () => (<h1>its like a 404 page</h1>)
 
 ReactDOM.render((
-  <Provider store={store}>
-    <HashRouter>
-      <main>
-        <Switch>
-          <Route exact path="/" component={SamplesCollecton} />
-          <Route path="/samples_collection" component={SamplesCollecton} />
-          <Route path="/moving_arrows" render={() => createDrawer(initMovingArrows)} />
-          <Route path="/planets_focus" render={() => createDrawer(initPlanetFocus)} />
-          <Route path="/basic_tableau" render={() => createDrawer(initRandomTableau)} />
-          <Route path="/smooth_tableau" render={() => createDrawer(initSmoothTableau)} />
-          <Route path="/rule_30" render={() => createDrawer(initRule30)} />
-          <Route path="/vichniac_vote" render={() => createDrawer(initVichniacVote)} />
-          <Route path="/orbits" render={() => createDrawer(initOrbits)} />
-          <Route path="/luna" render={() => createDrawer(initLuna)} />
-          <Route path="/wavy_sphere" render={() => createDrawer(initWavyPlanet)} />
-          <Route path="/dots_spiral" render={() => createDrawer(initDotsSpiral)} />
-          <Route path="/voronoi_lloyd" render={() => createDrawer(initVoronoyLloyd)} />
-          <Route path="/voronoi_lloyd_vawes" render={() => createDrawer(initVoronoyLloydVawes)} />
-          <Route path="/voronoi_lloyd_vawes_rand" render={() => createDrawer(initVoronoyLloydVawesRand)} />
-          <Route path="/gravitation" render={() => createDrawer(initGravitation)} />
-          <Route path="/coulomb_and_ring" render={() => createDrawer(initCoulombAndRing)} />
-          <Route path="/rrt_basic" render={() => createDrawer(initRRTBasic)} />
-          <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
-          <Route path="/rrt_exp" render={() => createDrawer(initRRTExp)} />
-          <Route path="/rrt_exp_2" render={() => createDrawer(initRRTExp2)} />
-          <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
-          <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
-          <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
-          <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
-          <Route path="/tissue" render={() => createDrawer(initTissue)} />
-          {/* dont work. 404 routed from dev server itself */}
-          <Route path="/" render={page404} />
-        </Switch>
-      </main>
-    </HashRouter>
-  </Provider>
+  <HashRouter>
+    <main>
+      <Switch>
+        <Route exact path="/" component={SamplesCollecton} />
+        <Route path="/samples_collection" component={SamplesCollecton} />
+        <Route path="/moving_arrows" render={() => createDrawer(initMovingArrows)} />
+        <Route path="/planets_focus" render={() => createDrawer(initPlanetFocus)} />
+        <Route path="/basic_tableau" render={() => createDrawer(initRandomTableau)} />
+        <Route path="/smooth_tableau" render={() => createDrawer(initSmoothTableau)} />
+        <Route path="/rule_30" render={() => createDrawer(initRule30)} />
+        <Route path="/vichniac_vote" render={() => createDrawer(initVichniacVote)} />
+        <Route path="/orbits" render={() => createDrawer(initOrbits)} />
+        <Route path="/luna" render={() => createDrawer(initLuna)} />
+        <Route path="/wavy_sphere" render={() => createDrawer(initWavyPlanet)} />
+        <Route path="/dots_spiral" render={() => createDrawer(initDotsSpiral)} />
+        <Route path="/voronoi_lloyd" render={() => createDrawer(initVoronoyLloyd)} />
+        <Route path="/voronoi_lloyd_vawes" render={() => createDrawer(initVoronoyLloydVawes)} />
+        <Route path="/voronoi_lloyd_vawes_rand" render={() => createDrawer(initVoronoyLloydVawesRand)} />
+        <Route path="/gravitation" render={() => createDrawer(initGravitation)} />
+        <Route path="/coulomb_and_ring" render={() => createDrawer(initCoulombAndRing)} />
+        <Route path="/rrt_basic" render={() => createDrawer(initRRTBasic)} />
+        <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
+        <Route path="/rrt_exp" render={() => createDrawer(initRRTExp)} />
+        <Route path="/rrt_exp_2" render={() => createDrawer(initRRTExp2)} />
+        <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
+        <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
+        <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
+        <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
+        <Route path="/tissue" render={() => createDrawer(initTissue)} />
+        {/* dont work. 404 routed from dev server itself */}
+        <Route path="/" render={page404} />
+      </Switch>
+    </main>
+  </HashRouter>
   // $FlowIgnore
 ), document.body.appendChild(document.createElement('div')))

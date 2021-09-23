@@ -6,11 +6,11 @@ import seedrandom from 'seedrandom'
 import * as Color from 'common/color'
 import * as U from 'common/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
-import { initDrawer } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
 import { calcCircleBorderForceAcceleration, returnPointsToCircle } from 'experimental/circle_border'
 import { randomPointInSquare } from 'experimental/random_points'
 
-import type { InitDrawerResult, DrawerState, DrawerDebugInfoUnit } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 import type { MassSpeedPoint } from 'experimental/circle_border'
 
 
@@ -81,8 +81,4 @@ const calcForceAcceleration = (points: Array<Point>): Array<Point> => R.map(p =>
 
 const crossSumm = (a, b) => ({ x: a.x + b.x, y: a.y + b.y })
 
-const updateDebugInfo = (state: State): Array<DrawerDebugInfoUnit> => [
-  { text: 'tick', value: state.tick },
-]
-
-export const init = (): InitDrawerResult => initDrawer('circle', updateDebugInfo, initGraphics, redraw)
+export const init = (): void => startDrawer('circle', initGraphics, redraw)

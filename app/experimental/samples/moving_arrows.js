@@ -3,8 +3,8 @@ import Util from 'common/util'
 import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 
-import { initDrawer } from 'experimental/drawer'
-import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
+import { startDrawer } from 'experimental/drawer'
+import type { DrawerState } from 'experimental/drawer'
 
 // TODO:
 //   - add debug info of angle_inc, acceleration, speed
@@ -12,8 +12,6 @@ import type { InitDrawerResult, DrawerState } from 'experimental/drawer'
 //   - fix graphics redraw leaps!!!
 
 // TODO flow type State
-
-const updateDebugInfo = () => []
 
 const initGraphics = (oldState: DrawerState): DrawerState => {
   const state = { ...oldState }
@@ -95,9 +93,4 @@ const linearInterpolation = (min: number, max: number, x: number): number => {
   return min * (1 - x) + max * x
 }
 
-export const initMovingArrows = (): InitDrawerResult => initDrawer(
-  'square',
-  updateDebugInfo,
-  initGraphics,
-  redraw
-)
+export const initMovingArrows = (): void => startDrawer('square', initGraphics, redraw)

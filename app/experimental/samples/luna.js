@@ -3,7 +3,6 @@ import Util from 'common/util'
 import { initPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
 
 import type { PlanetState, SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
-import type { InitDrawerResult } from 'experimental/drawer'
 
 type Crater = {
   precession: number,
@@ -61,4 +60,4 @@ const sphereAnglesDistance = (a: Crater, b: Crater): number => {
   return Math.acos(scalar / module)
 }
 
-export const initLuna = (): InitDrawerResult => initPlanetDrawer(sphereMap)
+export const initLuna = (): void => initPlanetDrawer(sphereMap)
