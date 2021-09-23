@@ -210,7 +210,7 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     }
     graphics.x = p.x
     graphics.y = p.y
-    let dotColor = p.cg ? [150, 0, 150] : color
+    let dotColor = p.cg ? [100, 0, 0] : color
     dotColor = p.clp ? [150, 0, 0] : dotColor
     drawDottedPoint(graphics, dotColor, 1.5)
     return { radius, color }
