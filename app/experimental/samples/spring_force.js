@@ -197,8 +197,9 @@ const redraw = (oldState: State): State => {
 const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
 
 const redrawGraphics = (container, points: Points, links: Array<Link>, colors: Array<ChannelMatrix>, colorStep) => {
+  const center = { x: 0, y: 0 }
   const pointDist = R.map(p => {
-    const { radius } = U.toPolarCoords(p)
+    const radius = U.distance(p, center)
     const colorDiff = COLOR_BRIGHTEN_MAX - radius * colorStep
     const ci = p.group % R.length(colors)
     const color = Color.forRGB(Color.matrixToRGB(colors[ci]), e => ccc(e, colorDiff))
