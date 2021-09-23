@@ -114,7 +114,7 @@ const colorConfig: Array<SamplePreviewConfig> = [
     description: 'like springs between points',
     sample_url: './spring_force',
     img_path: './thumbnails/spring_force.png',
-    status: 'in_progress',
+    status: 'almost_ready',
   },
   {
     name: 'rrt diagram',
