@@ -106,7 +106,7 @@ const initGraphics = (oldState: State): State => {
   }, [], pointsArray)
   // copy links data to points
   state.points = gatherPointLinks(state.points, state.links)
-  state.points = gatherPointGroups(1, state.points)
+  state.points = gatherPointGroups(state.points)
   // calc points groups
   // R.map(p => console.log(p.id, p.links), state.points)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
@@ -126,30 +126,10 @@ const gatherPointLinks = (points: Points, links: Array<Link>): Points => R.reduc
   return { ...acc, [p1.id]: { ...p1, links: [...p1.links, p2.id] }, [p2.id]: { ...p2, links: [...p2.links, p1.id] } }
 }, points, links)
 
-// @TODO move to utils
-export const gatherPointGroups = (curGroup: number, points: Points): Points => {
-  const pointsArray = R.values(points)
-  const noGroupPoints = R.filter(p => p.group === 0, pointsArray)
-  if (R.length(noGroupPoints) === 0) {
-    return points
-  }
-  const curGroupPoints = R.filter(p => p.group === curGroup, pointsArray)
-  if (R.length(curGroupPoints) === 0) {
-    const p = noGroupPoints[0]
-    return gatherPointGroups(curGroup, { ...points, [p.id]: { ...p, group: curGroup } })
-  }
-  const curPointLinks = R.chain(p => p.links, curGroupPoints)
-  const pointIdsToSet = R.indexBy(e => e, R.filter(pid => points[pid].group === 0, curPointLinks))
-  if (R.equals(pointIdsToSet, {})) {
-    return gatherPointGroups(curGroup + 1, points)
-  }
-  const newPoints = R.map(p => {
-    if (pointIdsToSet[p.id]) {
-      return { ...p, group: curGroup }
-    }
-    return p
-  }, points)
-  return gatherPointGroups(curGroup, newPoints)
+export const gatherPointGroups = (points: Points): Points => {
+  const subgraphs = U.findSubgraphs(points)
+  const pointsGroups = R.mergeAll(subgraphs.map((subgraph, i) => R.map(() => i + 1, subgraph)))
+  return R.map(p => ({ ...p, group: pointsGroups[p.id] }), points)
 }
 
 const initDrawings = (container, points) => {

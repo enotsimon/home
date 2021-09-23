@@ -293,6 +293,23 @@ export const removeLinks = <T: { ...GraphEdge }>(graph: Graph<T>, links: Array<G
   return copy
 }
 
+export const findSubgraphs = <T: { ...GraphEdge }>(graph: Graph<T>): Array<EdgeIdsIndexed> =>
+  findSubgraphsRec(graph, R.values(graph), [])
+
+const findSubgraphsRec = <T: { ...GraphEdge }>(
+  graph: Graph<T>,
+  openList: Array<T>,
+  result: Array<EdgeIdsIndexed>,
+): Array<EdgeIdsIndexed> => {
+  if (openList.length === 0) {
+    return result
+  }
+  const chain = findByLinks([openList[0].id], graph)
+  const newOpenList = R.filter(e => !chain[e.id], openList)
+  result.push(chain)
+  return findSubgraphsRec(graph, newOpenList, result)
+}
+
 /* bi-directional links! */
 export const findByLinks = <T: { ...GraphEdge }>(
   curEdges: Array<GraphEdgeId> | GraphEdgeId,

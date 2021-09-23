@@ -274,6 +274,17 @@ describe('findByLinks', () => {
   })
 })
 
+describe('findSubgraphsRec', () => {
+  it('should find isolated sub-graphs in graph', () => {
+    const expect = [
+      indexed(['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7']),
+      indexed(['p11', 'p12', 'p13']),
+    ]
+    const actual = U.findSubgraphs(graph)
+    assert.deepEqual(expect, actual)
+  })
+})
+
 const g = R.indexBy(e => e.id, [
   { id: 'p1', links: ['p2', 'p3'] },
   { id: 'p2', links: ['p1', 'p4'] },
