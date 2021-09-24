@@ -118,7 +118,7 @@ const colorConfig: Array<SamplePreviewConfig> = [
   },
   {
     name: 'spring force twitchy',
-    description: 'like spring force smooth, but springs are quite hard. more points',
+    description: 'like spring force smooth, but springs are quite hard',
     sample_url: './spring_force_twitchy',
     img_path: './thumbnails/spring_force_twitchy.png',
     status: 'almost_ready',
