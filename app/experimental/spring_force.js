@@ -30,6 +30,21 @@ import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
 import type { ChannelMatrix } from 'common/color'
 
+export type SpringForceConfig = {|
+  COUNT_POINTS: number,
+  LINKS_LENGTH_MUL: number,
+  FORCE_MUL: number,
+  REPULSING_FORCE_MUL: number,
+  REPULSING_FORCE_MAX_DIST_MUL: number,
+  SLOWDOWN_MUL: number, // backward -- less value -- more slowdown
+  CB_FORCE_MUL: number,
+  MAX_SPEED_QUAD_TRIGGER: number,
+  REBUILD_EVERY: number,
+  CG_STEPS: number,
+  COLOR_BRIGHTEN_MAX: number,
+  COLOR_VALUES_LIST: Array<number>,
+|}
+
 // type Vector = XYPoint
 type PointId = string
 type Point = {|
@@ -56,6 +71,9 @@ type Vector = {|
 
 type State = {|
   ...DrawerState,
+  ...SpringForceConfig,
+  LINKS_LENGTH: number,
+  dlQuad: number,
   points: Points,
   links: Array<Link>,
   pairs: Array<Link>,
@@ -65,27 +83,14 @@ type State = {|
 
 type FroceFunc = (Point, Point, number, Link) => number
 
-// const FORCE_STRENGTH = 0.05
-const COUNT_POINTS = 100
-const LINKS_LENGTH_MUL = 800
-const LINKS_LENGTH = LINKS_LENGTH_MUL / COUNT_POINTS
-const FORCE_MUL = 0.075
-const REPULSING_FORCE_MUL = 0.05
-const REPULSING_FORCE_MAX_DIST_MUL = 0.5
-const SLOWDOWN_MUL = 0.8 // backward -- less value -- more slowdown
-const CB_FORCE_MUL = 0.0025
-const MAX_SPEED_QUAD_TRIGGER = 0.08 // TODO increasing speed tru time
-const REBUILD_EVERY = 2500
-const CG_STEPS = 50
-const COLOR_BRIGHTEN_MAX = 100
-const COLOR_VALUES_LIST = [0, 50, 100]
-
 const initGraphics = (oldState: State): State => {
   const state = { ...oldState }
   const seed = Date.now()
   random.use(seedrandom(seed))
-  state.colorStep = COLOR_BRIGHTEN_MAX / (state.size / 2)
-  state.colors = U.shuffle(Color.matrixesByValuesList(COLOR_VALUES_LIST))
+  state.dlQuad = (state.REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2
+  state.LINKS_LENGTH = state.LINKS_LENGTH_MUL / state.COUNT_POINTS
+  state.colorStep = state.COLOR_BRIGHTEN_MAX / (state.size / 2)
+  state.colors = U.shuffle(Color.matrixesByValuesList(state.COLOR_VALUES_LIST))
   // dont like blue colors -- they are hard to discern
   state.colors = R.filter(({ r, g }) => r > 0 || g > 0, state.colors)
   // console.log('color matrixes', state.colors)
@@ -93,7 +98,7 @@ const initGraphics = (oldState: State): State => {
     const { x, y } = U.fromPolarCoords(randomPointPolar(state.size / 2))
     const point: Point = { id: `p${id}`, x, y, speed: { x: 0, y: 0 }, group: 0, links: [], cg: 0, clp: 0 }
     return point
-  }, R.range(0, COUNT_POINTS)))
+  }, R.range(0, state.COUNT_POINTS)))
   // each point has one link to ramdom another one
   const pointsArray = R.values(state.points)
   state.links = R.reduce((accLinks, p) => {
@@ -102,18 +107,19 @@ const initGraphics = (oldState: State): State => {
       throw new Error('no possible target points')
     }
     const targetPoint = U.randElement(possibleTargetPoints)
-    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: LINKS_LENGTH }]
+    return [...accLinks, { p1: p.id, p2: targetPoint.id, length: state.LINKS_LENGTH }]
   }, [], pointsArray)
   // copy links data to points
   state.points = gatherPointLinks(state.points, state.links)
   state.points = gatherPointGroups(state.points)
-  // calc points groups
-  // R.map(p => console.log(p.id, p.links), state.points)
   // list of all point pairs for repulsing force -- save it in state for saving calculations
+  // tried some optimizations -- to do less calcs but works bad
+  // const repForcePoints = R.values(state.points).filter(p => p.links.length !== 2)
+  const repForcePoints = pointsArray
   state.pairs = R.map(
     // its a fake link, just to make funcs types simplier
     ([id1, id2]) => ({ p1: id1, p2: id2, length: 0 }),
-    U.noOrderNoSameValuesPairs(R.map(p => p.id, pointsArray))
+    U.noOrderNoSameValuesPairs(R.map(p => p.id, repForcePoints))
   )
   initDrawings(state.base_container, pointsArray)
   addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, Color.matrixToRGB(state.colors[1]))
@@ -150,25 +156,29 @@ const drawerPointId = point => `p-${point.id}`
 
 const redraw = (oldState: State): State => {
   const state: State = { ...oldState }
-  const rfVectors = calcAllRepulsingForce(state.points, state.pairs, (REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2)
-  const sfVectors = calcSpringForce(state.points, state.links)
+  // calc all repulsing force
+  const rff = (p1, p2, quadDist) => allRepulsingForce(p1, p2, quadDist, state.REPULSING_FORCE_MUL, state.LINKS_LENGTH)
+  const rfVectors = vectorsByLinks(state.points, state.pairs, rff, state.dlQuad)
+  // calc spring force
+  const sff = (p1, p2, quadDistance, link) => springForce(p1, p2, quadDistance, link, state.FORCE_MUL)
+  const sfVectors = vectorsByLinks(state.points, state.links, sff)
   state.points = addVectorsToPointsSpeed(state.points, [...rfVectors, ...sfVectors])
-  state.points = circleBorderForceLinear(state.points, state.size / 2, CB_FORCE_MUL)
+  state.points = circleBorderForceLinear(state.points, state.size / 2, state.CB_FORCE_MUL)
   state.points = R.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }), state.points)
   // speed slowdown -- its like resistance of the environment
   state.points = R.map(p => ({
     ...p,
-    speed: { x: SLOWDOWN_MUL * p.speed.x, y: SLOWDOWN_MUL * p.speed.y }
+    speed: { x: state.SLOWDOWN_MUL * p.speed.x, y: state.SLOWDOWN_MUL * p.speed.y }
   }), state.points)
-  if (maxSpeedQuad(state.points) <= MAX_SPEED_QUAD_TRIGGER) {
+  if (maxSpeedQuad(state.points) <= state.MAX_SPEED_QUAD_TRIGGER) {
     // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
     const curLink = state.links[state.ticks % state.links.length]
-    state.points = findAndHandleCrossingLinks(curLink, state.links, state.points)
+    state.points = findAndHandleCrossingLinks(curLink, state.links, state.points, state.CG_STEPS)
   }
   state.points = handleCGAndCLPPoints(state.points)
-  redrawGraphics(state.base_container, state.points, state.links, state.colors, state.colorStep)
+  redrawGraphics(state)
   // console.log(state.ticks)
-  if ((state.ticks + 1) % REBUILD_EVERY === 0) {
+  if ((state.ticks + 1) % state.REBUILD_EVERY === 0) {
     return initGraphics(state)
   }
   return state
@@ -177,13 +187,14 @@ const redraw = (oldState: State): State => {
 // calc color channel
 const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
 
-const redrawGraphics = (container, points: Points, links: Array<Link>, colors: Array<ChannelMatrix>, colorStep) => {
+const redrawGraphics = (state: State): void => {
+  const container = state.base_container
   const center = { x: 0, y: 0 }
   const pointDist = R.map(p => {
     const radius = U.distance(p, center)
-    const colorDiff = COLOR_BRIGHTEN_MAX - radius * colorStep
-    const ci = p.group % R.length(colors)
-    const color = Color.forRGB(Color.matrixToRGB(colors[ci]), e => ccc(e, colorDiff))
+    const colorDiff = state.COLOR_BRIGHTEN_MAX - radius * state.colorStep
+    const ci = p.group % R.length(state.colors)
+    const color = Color.forRGB(Color.matrixToRGB(state.colors[ci]), e => ccc(e, colorDiff))
     const graphics = container.getChildByName(drawerPointId(p))
     if (!graphics) {
       throw new Error(`point graphics not found by id ${p.id}`)
@@ -194,11 +205,11 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
     dotColor = p.clp ? [150, 0, 0] : dotColor
     drawDottedPoint(graphics, dotColor, 1.5)
     return { radius, color }
-  }, points)
+  }, state.points)
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
-  links.forEach(l => {
-    const [p1, p2] = getLinkPoints(l, points)
+  state.links.forEach(l => {
+    const [p1, p2] = getLinkPoints(l, state.points)
     const color = pointDist[l.p1].radius > pointDist[l.p2].radius ? pointDist[l.p1].color : pointDist[l.p2].color
     drawLine(linksContainer, color, 0.75, p1, p2)
   })
@@ -206,7 +217,7 @@ const redrawGraphics = (container, points: Points, links: Array<Link>, colors: A
 
 const gatherPointIdsFromLinks = links => R.uniq(R.chain(({ p1, p2 }) => [p1, p2], links))
 
-const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points): Points => {
+const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points, CG_STEPS: number): Points => {
   const crossingLinks = R.filter(l => {
     if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
       return false
@@ -260,17 +271,14 @@ const getLinkPoints = (link: Link, points: Points) => {
   return [p1, p2]
 }
 
-const calcAllRepulsingForce = (points, pairs, dlQuad) => vectorsByLinks(points, pairs, allRepulsingForce, dlQuad)
-const calcSpringForce = (points, links) => vectorsByLinks(points, links, springForce)
-
-const allRepulsingForce = (p1, p2, quadDistance) => {
+const allRepulsingForce = (p1, p2, quadDistance, REPULSING_FORCE_MUL, LINKS_LENGTH) => {
   if (p1.cg || p2.cg) {
     return 0
   }
   return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
 }
 
-const springForce = (p1, p2, quadDistance, link) => {
+const springForce = (p1, p2, quadDistance, link, FORCE_MUL) => {
   // let it be linear for now
   return FORCE_MUL * ((link.length ** 2) - quadDistance) / quadDistance
 }
@@ -319,4 +327,4 @@ const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points
 const maxSpeedQuad = (points: Points) =>
   R.reduce((cur, e) => Math.max(cur, e), 0, R.map(({ speed: { x, y } }) => (x ** 2) + (y ** 2), R.values(points)))
 
-export const init = (): void => startDrawer('circle', initGraphics, redraw)
+export const initSpringForce = (config: SpringForceConfig): void => startDrawer('circle', initGraphics, redraw, config)

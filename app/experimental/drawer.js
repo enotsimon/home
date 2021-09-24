@@ -15,15 +15,16 @@ export type DrawerState = {|
   [string]: any,
 |}
 
+// TODO its a hack. do normal way
 export type ExtDrawerState<T: Object> = {| ...DrawerState, ...T |}
-
 export type DrawerInitCallback<T: Object> = (DrawerState) => ExtDrawerState<T>
 export type DrawerRedrawCallback<T: Object> = (ExtDrawerState<T>) => ExtDrawerState<T>
 
 export const startDrawer = <T: Object>(
   regime: DrawerRegime,
   initGraphics: DrawerInitCallback<T>,
-  redraw: DrawerRedrawCallback<T>
+  redraw: DrawerRedrawCallback<T>,
+  additional: Object = {},
 ): void => {
   let state = {
     ticks: 0,
@@ -65,7 +66,7 @@ export const startDrawer = <T: Object>(
 
   pixi.stage.addChild(state.base_container)
 
-  state = initGraphics(state)
+  state = initGraphics({ ...state, ...additional })
 
   pixi.ticker.add(delta => {
     state.ticks += 1

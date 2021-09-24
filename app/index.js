@@ -27,7 +27,8 @@ import { init as initRRTBasic } from 'experimental/samples/rrt_basic'
 import { init as initRRTFlashes } from 'experimental/samples/rrt_flashes'
 import { init as initRRTExp } from 'experimental/samples/rrt_exp'
 import { init as initRRTExp2 } from 'experimental/samples/rrt_exp_2'
-import { init as initSpringForce } from 'experimental/samples/spring_force'
+import { init as initSpringForceSmooth } from 'experimental/samples/spring_force_smooth'
+import { init as initSpringForceTwitchy } from 'experimental/samples/spring_force_twitchy'
 import { init as initDotsMap } from 'experimental/samples/dots_map'
 import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
 import { init as initTissue } from 'experimental/samples/tissue'
@@ -62,7 +63,8 @@ ReactDOM.render((
         <Route path="/rrt_flashes" render={() => createDrawer(initRRTFlashes)} />
         <Route path="/rrt_exp" render={() => createDrawer(initRRTExp)} />
         <Route path="/rrt_exp_2" render={() => createDrawer(initRRTExp2)} />
-        <Route path="/spring_force" render={() => createDrawer(initSpringForce)} />
+        <Route path="/spring_force_smooth" render={() => createDrawer(initSpringForceSmooth)} />
+        <Route path="/spring_force_twitchy" render={() => createDrawer(initSpringForceTwitchy)} />
         <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />
         <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
         <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
