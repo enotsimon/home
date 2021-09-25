@@ -36,10 +36,10 @@ export type SpringForceConfig = {|
   SLOWDOWN_MUL: number, // backward -- less value -- more slowdown
   CB_FORCE_MUL: number,
   MAX_SPEED_QUAD_TRIGGER: number,
-  REBUILD_EVERY: number,
   CG_STEPS: number,
   COLOR_BRIGHTEN_MAX: number,
   COLOR_VALUES_LIST: Array<number>,
+  REBUILD_EVERY: number,
 |}
 
 // type Vector = XYPoint
@@ -214,6 +214,12 @@ const redrawGraphics = (state: State): void => {
 
 const gatherPointIdsFromLinks = links => R.uniq(R.chain(({ p1, p2 }) => [p1, p2], links))
 
+const vectorToDist = <T: { ...XYPoint }>(from: T, to: T, length: number): XYPoint => {
+  const v = { x: to.x - from.x, y: to.y - from.y }
+  const distance = Math.sqrt((v.x ** 2) + (v.y ** 2))
+  return { x: length * v.x / distance, y: length * v.y / distance }
+}
+
 const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points, CG_STEPS: number): Points => {
   const crossingLinks = R.filter(l => {
     if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
@@ -235,8 +241,13 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   // logic says we should choose shortest chain but random works better including fact that upper 2 lines work incorrect
   const cgPointChains = U.randElement(pointChains)
   const pointsFromCrossingLinksInd = R.indexBy(e => e, pointsFromCrossingLinks)
+  // const randDist = U.fromPolarCoords(randomPointPolar(100))
+  const randDist = { x: 0, y: 0 }
+  // const randLength = random.int(4, 8)
   return R.map(p => {
     if (cgPointChains[p.id]) {
+      const vec = vectorToDist(p, randDist, 3) // const?
+      addVectorToPointSpeed(p, vec)
       return { ...p, cg: CG_STEPS }
     }
     if (pointsFromCrossingLinksInd[p.id]) {
@@ -319,6 +330,11 @@ const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points
     myVectors.forEach(v => { point.speed = { x: point.speed.x + v.x, y: point.speed.y + v.y } })
     return point
   }, points)
+}
+
+const addVectorToPointSpeed = <T: { ...XYPoint }>(point: Point, vector: T): void => {
+  /* eslint-disable-next-line no-param-reassign */
+  point.speed = { x: point.speed.x + vector.x, y: point.speed.y + vector.y }
 }
 
 const maxSpeedQuad = (points: Points) =>
