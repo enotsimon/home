@@ -119,8 +119,9 @@ const initGraphics = (oldState: State): State => {
     ([id1, id2]) => ({ p1: id1, p2: id2, length: 0 }),
     U.noOrderNoSameValuesPairs(R.map(p => p.id, repForcePoints))
   )
-  initDrawings(state.base_container, pointsArray)
-  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, Color.matrixToRGB(state.colors[1]))
+  initDrawings(state.base_container, R.values(state.points), state.colors)
+  const cc = Color.forRGB(Color.matrixToRGB(state.colors[1]), e => e / 2)
+  addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, cc)
   return state
 }
 
@@ -136,7 +137,7 @@ export const gatherPointGroups = (points: Points): Points => {
   return R.map(p => ({ ...p, group: pointsGroups[p.id] }), points)
 }
 
-const initDrawings = (container, points) => {
+const initDrawings = (container, points, colors) => {
   container.removeChildren()
   const linksContainer = new Graphics()
   linksContainer.name = 'linksContainer'
@@ -145,12 +146,16 @@ const initDrawings = (container, points) => {
   points.forEach(p => {
     const graphics = new Graphics()
     graphics.name = drawerPointId(p)
+    const ci = p.group % R.length(colors)
+    const amGraphics = drawDottedPoint(graphics, Color.matrixToRGB(colors[ci]), 1.5)
+    amGraphics.name = amPointId(p)
     container.addChild(graphics)
+    container.addChild(amGraphics)
   })
 }
 
 const drawerPointId = point => `p-${point.id}`
-// const drawerLinkId = link => `l-${link.p1}-${link.p2}`
+const amPointId = point => `pam-${point.id}`
 
 const redraw = (oldState: State): State => {
   const state: State = { ...oldState }
@@ -182,32 +187,33 @@ const redraw = (oldState: State): State => {
 }
 
 // calc color channel
-const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
+// const ccc = (orig: number, diff: number): number => (orig === 0 ? 0 : Math.round(orig + diff))
 
 const redrawGraphics = (state: State): void => {
   const container = state.base_container
   const center = { x: 0, y: 0 }
   const pointDist = R.map(p => {
-    const radius = U.distance(p, center)
-    const colorDiff = state.COLOR_BRIGHTEN_MAX - radius * state.colorStep
-    const ci = p.group % R.length(state.colors)
-    const color = Color.forRGB(Color.matrixToRGB(state.colors[ci]), e => ccc(e, colorDiff))
     const graphics = container.getChildByName(drawerPointId(p))
-    if (!graphics) {
-      throw new Error(`point graphics not found by id ${p.id}`)
-    }
+    const ssq = (state.size / 2) ** 2
+    const alpha = U.normalizeValue(R.min(U.quadDistance(p, center), ssq), ssq, 0.75, 0, 0)
     graphics.x = p.x
     graphics.y = p.y
-    let dotColor = p.cg ? [100, 0, 0] : color
-    dotColor = p.clp ? [150, 0, 0] : dotColor
-    drawDottedPoint(graphics, dotColor, 1.5)
-    return { radius, color }
+    const amGraphics = container.getChildByName(amPointId(p))
+    amGraphics.x = p.x
+    amGraphics.y = p.y
+    amGraphics.alpha = alpha
+    // let dotColor = p.cg ? [100, 0, 0] : color
+    // dotColor = p.clp ? [150, 0, 0] : dotColor
+    // drawDottedPoint(graphics, dotColor, 1.5)
+    const ci = p.group % R.length(state.colors)
+    const color = Color.forRGB(Color.matrixToRGB(state.colors[ci]), e => e * (1 - alpha))
+    return { alpha, color }
   }, state.points)
   const linksContainer = container.getChildByName('linksContainer')
   linksContainer.removeChildren()
   state.links.forEach(l => {
     const [p1, p2] = getLinkPoints(l, state.points)
-    const color = pointDist[l.p1].radius > pointDist[l.p2].radius ? pointDist[l.p1].color : pointDist[l.p2].color
+    const color = pointDist[l.p1].alpha > pointDist[l.p2].alpha ? pointDist[l.p1].color : pointDist[l.p2].color
     drawLine(linksContainer, color, 0.75, p1, p2)
   })
 }

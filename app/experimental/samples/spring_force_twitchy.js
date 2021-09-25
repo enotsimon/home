@@ -12,6 +12,6 @@ export const init = (): void => initSpringForce({
   MAX_SPEED_QUAD_TRIGGER: 0.06,
   CG_STEPS: 50,
   COLOR_BRIGHTEN_MAX: 100,
-  COLOR_VALUES_LIST: [0, 50, 100],
+  COLOR_VALUES_LIST: [0, 100, 200],
   REBUILD_EVERY: 2500,
 })
