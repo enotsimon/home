@@ -27,6 +27,8 @@ import type { XYPoint } from 'common/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
 import type { ChannelMatrix } from 'common/color'
 
+const FIX_CROSSING_LINKS_VECTOR_LENGTH = 3
+
 export type SpringForceConfig = {|
   COUNT_POINTS: number,
   LINKS_LENGTH: number,
@@ -162,10 +164,9 @@ const redraw = (oldState: State): State => {
   state.points = circleBorderForceLinear(state.points, state.size / 2, state.CB_FORCE_MUL)
   state.points = R.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }), state.points)
   // speed slowdown -- its like resistance of the environment
-  state.points = R.map(p => ({
-    ...p,
-    speed: { x: state.SLOWDOWN_MUL * p.speed.x, y: state.SLOWDOWN_MUL * p.speed.y }
-  }), state.points)
+  state.points = R.map(p => {
+    return { ...p, speed: { x: state.SLOWDOWN_MUL * p.speed.x, y: state.SLOWDOWN_MUL * p.speed.y } }
+  }, state.points)
   if (maxSpeedQuad(state.points) <= state.MAX_SPEED_QUAD_TRIGGER) {
     // we find crossing links for only one link a tick -- to save speed and spread calculations thru ticks
     const curLink = state.links[state.ticks % state.links.length]
@@ -239,7 +240,7 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   // const randLength = random.int(4, 8)
   return R.map(p => {
     if (cgPointChains[p.id]) {
-      const vec = U.vectorToDist(p, randDist, 3) // const?
+      const vec = U.vectorToDist(p, randDist, FIX_CROSSING_LINKS_VECTOR_LENGTH)
       addVectorToPointSpeed(p, vec)
       return { ...p, cg: CG_STEPS }
     }
