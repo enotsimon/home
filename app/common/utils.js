@@ -139,6 +139,11 @@ export const moveByVector = (from: XYPInex, to: XYPInex, length: number): XYPoin
   return { x: from.x + (to.x - from.x) * length, y: from.y + (to.y - from.y) * length }
 }
 
+export const vectorToDist = <T: { ...XYPoint }>(from: T, to: T, length: number = 1): XYPoint => {
+  const v = { x: to.x - from.x, y: to.y - from.y }
+  const distance = Math.sqrt((v.x ** 2) + (v.y ** 2))
+  return { x: length * v.x / distance, y: length * v.y / distance }
+}
 
 export const convexPolygonCentroid = (points: Array<XYPInex>): XYPoint => {
   const p1 = points[0]

@@ -78,6 +78,12 @@ describe('fromPolarCoords', () => {
   })
 })
 
+describe('vectorToDist', () => {
+  it('should return vector from given point to given point with given length', () => {
+    assert.deepEqual(U.vectorToDist({ x: -3, y: -3 }, { x: 0, y: 1 }, 3), { x: 1.8, y: 2.4 })
+  })
+})
+
 describe('lineFormula', () => {
   const samples = [
     { p1: { x: 1, y: 1 }, p2: { x: 3, y: 1 }, expect: { a: 0, b: 2, c: -2 } },

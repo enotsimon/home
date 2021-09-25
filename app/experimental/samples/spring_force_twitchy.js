@@ -10,8 +10,8 @@ export const init = (): void => initSpringForce({
   SLOWDOWN_MUL: 0.7, // backward -- less value -- more slowdown
   CB_FORCE_MUL: 0.0018,
   MAX_SPEED_QUAD_TRIGGER: 0.06,
-  REBUILD_EVERY: 2500,
   CG_STEPS: 50,
   COLOR_BRIGHTEN_MAX: 100,
   COLOR_VALUES_LIST: [0, 50, 100],
+  REBUILD_EVERY: 2500,
 })

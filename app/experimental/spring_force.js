@@ -214,12 +214,6 @@ const redrawGraphics = (state: State): void => {
 
 const gatherPointIdsFromLinks = links => R.uniq(R.chain(({ p1, p2 }) => [p1, p2], links))
 
-const vectorToDist = <T: { ...XYPoint }>(from: T, to: T, length: number): XYPoint => {
-  const v = { x: to.x - from.x, y: to.y - from.y }
-  const distance = Math.sqrt((v.x ** 2) + (v.y ** 2))
-  return { x: length * v.x / distance, y: length * v.y / distance }
-}
-
 const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points, CG_STEPS: number): Points => {
   const crossingLinks = R.filter(l => {
     if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
@@ -246,7 +240,7 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   // const randLength = random.int(4, 8)
   return R.map(p => {
     if (cgPointChains[p.id]) {
-      const vec = vectorToDist(p, randDist, 3) // const?
+      const vec = U.vectorToDist(p, randDist, 3) // const?
       addVectorToPointSpeed(p, vec)
       return { ...p, cg: CG_STEPS }
     }
