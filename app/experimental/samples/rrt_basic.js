@@ -34,6 +34,7 @@ const initGraphics = (state: State): State => {
   state.base_container.addChild(pointsGraphics)
   addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
   const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: state.size / 2 })
+  console.log('cnt points', rrt.length)
   return {
     ...state,
     pointsGraphics,
@@ -56,9 +57,10 @@ const redraw = (state: State): State => {
     return { ...state, curIndex: state.curIndex + 1 }
   }
   const parent = state.rrt[point.parent]
-  const mainColor = Math.max(50, 255 - (point.index / 3))
-  const radius = Math.max(0.5, 2 - (point.index / 250))
-  const bgColor = Math.max(10, mainColor / 2)
+  // const mainColor = Math.max(50, 255 - (point.index / 3))
+  const mainColor = 255 - U.normalizeValue(point.index, state.rrt.length, 255, 0, 50)
+  const bgColor = mainColor / 2
+  const radius = Math.max(0.5, 2 - (3 * point.index / state.rrt.length))
   drawPoint(state.pointsGraphics, point, mainColor, bgColor, radius)
   drawLink(state.linksGraphics, point, parent, bgColor, radius)
   return { ...state, curIndex: state.curIndex + 1 }
