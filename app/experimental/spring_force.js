@@ -29,7 +29,7 @@ import type { ChannelMatrix } from 'common/color'
 
 export type SpringForceConfig = {|
   COUNT_POINTS: number,
-  LINKS_LENGTH_MUL: number,
+  LINKS_LENGTH: number,
   FORCE_MUL: number,
   REPULSING_FORCE_MUL: number,
   REPULSING_FORCE_MAX_DIST_MUL: number,
@@ -85,7 +85,6 @@ const initGraphics = (oldState: State): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.dlQuad = (state.REPULSING_FORCE_MAX_DIST_MUL * state.size) ** 2
-  state.LINKS_LENGTH = state.LINKS_LENGTH_MUL / state.COUNT_POINTS
   state.colorStep = state.COLOR_BRIGHTEN_MAX / (state.size / 2)
   state.colors = U.shuffle(Color.matrixesByValuesList(state.COLOR_VALUES_LIST))
   // dont like blue colors -- they are hard to discern
