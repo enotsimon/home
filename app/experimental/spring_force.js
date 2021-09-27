@@ -221,19 +221,21 @@ const redrawGraphics = (state: State): void => {
 const gatherPointIdsFromLinks = links => R.uniq(R.chain(({ p1, p2 }) => [p1, p2], links))
 
 const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Points, CG_STEPS: number): Points => {
-  const crossingLinks = R.filter(l => {
-    if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
-      return false
-    }
-    const [p11, p12] = getLinkPoints(link, points)
-    const [p21, p22] = getLinkPoints(l, points)
-    // we checked edges upper
-    return !!U.intervalsCrossPoint(p11, p12, p21, p22)
-  }, links)
-  if (crossingLinks.length === 0) {
-    return points
+  const crossingLinks = findCrossingLinks(link, links, points)
+  return crossingLinks.length === 0 ? points : handleCrossingLinks([...crossingLinks, link], points, CG_STEPS)
+}
+
+const findCrossingLinks = (link: Link, links: Array<Link>, points: Points): Array<Link> => R.filter(l => {
+  if (link.p1 === l.p1 || link.p1 === l.p2 || link.p2 === l.p1 || link.p2 === l.p2) {
+    return false
   }
-  const crossingLinksAll = [...crossingLinks, link]
+  const [p11, p12] = getLinkPoints(link, points)
+  const [p21, p22] = getLinkPoints(l, points)
+  // we checked edges upper
+  return !!U.intervalsCrossPoint(p11, p12, p21, p22)
+}, links)
+
+const handleCrossingLinks = (crossingLinksAll, points: Points, CG_STEPS: number): Points => {
   const pointsFromCrossingLinks = gatherPointIdsFromLinks(crossingLinksAll)
   // TODO test these 2 lines cause work incorrect on cycles in graph
   const pointsCopyNoCL = U.removeLinks(points, crossingLinksAll)
@@ -247,8 +249,7 @@ const findAndHandleCrossingLinks = (link: Link, links: Array<Link>, points: Poin
   return R.map(p => {
     if (cgPointChains[p.id]) {
       const vec = U.vectorToDist(p, randDist, FIX_CROSSING_LINKS_VECTOR_LENGTH)
-      addVectorToPointSpeed(p, vec)
-      return { ...p, cg: CG_STEPS }
+      return { ...p, cg: CG_STEPS, speed: { x: p.speed.x + vec.x, y: p.speed.y + vec.y } }
     }
     if (pointsFromCrossingLinksInd[p.id]) {
       return { ...p, clp: CG_STEPS }
@@ -330,11 +331,6 @@ const addVectorsToPointsSpeed = (points: Points, vectors: Array<Vector>): Points
     myVectors.forEach(v => { point.speed = { x: point.speed.x + v.x, y: point.speed.y + v.y } })
     return point
   }, points)
-}
-
-const addVectorToPointSpeed = <T: { ...XYPoint }>(point: Point, vector: T): void => {
-  /* eslint-disable-next-line no-param-reassign */
-  point.speed = { x: point.speed.x + vector.x, y: point.speed.y + vector.y }
 }
 
 const maxSpeedQuad = (points: Points) =>
