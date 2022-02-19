@@ -1,5 +1,5 @@
 // @flow
-import random from 'random'
+// import random from 'random'
 
 import { initTableauDrawer } from 'experimental/tableau_drawer'
 
@@ -7,22 +7,40 @@ import type { TableauState, TableauCell } from '../tableau_drawer'
 
 /* eslint-disable quote-props */
 
-const randSartValue = () => (random.float() < 0.25 ? 1 : 0)
+const SIZE = 100
+
+const randSartValue = (x, y) => {
+  // if (x === 0 || y === 0 || x === SIZE - 1 || y === SIZE - 1) {
+  //   return 2
+  // }
+  const pattern = `${x}_${y}`
+  const map = {
+    '50_50': 2,
+    // '51_50': 2,
+    // '50_51': 2,
+    '51_51': 2,
+  }
+  if (map[pattern]) {
+    return map[pattern]
+  }
+  // return (random.float() < 0.1 ? 1 : 0)
+  return 0
+}
 
 const rule = (v00, v10, v01, v11) => {
   const pattern = `${v00}${v10}${v01}${v11}`
   const map = {
-    '1100': 2,
-    '1010': 2,
+    // '1100': 2,
+    // '1010': 2,
     '1001': 2,
 
     '2200': 1,
     '2020': 1,
-    '2002': 1,
+    // '2002': 1,
 
     '0200': 2,
     '0020': 2,
-    '0002': 0,
+    '0002': 2,
 
     '2222': 0,
     '0222': 0,
@@ -52,7 +70,8 @@ const valueToColor = value => {
   return map[value] || 0
 }
 
-const initElementState = (element: TableauCell): TableauCell => ({ ...element, value: randSartValue(), new_value: 0 })
+const initElementState = (element: TableauCell): TableauCell =>
+  ({ ...element, value: randSartValue(element.x, element.y), new_value: 0 })
 
 // this func suppose to change new_color prop, not color!
 const mutateElementState = (element: TableauCell, state: TableauState): TableauCell => {
@@ -70,6 +89,6 @@ export const init = (): void => initTableauDrawer(
   mutateElementState,
   5,
   0,
-  100,
-  100,
+  SIZE,
+  SIZE,
 )
