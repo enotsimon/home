@@ -32,6 +32,7 @@ import { init as initSpringForceTwitchy } from 'experimental/samples/spring_forc
 import { init as initDotsMap } from 'experimental/samples/dots_map'
 import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
 import { init as initTissue } from 'experimental/samples/tissue'
+import { init as initCellularAutomatonExp } from 'experimental/samples/cellular_automaton_exp'
 
 // TODO fix updateDebugInfo()
 const createDrawer = init => <Sample init={init} />
@@ -69,6 +70,7 @@ ReactDOM.render((
         <Route path="/dots_map_dynamic" render={() => createDrawer(initDotsMapDynamic)} />
         <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
         <Route path="/tissue" render={() => createDrawer(initTissue)} />
+        <Route path="/cellular_automaton_exp" render={() => createDrawer(initCellularAutomatonExp)} />
         {/* dont work. 404 routed from dev server itself */}
         <Route path="/" render={page404} />
       </Switch>

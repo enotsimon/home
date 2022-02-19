@@ -12,6 +12,9 @@ export type TableauCell = {|
   color: number,
   new_color: number,
   graphics: Object, // PIXI
+  // TODO calc color from value and drop new_color
+  value: string | number,
+  new_value: string | number,
 |}
 export type TableauData = Array<Array<TableauCell>>
 export type TableauState = {|
@@ -65,7 +68,7 @@ const initGraphics = (oldState, initElementState, throttle, cyclesLimit, x_size,
       )
       graphics.endFill()
       state.base_container.addChild(graphics)
-      state.data[y][x] = { x, y, color: 0, new_color: 0, graphics }
+      state.data[y][x] = { x, y, color: 0, new_color: 0, value: 0, new_value: 0, graphics }
     }
   }
   state = initState(state, initElementState)
@@ -107,8 +110,12 @@ const mutateState = (oldState: TableauState, mutateElementState, initElementStat
   }
   state = forAllElements(element => mutateElementState(element, state), state)
   state = forAllElements(element => {
-    /* eslint-disable-next-line no-param-reassign */
+    // speed
+    // return { ...element, color: element.new_color, value: element.new_value }
+    /* eslint-disable-next-line */
     element.color = element.new_color
+    /* eslint-disable-next-line */
+    element.value = element.new_value
     return element
   }, state)
   return state
