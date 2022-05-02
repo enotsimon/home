@@ -15,10 +15,14 @@ const randSartValue = (x, y) => {
   // }
   const pattern = `${x}_${y}`
   const map = {
-    '50_50': 2,
+    // '50_50': 2,
     // '51_50': 2,
     // '50_51': 2,
-    '51_51': 2,
+    // '51_51': 2,
+    '90_90': 2,
+    '90_91': 2,
+    '91_90': 2,
+    '91_91': 2,
   }
   if (map[pattern]) {
     return map[pattern]
@@ -33,19 +37,28 @@ const rule = (v00, v10, v01, v11) => {
     // '1100': 2,
     // '1010': 2,
     '1001': 2,
+    /*
+    '1010': 0,
+    '1100': 0,
 
+    '1111': 0,
+    '0111': 0,
+    '1011': 0,
+    '1101': 0,
+    '1110': 0,
+    */
     '2200': 1,
     '2020': 1,
     // '2002': 1,
 
     '0200': 2,
     '0020': 2,
-    '0002': 2,
+    // '0002': 2,
 
     '2222': 0,
-    '0222': 0,
-    '2022': 0,
-    '2202': 0,
+    '0222': 1,
+    '2022': 1,
+    '2202': 1,
     '2220': 0,
   }
   const current = map[pattern]
@@ -53,14 +66,14 @@ const rule = (v00, v10, v01, v11) => {
     return current
   }
   const currentValueMap = {
-    na: 0,
+    N: 0,
     '1': 0,
     '2': 2,
   }
   return currentValueMap[v00] || 0
 }
 
-const getElementValue = (x, y, state) => (state.data[y] && state.data[y][x] ? state.data[y][x].value : 'na')
+const getElementValue = (x, y, state) => (state.data[y] && state.data[y][x] ? state.data[y][x].value : 'N')
 
 const valueToColor = value => {
   const map = {
@@ -87,7 +100,7 @@ const mutateElementState = (element: TableauCell, state: TableauState): TableauC
 export const init = (): void => initTableauDrawer(
   initElementState,
   mutateElementState,
-  5,
+  3,
   0,
   SIZE,
   SIZE,
