@@ -53,6 +53,13 @@ const redraw = (oldState: State): State => {
   state.points = state.points.map(p => ({ ...p, x: p.x + p.speed.x, y: p.y + p.speed.y }))
   state.points = returnPointsToCircle(state.points, state.size / 2)
 
+  redrawGraphics(state)
+
+  return state
+}
+
+// side effects
+const redrawGraphics = state => {
   state.base_container.removeChildren()
   state.points.forEach(p => {
     const graphics = new PIXI.Graphics()
@@ -64,7 +71,6 @@ const redraw = (oldState: State): State => {
     state.base_container.addChild(graphics)
   })
   addCircleMask(state.base_container, state.size / 2)
-  return state
 }
 
 const calcForceAcceleration = (points: Array<Point>): Array<Point> => R.map(p => {
