@@ -16,7 +16,6 @@ export type XYPoint = { x: number, y: number }
 export type SpeedPoint = { ...XYPoint, speed: XYPoint }
 export type MassSpeedPoint = { ...SpeedPoint, mass: number }
 
-const abs = x => Math.abs(x)
-
-export const isInSquare = (side: number, { x, y }: XYPoint): boolean => abs(x) < side && abs(y) < side
-export const isInLozenge = (side: number, { x, y }: XYPoint): boolean => abs(x) + abs(y) < side
+// я пробовал всякие оптимизации -- быстрые сравнения на границы кватдаров, ромбов
+// но эта функция быстрее их! видимо движок оптимизирует лучше меня
+export const isInCircle = (radius: number, { x, y }: XYPoint): boolean => (x ** 2) + (y ** 2) < radius ** 2
