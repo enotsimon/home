@@ -9,6 +9,7 @@ export type RandPointFunc = () => XYPoint
 export type RRTPointId = number
 export type RRTPoint = {|
   ...XYPoint,
+  // its like a length from root
   generation: number,
   index: RRTPointId,
   parent: ?RRTPointId,
@@ -40,8 +41,8 @@ export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: 
 }
 
 const generateRec = (step: number, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {
-  const { point, nearest } = getNewPoint(points.length, step, randPointFunc, points)
-  if (!point || !nearest) {
+  const point = getNewPoint(points.length, step, randPointFunc, points)
+  if (!point) {
     return points
   }
   return generateRec(step, randPointFunc, [...points, point])
@@ -53,9 +54,9 @@ const getNewPoint = (
   randPointFunc: RandPointFunc,
   points: RRTDiagram,
   counter: number = 0
-): { point: ?RRTPoint, nearest: ?RRTPoint } => {
+): ?RRTPoint => {
   if (counter > REJECT_LIMIT) {
-    return { point: null, nearest: null }
+    return null
   }
   const newPoint = randPointFunc()
   const nearest = U.findNearestPoint(newPoint, points)
@@ -70,5 +71,5 @@ const getNewPoint = (
     index,
     parent: nearest.index,
   }
-  return { point: pp, nearest }
+  return pp
 }
