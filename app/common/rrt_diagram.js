@@ -11,11 +11,15 @@ export type RRTPoint = {|
   ...XYPoint,
   // its like a length from root
   generation: number,
+  // its a distance from most distant leaf
+  depth: null,
   index: RRTPointId,
   parent: ?RRTPointId,
 |}
 export type RRTDiagram = Array<RRTPoint>
 export type RRTGenerationsIndex = Array<Array<RRTPointId>>
+export type RRTWDPoint = {| ...RRTPoint, depth: number |}
+export type RRTWDDiagram = Array<RRTWDPoint>
 
 
 const REJECT_LIMIT = 500
@@ -36,8 +40,53 @@ export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: 
     generation: 0,
     index: 0,
     parent: null,
+    depth: null,
   }
   return generateRec(step, randPointFunc, [firstPoint])
+}
+
+export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => {
+  const preIndex = R.map(e => ({ ...e, children: [] }), rrt)
+  const childrenIndex = R.reduce((acc, p) => {
+    if (p.parent == null) {
+      return acc
+    }
+    acc[p.parent].children.push(p.index)
+    return acc
+  }, preIndex, preIndex)
+  const leafsProcessed = R.map(p => {
+    if (childrenIndex[p.index].children.length === 0) {
+      return { ...p, depth: 0 }
+    }
+    return p
+  }, rrt)
+  return calcDepthRec(leafsProcessed, childrenIndex)
+}
+
+
+const calcDepthRec = (rrt, childrenIndex): RRTWDDiagram => {
+  const has = R.any(e => e.depth === null, rrt)
+  if (!has) {
+    // $FlowIgnore no null values here but dunno how to explain this to flow
+    return rrt
+  }
+  const rrtNew = R.map(p => {
+    if (p.depth !== null) {
+      return p
+    }
+    const max = R.reduce((acc, i) => {
+      const iDepth = rrt[i].depth
+      if (acc == null || iDepth == null) {
+        return null
+      }
+      return acc > iDepth ? acc : iDepth
+    }, 0, childrenIndex[p.index].children)
+    if (max === null) {
+      return p
+    }
+    return { ...p, depth: max + 1 }
+  }, rrt)
+  return calcDepthRec(rrtNew, childrenIndex)
 }
 
 const generateRec = (step: number, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {
@@ -70,6 +119,7 @@ const getNewPoint = (
     generation: nearest.generation + 1,
     index,
     parent: nearest.index,
+    depth: null,
   }
   return pp
 }
