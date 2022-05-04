@@ -6,7 +6,7 @@ import * as R from 'ramda'
 
 import * as Color from 'common/color'
 import * as U from 'common/utils'
-import { addCircleMask } from 'experimental/drawing_functions'
+import { addCircleMask, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
 import { generate, pointsByGenerationsIndex } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
@@ -88,7 +88,10 @@ const drawTreeContour = (
   pbgIndex.forEach(gen => gen.forEach(index => {
     const p = rrt[index]
     if (p.parent !== null && p.parent !== undefined) {
-      drawLine(treeContour, p, rrt[p.parent], maxGeneration)
+      const fuckFlow = p.parent // dunno whats wrong with it but using p.parent dont work
+      const color = U.normalizeValue(maxGeneration - p.generation, maxGeneration, 125, 0, 50)
+      const lineWidth = U.normalizeValue(maxGeneration - p.generation, maxGeneration, 2, 0, 0.25)
+      drawRRTLink(treeContour, p, rrt[fuckFlow], [color, 0, 0], lineWidth, 0.75)
     }
     drawCircle(treeContour, p, maxGeneration)
   }))
@@ -121,14 +124,6 @@ const drawCircle = (graphics: PIXIContainer, point: RRTPoint, maxGeneration: num
   graphics.beginFill(Color.to_pixi([color, 0, 0]), 1)
   graphics.drawCircle(point.x, point.y, 0.5)
   graphics.endFill()
-}
-
-const drawLine = (graphics: PIXIContainer, point: RRTPoint, parent: RRTPoint, maxGeneration: number): void => {
-  const color = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 125, 0, 50)
-  const lineWidth = U.normalizeValue(maxGeneration - point.generation, maxGeneration, 2, 0, 0.25)
-  graphics.lineStyle(lineWidth, Color.to_pixi([color, 0, 0]), 0.75)
-  graphics.moveTo(parent.x, parent.y)
-  graphics.lineTo(point.x, point.y)
 }
 
 export const init = (): void => startDrawer('circle', initGraphics, redraw)
