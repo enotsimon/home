@@ -3,15 +3,14 @@ import * as PIXI from 'pixi.js'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
-import * as Color from 'common/color'
 import * as U from 'common/utils'
-import { addCircleMask } from 'experimental/drawing_functions'
+import { addCircleMask, drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
 import { generate } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTDiagram, RRTPoint } from 'common/rrt_diagram'
+import type { RRTDiagram } from 'common/rrt_diagram'
 
 const STEP = 5
 
@@ -61,24 +60,10 @@ const redraw = (state: State): State => {
   const mainColor = 255 - U.normalizeValue(point.index, state.rrt.length, 255, 0, 50)
   const bgColor = mainColor / 2
   const radius = Math.max(0.5, 2 - (3 * point.index / state.rrt.length))
-  drawPoint(state.pointsGraphics, point, mainColor, bgColor, radius)
-  drawLink(state.linksGraphics, point, parent, bgColor, radius)
+  // yes bgColor and mainColor are mixed
+  drawRRTPoint(state.pointsGraphics, point, [bgColor, 0, 0], [mainColor, 0, 0], radius / 1.25)
+  drawRRTLink(state.linksGraphics, point, parent, [bgColor, 0, 0], radius, 0.5)
   return { ...state, curIndex: state.curIndex + 1 }
-}
-
-const drawPoint = (graphics: Object, point: RRTPoint, mainColor, bgColor, radius): void => {
-  graphics.beginFill(Color.to_pixi([bgColor, 0, 0]), 1)
-  graphics.drawCircle(point.x, point.y, radius / 1.25)
-  graphics.endFill()
-  graphics.beginFill(Color.to_pixi([mainColor, 0, 0]), 1)
-  graphics.drawCircle(point.x, point.y, radius / 3)
-  graphics.endFill()
-}
-
-const drawLink = (graphics: Object, point: RRTPoint, parent: RRTPoint, bgColor, radius): void => {
-  graphics.lineStyle(radius, Color.to_pixi([bgColor, 0, 0]), 0.5)
-  graphics.moveTo(parent.x, parent.y)
-  graphics.lineTo(point.x, point.y)
 }
 
 export const init = (): void => startDrawer('circle', initGraphics, redraw)

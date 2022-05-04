@@ -65,6 +65,7 @@ export const drawLine = <T: { ...XYPoint }>(container: Object, color: RGBArray, 
   container.addChild(graphics)
 }
 
+// TODO it duplicates drawDottedPoint()
 export const drawRRTPoint = <T: { ...RRTPoint }>(
   graphics: Object,
   point: T,
@@ -85,9 +86,10 @@ export const drawRRTLink = <T: { ...RRTPoint }>(
   point: T,
   parent: T,
   color: RGBArray,
-  width: number
+  width: number,
+  alpha: number = 1
 ): void => {
-  graphics.lineStyle(width, Color.to_pixi(color), 1)
+  graphics.lineStyle(width, Color.to_pixi(color), alpha)
   graphics.moveTo(parent.x, parent.y)
   graphics.lineTo(point.x, point.y)
 }
