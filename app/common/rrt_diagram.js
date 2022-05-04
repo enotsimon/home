@@ -12,7 +12,6 @@ export type RRTPoint = {|
   // its like a length from root
   generation: number,
   // its a distance from most distant leaf
-  depth: null,
   index: RRTPointId,
   parent: ?RRTPointId,
 |}
@@ -40,7 +39,6 @@ export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: 
     generation: 0,
     index: 0,
     parent: null,
-    depth: null,
   }
   return generateRec(step, randPointFunc, [firstPoint])
 }
@@ -65,18 +63,18 @@ export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => {
 
 
 const calcDepthRec = (rrt, childrenIndex): RRTWDDiagram => {
-  const has = R.any(e => e.depth === null, rrt)
+  const has = R.any(e => !R.has('depth', e), rrt)
   if (!has) {
     // $FlowIgnore no null values here but dunno how to explain this to flow
     return rrt
   }
   const rrtNew = R.map(p => {
-    if (p.depth !== null) {
+    if (p.depth !== undefined) {
       return p
     }
     const max = R.reduce((acc, i) => {
       const iDepth = rrt[i].depth
-      if (acc == null || iDepth == null) {
+      if (acc === null || iDepth === undefined) {
         return null
       }
       return acc > iDepth ? acc : iDepth
@@ -119,7 +117,6 @@ const getNewPoint = (
     generation: nearest.generation + 1,
     index,
     parent: nearest.index,
-    depth: null,
   }
   return pp
 }

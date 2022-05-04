@@ -8,6 +8,7 @@ import { Graphics } from 'pixi.js'
 
 import type { XYPoint } from 'common/utils'
 import type { RGBArray } from 'common/color'
+import type { RRTPoint } from 'common/rrt_diagram'
 
 // a ring that works like a drawing mask -- nothing outside it is drawing
 export const addCircleMask = (
@@ -62,4 +63,31 @@ export const drawLine = <T: { ...XYPoint }>(container: Object, color: RGBArray, 
   graphics.moveTo(p1.x, p1.y)
   graphics.lineTo(p2.x, p2.y)
   container.addChild(graphics)
+}
+
+export const drawRRTPoint = <T: { ...RRTPoint }>(
+  graphics: Object,
+  point: T,
+  color: RGBArray,
+  bgColor: RGBArray,
+  radius: number
+): void => {
+  graphics.beginFill(Color.to_pixi(color), 1)
+  graphics.drawCircle(point.x, point.y, radius)
+  graphics.endFill()
+  graphics.beginFill(Color.to_pixi(bgColor), 1)
+  graphics.drawCircle(point.x, point.y, radius / 2)
+  graphics.endFill()
+}
+
+export const drawRRTLink = <T: { ...RRTPoint }>(
+  graphics: Object,
+  point: T,
+  parent: T,
+  color: RGBArray,
+  width: number
+): void => {
+  graphics.lineStyle(width, Color.to_pixi(color), 1)
+  graphics.moveTo(parent.x, parent.y)
+  graphics.lineTo(point.x, point.y)
 }

@@ -8,19 +8,20 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 import * as R from 'ramda'
 
-import * as Color from 'common/color'
 import * as U from 'common/utils'
 // import { addCircleMask } from 'experimental/drawing_functions'
+import { drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
 import { generate, calcDepth } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTWDDiagram, RRTWDPoint } from 'common/rrt_diagram'
+import type { RRTWDDiagram } from 'common/rrt_diagram'
 
 const STEP = 5
 const COLOR_MAX = [0, 255, 0]
 const COLOR_MIN = [0, 25, 0]
+const DEPTH_DRAW_THRESHOLD = 0
 
 type State = {|
   ...DrawerState,
@@ -52,38 +53,29 @@ const initGraphics = (state: State): State => {
 
 const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
+const calcColor = (depth, depthMax) => {
+  // experimental
+  if (depth < DEPTH_DRAW_THRESHOLD) {
+    return [0, 0, 0]
+  }
+  return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
+}
+
 const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State): void => {
   // const generationMax = R.reduce((acc, { generation }) => (acc > generation ? acc : generation), 0, rrt)
   const depthMax = R.reduce((acc, { depth }) => (acc > depth ? acc : depth), 0, rrt)
-  const calcColor = value => R.map(i => U.normalizeValue(value, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
   rrt.forEach(point => {
-    const color = calcColor(point.depth)
+    // $FlowIgnore he is wrong. number is 3
+    const color: RGBArray = calcColor(point.depth, depthMax)
     if (point.parent !== null && point.parent !== undefined) {
-      drawLink(linksGraphics, point, rrt[point.parent], color, 1)
+      drawRRTLink(linksGraphics, point, rrt[point.parent], color, 1)
     }
-    drawPoint(pointsGraphics, point, color, [0, 0, 0], 1)
+    drawRRTPoint(pointsGraphics, point, color, [0, 0, 0], 1)
   })
 }
 
 const redraw = (state: State): State => {
   return state
-}
-
-const drawPoint = (graphics: Object, point: RRTWDPoint, color, bgColor, radius): void => {
-  // $FlowIgnore he is wrong. number is 3
-  graphics.beginFill(Color.to_pixi(color), 1)
-  graphics.drawCircle(point.x, point.y, radius)
-  graphics.endFill()
-  graphics.beginFill(Color.to_pixi(bgColor), 1)
-  graphics.drawCircle(point.x, point.y, radius / 2)
-  graphics.endFill()
-}
-
-const drawLink = (graphics, point, parent: RRTWDPoint, color, width): void => {
-  // $FlowIgnore he is wrong. number is 3
-  graphics.lineStyle(width, Color.to_pixi(color), 1)
-  graphics.moveTo(parent.x, parent.y)
-  graphics.lineTo(point.x, point.y)
 }
 
 export const init = (): void => startDrawer('circle', initGraphics, redraw)
