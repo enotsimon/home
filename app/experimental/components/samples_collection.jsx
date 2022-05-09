@@ -137,6 +137,13 @@ const colorConfig: Array<SamplePreviewConfig> = [
     img_path: './thumbnails/rrt_flashes.png',
     status: 'draft',
   },
+  {
+    name: 'rrt depth',
+    description: 'depth is a distance from the most distant leaf',
+    sample_url: './rrt_depth',
+    img_path: './thumbnails/rrt_depth.png',
+    status: 'almost_ready',
+  },
 ]
 
 const SamplesCollecton = (): Node => (
