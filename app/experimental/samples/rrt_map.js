@@ -22,6 +22,7 @@ const STEP = 5
 const COLOR_MAX = [0, 255, 0]
 const COLOR_MIN = [0, 25, 0]
 const DEPTH_DRAW_THRESHOLD = 0
+const REDRAW_STEP = 500
 
 type State = {|
   ...DrawerState,
@@ -30,7 +31,7 @@ type State = {|
   linksGraphics: Object,
 |}
 
-const initGraphics = (state: State): State => {
+const initAll = (state: State): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.base_container.removeChildren()
@@ -40,7 +41,9 @@ const initGraphics = (state: State): State => {
   state.base_container.addChild(linksGraphics)
   const pointsGraphics = new PIXI.Graphics()
   state.base_container.addChild(pointsGraphics)
-  const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: 0 })
+  const root = { x: 0, y: 0 }
+  // const root = randomPointFunc(state.size / 2)()
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), root)
   console.log('cnt points', rrt.length)
 
   const rrtWithDepth = calcDepth(rrt)
@@ -74,7 +77,12 @@ const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State): void => {
   })
 }
 
+const initGraphics = (state: State): State => state
+
 const redraw = (state: State): State => {
+  if (state.ticks % REDRAW_STEP === 1) {
+    return initAll(state)
+  }
   return state
 }
 
