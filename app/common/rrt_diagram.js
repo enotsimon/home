@@ -14,6 +14,7 @@ export type RRTPoint = {|
   // its a distance from most distant leaf
   index: RRTPointId,
   parent: ?RRTPointId,
+  children: Array<RRTPointId>,
 |}
 export type RRTDiagram = Array<RRTPoint>
 export type RRTGenerationsIndex = Array<Array<RRTPointId>>
@@ -39,52 +40,36 @@ export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: 
     generation: 0,
     index: 0,
     parent: null,
+    children: [],
   }
-  return generateRec(step, randPointFunc, [firstPoint])
+  return calcChildrenIndex(generateRec(step, randPointFunc, [firstPoint]))
 }
 
-export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => {
-  const preIndex = R.map(e => ({ ...e, children: [] }), rrt)
-  const childrenIndex = R.reduce((acc, p) => {
-    if (p.parent == null) {
-      return acc
-    }
-    acc[p.parent].children.push(p.index)
-    return acc
-  }, preIndex, preIndex)
-  const leafsProcessed = R.map(p => {
-    if (childrenIndex[p.index].children.length === 0) {
-      return { ...p, depth: 0 }
-    }
-    return p
-  }, rrt)
-  return calcDepthRec(leafsProcessed, childrenIndex)
-}
+export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => calcDepthRec(rrt, R.map(e => e.index, rrt), 0)
 
 
-const calcDepthRec = (rrt, childrenIndex): RRTWDDiagram => {
-  const has = R.any(e => !R.has('depth', e), rrt)
-  if (!has) {
-    // $FlowIgnore no null values here but dunno how to explain this to flow
+const calcDepthRec = (orrt, openList, depth): RRTWDDiagram => {
+  const rrt = [...orrt]
+  const leafs = R.filter(index => {
+    const point = rrt[index]
+    if (point.parent === null || rrt[point.parent].depth !== undefined) {
+      return true
+    }
+    const goodChildren = R.filter(ci => rrt[ci].depth === undefined, point.children)
+    const isLeaf = goodChildren.length === 0
+    return isLeaf
+  }, openList)
+  R.forEach(i => {
+    // $FlowIgnore
+    rrt[i].depth = depth
+  }, leafs)
+  // not very optimal, should use index
+  const newOpenList = R.difference(openList, leafs)
+  if (newOpenList.length === 0) {
+    // $FlowIgnore
     return rrt
   }
-  const rrtNew = R.map(p => {
-    if (p.depth !== undefined) {
-      return p
-    }
-    const max = R.reduce((acc, i) => {
-      const iDepth = rrt[i].depth
-      if (acc === null || iDepth === undefined) {
-        return null
-      }
-      return acc > iDepth ? acc : iDepth
-    }, 0, childrenIndex[p.index].children)
-    if (max === null) {
-      return p
-    }
-    return { ...p, depth: max + 1 }
-  }, rrt)
-  return calcDepthRec(rrtNew, childrenIndex)
+  return calcDepthRec(rrt, newOpenList, depth + 1)
 }
 
 const generateRec = (step: number, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {
@@ -117,6 +102,17 @@ const getNewPoint = (
     generation: nearest.generation + 1,
     index,
     parent: nearest.index,
+    children: [],
   }
   return pp
+}
+
+const calcChildrenIndex = (rrt: RRTDiagram): RRTDiagram => {
+  return R.reduce((acc, p) => {
+    if (p.parent == null) {
+      return acc
+    }
+    acc[p.parent].children.push(p.index)
+    return acc
+  }, rrt, rrt)
 }

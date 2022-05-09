@@ -139,7 +139,7 @@ const colorConfig: Array<SamplePreviewConfig> = [
   },
   {
     name: 'rrt depth',
-    description: 'depth is a distance from the most distant leaf',
+    description: 'point depth is kind of leaf order -- leafs are 0, next to leafs are 1, etc',
     sample_url: './rrt_depth',
     img_path: './thumbnails/rrt_depth.png',
     status: 'almost_ready',
