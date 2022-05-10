@@ -41,8 +41,8 @@ const initAll = (state: State): State => {
   state.base_container.addChild(linksGraphics)
   const pointsGraphics = new PIXI.Graphics()
   state.base_container.addChild(pointsGraphics)
-  const root = { x: 0, y: 0 }
-  // const root = randomPointFunc(state.size / 2)()
+  // const root = { x: 0, y: 0 }
+  const root = randomPointFunc(state.size / 2)()
   const rrt = generate(STEP, randomPointFunc(state.size / 2), root)
   console.log('cnt points', rrt.length)
 
@@ -67,21 +67,32 @@ const calcColor = (depth, depthMax) => {
 const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State): void => {
   // const generationMax = R.reduce((acc, { generation }) => (acc > generation ? acc : generation), 0, rrt)
   const depthMax = R.reduce((acc, { depth }) => (acc > depth ? acc : depth), 0, rrt)
+  console.log('depthMax', depthMax, 'draw threshold', DEPTH_DRAW_THRESHOLD * depthMax)
   rrt.forEach(point => {
     // $FlowIgnore he is wrong. number is 3
-    const color: RGBArray = calcColor(point.depth, depthMax)
+    let color: RGBArray = calcColor(point.depth, depthMax)
+    const smallDepth = point.depth < DEPTH_DRAW_THRESHOLD * depthMax
+    if (smallDepth) {
+      color = [0, 0, 0]
+    }
     if (point.parent !== null && point.parent !== undefined) {
       drawRRTLink(linksGraphics, point, rrt[point.parent], color, 1)
+    }
+    const cntLinks = point.children.length + (point.parent ? 1 : 0)
+    if (cntLinks >= 3 && !smallDepth) {
+      // color = [125, 0, 0]
     }
     drawRRTPoint(pointsGraphics, point, color, [0, 0, 0], 1)
   })
 }
 
-const initGraphics = (state: State): State => state
+const initGraphics = (state: State): State => {
+  return initAll(state)
+}
 
 const redraw = (state: State): State => {
   if (state.ticks % REDRAW_STEP === 1) {
-    return initAll(state)
+    // return initAll(state)
   }
   return state
 }
