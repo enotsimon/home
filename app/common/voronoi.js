@@ -13,7 +13,8 @@ import * as R from 'ramda'
 
 type XYPoint = { x: number, y: number }
 
-type VoronoiNode = XYPoint & {
+type VoronoiNode = {
+  ...XYPoint,
   links: Array<VoronoiNode>,
   cells: Array<VoronoiCell>,
 }
@@ -21,7 +22,8 @@ type VoronoiNode = XYPoint & {
 type VoronoiEdgeIndex = number
 
 // x, y for cell center i assume
-type VoronoiCell = XYPoint & {
+export type VoronoiCell = {
+  ...XYPoint,
   index: number, // dunno what for
   halfedges: Array<VoronoiEdgeIndex>, // edges on the border i assume
   links: Array<VoronoiCell>, // neighbour nodes
@@ -43,14 +45,16 @@ export type VoronoiDiagram = {
   height: number,
 }
 
-export const generate = (
-  nodes: Array<XYPoint>, // FIXME
-  width: number,
-  height: number,
+export const generate = <T: { ...XYPoint }>(
+  nodes: Array<T>,
+  widthTo: number,
+  heightTo: number,
   lloydRelaxationSteps: number = 0,
   lloydRelaxationToMove: number = 1,
+  widthFrom: number = 0,
+  heightFrom: number = 0,
 ): VoronoiDiagram => {
-  const d3Voronoi = d3.voronoi().x(p => p.x).y(p => p.y).size([width, height])
+  const d3Voronoi = d3.voronoi().x(p => p.x).y(p => p.y).extent([[widthFrom, heightFrom], [widthTo, heightTo]])
   const d3Diagram = R.reduce(
     acc => lloydRelaxation(acc, d3Voronoi, lloydRelaxationToMove),
     d3Voronoi(nodes),
@@ -130,8 +134,8 @@ export const generate = (
     /* eslint-disable-next-line no-param-reassign */
     cell.links = links
   })
-  diagram.width = width
-  diagram.height = height
+  diagram.width = widthTo - widthFrom
+  diagram.height = heightTo - heightFrom
 
   // final checks
   diagram.nodes.forEach(node => {
@@ -178,7 +182,7 @@ const lloydRelaxation = (d3Diagram, d3Voronoi, toMove = 1) => {
 
 // PRIVATE. TRY to heal shizophrenia -- different, but very close nodes
 // but it can lead us to total
-const seemsLikeNodesAreEqual = (node: XYPoint, d3Node: [number, number]): boolean => {
+const seemsLikeNodesAreEqual = <T: { ...XYPoint }>(node: T, d3Node: [number, number]): boolean => {
   const veryCloseIs = 0.0000000000001
   return Math.abs(node.x - d3Node[0]) < veryCloseIs
       && Math.abs(node.y - d3Node[1]) < veryCloseIs

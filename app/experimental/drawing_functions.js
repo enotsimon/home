@@ -71,12 +71,13 @@ export const drawRRTPoint = <T: { ...RRTPoint }>(
   point: T,
   color: RGBArray,
   bgColor: RGBArray,
-  radius: number
+  radius: number,
+  alpha: number = 1
 ): void => {
-  graphics.beginFill(Color.to_pixi(color), 1)
+  graphics.beginFill(Color.to_pixi(color), alpha)
   graphics.drawCircle(point.x, point.y, radius)
   graphics.endFill()
-  graphics.beginFill(Color.to_pixi(bgColor), 1)
+  graphics.beginFill(Color.to_pixi(bgColor), alpha)
   graphics.drawCircle(point.x, point.y, radius / 2)
   graphics.endFill()
 }
