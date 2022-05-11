@@ -13,39 +13,39 @@ import * as R from 'ramda'
 
 type XYPoint = { x: number, y: number }
 
-type VoronoiNode = {
-  ...XYPoint,
-  links: Array<VoronoiNode>,
-  cells: Array<VoronoiCell>,
+type VoronoiNode<T: XYPoint> = {
+  ...XYPoint, // sic! not T! cause node here are not nodes in generate() 1st arg
+  links: Array<VoronoiNode<T>>,
+  cells: Array<VoronoiCell<T>>,
 }
 
 type VoronoiEdgeIndex = number
 
 // x, y for cell center i assume
-export type VoronoiCell = {
-  ...XYPoint,
+export type VoronoiCell<T: XYPoint> = {
+  ...T,
   index: number, // dunno what for
   halfedges: Array<VoronoiEdgeIndex>, // edges on the border i assume
-  links: Array<VoronoiCell>, // neighbour nodes
-  nodes: Array<VoronoiNode>,
+  links: Array<VoronoiCell<T>>, // neighbour nodes
+  nodes: Array<VoronoiNode<T>>,
 }
 
-type VoronoiEdge = {
-  from: VoronoiNode,
-  to: VoronoiNode,
-  left: VoronoiCell,
-  right: ?VoronoiCell,
+type VoronoiEdge<T: XYPoint> = {
+  from: VoronoiNode<T>,
+  to: VoronoiNode<T>,
+  left: VoronoiCell<T>,
+  right: ?VoronoiCell<T>,
 }
 
-export type VoronoiDiagram = {
-  nodes: Array<VoronoiNode>,
-  edges: Array<VoronoiEdge>,
-  cells: Array<VoronoiCell>,
+export type VoronoiDiagram<T: XYPoint> = {
+  nodes: Array<VoronoiNode<T>>,
+  edges: Array<VoronoiEdge<T>>,
+  cells: Array<VoronoiCell<T>>,
   width: number,
   height: number,
 }
 
-export const generate = <T: { ...XYPoint }>(
+export const generate = <T: XYPoint>(
   nodes: Array<T>,
   widthTo: number,
   heightTo: number,
@@ -53,7 +53,7 @@ export const generate = <T: { ...XYPoint }>(
   lloydRelaxationToMove: number = 1,
   widthFrom: number = 0,
   heightFrom: number = 0,
-): VoronoiDiagram => {
+): VoronoiDiagram<T> => {
   const d3Voronoi = d3.voronoi().x(p => p.x).y(p => p.y).extent([[widthFrom, heightFrom], [widthTo, heightTo]])
   const d3Diagram = R.reduce(
     acc => lloydRelaxation(acc, d3Voronoi, lloydRelaxationToMove),

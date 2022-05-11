@@ -18,7 +18,7 @@ import { generate as generateVoronoi } from 'common/voronoi'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTWDDiagram } from 'common/rrt_diagram'
+import type { RRTWDDiagram, RRTWDPoint } from 'common/rrt_diagram'
 import type { VoronoiDiagram, VoronoiCell } from 'common/voronoi'
 import type { RGBArray } from 'common/color'
 
@@ -73,21 +73,22 @@ const initAll = (state: State): State => {
 
 const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
-const calcColor = (depth, depthMax) => {
+const calcColor = (depth, depthMax): RGBArray => {
   // experimental
   if (depth < DEPTH_DRAW_THRESHOLD) {
     return [0, 0, 0]
   }
+  // $FlowIgnore hes wrong
   return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
 }
 
 // TODO move to drawing functions
 const drawVoronoiDiagram = (
   graphics: Object,
-  voronoi: VoronoiDiagram,
+  voronoi: VoronoiDiagram<RRTWDPoint>,
   contourWidth: number,
   contourColor: RGBArray,
-  cellColorFunc: <T: { ...VoronoiCell }>(cell: T) => RGBArray,
+  cellColorFunc: (cell: VoronoiCell<RRTWDPoint>) => RGBArray,
   cellAlpha: number,
 ): void => {
   // const graphics = new PIXI.Graphics()
