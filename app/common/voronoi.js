@@ -11,7 +11,7 @@ import * as R from 'ramda'
  *  and to each cell we add array of links to near nodes, sorted by distance
  */
 
-type XYPoint = { x: number, y: number }
+export type XYPoint = { x: number, y: number }
 
 type VoronoiNode<T: XYPoint> = {
   ...XYPoint, // sic! not T! cause node here are not nodes in generate() 1st arg

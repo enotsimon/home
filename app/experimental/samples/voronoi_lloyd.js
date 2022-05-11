@@ -11,13 +11,13 @@ import { startDrawer } from 'experimental/drawer'
 import { randomPointsInSquare } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { VoronoiDiagram } from 'common/voronoi'
+import type { VoronoiDiagram, XYPoint } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
 
 type State = {|
   ...DrawerState,
   step: number,
-  voronoi: VoronoiDiagram,
+  voronoi: VoronoiDiagram<XYPoint>,
   voronoiGraphics: Object,
   colorMatrix: ChannelMatrix,
 |}
@@ -44,10 +44,10 @@ const redraw = (state: State): State => {
     return state
   }
   state.base_container.removeChildren()
-  // $FlowIgnore FIXME
   const voronoi = generate(state.voronoi.cells, state.size, state.size, 1, LLOYD_TO_MOVE)
   return {
     ...state,
+    // $FlowIgnore we pass state.voronoi.cells to generate() and flow says its incorrect, hes right but we dont care
     voronoi,
     step: state.step + 1,
     voronoiGraphics: drawDiagram(state.base_container, voronoi, state.size, state.colorMatrix),
@@ -55,7 +55,7 @@ const redraw = (state: State): State => {
 }
 
 // TODO remove copy-paste
-const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrix): Object => {
+const drawDiagram = (parentContainer: Object, voronoi, size: number, colorMatrix): Object => {
   const center = { x: size / 2, y: size / 2 }
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)

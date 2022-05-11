@@ -11,7 +11,7 @@ import { addCircleMask, rotateGraphics } from 'experimental/drawing_functions'
 import { randomPointsInSquare } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { VoronoiDiagram } from 'common/voronoi'
+import type { VoronoiDiagram, XYPoint } from 'common/voronoi'
 import type { ChannelMatrix } from 'common/color'
 
 
@@ -20,7 +20,7 @@ type State = {|
   step: number,
   generation: number,
   rotation: number,
-  voronoi: VoronoiDiagram,
+  voronoi: VoronoiDiagram<XYPoint>,
   voronoiGraphics: Object,
   colorMatrixes: Array<ChannelMatrix>,
 |}
@@ -79,7 +79,7 @@ const randomPoints = (count: number, size: number, generation: number) =>
   randomPointsInSquare(count).map(e => ({ x: e.x + size / 2, y: e.y + size / 2, generation }))
 
 // TODO remove copy-paste
-const drawDiagram = (parentContainer: Object, voronoi: VoronoiDiagram, size: number, colorMatrixes): Object => {
+const drawDiagram = (parentContainer: Object, voronoi, size: number, colorMatrixes): Object => {
   const center = { x: size / 2, y: size / 2 }
   const graphics = new PIXI.Graphics()
   graphics.lineStyle(size / 200, Color.to_pixi([255, 255, 255]), 1)
