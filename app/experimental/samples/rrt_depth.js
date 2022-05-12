@@ -43,7 +43,7 @@ const initAll = (state: State): State => {
   state.base_container.addChild(pointsGraphics)
   const root = { x: 0, y: 0 }
   // const root = randomPointFunc(state.size / 2)()
-  const rrt = generate(STEP, randomPointFunc(state.size / 2), root)
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), [root])
   console.log('cnt points', rrt.length)
 
   const rrtWithDepth = calcDepth(rrt)

@@ -32,17 +32,17 @@ export const pointsByGenerationsIndex = (rrt: RRTDiagram): RRTGenerationsIndex =
   return R.map(g => R.map(p => p.index, R.filter(p => p.generation === g, rrt)))(generations)
 }
 
-export const generate = (step: number, randPointFunc: RandPointFunc, rootPoint: ?XYPoint = null): RRTDiagram => {
-  const firstPoint = {
-    ...(rootPoint || randPointFunc()),
+export const generate = (step: number, randPointFunc: RandPointFunc, roots: Array<XYPoint>): RRTDiagram => {
+  const rootPoints = (roots.length > 0 ? roots : [randPointFunc()]).map((p, index) => ({
+    ...p,
     // index = 0 cause we should be able to access rrt array of point by array index!
     // generation = 0 well... because index = 0 mean generation = 0
     generation: 0,
-    index: 0,
+    index,
     parent: null,
     children: [],
-  }
-  return calcChildrenIndex(generateRec(step, randPointFunc, [firstPoint]))
+  }))
+  return calcChildrenIndex(generateRec(step, randPointFunc, rootPoints))
 }
 
 export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => calcDepthRec(rrt, R.map(e => e.index, rrt), 0)

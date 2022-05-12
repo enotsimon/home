@@ -32,7 +32,7 @@ const initGraphics = (state: State): State => {
   const pointsGraphics = new PIXI.Graphics()
   state.base_container.addChild(pointsGraphics)
   addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
-  const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: state.size / 2 })
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), [{ x: 0, y: state.size / 2 }])
   console.log('cnt points', rrt.length)
   return {
     ...state,

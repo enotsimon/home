@@ -31,7 +31,7 @@ type State = {|
 const initGraphics = (state: State): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
-  const rrt = generate(STEP, randomPointFunc(state.size / 2), { x: 0, y: state.size / 2 })
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), [{ x: 0, y: state.size / 2 }])
   const pbgIndex = pointsByGenerationsIndex(rrt)
   state.base_container.removeChildren()
   const graphics = new PIXI.Graphics()

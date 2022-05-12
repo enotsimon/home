@@ -26,8 +26,8 @@ const STEP = 5
 const COLOR_MAX = [0, 255, 0]
 const COLOR_MIN = [0, 25, 0]
 const DEPTH_DRAW_THRESHOLD = 0
-const DRAW_RRT_ALPHA = 0
-const DRAW_VORONOI_ALPHA = 1
+const DRAW_RRT_ALPHA = 1
+const DRAW_VORONOI_ALPHA = 0
 const REDRAW_STEP = 500
 
 type State = {|
@@ -53,7 +53,7 @@ const initAll = (state: State): State => {
 
   // const root = { x: 0, y: 0 }
   const root = randomPointFunc(size)()
-  const rrt = generate(STEP, randomPointFunc(size), root)
+  const rrt = generate(STEP, randomPointFunc(size), [root])
   console.log('cnt points', rrt.length)
 
   const rrtWithDepth = calcDepth(rrt)

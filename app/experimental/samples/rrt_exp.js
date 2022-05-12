@@ -31,7 +31,7 @@ const initGraphics = (state: State): State => {
   const graphics = new PIXI.Graphics()
   state.base_container.addChild(graphics)
   addCircleMask(graphics, state.size / 2, { x: 0, y: 0 }, [100, 0, 0])
-  const rrt = generate(STEP, randomPointFunc(state.size / 2), U.fromPolarCoords(randomPointPolar(state.size / 2)))
+  const rrt = generate(STEP, randomPointFunc(state.size / 2), [U.fromPolarCoords(randomPointPolar(state.size / 2))])
   // $FlowIgnore
   rrt.forEach(point => drawCircleAndLine(graphics, point, rrt[point.parent], rrt.length))
   drawLinks(rrt, graphics)
