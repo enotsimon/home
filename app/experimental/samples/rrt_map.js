@@ -25,7 +25,8 @@ import type { RGBArray } from 'common/color'
 const STEP = 5
 const COLOR_MAX = [0, 255, 0]
 const COLOR_MIN = [0, 25, 0]
-const DEPTH_DRAW_THRESHOLD = 0
+const DEPTH_DRAW_COLOR = [0, 0, 0]
+const DEPTH_DRAW_THRESHOLD = 1
 const DRAW_RRT_ALPHA = 1
 const DRAW_VORONOI_ALPHA = 0
 const REDRAW_STEP = 500
@@ -57,7 +58,7 @@ const initAll = (state: State): State => {
   console.log('cnt points', rrt.length)
 
   const rrtWithDepth = calcDepth(rrt)
-  // console.log('RRT', rrtWithDepth)
+  // console.log('RRT', rrtWithDepth[0])
   const newState = { ...state, rrt: rrtWithDepth, pointsGraphics, linksGraphics }
 
   const depthMax = calcDepthMax(rrtWithDepth)
@@ -68,6 +69,8 @@ const initAll = (state: State): State => {
   const voronoiCellColor = point => calcColor(point.depth, depthMax)
   drawVoronoiDiagram(voronoiGraphics, voronoi, 0.5, [0, 0, 0], voronoiCellColor, DRAW_VORONOI_ALPHA)
 
+  // const lowDepth
+
   return newState
 }
 
@@ -76,7 +79,7 @@ const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointP
 const calcColor = (depth, depthMax): RGBArray => {
   // experimental
   if (depth < DEPTH_DRAW_THRESHOLD) {
-    return [0, 0, 0]
+    return DEPTH_DRAW_COLOR
   }
   // $FlowIgnore hes wrong
   return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
@@ -113,7 +116,11 @@ const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State, depthMax, alpha)
     // $FlowIgnore he is wrong. number is 3
     const color: RGBArray = calcColor(point.depth, depthMax)
     if (point.parent !== null && point.parent !== undefined) {
-      drawRRTLink(linksGraphics, point, rrt[point.parent], color, 1, alpha)
+      const parentDepth = rrt[point.parent].depth
+      // когда у parent depth меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
+      // что воспринимается как баг подсчета depth
+      const linkColor = parentDepth < point.depth ? calcColor(parentDepth, depthMax) : color
+      drawRRTLink(linksGraphics, point, rrt[point.parent], linkColor, 1, alpha)
     }
     const cntLinks = point.children.length + (point.parent ? 1 : 0)
     if (cntLinks >= 3) {
