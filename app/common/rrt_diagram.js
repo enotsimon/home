@@ -52,11 +52,10 @@ const calcDepthRec = (orrt, openList, depth): RRTWDDiagram => {
   const rrt = [...orrt]
   const leafs = R.filter(index => {
     const point = rrt[index]
-    if (point.parent === null || rrt[point.parent].depth !== undefined) {
-      return true
-    }
+    const plusGoodParent = point.parent !== null && rrt[point.parent].depth === undefined ? 1 : 0
     const goodChildren = R.filter(ci => rrt[ci].depth === undefined, point.children)
-    const isLeaf = goodChildren.length === 0
+    // sic! sometimes it can be 0
+    const isLeaf = (goodChildren.length + plusGoodParent) <= 1
     return isLeaf
   }, openList)
   R.forEach(i => {
