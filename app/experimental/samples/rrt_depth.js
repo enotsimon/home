@@ -17,6 +17,7 @@ import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { RRTWDDiagram } from 'common/rrt_diagram'
+import type { RGBArray } from 'common/color'
 
 const STEP = 5
 const COLOR_MAX = [0, 255, 0]
@@ -56,11 +57,12 @@ const initAll = (state: State): State => {
 
 const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
-const calcColor = (depth, depthMax) => {
+const calcColor = (depth, depthMax): RGBArray => {
   // experimental
   if (depth < DEPTH_DRAW_THRESHOLD) {
     return [0, 0, 0]
   }
+  // $FlowIgnore hes wrong
   return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
 }
 
@@ -71,7 +73,11 @@ const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State): void => {
     // $FlowIgnore he is wrong. number is 3
     const color: RGBArray = calcColor(point.depth, depthMax)
     if (point.parent !== null && point.parent !== undefined) {
-      drawRRTLink(linksGraphics, point, rrt[point.parent], color, 1)
+      const parentDepth = rrt[point.parent].depth
+      // когда у parent depth меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
+      // что воспринимается как баг подсчета depth
+      const linkColor = parentDepth < point.depth ? calcColor(parentDepth, depthMax) : color
+      drawRRTLink(linksGraphics, point, rrt[point.parent], linkColor, 1)
     }
     drawRRTPoint(pointsGraphics, point, color, [0, 0, 0], 1)
   })
