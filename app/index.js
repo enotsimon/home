@@ -28,7 +28,7 @@ import { init as initRRTFlashes } from 'experimental/samples/rrt_flashes'
 import { init as initRRTExp } from 'experimental/samples/rrt_exp'
 import { init as initRRTExp2 } from 'experimental/samples/rrt_exp_2'
 import { init as initRRTMap } from 'experimental/samples/rrt_map'
-import { init as initRRTDepth } from 'experimental/samples/rrt_depth'
+import { init as initRRTHeight } from 'experimental/samples/rrt_height'
 import { init as initSpringForceSmooth } from 'experimental/samples/spring_force_smooth'
 import { init as initSpringForceTwitchy } from 'experimental/samples/spring_force_twitchy'
 import { init as initDotsMap } from 'experimental/samples/dots_map'
@@ -67,7 +67,7 @@ ReactDOM.render((
         <Route path="/rrt_exp" render={() => createDrawer(initRRTExp)} />
         <Route path="/rrt_exp_2" render={() => createDrawer(initRRTExp2)} />
         <Route path="/rrt_map" render={() => createDrawer(initRRTMap)} />
-        <Route path="/rrt_depth" render={() => createDrawer(initRRTDepth)} />
+        <Route path="/rrt_height" render={() => createDrawer(initRRTHeight)} />
         <Route path="/spring_force_smooth" render={() => createDrawer(initSpringForceSmooth)} />
         <Route path="/spring_force_twitchy" render={() => createDrawer(initSpringForceTwitchy)} />
         <Route path="/dots_map" render={() => createDrawer(initDotsMap)} />

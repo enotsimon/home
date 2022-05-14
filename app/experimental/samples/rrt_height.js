@@ -12,7 +12,7 @@ import * as U from 'common/utils'
 // import { addCircleMask } from 'experimental/drawing_functions'
 import { drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate, calcDepth } from 'common/rrt_diagram'
+import { generate, calcHeight } from 'common/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
@@ -47,9 +47,9 @@ const initAll = (state: State): State => {
   const rrt = generate(STEP, randomPointFunc(state.size / 2), [root])
   console.log('cnt points', rrt.length)
 
-  const rrtWithDepth = calcDepth(rrt)
-  // console.log('RRT', rrtWithDepth)
-  const newState = { ...state, rrt: rrtWithDepth, pointsGraphics, linksGraphics }
+  const rrtWithHeight = calcHeight(rrt)
+  // console.log('RRT', rrtWithHeight)
+  const newState = { ...state, rrt: rrtWithHeight, pointsGraphics, linksGraphics }
   drawRRT(newState)
 
   return newState
@@ -57,26 +57,26 @@ const initAll = (state: State): State => {
 
 const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
-const calcColor = (depth, depthMax): RGBArray => {
+const calcColor = (height, heightMax): RGBArray => {
   // experimental
-  if (depth < DEPTH_DRAW_THRESHOLD) {
+  if (height < DEPTH_DRAW_THRESHOLD) {
     return [0, 0, 0]
   }
   // $FlowIgnore hes wrong
-  return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
+  return R.map(i => U.normalizeValue(height, heightMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
 }
 
 const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State): void => {
   // const generationMax = R.reduce((acc, { generation }) => (acc > generation ? acc : generation), 0, rrt)
-  const depthMax = R.reduce((acc, { depth }) => (acc > depth ? acc : depth), 0, rrt)
+  const heightMax = R.reduce((acc, { height }) => (acc > height ? acc : height), 0, rrt)
   rrt.forEach(point => {
     // $FlowIgnore he is wrong. number is 3
-    const color: RGBArray = calcColor(point.depth, depthMax)
+    const color: RGBArray = calcColor(point.height, heightMax)
     if (point.parent !== null && point.parent !== undefined) {
-      const parentDepth = rrt[point.parent].depth
-      // когда у parent depth меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
-      // что воспринимается как баг подсчета depth
-      const linkColor = parentDepth < point.depth ? calcColor(parentDepth, depthMax) : color
+      const parentHeight = rrt[point.parent].height
+      // когда у parent height меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
+      // что воспринимается как баг подсчета height
+      const linkColor = parentHeight < point.height ? calcColor(parentHeight, heightMax) : color
       drawRRTLink(linksGraphics, point, rrt[point.parent], linkColor, 1)
     }
     drawRRTPoint(pointsGraphics, point, color, [0, 0, 0], 1)

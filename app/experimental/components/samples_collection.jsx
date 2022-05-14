@@ -138,10 +138,10 @@ const colorConfig: Array<SamplePreviewConfig> = [
     status: 'draft',
   },
   {
-    name: 'rrt depth',
-    description: 'point depth is kind of leaf order -- leafs are 0, next to leafs are 1, etc',
-    sample_url: './rrt_depth',
-    img_path: './thumbnails/rrt_depth.png',
+    name: 'rrt height',
+    description: 'draw graph height for rrt diagram',
+    sample_url: './rrt_height',
+    img_path: './thumbnails/rrt_height.png',
     status: 'almost_ready',
   },
 ]

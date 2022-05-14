@@ -18,7 +18,7 @@ export type RRTPoint = {|
 |}
 export type RRTDiagram = Array<RRTPoint>
 export type RRTGenerationsIndex = Array<Array<RRTPointId>>
-export type RRTWDPoint = {| ...RRTPoint, depth: number |}
+export type RRTWDPoint = {| ...RRTPoint, height: number |}
 export type RRTWDDiagram = Array<RRTWDPoint>
 
 
@@ -45,22 +45,22 @@ export const generate = (step: number, randPointFunc: RandPointFunc, roots: Arra
   return calcChildrenIndex(generateRec(step, randPointFunc, rootPoints))
 }
 
-export const calcDepth = (rrt: RRTDiagram): RRTWDDiagram => calcDepthRec(rrt, R.map(e => e.index, rrt), 0)
+export const calcHeight = (rrt: RRTDiagram): RRTWDDiagram => calcHeightRec(rrt, R.map(e => e.index, rrt), 0)
 
 
-const calcDepthRec = (orrt, openList, depth): RRTWDDiagram => {
+const calcHeightRec = (orrt, openList, height): RRTWDDiagram => {
   const rrt = [...orrt]
   const leafs = R.filter(index => {
     const point = rrt[index]
-    const plusGoodParent = point.parent !== null && rrt[point.parent].depth === undefined ? 1 : 0
-    const goodChildren = R.filter(ci => rrt[ci].depth === undefined, point.children)
+    const plusGoodParent = point.parent !== null && rrt[point.parent].height === undefined ? 1 : 0
+    const goodChildren = R.filter(ci => rrt[ci].height === undefined, point.children)
     // sic! sometimes it can be 0
     const isLeaf = (goodChildren.length + plusGoodParent) <= 1
     return isLeaf
   }, openList)
   R.forEach(i => {
     // $FlowIgnore
-    rrt[i].depth = depth
+    rrt[i].height = height
   }, leafs)
   // not very optimal, should use index
   const newOpenList = R.difference(openList, leafs)
@@ -68,7 +68,7 @@ const calcDepthRec = (orrt, openList, depth): RRTWDDiagram => {
     // $FlowIgnore
     return rrt
   }
-  return calcDepthRec(rrt, newOpenList, depth + 1)
+  return calcHeightRec(rrt, newOpenList, height + 1)
 }
 
 const generateRec = (step: number, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {

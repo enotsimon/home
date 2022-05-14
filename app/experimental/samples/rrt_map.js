@@ -13,7 +13,7 @@ import * as U from 'common/utils'
 // import { addCircleMask } from 'experimental/drawing_functions'
 import { drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate, calcDepth } from 'common/rrt_diagram'
+import { generate, calcHeight } from 'common/rrt_diagram'
 import { generate as generateVoronoi } from 'common/voronoi'
 import { randomPointPolar } from 'experimental/random_points'
 
@@ -57,32 +57,32 @@ const initAll = (state: State): State => {
   const rrt = generate(STEP, randomPointFunc(size), [root])
   console.log('cnt points', rrt.length)
 
-  const rrtWithDepth = calcDepth(rrt)
-  // console.log('RRT', rrtWithDepth[0])
-  const newState = { ...state, rrt: rrtWithDepth, pointsGraphics, linksGraphics }
+  const rrtWithHeight = calcHeight(rrt)
+  // console.log('RRT', rrtWithHeight[0])
+  const newState = { ...state, rrt: rrtWithHeight, pointsGraphics, linksGraphics }
 
-  const depthMax = calcDepthMax(rrtWithDepth)
-  console.log('depthMax', depthMax, 'draw threshold', DEPTH_DRAW_THRESHOLD)
-  drawRRT(newState, depthMax, DRAW_RRT_ALPHA)
+  const heightMax = calcHeightMax(rrtWithHeight)
+  console.log('heightMax', heightMax, 'draw threshold', DEPTH_DRAW_THRESHOLD)
+  drawRRT(newState, heightMax, DRAW_RRT_ALPHA)
 
-  const voronoi = generateVoronoi(rrtWithDepth, size, size, 0, 1, -size, -size)
-  const voronoiCellColor = point => calcColor(point.depth, depthMax)
+  const voronoi = generateVoronoi(rrtWithHeight, size, size, 0, 1, -size, -size)
+  const voronoiCellColor = point => calcColor(point.height, heightMax)
   drawVoronoiDiagram(voronoiGraphics, voronoi, 0.5, [0, 0, 0], voronoiCellColor, DRAW_VORONOI_ALPHA)
 
-  // const lowDepth
+  // const lowHeight
 
   return newState
 }
 
 const randomPointFunc = (radius: number) => () => U.fromPolarCoords(randomPointPolar(radius))
 
-const calcColor = (depth, depthMax): RGBArray => {
+const calcColor = (height, heightMax): RGBArray => {
   // experimental
-  if (depth < DEPTH_DRAW_THRESHOLD) {
+  if (height < DEPTH_DRAW_THRESHOLD) {
     return DEPTH_DRAW_COLOR
   }
   // $FlowIgnore hes wrong
-  return R.map(i => U.normalizeValue(depth, depthMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
+  return R.map(i => U.normalizeValue(height, heightMax, COLOR_MAX[i], 0, COLOR_MIN[i]), [0, 1, 2])
 }
 
 // TODO move to drawing functions
@@ -108,18 +108,18 @@ const drawVoronoiDiagram = (
   })
 }
 
-const calcDepthMax = rrt => R.reduce((acc, { depth }) => (acc > depth ? acc : depth), 0, rrt)
+const calcHeightMax = rrt => R.reduce((acc, { height }) => (acc > height ? acc : height), 0, rrt)
 
-const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State, depthMax, alpha): void => {
+const drawRRT = ({ rrt, pointsGraphics, linksGraphics }: State, heightMax, alpha): void => {
   // const generationMax = R.reduce((acc, { generation }) => (acc > generation ? acc : generation), 0, rrt)
   rrt.forEach(point => {
     // $FlowIgnore he is wrong. number is 3
-    const color: RGBArray = calcColor(point.depth, depthMax)
+    const color: RGBArray = calcColor(point.height, heightMax)
     if (point.parent !== null && point.parent !== undefined) {
-      const parentDepth = rrt[point.parent].depth
-      // когда у parent depth меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
-      // что воспринимается как баг подсчета depth
-      const linkColor = parentDepth < point.depth ? calcColor(parentDepth, depthMax) : color
+      const parentHeight = rrt[point.parent].height
+      // когда у parent height меньше чем у текущей точки тогда цвет связи выглядит неадекватно ярким
+      // что воспринимается как баг подсчета height
+      const linkColor = parentHeight < point.height ? calcColor(parentHeight, heightMax) : color
       drawRRTLink(linksGraphics, point, rrt[point.parent], linkColor, 1, alpha)
     }
     const cntLinks = point.children.length + (point.parent ? 1 : 0)
