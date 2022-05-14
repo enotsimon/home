@@ -35,14 +35,14 @@ export const pointsByGenerationsIndex = (rrt: RRTDiagram): RRTGenerationsIndex =
 export const generate = (step: number, randPointFunc: RandPointFunc, roots: Array<XYPoint>): RRTDiagram => {
   const rootPoints = (roots.length > 0 ? roots : [randPointFunc()]).map((p, index) => ({
     ...p,
-    // index = 0 cause we should be able to access rrt array of point by array index!
-    // generation = 0 well... because index = 0 mean generation = 0
+    // generation is my name to graph depth. TODO rename
     generation: 0,
+    // index = 0 cause we should be able to access rrt array of point by array index!
     index,
     parent: null,
     children: [],
   }))
-  return calcChildrenIndex(generateRec(step, randPointFunc, rootPoints))
+  return calcChildrenIndex(generateRec(step, step ** 2, randPointFunc, rootPoints))
 }
 
 export const calcHeight = (rrt: RRTDiagram): RRTWDDiagram => calcHeightRec(rrt, R.map(e => e.index, rrt), 0)
@@ -71,17 +71,18 @@ const calcHeightRec = (orrt, openList, height): RRTWDDiagram => {
   return calcHeightRec(rrt, newOpenList, height + 1)
 }
 
-const generateRec = (step: number, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {
-  const point = getNewPoint(points.length, step, randPointFunc, points)
+const generateRec = (step, qStep, randPointFunc: RandPointFunc, points: RRTDiagram = []): RRTDiagram => {
+  const point = getNewPoint(points.length, step, qStep, randPointFunc, points)
   if (!point) {
     return points
   }
-  return generateRec(step, randPointFunc, [...points, point])
+  return generateRec(step, qStep, randPointFunc, [...points, point])
 }
 
 const getNewPoint = (
   index: number,
   step: number,
+  qStep: number,
   randPointFunc: RandPointFunc,
   points: RRTDiagram,
   counter: number = 0
@@ -91,8 +92,8 @@ const getNewPoint = (
   }
   const newPoint = randPointFunc()
   const nearest = U.findNearestPoint(newPoint, points)
-  if (U.distance(newPoint, nearest) < step) {
-    return getNewPoint(index, step, randPointFunc, points, counter + 1)
+  if (U.quadDistance(newPoint, nearest) < qStep) {
+    return getNewPoint(index, step, qStep, randPointFunc, points, counter + 1)
   }
   const theta = Math.atan2(newPoint.y - nearest.y, newPoint.x - nearest.x)
   const pp = {
