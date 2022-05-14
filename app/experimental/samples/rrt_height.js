@@ -1,8 +1,4 @@
 // @flow
-/**
- * попробуем возродить идею карты из rrt
- * rrt это горные хребты
- */
 import * as PIXI from 'pixi.js'
 import random from 'random'
 import seedrandom from 'seedrandom'
