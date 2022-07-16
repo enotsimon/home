@@ -1,6 +1,6 @@
 // @flow
 import Util from 'common/util'
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import * as d3 from 'd3'
 import * as R from 'ramda'

@@ -2,7 +2,7 @@
 // это про разрастание клеток. клетка делитчя и дает сразу две дочерние в выбранном или случайном
 // направлении. такого не бывает в природе но и пофиг. направление роста задается при рождении клетки
 // делится она только один раз. две дочерние появляются по углу от этого направления
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
 // import * as U from 'enot-simon-utils/lib/utils'

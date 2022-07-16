@@ -1,5 +1,5 @@
 // @flow
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 // import * as R from 'ramda'
 import * as U from 'enot-simon-utils/lib/utils'

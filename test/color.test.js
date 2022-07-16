@@ -3,7 +3,7 @@
 import { describe, it } from 'mocha'
 import { assert } from 'chai'
 
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 
 describe('allChannelMatrixes', () => {
   it('0 case', () => {

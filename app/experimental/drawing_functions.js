@@ -3,7 +3,7 @@
 // these functions are full of operations on PIXI objects and the're cannon be cloned, so disable no-param-reassign
 /* eslint-disable no-param-reassign */
 
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import { Graphics } from 'pixi.js'
 
 import type { XYPoint } from 'common/utils'

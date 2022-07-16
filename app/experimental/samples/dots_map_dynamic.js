@@ -1,7 +1,7 @@
 // @flow
 // это основа очередного генератора карт. сначала мы генерим опорные точки. но это предполагается только
 // как первый этап. потом планируется по ним генерить контур побережья как бы для начала а потом неявно что еще
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
 import * as U from 'enot-simon-utils/lib/utils'

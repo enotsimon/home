@@ -1,6 +1,6 @@
 
 import Util from 'common/util'
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 
 // //////////////////////////////////////////////
 // WARNING!!! doesnt work, rewite to BasicDrawer

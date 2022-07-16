@@ -7,7 +7,7 @@ import * as PIXI from 'pixi.js'
 import random from 'random'
 import seedrandom from 'seedrandom'
 import * as R from 'ramda'
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 
 import * as U from 'enot-simon-utils/lib/utils'
 // import { addCircleMask } from 'experimental/drawing_functions'

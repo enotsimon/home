@@ -4,7 +4,7 @@
 // так же предпологалось некое сглаживание засчет второй генерации точек вокруг первой
 // но я решил что лучше попробовать динамический подход в dots_map_dynamic --
 // добавление точек по одной а не все разом как тут
-import * as Color from 'common/color'
+import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
 import * as U from 'enot-simon-utils/lib/utils'
