@@ -3239,6 +3239,16 @@ enhanced-resolve@^4.1.0:
     memory-fs "^0.5.0"
     tapable "^1.0.0"
 
+"enot-simon-utils@https://github.com/enotsimon/utils":
+  version "0.0.1"
+  resolved "https://github.com/enotsimon/utils#0df925e902a9de31d10ec9aa20205c1e8b0c27f3"
+  dependencies:
+    babel-plugin-transform-object-rest-spread "^6.26.0"
+    d3 "^4.10.0"
+    deep-equal-in-any-order "^1.0.14"
+    ramda "^0.27.0"
+    random "^2.1.1"
+
 entities@^1.1.1:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
