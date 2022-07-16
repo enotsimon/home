@@ -1,6 +1,6 @@
 // @flow
 import * as R from 'ramda'
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 
 import type { XYPoint } from 'common/utils'
 

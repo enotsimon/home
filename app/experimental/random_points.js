@@ -1,6 +1,6 @@
 // @flow
 import random from 'random'
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as R from 'ramda'
 
 import type { XYPoint, PolarPoint } from 'common/utils'

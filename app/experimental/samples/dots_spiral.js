@@ -2,7 +2,7 @@
 import * as Color from 'common/color'
 import * as PIXI from 'pixi.js'
 import * as R from 'ramda'
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import random from 'random'
 import seedrandom from 'seedrandom'
 

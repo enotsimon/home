@@ -3,7 +3,7 @@ import * as PIXI from 'pixi.js'
 import random from 'random'
 import seedrandom from 'seedrandom'
 
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import { addCircleMask, drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
 import { generate } from 'common/rrt_diagram'

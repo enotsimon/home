@@ -13,7 +13,7 @@ import random from 'random'
 import seedrandom from 'seedrandom'
 
 import * as Color from 'common/color'
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as R from 'ramda'
 // import { addCircleMask } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'

@@ -5,7 +5,7 @@ import seedrandom from 'seedrandom'
 import * as R from 'ramda'
 
 import * as Color from 'common/color'
-import * as U from 'common/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import { addCircleMask } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
