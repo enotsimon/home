@@ -248,6 +248,9 @@ const handleCrossingLinks = (crossingLinksAll, points: Points, CG_STEPS: number)
   // const randDist = U.fromPolarCoords(randomPointPolar(100))
   const randDist = { x: 0, y: 0 }
   // const randLength = random.int(4, 8)
+  // сейчас идея такая -- берем одну из "запутавшихся" веток и даем всем ее точкам ускорение в каком-то направлении
+  // направление это сейчас просто на центр
+  // кроме того для таких точек allRepulsingForce работает иначе -- сейчас наоборот
   return R.map(p => {
     if (cgPointChains[p.id]) {
       const vec = U.vectorToDist(p, randDist, FIX_CROSSING_LINKS_VECTOR_LENGTH)
@@ -283,10 +286,11 @@ const getLinkPoints = (link: Link, points: Points) => {
 }
 
 const allRepulsingForce = (p1, p2, quadDistance, REPULSING_FORCE_MUL, LINKS_LENGTH) => {
+  let cgMul = 1
   if (p1.cg || p2.cg) {
-    return 0
+    cgMul = -0.1
   }
-  return REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
+  return cgMul * REPULSING_FORCE_MUL * LINKS_LENGTH / quadDistance
 }
 
 const springForce = (p1, p2, quadDistance, link, FORCE_MUL) => {
