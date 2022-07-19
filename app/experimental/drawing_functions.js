@@ -6,9 +6,9 @@
 import * as Color from 'enot-simon-utils/lib/color'
 import { Graphics } from 'pixi.js'
 
-import type { XYPoint } from 'common/utils'
-import type { RGBArray } from 'common/color'
-import type { RRTPoint } from 'common/rrt_diagram'
+import type { XYPoint } from 'enot-simon-utils/lib/utils'
+import type { RGBArray } from 'enot-simon-utils/lib/color'
+import type { RRTPoint } from 'enot-simon-utils/lib/rrt_diagram'
 
 // a ring that works like a drawing mask -- nothing outside it is drawing
 export const addCircleMask = (

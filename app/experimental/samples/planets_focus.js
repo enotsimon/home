@@ -1,5 +1,5 @@
 // @flow
-import Util from 'common/util'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import * as d3 from 'd3'
@@ -83,7 +83,7 @@ const updateMatrixByFocus = (oldState: DrawerState): DrawerState => {
 }
 
 const calc_coords_recursively = (body, acc = { x: 0, y: 0 }) => {
-  const coords = Util.from_polar_coords(body.orbital_angle, body.orbital_radius)
+  const coords = U.fromPolarCoords({ angle: body.orbital_angle, radius: body.orbital_radius })
   acc.x += coords.x
   acc.y += coords.y
   if (body.parent) {
@@ -108,7 +108,7 @@ const initBody = (state, name, parent, orbital_radius, radius, orbital_speed, ro
   graphics.drawCircle(0, 0, BodyRadius)
   graphics.closePath();
   ([1, 2, 3]).forEach(i => {
-    const coords = Util.from_polar_coords(i * 2 * Math.PI / 3, BodyRadius / 2)
+    const coords = U.fromPolarCoords({ angle: i * 2 * Math.PI / 3, radius: BodyRadius / 2 })
     graphics.drawCircle(coords.x, coords.y, BodyRadius / 4)
     graphics.closePath()
   })
@@ -121,8 +121,8 @@ const initBody = (state, name, parent, orbital_radius, radius, orbital_speed, ro
     parent,
     orbital_radius: radius_factor * orbital_radius,
     radius: BodyRadius,
-    orbital_speed: Util.radians(orbital_speed),
-    rotation_speed: Util.radians(rotation_speed),
+    orbital_speed: U.radians(orbital_speed),
+    rotation_speed: U.radians(rotation_speed),
     orbital_angle: orbital_angle || 2 * Math.PI * Math.random(),
     angle: angle || 2 * Math.PI * Math.random(),
   }
@@ -134,7 +134,7 @@ const initBody = (state, name, parent, orbital_radius, radius, orbital_speed, ro
 
 const setGraphicsTransformByStellarCoords = (origBody: StellarBody): StellarBody => {
   const body = { ...origBody }
-  const coords = Util.from_polar_coords(body.orbital_angle, body.orbital_radius)
+  const coords = U.fromPolarCoords({ angle: body.orbital_angle, radius: body.orbital_radius })
   // thats not a mistake, see comment below
   body.base_container.x = coords.x
   body.base_container.y = coords.y

@@ -11,8 +11,8 @@ import { startDrawer } from 'experimental/drawer'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { XYPoint } from 'common/utils'
-import type { RRTPoint } from 'common/rrt_diagram'
+import type { XYPoint } from 'enot-simon-utils/lib/utils'
+import type { RRTPoint } from 'enot-simon-utils/lib/rrt_diagram'
 
 const STEP = 5
 const REJECT_LIMIT = 100

@@ -25,9 +25,9 @@ import { randomPointPolar } from 'experimental/random_points'
 import { circleBorderForceLinear } from 'experimental/circle_border'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { XYPoint } from 'common/utils'
+import type { XYPoint } from 'enot-simon-utils/lib/utils'
 import type { SpeedPoint } from 'experimental/circle_border'
-import type { ChannelMatrix } from 'common/color'
+import type { ChannelMatrix } from 'enot-simon-utils/lib/color'
 
 const FIX_CROSSING_LINKS_VECTOR_LENGTH = 3
 

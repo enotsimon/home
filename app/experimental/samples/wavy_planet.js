@@ -1,8 +1,12 @@
 // @flow
-import Util from 'common/util'
+import random from 'random'
+import seedrandom from 'seedrandom'
 import { initPlanetDrawer } from 'experimental/planet_drawer'
 
 import type { SphereMapBuilder } from 'experimental/planet_drawer'
+
+const seed = Date.now()
+random.use(seedrandom(seed))
 
 const sinRing = (amplitude, altitude, countWaves) => {
   const map = []
@@ -18,8 +22,8 @@ const sinRing = (amplitude, altitude, countWaves) => {
 const sphereMap: SphereMapBuilder = () => {
   let map = []
   const step = 2 * Math.PI / 36
-  const amplitude = Util.rand_float(0.1 * step, 0.5 * step)
-  let countWaves = Util.rand(2, 10)
+  const amplitude = random.float(0.1 * step, 0.5 * step)
+  let countWaves = random.int(2, 10)
   for (let altitude = 1 * step; altitude < 2 * Math.PI / 2 - step; altitude += step) {
     countWaves = (altitude / step) || 0
     map = map.concat(sinRing(amplitude, altitude, countWaves))

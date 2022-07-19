@@ -1,5 +1,5 @@
 // @flow
-import Util from 'common/util'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as d3 from 'd3'
 import * as R from 'ramda'
 
@@ -85,15 +85,15 @@ export const generate = <T: XYPoint>(
       diagram.nodes.push(node_to)
     }
     // node_from.links.push(node_to);
-    Util.push_uniq(node_to, node_from.links)
+    pushUniq(node_to, node_from.links)
     node_to.links.push(node_from)
-    Util.push_uniq(node_from, node_to.links)
+    pushUniq(node_from, node_to.links)
 
-    Util.push_uniq(edge.left.data, node_from.cells)
-    Util.push_uniq(edge.left.data, node_to.cells)
+    pushUniq(edge.left.data, node_from.cells)
+    pushUniq(edge.left.data, node_to.cells)
     if (edge.right) {
-      Util.push_uniq(edge.right.data, node_from.cells)
-      Util.push_uniq(edge.right.data, node_to.cells)
+      pushUniq(edge.right.data, node_from.cells)
+      pushUniq(edge.right.data, node_to.cells)
     }
     return {
       from: node_from,
@@ -107,8 +107,8 @@ export const generate = <T: XYPoint>(
     const cell = orig_cell.site.data // original object!!! and we change it here!!!
     cell.nodes = diagram.nodes.filter(node => node.cells.indexOf(cell) !== -1)
     cell.nodes.sort((n1, n2) => {
-      const angle1 = Util.to_polar_coords(n1.x - cell.x, n1.y - cell.y).angle
-      const angle2 = Util.to_polar_coords(n2.x - cell.x, n2.y - cell.y).angle
+      const angle1 = U.toPolarCoords({ x: n1.x - cell.x, y: n1.y - cell.y }).angle
+      const angle2 = U.toPolarCoords({ x: n2.x - cell.x, y: n2.y - cell.y }).angle
       return angle1 - angle2
     })
     cell.halfedges = orig_cell.halfedges
@@ -127,10 +127,10 @@ export const generate = <T: XYPoint>(
       if (!link_site) {
         return
       }
-      Util.push_uniq(diagram.cells[link_site.index], links)
+      pushUniq(diagram.cells[link_site.index], links)
     })
     // links sorted by distance -- from lowest to highest!
-    links.sort((e1, e2) => Util.distance(cell, e1) - Util.distance(cell, e2))
+    links.sort((e1, e2) => U.distance(cell, e1) - U.distance(cell, e2))
     /* eslint-disable-next-line no-param-reassign */
     cell.links = links
   })
@@ -172,9 +172,9 @@ const lloydRelaxation = (d3Diagram, d3Voronoi, toMove = 1) => {
     // well, its not real lloyd relaxation, we move new cell center not to centroid, but move
     // it by value of 'to_move' to direction to centroid
     const poly = p.map(e => { return { x: e[0], y: e[1] } })
-    const pf = Util.convex_polygon_centroid(poly)
+    const pf = U.convexPolygonCentroid(poly)
     // ...p.data is for passing original input point to cell like d3 does
-    return { ...p.data, ...Util.move_by_vector(p.data, pf, toMove) }
+    return { ...p.data, ...U.moveByVector(p.data, pf, toMove) }
   })
   return d3Voronoi(newPoints)
 }
@@ -187,4 +187,10 @@ const seemsLikeNodesAreEqual = <T: { ...XYPoint }>(node: T, d3Node: [number, num
   return Math.abs(node.x - d3Node[0]) < veryCloseIs
       && Math.abs(node.y - d3Node[1]) < veryCloseIs
   // return node.x == old_node[0] && node.y == old_node[1];
+}
+
+const pushUniq = <T: any>(element: T, arr: Array<T>): void => {
+  if (arr.indexOf(element) === -1) {
+    arr.push(element)
+  }
 }

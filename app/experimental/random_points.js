@@ -3,7 +3,7 @@ import random from 'random'
 import * as U from 'enot-simon-utils/lib/utils'
 import * as R from 'ramda'
 
-import type { XYPoint, PolarPoint } from 'common/utils'
+import type { XYPoint, PolarPoint } from 'enot-simon-utils/lib/utils'
 
 export type DotId = string
 export type Dot = {|

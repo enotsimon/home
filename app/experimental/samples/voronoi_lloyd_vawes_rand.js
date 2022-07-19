@@ -12,7 +12,7 @@ import { randomPointPolar, randomPointsInSquare } from 'experimental/random_poin
 
 import type { DrawerState } from 'experimental/drawer'
 import type { VoronoiDiagram, XYPoint } from 'common/voronoi'
-import type { ChannelMatrix } from 'common/color'
+import type { ChannelMatrix } from 'enot-simon-utils/lib/color'
 
 // TODO get rid of all copy-paste from voronoi_lloyd_vawes
 

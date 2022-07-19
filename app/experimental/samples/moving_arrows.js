@@ -1,5 +1,5 @@
 // @flow
-import Util from 'common/util'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 
@@ -68,7 +68,7 @@ const redraw = (oldState: DrawerState): DrawerState => {
 
   const radius = state.speed
   const angle = state.angle
-  const diff = Util.from_polar_coords(angle, radius)
+  const diff = U.fromPolarCoords({ angle, radius })
   state.arrows.forEach(arrow => {
     // TODO seems too complicated. is there better way?
     // FIXME cant just rewrite it to map and { ...arrow } cause it is PIXI obj and its broken after clone

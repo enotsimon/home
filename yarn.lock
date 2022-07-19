@@ -3240,8 +3240,8 @@ enhanced-resolve@^4.1.0:
     tapable "^1.0.0"
 
 "enot-simon-utils@https://github.com/enotsimon/utils":
-  version "0.0.1"
-  resolved "https://github.com/enotsimon/utils#0df925e902a9de31d10ec9aa20205c1e8b0c27f3"
+  version "0.0.3"
+  resolved "https://github.com/enotsimon/utils#798081c6c00c89a900f3b6ebbf0a43bb20553c75"
   dependencies:
     babel-plugin-transform-object-rest-spread "^6.26.0"
     d3 "^4.10.0"

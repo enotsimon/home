@@ -1,8 +1,13 @@
 // @flow
-import Util from 'common/util'
+import random from 'random'
+import seedrandom from 'seedrandom'
+import * as U from 'enot-simon-utils/lib/utils'
 import { initPlanetDrawer, calcSinglePoint } from 'experimental/planet_drawer'
 
 import type { PlanetState, SphereMapBuilder, PlanetSpherePoint } from 'experimental/planet_drawer'
+
+const seed = Date.now()
+random.use(seedrandom(seed))
 
 type Crater = {
   precession: number,
@@ -21,12 +26,12 @@ const sphereMap: SphereMapBuilder = (state: PlanetState): Array<PlanetSpherePoin
       throw ('too many cycles')
     }
     // rotation has no meaning in this case
-    const precession = Util.rand_float(0, 2 * Math.PI)
-    const nutation = Util.rand_float(0, 2 * Math.PI)
-    const diameter = Util.rand_float(Util.radians(1), Util.radians(15))
+    const precession = random.float(0, 2 * Math.PI)
+    const nutation = random.float(0, 2 * Math.PI)
+    const diameter = random.float(U.radians(1), U.radians(15))
     const planet_radius = state.radius
     const crossing = craters_data.some(c => {
-      const distance = diameter + c.diameter + Util.radians(2)
+      const distance = diameter + c.diameter + U.radians(2)
       return sphereAnglesDistance({ precession, nutation, diameter }, c) < distance
     })
     if (!crossing) {

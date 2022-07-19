@@ -1,8 +1,12 @@
 // @flow
-import Util from 'common/util'
+import random from 'random'
+import seedrandom from 'seedrandom'
 import { initTableauDrawer, getElementColor } from 'experimental/tableau_drawer'
 
 // https://en.wikipedia.org/wiki/Rule_30
+
+const seed = Date.now()
+random.use(seedrandom(seed))
 
 // color = (element.y == this.y_size - 1) && (element.x == this.x_size / 2 | 0) ? 1 : 0;
 const initElementState = (element) => ({ ...element, color: 0 })
@@ -27,7 +31,7 @@ const mutateElementState = (element, state) => {
  *  thats NOT CORRECT and so this all is not pure rule 30 evolution, but
  *  rule 30 with random initial state and random border conditions
  */
-const outOfBorderFunc = () => Util.rand(0, 1)
+const outOfBorderFunc = () => random.int(0, 1)
 
 // thats rule 30 itself
 const elementStateRule = (l, r, s) => {

@@ -17,13 +17,13 @@ import * as U from 'enot-simon-utils/lib/utils'
 import * as R from 'ramda'
 // import { addCircleMask } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate } from 'common/rrt_diagram'
+import { generate } from 'enot-simon-utils/lib/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-// import type { RRTDiagram, RRTPoint } from 'common/rrt_diagram'
+// import type { RRTDiagram, RRTPoint } from 'enot-simon-utils/lib/rrt_diagram'
 
-import type { XYPoint } from 'common/utils'
+import type { XYPoint } from 'enot-simon-utils/lib/utils'
 
 const STEP = 7
 const REBUIND_AFTER = 5000

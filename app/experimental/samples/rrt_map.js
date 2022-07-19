@@ -13,14 +13,14 @@ import * as U from 'enot-simon-utils/lib/utils'
 // import { addCircleMask } from 'experimental/drawing_functions'
 import { drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate, calcHeight } from 'common/rrt_diagram'
+import { generate, calcHeight } from 'enot-simon-utils/lib/rrt_diagram'
 import { generate as generateVoronoi } from 'common/voronoi'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTWDDiagram, RRTWDPoint } from 'common/rrt_diagram'
+import type { RRTWDDiagram, RRTWDPoint } from 'enot-simon-utils/lib/rrt_diagram'
 import type { VoronoiDiagram, VoronoiCell } from 'common/voronoi'
-import type { RGBArray } from 'common/color'
+import type { RGBArray } from 'enot-simon-utils/lib/color'
 
 const STEP = 5
 const COLOR_MAX = [0, 255, 0]

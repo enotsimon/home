@@ -12,7 +12,7 @@ import { randomPointsInSquare } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
 import type { VoronoiDiagram, XYPoint } from 'common/voronoi'
-import type { ChannelMatrix } from 'common/color'
+import type { ChannelMatrix } from 'enot-simon-utils/lib/color'
 
 
 type State = {|

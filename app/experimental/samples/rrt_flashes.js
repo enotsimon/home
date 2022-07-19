@@ -8,11 +8,11 @@ import * as Color from 'enot-simon-utils/lib/color'
 import * as U from 'enot-simon-utils/lib/utils'
 import { addCircleMask, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate, pointsByGenerationsIndex } from 'common/rrt_diagram'
+import { generate, pointsByGenerationsIndex } from 'enot-simon-utils/lib/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTDiagram, RRTPoint, RRTGenerationsIndex } from 'common/rrt_diagram'
+import type { RRTDiagram, RRTPoint, RRTGenerationsIndex } from 'enot-simon-utils/lib/rrt_diagram'
 
 const STEP = 5
 const BASIC_THROTTLE = 3

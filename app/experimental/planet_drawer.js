@@ -1,11 +1,16 @@
 // @flow
-import Util from 'common/util'
+import * as U from 'enot-simon-utils/lib/utils'
+import random from 'random'
+import seedrandom from 'seedrandom'
 import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 
 import { startDrawer } from 'experimental/drawer'
 
 import type { DrawerState } from 'experimental/drawer'
+
+const seed = Date.now()
+random.use(seedrandom(seed))
 
 export type PlanetXYZPoint = { x: number, y: number, z: number }
 export type PlanetSpherePoint = { phi: number, theta: number }
@@ -56,8 +61,8 @@ export const initPlanetDrawer = (
 const defaultSphereMap: SphereMapBuilder = () => {
   return [...Array(500).keys()].map(() => {
     return {
-      phi: Util.rand_float(0, 2 * Math.PI),
-      theta: Util.rand_float(0, 2 * Math.PI),
+      phi: random.float(0, 2 * Math.PI),
+      theta: random.float(0, 2 * Math.PI),
     }
   })
 }
@@ -96,9 +101,9 @@ const initGraphics = (oldState: DrawerState, sphereMap: SphereMapBuilder, mapTra
 const redraw = (oldState: PlanetState): PlanetState => {
   const state = { ...oldState }
   // here was function change_angles(state.ticks)
-  state.rotation = Util.radians(0) + state.ticks * (2 * Math.PI / 360)
-  state.precession = Util.radians(30) + Util.radians(15) * Math.sin(2 * state.ticks / 360)
-  state.nutation = Util.radians(90 - 30) + Util.radians(15) * Math.cos(2 * state.ticks / 360)
+  state.rotation = U.radians(0) + state.ticks * (2 * Math.PI / 360)
+  state.precession = U.radians(30) + U.radians(15) * Math.sin(2 * state.ticks / 360)
+  state.nutation = U.radians(90 - 30) + U.radians(15) * Math.cos(2 * state.ticks / 360)
   //
   state.points.forEach(point => {
     const coords = calcSinglePoint(

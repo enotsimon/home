@@ -1,10 +1,14 @@
 // @flow
-import Util from 'common/util'
+import random from 'random'
+import seedrandom from 'seedrandom'
 import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 
 import { startDrawer } from 'experimental/drawer'
 import type { DrawerState } from 'experimental/drawer'
+
+const seed = Date.now()
+random.use(seedrandom(seed))
 
 type Figure = {
   id: number,
@@ -32,8 +36,8 @@ const initGraphics = (oldState: DrawerState): State => {
       graphics,
       radius: 0.9 * 0.5 * state.size,
       // rotation_coef: .0025,
-      precession_coef: 0.0025 * Util.rand_float(-3, 3),
-      nutation_coef: 0.0025 * Util.rand_float(1, 3),
+      precession_coef: 0.0025 * random.float(-3, 3),
+      nutation_coef: 0.0025 * random.float(1, 3),
     }
   })
   return state

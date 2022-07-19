@@ -6,11 +6,11 @@ import seedrandom from 'seedrandom'
 import * as U from 'enot-simon-utils/lib/utils'
 import { addCircleMask, drawRRTPoint, drawRRTLink } from 'experimental/drawing_functions'
 import { startDrawer } from 'experimental/drawer'
-import { generate } from 'common/rrt_diagram'
+import { generate } from 'enot-simon-utils/lib/rrt_diagram'
 import { randomPointPolar } from 'experimental/random_points'
 
 import type { DrawerState } from 'experimental/drawer'
-import type { RRTDiagram } from 'common/rrt_diagram'
+import type { RRTDiagram } from 'enot-simon-utils/lib/rrt_diagram'
 
 const STEP = 5
 

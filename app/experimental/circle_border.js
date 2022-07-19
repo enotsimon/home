@@ -2,7 +2,7 @@
 import * as R from 'ramda'
 import * as U from 'enot-simon-utils/lib/utils'
 
-import type { XYPoint } from 'common/utils'
+import type { XYPoint } from 'enot-simon-utils/lib/utils'
 
 export type Vector = XYPoint
 // TODO remove it from here

@@ -1,5 +1,5 @@
 // @flow
-import Util from 'common/util'
+import * as U from 'enot-simon-utils/lib/utils'
 import * as Color from 'enot-simon-utils/lib/color'
 import * as PIXI from 'pixi.js'
 import { startDrawer } from 'experimental/drawer'
@@ -61,8 +61,8 @@ const initGraphics = (oldState, initElementState, throttle, cyclesLimit, x_size,
       const graphics = new PIXI.Graphics()
       graphics.beginFill(Color.to_pixi([255, 255, 255]))
       graphics.drawRect(
-        Util.normalize_value(x, state.x_size, state.size),
-        Util.normalize_value(y, state.y_size, state.size),
+        U.normalizeValue(x, state.x_size, state.size),
+        U.normalizeValue(y, state.y_size, state.size),
         square_size,
         square_size
       )
