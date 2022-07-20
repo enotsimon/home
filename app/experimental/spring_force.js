@@ -146,18 +146,14 @@ const initDrawings = (container, points, colors) => {
   container.addChild(linksContainer)
   // points after links! emulation of zIndex. PIXI zIndex doesnot work, despite of sortableChildren = true. dunno why
   points.forEach(p => {
-    const graphics = new Graphics()
-    graphics.name = drawerPointId(p)
     const ci = p.group % R.length(colors)
-    const amGraphics = drawDottedPoint(graphics, Color.matrixToRGB(colors[ci]), 1.5)
-    amGraphics.name = amPointId(p)
+    const graphics = drawDottedPoint(Color.matrixToRGB(colors[ci]), 1.5)
+    graphics.name = drawerPointId(p)
     container.addChild(graphics)
-    container.addChild(amGraphics)
   })
 }
 
 const drawerPointId = point => `p-${point.id}`
-const amPointId = point => `pam-${point.id}`
 
 const redraw = (oldState: State): State => {
   const state: State = { ...oldState }
@@ -200,13 +196,7 @@ const redrawGraphics = (state: State): void => {
     const alpha = U.normalizeValue(R.min(U.quadDistance(p, center), ssq), ssq, 0.75, 0, 0)
     graphics.x = p.x
     graphics.y = p.y
-    const amGraphics = container.getChildByName(amPointId(p))
-    amGraphics.x = p.x
-    amGraphics.y = p.y
-    amGraphics.alpha = alpha
-    // let dotColor = p.cg ? [100, 0, 0] : color
-    // dotColor = p.clp ? [150, 0, 0] : dotColor
-    // drawDottedPoint(graphics, dotColor, 1.5)
+    graphics.getChildByName('aplhaMask').alpha = alpha
     const ci = p.group % R.length(state.colors)
     const color = Color.forRGB(Color.matrixToRGB(state.colors[ci]), e => e * (1 - alpha))
     return { alpha, color }

@@ -41,7 +41,9 @@ export const rotateGraphics = (graphics: Object, angle: number, anchor: XYPoint)
   graphics.rotation = angle
 }
 
-export const drawDottedPoint = (graphics: Object, color: RGBArray, width: number): Object => {
+export const drawDottedPoint = (color: RGBArray, width: number): Object => {
+  const graphics = new Graphics()
+  graphics.alpha = 1
   graphics.clear()
   graphics.beginFill(Color.to_pixi(color), 1)
   graphics.drawCircle(0, 0, width)
@@ -49,12 +51,18 @@ export const drawDottedPoint = (graphics: Object, color: RGBArray, width: number
   graphics.beginFill(Color.to_pixi([0, 0, 0]), 1)
   graphics.drawCircle(0, 0, width / 2)
   graphics.endFill()
+  graphics.name = 'base'
   const aplhaMaskGraphics = new Graphics()
+  aplhaMaskGraphics.addChild(graphics)
   aplhaMaskGraphics.alpha = 0
   aplhaMaskGraphics.beginFill(Color.to_pixi([0, 0, 0]), 1)
   aplhaMaskGraphics.drawCircle(0, 0, width)
   aplhaMaskGraphics.endFill()
-  return aplhaMaskGraphics
+  aplhaMaskGraphics.name = 'aplhaMask'
+  const container = new Graphics()
+  container.addChild(graphics)
+  container.addChild(aplhaMaskGraphics)
+  return container
 }
 
 export const drawLine = <T: { ...XYPoint }>(container: Object, color: RGBArray, width: number, p1: T, p2: T): void => {
