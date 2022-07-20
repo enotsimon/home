@@ -21,6 +21,7 @@
     "jsx-control-statements/jsx-jcs-no-undef": 0,
     "react/no-unused-prop-types": 0,
     "import/no-unresolved": 0,
+    "import/order": 0,
     "camelcase": 0,
     "no-throw-literal": 0,
     "prefer-destructuring": 0,
