@@ -5,7 +5,7 @@ import seedrandom from 'seedrandom'
 import * as R from 'ramda'
 
 import { to_pixi } from 'enot-simon-utils/lib/color'
-// import * as U from 'enot-simon-utils/lib/utils'
+import * as U from 'enot-simon-utils/lib/utils'
 import { startDrawer } from 'experimental/drawer'
 import { randomPointsInSquare } from 'enot-simon-utils/lib/random_points'
 import { generate } from '../../common/voronoi'
@@ -15,9 +15,8 @@ import type { DrawerState } from 'experimental/drawer'
 import type { XYPoint } from 'enot-simon-utils/lib/utils'
 import type { RGBArray } from 'enot-simon-utils/lib/color'
 
-const ROOT_THROTTLE = 20
-// TODO нужно считать его в внутренних тиках от ROOT_THROTTLE чтобы кратно было
-const RECALC_DEPOSITES_THROTTLE = 100
+const ROOT_THROTTLE = 100
+// const TICKS_IN_YEAR = 12
 const CNT_POINTS = 25
 const LLOYD_TO_MOVE = 1
 const LLOYD_STEPS = 2
@@ -25,11 +24,9 @@ const LLOYD_STEPS = 2
 type Record<Key: string | number, T: Object> = {| [Key]: T |}
 type PIXIContainer = Object // FIXME
 
-type ResourceId = string
-type DepositeId = string
-type CellId = string
-
 type FromTo = {| from: number, to: number |}
+
+type ResourceId = string
 type Resource = {|
   id: ResourceId,
   name: string,
@@ -41,12 +38,16 @@ type Resource = {|
 |}
 type ResourcesConfig = {| [ResourceId]: Resource |}
 
+type CellId = string
 type Cell = {|
   ...XYPoint,
   id: CellId,
   deposites: Array<DepositeId>,
+  creatures: Array<CreatureId>,
   links: Array<CellId>,
 |}
+
+type DepositeId = string
 type Deposite = {|
   id: DepositeId,
   resource: ResourceId,
@@ -54,79 +55,105 @@ type Deposite = {|
   gain: number,
   max: number,
 |}
+
+type FoodConsumptionConfig = {| [ResourceId]: FoodConsumption |}
+type FoodConsumption = {|
+  id: ResourceId,
+  consume: number,
+  calories: number,
+|}
+
+type RaceId = string
+type Race = {|
+  id: RaceId,
+  name: string,
+  food: FoodConsumptionConfig,
+|}
+type RacesConfig = {| [RaceId]: Race |}
+
+type Gender = 'male' | 'female' | 'inanimate'
+type CreatureId = string
+type Creature = {|
+  id: CreatureId,
+  name: string,
+  age: number, // in ticks
+  gender: Gender,
+  race: RaceId,
+  satiation: number,
+|}
+
 type Cells = Record<CellId, Cell>
 type Deposites = Record<DepositeId, Deposite>
+type Creatures = Record<CreatureId, Creature>
 type State = {|
   ...DrawerState,
-  resources: ResourcesConfig,
+  resourcesConfig: ResourcesConfig,
   cells: Cells,
   deposites: Deposites,
+  creatures: Creatures,
   graphics: PIXIContainer,
 |}
 
-const resourcesConfig: ResourcesConfig = R.indexBy(R.prop('id'), [
+const rootResourcesConfig: ResourcesConfig = U.indexById([
   {
-    id: 'green',
-    name: 'green resource',
+    id: 'apples',
+    name: 'apples',
     color: [0, 150, 0],
     amount: { from: 0, to: 0 },
-    gain: { from: 10, to: 50 },
-    max: 5000,
+    gain: { from: 5, to: 20 },
+    max: 1000,
     chance: 0.5,
   },
   {
-    id: 'orange',
-    name: 'orange resource',
+    id: 'mushrooms',
+    name: 'mushrooms',
     color: [150, 150, 0],
     amount: { from: 100, to: 1000 },
     gain: { from: 0, to: 0 },
-    max: 5000,
+    max: 1000,
     chance: 0.5,
   },
+])
+
+const rootRacesConfig: RacesConfig = U.indexById([
+  {
+    id: 'human',
+    name: 'human',
+    food: U.indexById([
+      { id: 'apples', consume: 2, calories: 1 },
+      { id: 'mushrooms', consume: 2, calories: 1 },
+    ]),
+  }
 ])
 
 const initGraphics = (state: DrawerState): State => {
   const seed = Date.now()
   random.use(seedrandom(seed))
   state.base_container.removeChildren()
-
   // addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, [0, 100, 0])
-  const points = randomPointsInSquare(CNT_POINTS, state.size).map((e, i) => ({ x: e.x, y: e.y, id: `point_${i}` }))
-  const voronoi = generate(points, state.size, state.size, LLOYD_STEPS, LLOYD_TO_MOVE)
-  const noDepositesCells = R.indexBy(R.prop('id'), R.map(e => ({
-    x: e.x,
-    y: e.y,
-    id: e.id,
-    links: R.map(R.prop('id'), e.links),
-    deposites: [],
-  }), voronoi.cells))
-  const [cells, deposites] = randomDeposites(noDepositesCells, resourcesConfig)
-  console.log('cells', cells)
-  initAndDrawLinks(cells, state.base_container)
-  initAndDrawCells(cells, state.base_container)
-  initTextLayer(state.base_container)
-  return {
+
+  // cells
+  const blankState = {
     ...state,
-    resources: resourcesConfig,
-    deposites,
-    cells,
+    resourcesConfig: rootResourcesConfig,
+    racesConfig: rootRacesConfig,
+    deposites: {},
+    cells: {},
+    creatures: {},
   }
+
+  const newState = R.pipe(...initStateHandlers)(blankState)
+
+  // deposites
+  // const [cells, deposites] = randomDeposites(blankCells, rootResourcesConfig)
+  // creatures
+  initAndDrawLinks(newState.cells, newState.base_container)
+  initAndDrawCells(newState.cells, newState.base_container)
+  initTextLayer(state.base_container)
+  return newState
 }
 
-const randomDeposites = (cellsOrig: Cells, config: ResourcesConfig): [Cells, Deposites] => {
-  const cells = {}
-  let depositesArray = []
-  R.forEach(cellId => {
-    const deposites = randomCellDeposites(cellId, config)
-    depositesArray = depositesArray.concat(deposites)
-    const depositeIds = R.map(R.prop('id'), deposites)
-    const cell = { ...cellsOrig[cellId], deposites: depositeIds }
-    cells[cell.id] = cell
-  }, R.keys(cellsOrig))
-  return [cells, R.indexBy(R.prop('id'), depositesArray)]
-}
-
-const randomCellDeposites = (cellId: CellId, config: ResourcesConfig): Array<Deposite> => {
+const randomCellDeposites = (cellId: CellId, resourcesConfig: ResourcesConfig): Array<Deposite> => {
   const deposites = []
   R.forEach(e => {
     if (random.float() >= e.chance) {
@@ -140,7 +167,7 @@ const randomCellDeposites = (cellId: CellId, config: ResourcesConfig): Array<Dep
       max: e.max,
     }
     deposites.push(deposite)
-  }, R.values(config))
+  }, R.values(resourcesConfig))
   return deposites
 }
 
@@ -180,18 +207,18 @@ const initTextLayer = (container) => {
   container.addChild(text)
 }
 
-const redrawTextLayer = (cells, deposites, resources, container) => {
-  const textContainer = container.getChildByName('text')
+const redrawTextLayer = ({ cells, deposites, resourcesConfig, base_container }): void => {
+  const textContainer = base_container.getChildByName('text')
   textContainer.removeChildren()
-  R.forEach(cell => drawCellText(cell, deposites, resources, textContainer), R.values(cells))
+  R.forEach(cell => drawCellText(cell, deposites, resourcesConfig, textContainer), R.values(cells))
 }
 
-const drawCellText = (cell, deposites, resources, textContainer): void => {
+const drawCellText = (cell, deposites, resourcesConfig, textContainer): void => {
   const cellDeposites = getCellDeposites(cell, deposites)
   const basicMargin = 1
   const lineHeight = 1.8
   R.reduce((margin, deposite) => {
-    const resource = resources[deposite.resource]
+    const resource = resourcesConfig[deposite.resource]
     const text = new PIXI.Text(
       `${resource.name}: ${deposite.amount}`,
       { fontFamily: 'Arial', fontSize: 16, fontStyle: 'bold', fill: to_pixi(resource.color) }
@@ -214,8 +241,8 @@ const redraw = (state: State): State => {
 }
 
 const innerTick = (oldState: State): State => {
-  const state = oldState.ticks % RECALC_DEPOSITES_THROTTLE === 1 ? recalcDeposites(oldState) : oldState
-  redrawTextLayer(state.cells, state.deposites, state.resources, state.base_container)
+  const state = R.pipe(...tickHandlers)(oldState)
+  R.pipe(...tickRedrawHandlers)(state)
   return state
 }
 
@@ -227,5 +254,50 @@ const recalcDeposites = (state) => {
   }, state.deposites)
   return { ...state, deposites }
 }
+
+const tickHandlers: Array<(state: State) => State> = [
+  recalcDeposites,
+]
+
+const tickRedrawHandlers: Array<(state: State) => void> = [
+  redrawTextLayer,
+]
+
+const randomCells = (state: State): State => {
+  const points = randomPointsInSquare(CNT_POINTS, state.size).map((e, i) => ({ x: e.x, y: e.y, id: `point_${i}` }))
+  const voronoi = generate(points, state.size, state.size, LLOYD_STEPS, LLOYD_TO_MOVE)
+  const cells = U.indexById(R.map(e => ({
+    x: e.x,
+    y: e.y,
+    id: e.id,
+    links: R.map(R.prop('id'), e.links),
+    deposites: [],
+    creatures: [],
+  }), voronoi.cells))
+  return { ...state, cells }
+}
+
+const randomDeposites = (state: State): State => {
+  const cells = {}
+  let depositesArray = []
+  R.forEach(cellId => {
+    const deposites = randomCellDeposites(cellId, state.resourcesConfig)
+    depositesArray = depositesArray.concat(deposites)
+    const depositeIds = R.map(R.prop('id'), deposites)
+    const cell = { ...state.cells[cellId], deposites: depositeIds }
+    cells[cell.id] = cell
+  }, R.keys(state.cells))
+  return { ...state, cells, deposites: U.indexById(depositesArray) }
+}
+
+const randomCreatures = (state: State): State => {
+  return state
+}
+
+const initStateHandlers: Array<(state: State) => State> = [
+  randomCells,
+  randomDeposites,
+  randomCreatures,
+]
 
 export const init = (): void => startDrawer('square', initGraphics, redraw)
