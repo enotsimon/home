@@ -35,6 +35,7 @@ import { init as initDotsMap } from 'experimental/samples/dots_map'
 import { init as initDotsMapDynamic } from 'experimental/samples/dots_map_dynamic'
 import { init as initTissue } from 'experimental/samples/tissue'
 import { init as initCellularAutomatonExp } from 'experimental/samples/cellular_automaton_exp'
+import { init as initResources } from './experimental/samples/resources'
 
 // TODO fix updateDebugInfo()
 const createDrawer = init => <Sample init={init} />
@@ -75,6 +76,7 @@ ReactDOM.render((
         <Route path="/mycelium_growth" render={() => createDrawer(initMyceliumGrowth)} />
         <Route path="/tissue" render={() => createDrawer(initTissue)} />
         <Route path="/cellular_automaton_exp" render={() => createDrawer(initCellularAutomatonExp)} />
+        <Route path="/resources" render={() => createDrawer(initResources)} />
         {/* dont work. 404 routed from dev server itself */}
         <Route path="/" render={page404} />
       </Switch>
