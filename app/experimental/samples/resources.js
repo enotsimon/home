@@ -20,9 +20,9 @@ const ROOT_THROTTLE = 100
 const CNT_POINTS = 25
 const LLOYD_TO_MOVE = 1
 const LLOYD_STEPS = 2
+const CREATURES_PER_CELL = 10
 
 type Record<Key: string | number, T: Object> = {| [Key]: T |}
-type PIXIContainer = Object // FIXME
 
 type FromTo = {| from: number, to: number |}
 
@@ -67,6 +67,7 @@ type RaceId = string
 type Race = {|
   id: RaceId,
   name: string,
+  // inanimate: boolean,
   food: FoodConsumptionConfig,
 |}
 type RacesConfig = {| [RaceId]: Race |}
@@ -87,11 +88,13 @@ type Deposites = Record<DepositeId, Deposite>
 type Creatures = Record<CreatureId, Creature>
 type State = {|
   ...DrawerState,
+  // autoincrement id counters
+  ids: {| creature: number |},
   resourcesConfig: ResourcesConfig,
+  racesConfig: RacesConfig,
   cells: Cells,
   deposites: Deposites,
   creatures: Creatures,
-  graphics: PIXIContainer,
 |}
 
 const rootResourcesConfig: ResourcesConfig = U.indexById([
@@ -132,21 +135,18 @@ const initGraphics = (state: DrawerState): State => {
   state.base_container.removeChildren()
   // addCircleMask(state.base_container, state.size / 2, { x: 0, y: 0 }, [0, 100, 0])
 
-  // cells
-  const blankState = {
+  const blankState: State = {
     ...state,
+    ids: { creature: 1 },
     resourcesConfig: rootResourcesConfig,
     racesConfig: rootRacesConfig,
     deposites: {},
     cells: {},
     creatures: {},
   }
-
   const newState = R.pipe(...initStateHandlers)(blankState)
+  // console.log('creatures', newState.creatures, newState.ids)
 
-  // deposites
-  // const [cells, deposites] = randomDeposites(blankCells, rootResourcesConfig)
-  // creatures
   initAndDrawLinks(newState.cells, newState.base_container)
   initAndDrawCells(newState.cells, newState.base_container)
   initTextLayer(state.base_container)
@@ -290,8 +290,34 @@ const randomDeposites = (state: State): State => {
   return { ...state, cells, deposites: U.indexById(depositesArray) }
 }
 
+// copy-paste from randomDeposites
 const randomCreatures = (state: State): State => {
-  return state
+  const cells = {}
+  let creaturesArray = []
+  let curCreatureId = state.ids.creature
+  R.forEach(cellId => {
+    const creatures = randomCellCreatures(curCreatureId, state.racesConfig)
+    creaturesArray = creaturesArray.concat(creatures)
+    const creatureIds = R.map(R.prop('id'), creatures)
+    const cell = { ...state.cells[cellId], creatures: creatureIds }
+    cells[cell.id] = cell
+    curCreatureId += creatures.length
+  }, R.keys(state.cells))
+  return { ...state, cells, creatures: U.indexById(creaturesArray), ids: { ...state.ids, creature: curCreatureId } }
+}
+
+const randomCellCreatures = (curCreatureId, racesConfig) => {
+  const cellRaceId = U.randElement(R.keys(racesConfig))
+  return R.map(i => {
+    return {
+      id: curCreatureId + i,
+      name: `creature ${curCreatureId + i}`,
+      age: 20,
+      gender: U.randElement(['male', 'female']),
+      race: cellRaceId,
+      satiation: 100,
+    }
+  }, R.range(0, CREATURES_PER_CELL))
 }
 
 const initStateHandlers: Array<(state: State) => State> = [
