@@ -147,9 +147,7 @@ const initGraphics = (state: DrawerState): State => {
   const newState = R.pipe(...initStateHandlers)(blankState)
   // console.log('creatures', newState.creatures, newState.ids)
 
-  initAndDrawLinks(newState.cells, newState.base_container)
-  initAndDrawCells(newState.cells, newState.base_container)
-  initTextLayer(state.base_container)
+  R.juxt(initGraphicsHandlers)(newState)
   return newState
 }
 
@@ -175,9 +173,9 @@ const depositeId = (cellId: CellId, resourceId: ResourceId): string => `deposite
 const randFromTo = (conf) => random.int(conf.from, conf.to)
 const getCellDeposites = (cell, deposites): Array<Deposite> => R.map(id => deposites[id], cell.deposites)
 
-const initAndDrawCells = (cells, container) => {
+const initAndDrawCells = ({ cells, base_container }: State): void => {
   const cellsGraphics = new PIXI.Graphics()
-  container.addChild(cellsGraphics)
+  base_container.addChild(cellsGraphics)
   R.forEach(p => {
     const graphics = drawDottedPoint([255, 255, 255], 0.75)
     graphics.x = p.x
@@ -187,9 +185,9 @@ const initAndDrawCells = (cells, container) => {
   }, R.values(cells))
 }
 
-const initAndDrawLinks = (cells, container) => {
+const initAndDrawLinks = ({ cells, base_container }: State): void => {
   const linksGraphics = new PIXI.Graphics()
-  container.addChild(linksGraphics)
+  base_container.addChild(linksGraphics)
   const links = R.pipe(
     R.values,
     R.chain(cell => R.map(l => [cell.id, l], cell.links)),
@@ -197,14 +195,14 @@ const initAndDrawLinks = (cells, container) => {
     R.uniq
   )(cells)
   R.forEach(([c1, c2]) => {
-    drawLine(container, [255, 255, 255], 0.25, cells[c1], cells[c2])
+    drawLine(base_container, [255, 255, 255], 0.25, cells[c1], cells[c2])
   }, links)
 }
 
-const initTextLayer = (container) => {
+const initTextLayer = ({ base_container }: State): void => {
   const text = new PIXI.Graphics()
   text.name = 'text'
-  container.addChild(text)
+  base_container.addChild(text)
 }
 
 const redrawTextLayer = ({ cells, deposites, resourcesConfig, base_container }): void => {
@@ -242,7 +240,7 @@ const redraw = (state: State): State => {
 
 const innerTick = (oldState: State): State => {
   const state = R.pipe(...tickHandlers)(oldState)
-  R.pipe(...tickRedrawHandlers)(state)
+  R.juxt(tickRedrawHandlers)(state)
   return state
 }
 
@@ -324,6 +322,12 @@ const initStateHandlers: Array<(state: State) => State> = [
   randomCells,
   randomDeposites,
   randomCreatures,
+]
+
+const initGraphicsHandlers = [
+  initAndDrawLinks,
+  initAndDrawCells,
+  initTextLayer,
 ]
 
 export const init = (): void => startDrawer('square', initGraphics, redraw)
