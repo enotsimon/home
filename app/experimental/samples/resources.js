@@ -60,15 +60,20 @@ type FoodConsumptionConfig = {| [ResourceId]: FoodConsumption |}
 type FoodConsumption = {|
   id: ResourceId,
   consume: number,
-  calories: number,
+  satiation: number,
 |}
 
 type RaceId = string
 type Race = {|
   id: RaceId,
   name: string,
+  plural: string,
+  color: RGBArray,
   // inanimate: boolean,
   food: FoodConsumptionConfig,
+  endurance: FromTo,
+  satiationStep: number,
+  satiationDecrease: number,
 |}
 type RacesConfig = {| [RaceId]: Race |}
 
@@ -81,6 +86,7 @@ type Creature = {|
   gender: Gender,
   race: RaceId,
   satiation: number,
+  endurance: number,
 |}
 
 type Cells = Record<CellId, Cell>
@@ -122,10 +128,15 @@ const rootRacesConfig: RacesConfig = U.indexById([
   {
     id: 'human',
     name: 'human',
+    plural: 'humans',
+    color: [255, 165, 0],
+    satiationStep: 50, // max satiation = satiationStep * endurance
+    satiationDecrease: 5,
     food: U.indexById([
-      { id: 'apples', consume: 2, calories: 1 },
-      { id: 'mushrooms', consume: 2, calories: 1 },
+      { id: 'apples', consume: 1, satiation: 1 },
+      { id: 'mushrooms', consume: 2, satiation: 1 },
     ]),
+    endurance: { from: 1, to: 10 },
   }
 ])
 
@@ -158,7 +169,7 @@ const randomCellDeposites = (cellId: CellId, resourcesConfig: ResourcesConfig): 
       return
     }
     const deposite = {
-      id: depositeId(cellId, e.id),
+      id: buildDepositeId(cellId, e.id),
       resource: e.id,
       amount: randFromTo(e.amount),
       gain: randFromTo(e.gain),
@@ -169,9 +180,10 @@ const randomCellDeposites = (cellId: CellId, resourcesConfig: ResourcesConfig): 
   return deposites
 }
 
-const depositeId = (cellId: CellId, resourceId: ResourceId): string => `deposite_${cellId}_${resourceId}`
+const buildDepositeId = (cellId: CellId, resourceId: ResourceId): string => `deposite_${cellId}_${resourceId}`
 const randFromTo = (conf) => random.int(conf.from, conf.to)
 const getCellDeposites = (cell, deposites): Array<Deposite> => R.map(id => deposites[id], cell.deposites)
+const getCellCreatures = (cell, creatures): Array<Creature> => R.map(id => creatures[id], cell.creatures)
 
 const initAndDrawCells = ({ cells, base_container }: State): void => {
   const cellsGraphics = new PIXI.Graphics()
@@ -205,18 +217,35 @@ const initTextLayer = ({ base_container }: State): void => {
   base_container.addChild(text)
 }
 
-const redrawTextLayer = ({ cells, deposites, resourcesConfig, base_container }): void => {
-  const textContainer = base_container.getChildByName('text')
+const redrawTextLayer = (state: State): void => {
+  const textContainer = state.base_container.getChildByName('text')
   textContainer.removeChildren()
-  R.forEach(cell => drawCellText(cell, deposites, resourcesConfig, textContainer), R.values(cells))
+  R.forEach(cell => drawCellText(cell, state, textContainer), R.values(state.cells))
 }
 
-const drawCellText = (cell, deposites, resourcesConfig, textContainer): void => {
-  const cellDeposites = getCellDeposites(cell, deposites)
+const drawCellText = (cell, state, textContainer): void => {
   const basicMargin = 1
   const lineHeight = 1.8
+  // creatures
+  const cellCreatureRaces = R.reduce((acc, e) => {
+    acc[e.race] = acc[e.race] ? acc[e.race] + 1 : 1
+    return acc
+  }, {}, getCellCreatures(cell, state.creatures))
+  const depositesMargin = R.reduce((margin, [raceId, amount]) => {
+    const race = state.racesConfig[raceId]
+    const text = new PIXI.Text(
+      `${race.plural}: ${amount}`,
+      { fontFamily: 'Arial', fontSize: 16, fontStyle: 'bold', fill: to_pixi(race.color) }
+    )
+    text.scale = { x: 0.1, y: 0.1 }
+    text.x = cell.x
+    text.y = cell.y + margin
+    textContainer.addChild(text)
+    return margin + lineHeight
+  }, basicMargin, R.toPairs(cellCreatureRaces))
+  // deposites
   R.reduce((margin, deposite) => {
-    const resource = resourcesConfig[deposite.resource]
+    const resource = state.resourcesConfig[deposite.resource]
     const text = new PIXI.Text(
       `${resource.name}: ${deposite.amount}`,
       { fontFamily: 'Arial', fontSize: 16, fontStyle: 'bold', fill: to_pixi(resource.color) }
@@ -226,7 +255,7 @@ const drawCellText = (cell, deposites, resourcesConfig, textContainer): void => 
     text.y = cell.y + margin
     textContainer.addChild(text)
     return margin + lineHeight
-  }, basicMargin, cellDeposites)
+  }, depositesMargin, getCellDeposites(cell, state.deposites))
 }
 
 const cellGraphicsName = id => `cell_${id}`
@@ -253,8 +282,43 @@ const recalcDeposites = (state) => {
   return { ...state, deposites }
 }
 
+const hunger = (state: State): State => {
+  const creatures = R.map(creature => {
+    const creatureRace = state.racesConfig[creature.race]
+    return { ...creature, satiation: creature.satiation - creatureRace.satiationDecrease }
+  }, state.creatures)
+  return { ...state, creatures }
+}
+
+const foodConsumption = (oldState: State): State => {
+  /*
+  const state = { ...oldState }
+  R.forEach(cell => {
+    const deposites = getCellDeposites(cell, state.deposites)
+    const creatures = getCellCreatures(cell, state.creatures)
+    R.forEach(creature => {
+      const creatureRace = state.racesConfig[creature.race]
+      const food = R.filter(deposite => R.includes(deposite.resource, R.keys(creatureRace.food)))
+    }, creatures)
+  }, R.values(state.cells))
+  return state
+  */
+  return oldState
+}
+
+const starvationDeath = (state: State): State => {
+  const creatures = R.filter(creature => creature.satiation > 0, state.creatures)
+  const cells: Cells = R.keys(state.creatures).length === R.keys(creatures).length
+    ? state.cells
+    : R.map(cell => ({ ...cell, creatures: R.filter(id => !!creatures[id], cell.creatures) }), state.cells)
+  return { ...state, creatures, cells }
+}
+
 const tickHandlers: Array<(state: State) => State> = [
   recalcDeposites,
+  hunger,
+  foodConsumption,
+  starvationDeath,
 ]
 
 const tickRedrawHandlers: Array<(state: State) => void> = [
@@ -314,6 +378,7 @@ const randomCellCreatures = (curCreatureId, racesConfig) => {
       gender: U.randElement(['male', 'female']),
       race: cellRaceId,
       satiation: 100,
+      endurance: random.int(racesConfig[cellRaceId].endurance.from, racesConfig[cellRaceId].endurance.to)
     }
   }, R.range(0, CREATURES_PER_CELL))
 }
