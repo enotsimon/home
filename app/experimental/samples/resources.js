@@ -71,6 +71,7 @@ type Race = {|
   // inanimate: boolean,
   food: FoodConsumptionConfig,
   endurance: FromTo,
+  satiationBase: number,
   satiationStep: number,
   satiationDecrease: number,
 |}
@@ -130,7 +131,8 @@ const rootRacesConfig: RacesConfig = U.indexById([
     name: 'human',
     plural: 'humans',
     color: [255, 165, 0],
-    satiationStep: 50, // max satiation = satiationStep * endurance
+    satiationStep: 50,
+    satiationBase: 200,
     satiationDecrease: 5,
     food: U.indexById([
       { id: 'apples', consume: 1, satiation: 1 },
@@ -357,7 +359,8 @@ const randomCreatures = (state: State): State => {
   return { ...state, creatures: U.indexById(creaturesArray), ids: { ...state.ids, creature: curCreatureId } }
 }
 
-const calcMaxSatiation = (satiationStep, endurance) => satiationStep * endurance
+const calcMaxSatiation = (raceConfig: Race, endurance: number): number =>
+  raceConfig.satiationBase + raceConfig.satiationStep * endurance
 
 const randomCellCreatures = (cellId, curCreatureId, racesConfig): Array<Creature> => {
   const cellRaceId = U.randElement(R.keys(racesConfig))
@@ -369,7 +372,7 @@ const randomCellCreatures = (cellId, curCreatureId, racesConfig): Array<Creature
       age: 20,
       gender: U.randElement(['male', 'female']),
       race: cellRaceId,
-      satiation: calcMaxSatiation(racesConfig[cellRaceId].satiationStep, endurance),
+      satiation: calcMaxSatiation(racesConfig[cellRaceId], endurance),
       endurance,
       location: cellId,
     }
