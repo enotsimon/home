@@ -357,17 +357,20 @@ const randomCreatures = (state: State): State => {
   return { ...state, creatures: U.indexById(creaturesArray), ids: { ...state.ids, creature: curCreatureId } }
 }
 
+const calcMaxSatiation = (satiationStep, endurance) => satiationStep * endurance
+
 const randomCellCreatures = (cellId, curCreatureId, racesConfig): Array<Creature> => {
   const cellRaceId = U.randElement(R.keys(racesConfig))
   return R.map(i => {
+    const endurance = random.int(racesConfig[cellRaceId].endurance.from, racesConfig[cellRaceId].endurance.to)
     return {
       id: `${curCreatureId + i}`,
       name: `creature ${curCreatureId + i}`,
       age: 20,
       gender: U.randElement(['male', 'female']),
       race: cellRaceId,
-      satiation: 100,
-      endurance: random.int(racesConfig[cellRaceId].endurance.from, racesConfig[cellRaceId].endurance.to),
+      satiation: calcMaxSatiation(racesConfig[cellRaceId].satiationStep, endurance),
+      endurance,
       location: cellId,
     }
   }, R.range(0, CREATURES_PER_CELL))
