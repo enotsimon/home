@@ -42,8 +42,6 @@ type CellId = string
 type Cell = {|
   ...XYPoint,
   id: CellId,
-  deposites: Array<DepositeId>,
-  creatures: Array<CreatureId>,
   links: Array<CellId>,
 |}
 
@@ -54,6 +52,7 @@ type Deposite = {|
   amount: number,
   gain: number,
   max: number,
+  location: CellId,
 |}
 
 type FoodConsumptionConfig = {| [ResourceId]: FoodConsumption |}
@@ -87,6 +86,7 @@ type Creature = {|
   race: RaceId,
   satiation: number,
   endurance: number,
+  location: CellId,
 |}
 
 type Cells = Record<CellId, Cell>
@@ -174,6 +174,7 @@ const randomCellDeposites = (cellId: CellId, resourcesConfig: ResourcesConfig): 
       amount: randFromTo(e.amount),
       gain: randFromTo(e.gain),
       max: e.max,
+      location: cellId,
     }
     deposites.push(deposite)
   }, R.values(resourcesConfig))
@@ -182,8 +183,9 @@ const randomCellDeposites = (cellId: CellId, resourcesConfig: ResourcesConfig): 
 
 const buildDepositeId = (cellId: CellId, resourceId: ResourceId): string => `deposite_${cellId}_${resourceId}`
 const randFromTo = (conf) => random.int(conf.from, conf.to)
-const getCellDeposites = (cell, deposites): Array<Deposite> => R.map(id => deposites[id], cell.deposites)
-const getCellCreatures = (cell, creatures): Array<Creature> => R.map(id => creatures[id], cell.creatures)
+
+const cellDeposites = (cellId, deposites): Array<Deposite> => R.filter(e => e.location === cellId, R.values(deposites))
+const cellCreatures = (cellId, creatures): Array<Creature> => R.filter(e => e.location === cellId, R.values(creatures))
 
 const initAndDrawCells = ({ cells, base_container }: State): void => {
   const cellsGraphics = new PIXI.Graphics()
@@ -230,7 +232,7 @@ const drawCellText = (cell, state, textContainer): void => {
   const cellCreatureRaces = R.reduce((acc, e) => {
     acc[e.race] = acc[e.race] ? acc[e.race] + 1 : 1
     return acc
-  }, {}, getCellCreatures(cell, state.creatures))
+  }, {}, cellCreatures(cell.id, state.creatures))
   const depositesMargin = R.reduce((margin, [raceId, amount]) => {
     const race = state.racesConfig[raceId]
     const text = new PIXI.Text(
@@ -255,7 +257,7 @@ const drawCellText = (cell, state, textContainer): void => {
     text.y = cell.y + margin
     textContainer.addChild(text)
     return margin + lineHeight
-  }, depositesMargin, getCellDeposites(cell, state.deposites))
+  }, depositesMargin, cellDeposites(cell.id, state.deposites))
 }
 
 const cellGraphicsName = id => `cell_${id}`
@@ -294,8 +296,8 @@ const foodConsumption = (oldState: State): State => {
   /*
   const state = { ...oldState }
   R.forEach(cell => {
-    const deposites = getCellDeposites(cell, state.deposites)
-    const creatures = getCellCreatures(cell, state.creatures)
+    const deposites = cellDeposites(cell.id, state.deposites)
+    const creatures = cellCreatures(cell.id, state.creatures)
     R.forEach(creature => {
       const creatureRace = state.racesConfig[creature.race]
       const food = R.filter(deposite => R.includes(deposite.resource, R.keys(creatureRace.food)))
@@ -308,10 +310,7 @@ const foodConsumption = (oldState: State): State => {
 
 const starvationDeath = (state: State): State => {
   const creatures = R.filter(creature => creature.satiation > 0, state.creatures)
-  const cells: Cells = R.keys(state.creatures).length === R.keys(creatures).length
-    ? state.cells
-    : R.map(cell => ({ ...cell, creatures: R.filter(id => !!creatures[id], cell.creatures) }), state.cells)
-  return { ...state, creatures, cells }
+  return { ...state, creatures }
 }
 
 const tickHandlers: Array<(state: State) => State> = [
@@ -333,52 +332,43 @@ const randomCells = (state: State): State => {
     y: e.y,
     id: e.id,
     links: R.map(R.prop('id'), e.links),
-    deposites: [],
-    creatures: [],
   }), voronoi.cells))
   return { ...state, cells }
 }
 
 const randomDeposites = (state: State): State => {
-  const cells = {}
   let depositesArray = []
   R.forEach(cellId => {
     const deposites = randomCellDeposites(cellId, state.resourcesConfig)
     depositesArray = depositesArray.concat(deposites)
-    const depositeIds = R.map(R.prop('id'), deposites)
-    const cell = { ...state.cells[cellId], deposites: depositeIds }
-    cells[cell.id] = cell
   }, R.keys(state.cells))
-  return { ...state, cells, deposites: U.indexById(depositesArray) }
+  return { ...state, deposites: U.indexById(depositesArray) }
 }
 
 // copy-paste from randomDeposites
 const randomCreatures = (state: State): State => {
-  const cells = {}
   let creaturesArray = []
   let curCreatureId = state.ids.creature
   R.forEach(cellId => {
-    const creatures = randomCellCreatures(curCreatureId, state.racesConfig)
+    const creatures = randomCellCreatures(cellId, curCreatureId, state.racesConfig)
     creaturesArray = creaturesArray.concat(creatures)
-    const creatureIds = R.map(R.prop('id'), creatures)
-    const cell = { ...state.cells[cellId], creatures: creatureIds }
-    cells[cell.id] = cell
     curCreatureId += creatures.length
   }, R.keys(state.cells))
-  return { ...state, cells, creatures: U.indexById(creaturesArray), ids: { ...state.ids, creature: curCreatureId } }
+  return { ...state, creatures: U.indexById(creaturesArray), ids: { ...state.ids, creature: curCreatureId } }
 }
 
-const randomCellCreatures = (curCreatureId, racesConfig) => {
+const randomCellCreatures = (cellId, curCreatureId, racesConfig): Array<Creature> => {
   const cellRaceId = U.randElement(R.keys(racesConfig))
   return R.map(i => {
     return {
-      id: curCreatureId + i,
+      id: `${curCreatureId + i}`,
       name: `creature ${curCreatureId + i}`,
       age: 20,
       gender: U.randElement(['male', 'female']),
       race: cellRaceId,
       satiation: 100,
-      endurance: random.int(racesConfig[cellRaceId].endurance.from, racesConfig[cellRaceId].endurance.to)
+      endurance: random.int(racesConfig[cellRaceId].endurance.from, racesConfig[cellRaceId].endurance.to),
+      location: cellId,
     }
   }, R.range(0, CREATURES_PER_CELL))
 }
