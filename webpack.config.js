@@ -4,9 +4,10 @@ const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin')
 
 const isDebug = process.argv.includes('--mode=development')
-const srcDir = path.resolve(__dirname, 'app')
+const srcDir = path.resolve(__dirname, 'src')
 
 const outputPath = path.resolve(__dirname, 'dist')
 
@@ -23,18 +24,28 @@ const babelRules = (dir, node) => (
       cacheDirectory: isDebug,
 
       presets: [
-        'flow',
-        ['env', {
-          targets: node === 'node' ? { node: 'current' } : { browsers: ['last 2 versions'] },
+        '@babel/preset-flow',
+        ['@babel/preset-env', {
+          targets: node ? {
+            node: 'current',
+          } : {
+            browsers: ['last 2 versions'],
+          },
         }],
-        'react'
+        '@babel/preset-react',
       ],
       plugins: [
-        'dynamic-import-node',
-        'jsx-control-statements',
-        'transform-decorators-legacy',
-        'transform-class-properties',
-        'transform-object-rest-spread',
+        ['@babel/plugin-transform-flow-strip-types', { all: true }],
+        'babel-plugin-dynamic-import-node',
+        'babel-plugin-jsx-control-statements',
+        '@babel/plugin-proposal-class-properties',
+        [
+          '@babel/plugin-proposal-decorators',
+          {
+            legacy: true,
+          },
+        ],
+        '@babel/plugin-proposal-object-rest-spread',
       ],
     },
   }
@@ -81,8 +92,8 @@ module.exports = () => [
 
     plugins: [
       new HtmlWebpackPlugin({
-        title: 'enot simon home app',
-        favicon: 'assets/favicon.jpeg',
+        title: 'planets game',
+        // favicon: 'assets/favicon.jpeg',
       }),
       new webpack.NamedModulesPlugin(),
       new webpack.HotModuleReplacementPlugin(),
@@ -90,9 +101,15 @@ module.exports = () => [
         {
           // Note:- No wildcard is specified hence will copy all files and folders
           from: 'assets/', // Will resolve to RepoDir/src/assets
-          to: '' // Copies all files from above dest to dist/assets
+          to: 'assets' // Copies all files from above dest to dist/assets
         },
+        {
+          // Wildcard is specified hence will copy only css files
+          from: 'css/*.css', // Will resolve to RepoDir/src/css and all *.css files from this directory
+          to: ''// Copies all matched css files from above dest to dist/css
+        }
       ]),
+      new HtmlWebpackTagsPlugin({ tags: ['css/main.css'], append: true })
     ],
 
     output: {
